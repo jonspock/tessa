@@ -1,7 +1,7 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2018 The PIVX developers
+// Copyright (c) 2015-2018 The XIVP developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -100,21 +100,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"setban", 2},
         {"setban", 3},
         {"spork", 1},
-        {"mnbudget", 3},
-        {"mnbudget", 4},
-        {"mnbudget", 6},
-        {"mnbudget", 8},
-        {"preparebudget", 2},
-        {"preparebudget", 3},
-        {"preparebudget", 5},
-        {"submitbudget", 2},
-        {"submitbudget", 3},
-        {"submitbudget", 5},
-        {"submitbudget", 7},
-        // disabled until removal of the legacy 'masternode' command
-        //{"startmasternode", 1},
-        {"mnvoteraw", 1},
-        {"mnvoteraw", 4},
         {"reservebalance", 0},
         {"reservebalance", 1},
         {"setstakesplitthreshold", 0},
@@ -140,7 +125,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"searchdzpiv", 0},
         {"searchdzpiv", 1},
         {"searchdzpiv", 2},
-        {"getaccumulatorvalues", 0},
         {"getfeeinfo", 0}
     };
 

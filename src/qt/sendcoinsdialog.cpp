@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2018 The PIVX developers
+// Copyright (c) 2015-2018 The XIVP developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -59,24 +59,11 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent),
     connect(ui->splitBlockCheckBox, SIGNAL(stateChanged(int)), this, SLOT(splitBlockChecked(int)));
     connect(ui->splitBlockLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(splitBlockLineEditChanged(const QString&)));
 
-    // PIVX specific
+    // CCCC specific
     QSettings settings;
-    if (!settings.contains("bUseObfuScation"))
-        settings.setValue("bUseObfuScation", false);
-    if (!settings.contains("bUseSwiftTX"))
-        settings.setValue("bUseSwiftTX", false);
-
-    bool useSwiftTX = settings.value("bUseSwiftTX").toBool();
-    if (fLiteMode) {
-        ui->checkSwiftTX->setVisible(false);
-        CoinControlDialog::coinControl->useObfuScation = false;
-        CoinControlDialog::coinControl->useSwiftTX = false;
-    } else {
-        ui->checkSwiftTX->setChecked(useSwiftTX);
-        CoinControlDialog::coinControl->useSwiftTX = useSwiftTX;
-    }
-
-    connect(ui->checkSwiftTX, SIGNAL(stateChanged(int)), this, SLOT(updateSwiftTX()));
+    ui->checkSwiftTX->setVisible(false);
+    CoinControlDialog::coinControl->useObfuScation = false;
+    CoinControlDialog::coinControl->useSwiftTX = false;
 
     // Coin Control: clipboard actions
     QAction* clipboardQuantityAction = new QAction(tr("Copy quantity"), this);
@@ -265,15 +252,6 @@ void SendCoinsDialog::on_sendButton_clicked()
     QString strFunds = "";
     QString strFee = "";
     recipients[0].inputType = ALL_COINS;
-
-    if (ui->checkSwiftTX->isChecked()) {
-        recipients[0].useSwiftTX = true;
-        strFunds += " ";
-        strFunds += tr("using SwiftX");
-    } else {
-        recipients[0].useSwiftTX = false;
-    }
-
 
     // Format confirmation message
     QStringList formatted;
@@ -579,10 +557,6 @@ void SendCoinsDialog::updateDisplayUnit()
 
 void SendCoinsDialog::updateSwiftTX()
 {
-    QSettings settings;
-    settings.setValue("bUseSwiftTX", ui->checkSwiftTX->isChecked());
-    CoinControlDialog::coinControl->useSwiftTX = ui->checkSwiftTX->isChecked();
-    coinControlUpdateLabels();
 }
 
 void SendCoinsDialog::processSendCoinsReturn(const WalletModel::SendCoinsReturn& sendCoinsReturn, const QString& msgArg, bool fPrepare)
@@ -883,7 +857,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
             ui->labelCoinControlChangeLabel->setText("");
         } else if (!addr.IsValid()) // Invalid address
         {
-            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid PIVX address"));
+            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid CCCC address"));
         } else // Valid address
         {
             CPubKey pubkey;

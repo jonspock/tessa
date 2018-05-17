@@ -1,7 +1,7 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2018 The PIVX developers
+// Copyright (c) 2015-2018 The XIVP developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,7 +15,6 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "accumulatormap.h"
-#include "accumulators.h"
 
 #include <stdint.h>
 #include <univalue.h>
@@ -325,15 +324,15 @@ UniValue getblock(const UniValue& params, bool fHelp)
             "  \"moneysupply\" : \"supply\"       (numeric) The money supply when this block was added to the blockchain\n"
             "  \"zPIVsupply\" :\n"
             "  {\n"
-            "     \"1\" : n,            (numeric) supply of 1 zPIV denomination\n"
-            "     \"5\" : n,            (numeric) supply of 5 zPIV denomination\n"
-            "     \"10\" : n,           (numeric) supply of 10 zPIV denomination\n"
-            "     \"50\" : n,           (numeric) supply of 50 zPIV denomination\n"
-            "     \"100\" : n,          (numeric) supply of 100 zPIV denomination\n"
-            "     \"500\" : n,          (numeric) supply of 500 zPIV denomination\n"
-            "     \"1000\" : n,         (numeric) supply of 1000 zPIV denomination\n"
-            "     \"5000\" : n,         (numeric) supply of 5000 zPIV denomination\n"
-            "     \"total\" : n,        (numeric) The total supply of all zPIV denominations\n"
+            "     \"1\" : n,            (numeric) supply of 1 zZZZ denomination\n"
+            "     \"5\" : n,            (numeric) supply of 5 zZZZ denomination\n"
+            "     \"10\" : n,           (numeric) supply of 10 zZZZ denomination\n"
+            "     \"50\" : n,           (numeric) supply of 50 zZZZ denomination\n"
+            "     \"100\" : n,          (numeric) supply of 100 zZZZ denomination\n"
+            "     \"500\" : n,          (numeric) supply of 500 zZZZ denomination\n"
+            "     \"1000\" : n,         (numeric) supply of 1000 zZZZ denomination\n"
+            "     \"5000\" : n,         (numeric) supply of 5000 zZZZ denomination\n"
+            "     \"total\" : n,        (numeric) The total supply of all zZZZ denominations\n"
             "  }\n"
             "}\n"
 
@@ -930,38 +929,6 @@ UniValue findserial(const UniValue& params, bool fHelp)
     UniValue ret(UniValue::VOBJ);
     ret.push_back(Pair("success", fSuccess));
     ret.push_back(Pair("txid", txid.GetHex()));
-    return ret;
-}
-
-UniValue getaccumulatorvalues(const UniValue& params, bool fHelp)
-{
-    if (fHelp || params.size() != 1)
-        throw runtime_error(
-            "getaccumulatorvalues \"height\"\n"
-                    "\nReturns the accumulator values associated with a block height\n"
-
-                    "\nArguments:\n"
-                    "1. height   (numeric, required) the height of the checkpoint.\n"
-
-                    "\nExamples:\n" +
-            HelpExampleCli("getaccumulatorvalues", "\"height\"") + HelpExampleRpc("getaccumulatorvalues", "\"height\""));
-
-    int nHeight = params[0].get_int();
-
-    CBlockIndex* pindex = chainActive[nHeight];
-    if (!pindex)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid block height");
-
-    UniValue ret(UniValue::VARR);
-    for (libzerocoin::CoinDenomination denom : libzerocoin::zerocoinDenomList) {
-        CBigNum bnValue;
-        if(!GetAccumulatorValueFromDB(pindex->nAccumulatorCheckpoint, denom, bnValue))
-            throw JSONRPCError(RPC_DATABASE_ERROR, "failed to find value in database");
-
-        UniValue obj(UniValue::VOBJ);
-        obj.push_back(Pair(std::to_string(denom), bnValue.GetHex()));
-        ret.push_back(obj);
-    }
 
     return ret;
 }

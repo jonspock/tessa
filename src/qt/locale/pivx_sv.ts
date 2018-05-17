@@ -62,12 +62,12 @@
         <translation>Mottagar adresser</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Det här är dina PIVX adresser för att sända betalningar. Kontrollera alltid summan och mottagaradressen före du sänder mynt.</translation>
+        <source>These are your CCCC addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Det här är dina CCCC adresser för att sända betalningar. Kontrollera alltid summan och mottagaradressen före du sänder mynt.</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Det här är dina PIVX adresser för att ta emot betalningar. Det är rekomenderat att använda en ny mottagaradress för varje transaktion.</translation>
+        <source>These are your CCCC addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Det här är dina CCCC adresser för att ta emot betalningar. Det är rekomenderat att använda en ny mottagaradress för varje transaktion.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -176,8 +176,8 @@
         <translation>Bekräfta plånboks krypering</translation>
     </message>
     <message>
-        <source>PIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
-        <translation>PIVX kommer att stängas ner nu för att färdigställa kryperingsprocessen. Kom ihåg att kryptering av din plånbok inte kan säkerställa dina PIVs från att bli stulna av skadeprogram som infekterat din dator.</translation>
+        <source>CCCC will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
+        <translation>CCCC kommer att stängas ner nu för att färdigställa kryperingsprocessen. Kom ihåg att kryptering av din plånbok inte kan säkerställa dina PIVs från att bli stulna av skadeprogram som infekterat din dator.</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -254,12 +254,12 @@
         <translation>Adress:</translation>
     </message>
     <message>
-        <source>Enter a PIVX Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
-        <translation>Fyll i en PIVX Adress som du skulle vilja cryptera med BIP 38. Skriv in ett lösenord i den mittersta lådan. Tryck kryptera för att beräkna fram den krypterade privata nyckeln</translation>
+        <source>Enter a CCCC Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
+        <translation>Fyll i en CCCC Adress som du skulle vilja cryptera med BIP 38. Skriv in ett lösenord i den mittersta lådan. Tryck kryptera för att beräkna fram den krypterade privata nyckeln</translation>
     </message>
     <message>
-        <source>The PIVX address to encrypt</source>
-        <translation>PIVX adressen som ska krypteras</translation>
+        <source>The CCCC address to encrypt</source>
+        <translation>CCCC adressen som ska krypteras</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -290,8 +290,8 @@
         <translation>Kopiera den nuvarande signaturen till systemets urklipp</translation>
     </message>
     <message>
-        <source>Encrypt the private key for this PIVX address</source>
-        <translation>Kryptera den privata nyckeln för denna PIVX adressen</translation>
+        <source>Encrypt the private key for this CCCC address</source>
+        <translation>Kryptera den privata nyckeln för denna CCCC adressen</translation>
     </message>
     <message>
         <source>Reset all fields</source>
@@ -645,12 +645,12 @@
         <translation>flik vertygsrad</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Kärna</translation>
+        <source>CCCC Core</source>
+        <translation>CCCC Kärna</translation>
     </message>
     <message>
-        <source>Send coins to a PIVX address</source>
-        <translation>Skicka mynt till en PIVX adress</translation>
+        <source>Send coins to a CCCC address</source>
+        <translation>Skicka mynt till en CCCC adress</translation>
     </message>
     <message>
         <source>Request payments (generates QR codes and pivx: URIs)</source>
@@ -669,24 +669,24 @@
         <translation>Utforska masternoder</translation>
     </message>
     <message>
-        <source>&amp;About PIVX Core</source>
-        <translation>Om PIVX Kärnan</translation>
+        <source>&amp;About CCCC Core</source>
+        <translation>Om CCCC Kärnan</translation>
     </message>
     <message>
-        <source>Show information about PIVX Core</source>
-        <translation>Visa information om PIVX Kärnan</translation>
+        <source>Show information about CCCC Core</source>
+        <translation>Visa information om CCCC Kärnan</translation>
     </message>
     <message>
-        <source>Modify configuration options for PIVX</source>
-        <translation>Ändra konfigurationsval för PIVX</translation>
+        <source>Modify configuration options for CCCC</source>
+        <translation>Ändra konfigurationsval för CCCC</translation>
     </message>
     <message>
-        <source>Sign messages with your PIVX addresses to prove you own them</source>
-        <translation>Signera meddelanden med din PIVX adress för att visa att du äger dem</translation>
+        <source>Sign messages with your CCCC addresses to prove you own them</source>
+        <translation>Signera meddelanden med din CCCC adress för att visa att du äger dem</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified PIVX addresses</source>
-        <translation>Verifiera meddelandet för att säkerställa att de blev signerat med den specifika PIVX adressen.</translation>
+        <source>Verify messages to ensure they were signed with specified CCCC addresses</source>
+        <translation>Verifiera meddelandet för att säkerställa att de blev signerat med den specifika CCCC adressen.</translation>
     </message>
     <message>
         <source>&amp;BIP38 tool</source>
@@ -717,8 +717,8 @@
         <translation>Öppna Huvudnodens konfigurations fil </translation>
     </message>
     <message>
-        <source>Open a PIVX: URI or payment request</source>
-        <translation>Öppna en PIVX: URI eller betalningsförfrågan</translation>
+        <source>Open a CCCC: URI or payment request</source>
+        <translation>Öppna en CCCC: URI eller betalningsförfrågan</translation>
     </message>
     <message>
         <source>&amp;Blockchain explorer</source>
@@ -729,16 +729,16 @@
         <translation>Blockera utforskarfönstret</translation>
     </message>
     <message>
-        <source>Show the PIVX Core help message to get a list with possible PIVX command-line options</source>
-        <translation>Visa PIVX Core hjälp meddelande för att få en lista med möjliga PIVX kommandorad alternativ</translation>
+        <source>Show the CCCC Core help message to get a list with possible CCCC command-line options</source>
+        <translation>Visa CCCC Core hjälp meddelande för att få en lista med möjliga CCCC kommandorad alternativ</translation>
     </message>
     <message>
-        <source>PIVX Core client</source>
-        <translation>PIVX kärn klient</translation>
+        <source>CCCC Core client</source>
+        <translation>CCCC kärn klient</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to PIVX network</source>
-        <translation><numerusform>%n aktiv(a) annslutning(ar) till PIVX nätverket</numerusform><numerusform>%n aktiv(a) annslutning(ar) till PIVX nätverket</numerusform></translation>
+        <source>%n active connection(s) to CCCC network</source>
+        <translation><numerusform>%n aktiv(a) annslutning(ar) till CCCC nätverket</numerusform><numerusform>%n aktiv(a) annslutning(ar) till CCCC nätverket</numerusform></translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
@@ -1185,8 +1185,8 @@ MultiSend: %1</translation>
         <translation>Redigera skickande adress</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid PIVX address.</source>
-        <translation>Den inmatade adressen "%1" är ej en giltig PIVX adress.</translation>
+        <source>The entered address "%1" is not a valid CCCC address.</source>
+        <translation>Den inmatade adressen "%1" är ej en giltig CCCC adress.</translation>
     </message>
     <message>
         <source>The entered address "%1" is already in the address book.</source>
@@ -1231,16 +1231,16 @@ MultiSend: %1</translation>
         <translation>version</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Kärna</translation>
+        <source>CCCC Core</source>
+        <translation>CCCC Kärna</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
         <translation>(%1-bit)</translation>
     </message>
     <message>
-        <source>About PIVX Core</source>
-        <translation>Om PIVX Kärna</translation>
+        <source>About CCCC Core</source>
+        <translation>Om CCCC Kärna</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1286,16 +1286,16 @@ MultiSend: %1</translation>
         <translation>Välkommen</translation>
     </message>
     <message>
-        <source>Welcome to PIVX Core.</source>
-        <translation>Välkommen till PIVX Kärna.</translation>
+        <source>Welcome to CCCC Core.</source>
+        <translation>Välkommen till CCCC Kärna.</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where PIVX Core will store its data.</source>
-        <translation>Eftersom detta är första gången programmet körs så kan du välja var PIVX Kärnan ska spara sin data.</translation>
+        <source>As this is the first time the program is launched, you can choose where CCCC Core will store its data.</source>
+        <translation>Eftersom detta är första gången programmet körs så kan du välja var CCCC Kärnan ska spara sin data.</translation>
     </message>
     <message>
-        <source>PIVX Core will download and store a copy of the PIVX block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation> Kärnan kommer ladda ner och spara en kopia av PIVX block chain. Minst %1GB data kommer sparas i denna katalog och den kommer växa med tiden. Plånboken kommer också sparas i denna katalog.</translation>
+        <source>CCCC Core will download and store a copy of the CCCC block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation> Kärnan kommer ladda ner och spara en kopia av CCCC block chain. Minst %1GB data kommer sparas i denna katalog och den kommer växa med tiden. Plånboken kommer också sparas i denna katalog.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1306,8 +1306,8 @@ MultiSend: %1</translation>
         <translation>Använd en skräddarsydd data katalog</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Kärna</translation>
+        <source>CCCC Core</source>
+        <translation>CCCC Kärna</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -1448,12 +1448,12 @@ MultiSend: %1</translation>
         <translation>Mata in Adress att Skicka till</translation>
     </message>
     <message>
-        <source>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other PIVX addresses after it matures.
-To Add: enter percentage to give and PIVX address to add to the MultiSend vector.
+        <source>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other CCCC addresses after it matures.
+To Add: enter percentage to give and CCCC address to add to the MultiSend vector.
 To Delete: Enter address to delete and press delete.
 MultiSend will not be activated unless you have clicked Activate</source>
-        <translation>MultiSend tillåter dig att automatiskt skicka upp till 100% av dina stake eller huvudnod belöningar till en lista av andra PIVX adresser efter att belöningarna har mognat.
-För att Lägga till: Ange procent att ge och PIVX adress för att lägga till i MultiSend vektorn.
+        <translation>MultiSend tillåter dig att automatiskt skicka upp till 100% av dina stake eller huvudnod belöningar till en lista av andra CCCC adresser efter att belöningarna har mognat.
+För att Lägga till: Ange procent att ge och CCCC adress för att lägga till i MultiSend vektorn.
 För att Ta Bort: Ange adressen som ska tas bort och tryck ta bort.
 MultiSend kommer inte aktiveras om du inte tryckt på Aktivera</translation>
     </message>
@@ -1795,16 +1795,16 @@ Var god vänta efter att du trycker på importera.</translation>
         <translation>Fördunkling Konfiguration</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening PIVX's configuration screen.</source>
-        <translation>Fördunkling sattes framgångsrikt till grundläggande (%1 och 2 rundor). Du kan ändra det här när du vill genom att öppna PIVX's konfigurationsskärm.</translation>
+        <source>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening CCCC's configuration screen.</source>
+        <translation>Fördunkling sattes framgångsrikt till grundläggande (%1 och 2 rundor). Du kan ändra det här när du vill genom att öppna CCCC's konfigurationsskärm.</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening PIVX's configuration screen.</source>
-        <translation>Fördunkling sattes framgångsrikt till hög (%1 och 8 rundor). Du kan ändra det här när du vill genom att öppna PIVX's konfigurationsskärm.</translation>
+        <source>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening CCCC's configuration screen.</source>
+        <translation>Fördunkling sattes framgångsrikt till hög (%1 och 8 rundor). Du kan ändra det här när du vill genom att öppna CCCC's konfigurationsskärm.</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening PIVX's configuration screen.</source>
-        <translation>Fördunkling sattes framgångsrikt till maximal (%1 och 16 rundor). Du kan ändra det här när du vill genom att öppna PIVX's konfigurationsskärm.</translation>
+        <source>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening CCCC's configuration screen.</source>
+        <translation>Fördunkling sattes framgångsrikt till maximal (%1 och 16 rundor). Du kan ändra det här när du vill genom att öppna CCCC's konfigurationsskärm.</translation>
     </message>
 </context>
 <context>
@@ -1849,8 +1849,8 @@ Var god vänta efter att du trycker på importera.</translation>
         <translation>Om du avaktiverar spenderandet av okonfirmerad växel så kommer växeln från en transaktion &lt;br/&gt;ej kunna användas föräns transaktionen har minst en bekräftelse. &lt;br/&gt; Detta påverkar även hur ditt saldo beräknas.</translation>
     </message>
     <message>
-        <source>Automatically open the PIVX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Öppna automatiskt PIVX klient porten på denna router. Detta funkar endast om din router stödjer UPnP och är påslaget.</translation>
+        <source>Automatically open the CCCC client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Öppna automatiskt CCCC klient porten på denna router. Detta funkar endast om din router stödjer UPnP och är påslaget.</translation>
     </message>
     <message>
         <source>Accept connections from outside</source>
@@ -1865,8 +1865,8 @@ Var god vänta efter att du trycker på importera.</translation>
         <translation>Expert</translation>
     </message>
     <message>
-        <source>Automatically start PIVX after logging in to the system.</source>
-        <translation>Starta PIVX automatiskt efter inloggning på systemet.</translation>
+        <source>Automatically start CCCC after logging in to the system.</source>
+        <translation>Starta CCCC automatiskt efter inloggning på systemet.</translation>
     </message>
     <message>
         <source>Whether to show coin control features or not.</source>
@@ -1881,8 +1881,8 @@ Var god vänta efter att du trycker på importera.</translation>
         <translation>Visa Huvudnoder Flik</translation>
     </message>
     <message>
-        <source>The user interface language can be set here. This setting will take effect after restarting PIVX.</source>
-        <translation>Användargränssnittets språk kan väljas här. Denna inställning börjar gälla efter att man startat om PIVX.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting CCCC.</source>
+        <translation>Användargränssnittets språk kan väljas här. Denna inställning börjar gälla efter att man startat om CCCC.</translation>
     </message>
     <message>
         <source>Language missing or translation incomplete? Help contributing translations here:
@@ -1895,12 +1895,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Tillåt automatisk minting med PIV enheter till zPIV</translation>
     </message>
     <message>
-        <source>Enable zPIV Automint</source>
-        <translation>Tillåt zPIV Automint</translation>
+        <source>Enable zZZZ Automint</source>
+        <translation>Tillåt zZZZ Automint</translation>
     </message>
     <message>
-        <source>Percentage of incoming PIV which get automatically converted to zPIV via Zerocoin Protocol (min: 10%)</source>
-        <translation>Procent av inkommande PIV som automatiskt konverteras till zPIV via Zerocoin Protokollet (min: 10%)</translation>
+        <source>Percentage of incoming PIV which get automatically converted to zZZZ via Zerocoin Protocol (min: 10%)</source>
+        <translation>Procent av inkommande PIV som automatiskt konverteras till zZZZ via Zerocoin Protokollet (min: 10%)</translation>
     </message>
     <message>
         <source>Percentage of autominted zPIV</source>
@@ -1911,16 +1911,16 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Vänta med automatisk omvandling till Zerocoin tills tillräckligt många PIV för denna valör är tillgängliga</translation>
     </message>
     <message>
-        <source>Preferred Automint zPIV Denomination</source>
-        <translation>Automint zPIV valör som föredras</translation>
+        <source>Preferred Automint zZZZ Denomination</source>
+        <translation>Automint zZZZ valör som föredras</translation>
     </message>
     <message>
         <source>Stake split threshold:</source>
         <translation>Stake delnings tröskel:</translation>
     </message>
     <message>
-        <source>Connect to the PIVX network through a SOCKS5 proxy.</source>
-        <translation>Anslut till PIVX nätverket via en SOCKS5 proxy.</translation>
+        <source>Connect to the CCCC network through a SOCKS5 proxy.</source>
+        <translation>Anslut till CCCC nätverket via en SOCKS5 proxy.</translation>
     </message>
     <message>
         <source>IP address of the proxy (e.g. IPv4: 127.0.0.1 / IPv6: ::1)</source>
@@ -2054,8 +2054,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Nuvarande låst saldo i endast-se adresser</translation>
     </message>
     <message>
-        <source>Your current PIVX balance, unconfirmed and immature transactions included</source>
-        <translation>Ditt nuvarande PIVX saldo, obekräftade och omogna transaktioner är inkluderade</translation>
+        <source>Your current CCCC balance, unconfirmed and immature transactions included</source>
+        <translation>Ditt nuvarande CCCC saldo, obekräftade och omogna transaktioner är inkluderade</translation>
     </message>
     <message>
         <source>zPIV Balance</source>
@@ -2063,9 +2063,9 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     </message>
     <message>
         <source>Mature: more than 20 confirmation and more than 1 mint of the same denomination after it was minted.
-These zPIV are spendable.</source>
+These zZZZ are spendable.</source>
         <translation>Mogna: över 20 bekräftelser och över 1 mint av samma valör efter den blev mintad
-Dessa zPIV kan spenderas.</translation>
+Dessa zZZZ kan spenderas.</translation>
     </message>
     <message>
         <source>Unconfirmed: less than 20 confirmations
@@ -2074,8 +2074,8 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
 Omogna: bekräftade men under 1 mint av samma valör efter den blev mintad</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the PIVX network after a connection is established, but this process has not completed yet.</source>
-        <translation>Den visade informationen kan vara utdaterad. Din plånbok synkroniserar automatiskt med PIVX nätverket efter att en anslutning är etablerad, men denna process har inte blivit klar än.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the CCCC network after a connection is established, but this process has not completed yet.</source>
+        <translation>Den visade informationen kan vara utdaterad. Din plånbok synkroniserar automatiskt med CCCC nätverket efter att en anslutning är etablerad, men denna process har inte blivit klar än.</translation>
     </message>
     <message>
         <source>OVERVIEW</source>
@@ -2118,8 +2118,8 @@ Omogna: bekräftade men under 1 mint av samma valör efter den blev mintad</tran
         <translation>Spenderbart:</translation>
     </message>
     <message>
-        <source>Locked PIV or Masternode collaterals. These are excluded from zPIV minting.</source>
-        <translation>Låsta PIV eller huvudnod säkerheter. Dessa är uteslutna från zPIV minting.</translation>
+        <source>Locked PIV or Masternode collaterals. These are excluded from zZZZ minting.</source>
+        <translation>Låsta PIV eller huvudnod säkerheter. Dessa är uteslutna från zZZZ minting.</translation>
     </message>
     <message>
         <source>Locked:</source>
@@ -2130,8 +2130,8 @@ Omogna: bekräftade men under 1 mint av samma valör efter den blev mintad</tran
         <translation>Obekräftade:</translation>
     </message>
     <message>
-        <source>Your current zPIV balance, unconfirmed and immature zPIV included.</source>
-        <translation>Ditt nuvarande zPIV saldo, obekräftade och omogna zPIV inräknade.</translation>
+        <source>Your current zZZZ balance, unconfirmed and immature zZZZ included.</source>
+        <translation>Ditt nuvarande zZZZ saldo, obekräftade och omogna zZZZ inräknade.</translation>
     </message>
     <message>
         <source>Recent transactions</source>
@@ -2191,8 +2191,8 @@ För att aktivera AutoMint ändra 'enablezeromint=0' till 'enablezeromint=1' i p
         <translation>Kan ej starta pivx: klicka-för-att-betala hanterare</translation>
     </message>
     <message>
-        <source>URI cannot be parsed! This can be caused by an invalid PIVX address or malformed URI parameters.</source>
-        <translation>URI kunde ej analyseras! Detta kan orsakas av en ogiltig PIVX adress eller felproducerade URI parametrar.</translation>
+        <source>URI cannot be parsed! This can be caused by an invalid CCCC address or malformed URI parameters.</source>
+        <translation>URI kunde ej analyseras! Detta kan orsakas av en ogiltig CCCC adress eller felproducerade URI parametrar.</translation>
     </message>
     <message>
         <source>Payment request file cannot be read! This can be caused by an invalid payment request file.</source>
@@ -2277,8 +2277,8 @@ För att aktivera AutoMint ändra 'enablezeromint=0' till 'enablezeromint=1' i p
         <translation>Zerocoin Handlingar:</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the PIVX network after a connection is established, but this process has not completed yet.</source>
-        <translation>Den visade informationen kan vara utdaterad. Din plånbok synkroniserar automatiskt med PIVX nätverket efter att en anslutning är etablerad, men denna process har inte blivit klar än.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the CCCC network after a connection is established, but this process has not completed yet.</source>
+        <translation>Den visade informationen kan vara utdaterad. Din plånbok synkroniserar automatiskt med CCCC nätverket efter att en anslutning är etablerad, men denna process har inte blivit klar än.</translation>
     </message>
     <message>
         <source>Mint Zerocoin</source>
@@ -2365,18 +2365,18 @@ För att aktivera AutoMint ändra 'enablezeromint=0' till 'enablezeromint=1' i p
         <translation>Spendera Zerocoin</translation>
     </message>
     <message>
-        <source>Available (mature and spendable) zPIV for spending</source>
-        <translation>Tillgängliga (mogna och spenderbara) zPIV att spendera</translation>
+        <source>Available (mature and spendable) zZZZ for spending</source>
+        <translation>Tillgängliga (mogna och spenderbara) zZZZ att spendera</translation>
     </message>
     <message>
         <source>Available Balance:</source>
         <translation>Tillgängligt Saldo:</translation>
     </message>
     <message>
-        <source>Available (mature and spendable) zPIV for spending
+        <source>Available (mature and spendable) zZZZ for spending
 
 zPIV are mature when they have more than 20 confirmations AND more than 2 mints of the same denomination after them were minted</source>
-        <translation>Tillgängliga (mogna och spenderbara) zPIV att spendera
+        <translation>Tillgängliga (mogna och spenderbara) zZZZ att spendera
 
 zPIV är mogna när de har över 20 bekräftelser OCH över 2 mints av samma valör efter de mintades.</translation>
     </message>
@@ -2397,8 +2397,8 @@ zPIV är mogna när de har över 20 bekräftelser OCH över 2 mints av samma val
         <translation>Säkerhetsnivå 1- 100 (standard: 42)</translation>
     </message>
     <message>
-        <source>The PIVX address to send the payment to. Creates local payment to yourself when empty.</source>
-        <translation>PIVX adressen att skicka betalningen till. Skapar lokal betalning till dig själv när den är tom.</translation>
+        <source>The CCCC address to send the payment to. Creates local payment to yourself when empty.</source>
+        <translation>CCCC adressen att skicka betalningen till. Skapar lokal betalning till dig själv när den är tom.</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -2446,7 +2446,7 @@ zPIV är mogna när de har över 20 bekräftelser OCH över 2 mints av samma val
     </message>
     <message>
         <source>Total Balance including unconfirmed and immature zPIV</source>
-        <translation>Totalt Saldo, obekräftade och omogna zPIV inkluderade</translation>
+        <translation>Totalt Saldo, obekräftade och omogna zZZZ inkluderade</translation>
     </message>
     <message>
         <source>Total Zerocoin  Balance:</source>
@@ -2467,7 +2467,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
 Omogna: bekräftade men under 1 mint av samma valör efter den blev mintad</translation>
     </message>
     <message>
-        <source>Show the current status of automatic zPIV minting.
+        <source>Show the current status of automatic zZZZ minting.
 
 To change the status (restart required):
 - enable: add 'enablezeromint=1' to pivx.conf
@@ -2477,7 +2477,7 @@ To change the percentage (no restart required):
 - menu Settings-&gt;Options-&gt;Percentage of autominted zPIV
 
 </source>
-        <translation>Visa den nuvarande statusen av automatisk zPIV minting.
+        <translation>Visa den nuvarande statusen av automatisk zZZZ minting.
 
 För att ändra statusen (omstart krävs):
 -aktivera: lägg till 'enablezeromint=1' i pivx.conf
@@ -2773,7 +2773,7 @@ För att ändra procenten (ingen omstart krävs):
         <translation>Mintad med Framgång</translation>
     </message>
     <message>
-        <source> zPIV in </source>
+        <source> zZZZ in </source>
         <translation>zPIV i</translation>
     </message>
     <message>
@@ -2835,8 +2835,8 @@ Datorkraftskrävande, kan behöva flera minuter beroende på den valda säkerhet
 Var god dröjj...</translation>
     </message>
     <message>
-        <source>Version 1 zPIV require a security level of 100 to successfully spend.</source>
-        <translation>Version 1 zPIV kräver en säkerhetsnivå på 100 för att kunna spenderas med framgång.</translation>
+        <source>Version 1 zZZZ require a security level of 100 to successfully spend.</source>
+        <translation>Version 1 zZZZ kräver en säkerhetsnivå på 100 för att kunna spenderas med framgång.</translation>
     </message>
     <message>
         <source>Failed to spend zPIV</source>
@@ -2911,8 +2911,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>mängd</translation>
     </message>
     <message>
-        <source>Enter a PIVX address (e.g. %1)</source>
-        <translation>Mata in en PIVX adress (e.g. %1)</translation>
+        <source>Enter a CCCC address (e.g. %1)</source>
+        <translation>Mata in en CCCC adress (e.g. %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -3041,8 +3041,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Block kedja</translation>
     </message>
     <message>
-        <source>Open the PIVX debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Öppna PIVX felsökningslogg från den nuvarande data katalogen. Detta kan ta några sekunder för stora logg filer.</translation>
+        <source>Open the CCCC debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Öppna CCCC felsökningslogg från den nuvarande data katalogen. Detta kan ta några sekunder för stora logg filer.</translation>
     </message>
     <message>
         <source>Number of Masternodes</source>
@@ -3157,8 +3157,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Skräddarsydd Backup Sökväg:</translation>
     </message>
     <message>
-        <source>Custom zPIV Backup Path:</source>
-        <translation>Skräddarsydd zPIV Backup Sökväg:</translation>
+        <source>Custom zZZZ Backup Path:</source>
+        <translation>Skräddarsydd zZZZ Backup Sökväg:</translation>
     </message>
     <message>
         <source>Custom Backups Threshold:</source>
@@ -3237,8 +3237,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Ut:</translation>
     </message>
     <message>
-        <source>Welcome to the PIVX RPC console.</source>
-        <translation>Välkommen till PIVX RPC konsol.</translation>
+        <source>Welcome to the CCCC RPC console.</source>
+        <translation>Välkommen till CCCC RPC konsol.</translation>
     </message>
     <message>
         <source>Ban Node for</source>
@@ -3332,16 +3332,16 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>En frivillig etikett att associera med den nya mottagaradressen.</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the PIVX network.</source>
-        <translation>Ett frivilligt meddelande att bifoga till betalningsförfrågan, som kommer visas när förfrågan öppnas. Observera: Medelandet kommer inte skickas med betalningen över PIVX nätverket.</translation>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the CCCC network.</source>
+        <translation>Ett frivilligt meddelande att bifoga till betalningsförfrågan, som kommer visas när förfrågan öppnas. Observera: Medelandet kommer inte skickas med betalningen över CCCC nätverket.</translation>
     </message>
     <message>
         <source>RECEIVE</source>
         <translation>MOTTA</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the PIVX network.</source>
-        <translation>Ett frivilligt meddelande att bifoga till betalningsförfrågan, vilket kommer visas när förfrågan öppnas.&lt;br&gt;Observera: Medelandet kommer inte skickas med betalningen över PIVX nätverket.</translation>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the CCCC network.</source>
+        <translation>Ett frivilligt meddelande att bifoga till betalningsförfrågan, vilket kommer visas när förfrågan öppnas.&lt;br&gt;Observera: Medelandet kommer inte skickas med betalningen över CCCC nätverket.</translation>
     </message>
     <message>
         <source>Use this form to request payments. All fields are &lt;b&gt;optional&lt;/b&gt;.</source>
@@ -3621,8 +3621,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Om 1000 uPIVs är den valda skräddarsydda avgiften och transaktionen är bara 250 bytes så kommer "per kilobyte" bara betala 250 uPIVs i avgift,&lt;br /&gt;medans "minst totalt" betalar 1000 uPIVs. För transaktioner större än en kilobyte så betalar båda per kilobyte.</translation>
     </message>
     <message>
-        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for PIVX transactions than the network can process.</source>
-        <translation>Att endast betala minimum avgift är okej så länge som transaktionsvolymen är mindre än rummet i blocken.&lt;br /&gt;Men var medveten om att detta kan sluta som en transaktion som aldrig blir bekräftad när det finns ett större behov av PIVX transaktioner än nätverket kan bearbeta.</translation>
+        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for CCCC transactions than the network can process.</source>
+        <translation>Att endast betala minimum avgift är okej så länge som transaktionsvolymen är mindre än rummet i blocken.&lt;br /&gt;Men var medveten om att detta kan sluta som en transaktion som aldrig blir bekräftad när det finns ett större behov av CCCC transaktioner än nätverket kan bearbeta.</translation>
     </message>
     <message>
         <source>normal</source>
@@ -3709,8 +3709,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Split block verktyget fungerar inte med flera adresser. Försök igen.</translation>
     </message>
     <message>
-        <source>Warning: Invalid PIVX address</source>
-        <translation>Varning: Ogiltig PIVX adress</translation>
+        <source>Warning: Invalid CCCC address</source>
+        <translation>Varning: Ogiltig CCCC adress</translation>
     </message>
     <message>
         <source>%1 to %2</source>
@@ -3808,8 +3808,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Detta är en normal betalning.</translation>
     </message>
     <message>
-        <source>The PIVX address to send the payment to</source>
-        <translation>PIVX adressen att skicka betalningen till</translation>
+        <source>The CCCC address to send the payment to</source>
+        <translation>CCCC adressen att skicka betalningen till</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -3844,8 +3844,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Medelande:</translation>
     </message>
     <message>
-        <source>A message that was attached to the PIVX: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the PIVX network.</source>
-        <translation>Ett medelande som var bifogat till PIVX: URI som kommer sparas med transaktionen som din referens. Lägg märke till: Detta meddelande kommer inte skickas genom PIVX nätverket.</translation>
+        <source>A message that was attached to the CCCC: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the CCCC network.</source>
+        <translation>Ett medelande som var bifogat till CCCC: URI som kommer sparas med transaktionen som din referens. Lägg märke till: Detta meddelande kommer inte skickas genom CCCC nätverket.</translation>
     </message>
     <message>
         <source>This is an unverified payment request.</source>
@@ -3871,8 +3871,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>PIVX Core is shutting down...</source>
-        <translation>PIVX Kärna stängs ner...</translation>
+        <source>CCCC Core is shutting down...</source>
+        <translation>CCCC Kärna stängs ner...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
@@ -3890,8 +3890,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Du kan signera meddelanden med din egna adress för att bevisa att du äger dem. Se upp för att signera något vagt, då phishing-attacker kan försöka lura dig att signera din identitet åt de. Signera endast fullt detaljerade påståenden du går med på.</translation>
     </message>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>PIVX adressen för signera meddelandet med</translation>
+        <source>The CCCC address to sign the message with</source>
+        <translation>CCCC adressen för signera meddelandet med</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -3922,16 +3922,16 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Kopiera den nuvarande signaturen till systemets urklipp</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>Signera meddelandet för att bevisa att du äger denna PIVX adress</translation>
+        <source>Sign the message to prove you own this CCCC address</source>
+        <translation>Signera meddelandet för att bevisa att du äger denna CCCC adress</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>PIVX adressen meddelandet blev signerat med</translation>
+        <source>The CCCC address the message was signed with</source>
+        <translation>CCCC adressen meddelandet blev signerat med</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified PIVX address</source>
-        <translation>Verifiera meddelandet för att säkerställa att de blev signerat med den specifika PIVX adressen.</translation>
+        <source>Verify the message to ensure it was signed with the specified CCCC address</source>
+        <translation>Verifiera meddelandet för att säkerställa att de blev signerat med den specifika CCCC adressen.</translation>
     </message>
     <message>
         <source>Reset all sign message fields</source>
@@ -4005,8 +4005,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Kärna</translation>
+        <source>CCCC Core</source>
+        <translation>CCCC Kärna</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -4021,8 +4021,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Dash Kärna utvecklarna</translation>
     </message>
     <message>
-        <source>The PIVX Core developers</source>
-        <translation>PIVX Kärna utvecklarna</translation>
+        <source>The CCCC Core developers</source>
+        <translation>CCCC Kärna utvecklarna</translation>
     </message>
     <message>
         <source>[testnet]</source>
@@ -4333,12 +4333,12 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Mottog PIV från zPIV</translation>
     </message>
     <message>
-        <source>Minted Change as zPIV from zPIV Spend</source>
-        <translation>Mintad Växel som zPIV från zPIV Spendera</translation>
+        <source>Minted Change as zZZZ from zZZZ Spend</source>
+        <translation>Mintad Växel som zZZZ från zZZZ Spendera</translation>
     </message>
     <message>
-        <source>Converted zPIV to PIV</source>
-        <translation>Convert zPIV to PIV</translation>
+        <source>Converted zZZZ to PIV</source>
+        <translation>Convert zZZZ to PIV</translation>
     </message>
     <message>
         <source>Anonymous (zPIV Transaction)</source>
@@ -4627,8 +4627,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
 <context>
     <name>ZPivControlDialog</name>
     <message>
-        <source>Select zPIV to Spend</source>
-        <translation>Välj zPIV att Spendera</translation>
+        <source>Select zZZZ to Spend</source>
+        <translation>Välj zZZZ att Spendera</translation>
     </message>
     <message>
         <source>Quantity</source>
@@ -4678,8 +4678,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Beräknade ackumulator kontrollstation är inte vad som sparats av block index</translation>
     </message>
     <message>
-        <source>Cannot obtain a lock on data directory %s. PIVX Core is probably already running.</source>
-        <translation>Kan ej låsa in på data katalog %s. PIVX Kärna körs förmodligen redan.</translation>
+        <source>Cannot obtain a lock on data directory %s. CCCC Core is probably already running.</source>
+        <translation>Kan ej låsa in på data katalog %s. CCCC Kärna körs förmodligen redan.</translation>
     </message>
     <message>
         <source>Change automatic finalized budget voting behavior. mode=auto: Vote for only exact finalized budget match to my generated budget. (string, default: auto)</source>
@@ -4706,16 +4706,16 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Distribuerad under MIT mjukvarulicensen, se medföljande fil COPYING eller &lt;http://www.opensource.org/licenses/mit-license.php&gt;.</translation>
     </message>
     <message>
-        <source>Enable automatic wallet backups triggered after each zPIV minting (0-1, default: %u)</source>
-        <translation>Aktivera automatisk plånboksbackup efter varje zPIV minting (0-1, standard: %u)</translation>
+        <source>Enable automatic wallet backups triggered after each zZZZ minting (0-1, default: %u)</source>
+        <translation>Aktivera automatisk plånboksbackup efter varje zZZZ minting (0-1, standard: %u)</translation>
     </message>
     <message>
         <source>Enable or disable staking functionality for PIV inputs (0-1, default: %u)</source>
         <translation>Aktivera eller avaktivera staking funktionalitet för PIV inmatningar (0-1, standard: %u)</translation>
     </message>
     <message>
-        <source>Enable or disable staking functionality for zPIV inputs (0-1, default: %u)</source>
-        <translation>Aktivera eller avaktivera staking funktionalitet för zPIV inmatningar (0-1, standard: %u)</translation>
+        <source>Enable or disable staking functionality for zZZZ inputs (0-1, default: %u)</source>
+        <translation>Aktivera eller avaktivera staking funktionalitet för zZZZ inmatningar (0-1, standard: %u)</translation>
     </message>
     <message>
         <source>Enable spork administration functionality with the appropriate private key.</source>
@@ -4850,8 +4850,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Denna produkt inkluderar mjukvara utvecklad av OpenSSL Projektet för användning i OpenSSL Toolkit &lt;https://www.openssl.org/&gt; och kryptografisk mjukvara skriven av Eric Young och UPnP mjukvara skriven av Thomas Bernard.</translation>
     </message>
     <message>
-        <source>Unable to bind to %s on this computer. PIVX Core is probably already running.</source>
-        <translation>Kan inte binda till %s på denna dator. PIVX Kärna körs förmodligen redan.</translation>
+        <source>Unable to bind to %s on this computer. CCCC Core is probably already running.</source>
+        <translation>Kan inte binda till %s på denna dator. CCCC Kärna körs förmodligen redan.</translation>
     </message>
     <message>
         <source>Unable to locate enough funds for this transaction that are not equal 10000 PIV.</source>
@@ -4870,8 +4870,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Varning: -maxtxfee är sätt väldigt högt! Detta är transaktionsavgiften du kommer betala om du skickar en transaktion.</translation>
     </message>
     <message>
-        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong PIVX Core will not work properly.</source>
-        <translation>Varning: Var vänlig kontrollera att din dators tid och datum är korrekt! Om din klocka är fel så kommer PIVX Kärna inte att fungera korrekt.</translation>
+        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong CCCC Core will not work properly.</source>
+        <translation>Varning: Var vänlig kontrollera att din dators tid och datum är korrekt! Om din klocka är fel så kommer CCCC Kärna inte att fungera korrekt.</translation>
     </message>
     <message>
         <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
@@ -5022,8 +5022,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Copyright (C) 2014-%i The Dash Core Developers</translation>
     </message>
     <message>
-        <source>Copyright (C) 2015-%i The PIVX Core Developers</source>
-        <translation>Copyright (C) 2015-%i The PIVX Core Developers</translation>
+        <source>Copyright (C) 2015-%i The CCCC Core Developers</source>
+        <translation>Copyright (C) 2015-%i The CCCC Core Developers</translation>
     </message>
     <message>
         <source>Corrupted block database detected</source>
@@ -5254,8 +5254,8 @@ Minta antingen högre valörer (så att färre inputs behövs) eller spendera mi
         <translation>Verifierar plånbok</translation>
     </message>
     <message>
-        <source>Version 1 zPIV require a security level of 100 to successfully spend.</source>
-        <translation>Version 1 zPIV kräver en säkerhetsnivå på 100 för att kunna spenderas med framgång.</translation>
+        <source>Version 1 zZZZ require a security level of 100 to successfully spend.</source>
+        <translation>Version 1 zZZZ kräver en säkerhetsnivå på 100 för att kunna spenderas med framgång.</translation>
     </message>
     <message>
         <source>Wallet is locked.</source>

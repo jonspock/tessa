@@ -90,7 +90,6 @@ endif
 .PHONY: FORCE
 # pivx core #
 BITCOIN_CORE_H = \
-  activemasternode.h \
   accumulators.h \
   accumulatorcheckpoints.h \
   accumulatorcheckpoints.json.h \
@@ -122,8 +121,6 @@ BITCOIN_CORE_H = \
   core_io.h \
   crypter.h \
   denomination_functions.h \
-  obfuscation.h \
-  obfuscation-relay.h \
   db.h \
   eccryptoverify.h \
   ecwrapper.h \
@@ -135,18 +132,11 @@ BITCOIN_CORE_H = \
   invalid_outpoints.json.h \
   invalid_serials.json.h \
   kernel.h \
-  swifttx.h \
   key.h \
   keystore.h \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
-  masternode.h \
-  masternode-payments.h \
-  masternode-budget.h \
-  masternode-sync.h \
-  masternodeman.h \
-  masternodeconfig.h \
   merkleblock.h \
   miner.h \
   mintpool.h \
@@ -229,8 +219,6 @@ libbitcoin_server_a_SOURCES = \
   pow.cpp \
   rest.cpp \
   rpcblockchain.cpp \
-  rpcmasternode.cpp \
-  rpcmasternode-budget.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
   rpcnet.cpp \
@@ -259,20 +247,10 @@ endif
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_wallet_a_SOURCES = \
-  activemasternode.cpp \
   bip38.cpp \
   denomination_functions.cpp \
-  obfuscation.cpp \
-  obfuscation-relay.cpp \
   db.cpp \
   crypter.cpp \
-  swifttx.cpp \
-  masternode.cpp \
-  masternode-budget.cpp \
-  masternode-payments.cpp \
-  masternode-sync.cpp \
-  masternodeconfig.cpp \
-  masternodeman.cpp \
   mintpool.cpp \
   rpcdump.cpp \
   primitives/deterministicmint.cpp \

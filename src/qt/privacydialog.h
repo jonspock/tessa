@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 The PIVX developers
+// Copyright (c) 2017-2018 The XIVP developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -104,7 +104,7 @@ private slots:
     void on_pasteButton_clicked();
     void updateDisplayUnit();
     void updateAutomintStatus();
-    void updateSPORK16Status();
+    void updateZeroSPORKStatus();
 };
 
 #endif // BITCOIN_QT_PRIVACYDIALOG_H

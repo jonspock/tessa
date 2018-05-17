@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 The PIVX developers
+// Copyright (c) 2017-2018 The XIVP developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -29,7 +29,7 @@ CzPIVWallet::CzPIVWallet(std::string strWalletFile)
             hashSeed = Hash(seed.begin(), seed.end());
             if (pwalletMain->AddDeterministicSeed(seed)) {
                 if (walletdb.EraseZPIVSeed_deprecated()) {
-                    LogPrintf("%s: Updated zPIV seed databasing\n", __func__);
+                    LogPrintf("%s: Updated zZZZ seed databasing\n", __func__);
                     fFirstRun = false;
                 } else {
                     LogPrintf("%s: failed to remove old zpiv seed\n", __func__);
@@ -231,7 +231,7 @@ void CzPIVWallet::SyncWithChain(bool fGenerateMintPool)
                     if (!out.scriptPubKey.IsZerocoinMint())
                         continue;
 
-                    PublicCoin pubcoin(Params().Zerocoin_Params(false));
+                    PublicCoin pubcoin(Params().Zerocoin_Params());
                     CValidationState state;
                     if (!TxOutToPublicCoin(out, pubcoin, state)) {
                         LogPrintf("%s : failed to get mint from txout for %s!\n", __func__, pMint.first.GetHex());
@@ -344,14 +344,14 @@ bool CzPIVWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const 
 // Check if the value of the commitment meets requirements
 bool IsValidCoinValue(const CBigNum& bnValue)
 {
-    return bnValue >= Params().Zerocoin_Params(false)->accumulatorParams.minCoinValue &&
-    bnValue <= Params().Zerocoin_Params(false)->accumulatorParams.maxCoinValue &&
+    return bnValue >= Params().Zerocoin_Params()->accumulatorParams.minCoinValue &&
+    bnValue <= Params().Zerocoin_Params()->accumulatorParams.maxCoinValue &&
     bnValue.isPrime();
 }
 
 void CzPIVWallet::SeedToZPIV(const uint512& seedZerocoin, CBigNum& bnValue, CBigNum& bnSerial, CBigNum& bnRandomness, CKey& key)
 {
-    ZerocoinParams* params = Params().Zerocoin_Params(false);
+    ZerocoinParams* params = Params().Zerocoin_Params();
 
     //convert state seed into a seed for the private key
     uint256 nSeedPrivKey = seedZerocoin.trim256();
@@ -431,7 +431,7 @@ void CzPIVWallet::GenerateMint(const uint32_t& nCount, const CoinDenomination de
     CBigNum bnRandomness;
     CKey key;
     SeedToZPIV(seedZerocoin, bnValue, bnSerial, bnRandomness, key);
-    coin = PrivateCoin(Params().Zerocoin_Params(false), denom, bnSerial, bnRandomness);
+    coin = PrivateCoin(Params().Zerocoin_Params(), denom, bnSerial, bnRandomness);
     coin.setPrivKey(key.GetPrivKey());
     coin.setVersion(PrivateCoin::CURRENT_VERSION);
 
@@ -452,7 +452,7 @@ bool CzPIVWallet::RegenerateMint(const CDeterministicMint& dMint, CZerocoinMint&
         return error("%s: master seed does not match!\ndmint:\n %s \nhashSeed: %s\nseed: %s", __func__, dMint.ToString(), hashSeed.GetHex(), seedMaster.GetHex());
 
     //Generate the coin
-    PrivateCoin coin(Params().Zerocoin_Params(false), dMint.GetDenomination(), false);
+    PrivateCoin coin(Params().Zerocoin_Params(), dMint.GetDenomination(), false);
     CDeterministicMint dMintDummy;
     GenerateMint(dMint.GetCount(), dMint.GetDenomination(), coin, dMintDummy);
 

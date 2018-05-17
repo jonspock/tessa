@@ -1,9 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=PIVX
-Comment=PIVX P2P Cryptocurrency
-Comment[fr]=PIVX, monnaie virtuelle cryptographique pair à pair
-Comment[tr]=PIVX, eşten eşe kriptografik sanal para birimi
+Name=CCCC
+Comment=CCCC P2P Cryptocurrency
+Comment[fr]=CCCC, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=CCCC, eşten eşe kriptografik sanal para birimi
 Exec=pivx-qt %u
 Terminal=false
 Type=Application
