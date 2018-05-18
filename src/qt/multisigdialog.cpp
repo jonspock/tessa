@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "multisigdialog.h"
-#include "forms/ui_multisigdialog.h"
+#include "ui_multisigdialog.h"
 
 #include "askpassphrasedialog.h"
 #include "primitives/transaction.h"

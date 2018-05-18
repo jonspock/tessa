@@ -108,6 +108,7 @@ set(GUI_FORMS
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/helpmessagedialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/intro.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/multisenddialog.ui
+  ${CMAKE_CURRENT_SOURCE_DIR}/forms/multisigdialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/obfuscationconfig.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/privacydialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/openuridialog.ui
@@ -221,8 +222,12 @@ SET(QT_TRANSLATIONS_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_en.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_en_US.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_es.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_es_ES.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_fi.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_fr_FR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_hi_IN.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_hr.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_hr_HR.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_it.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_ja.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_ko_KR.ts
@@ -236,9 +241,14 @@ SET(QT_TRANSLATIONS_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_sv.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_tr.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_uk.ts
-#	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_vi.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_vi.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_zh_CN.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_zh_TW.ts
+
+
+  ${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_hr_HR.ts
+  ${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_lt_LT.ts
+  
 	)
 
 get_filename_component(QM_FILES_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/locale" ABSOLUTE)
