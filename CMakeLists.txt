@@ -1,12 +1,35 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE "RELEASE")
+  SET(CMAKE_BUILD_TYPE "Release")
+  MESSAGE("Build type set to '${CMAKE_BUILD_TYPE}'")
 ENDIF()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   list(APPEND CMAKE_PREFIX_PATH /opt/local/opt/qt5)
 endif()
+
+# For projects using Git, use git version patch
+# Find Git Version Patch
+FIND_PROGRAM(GIT git)
+IF(GIT)
+  EXECUTE_PROCESS(
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${GIT} rev-parse --short HEAD 
+    OUTPUT_VARIABLE GIT_OUT OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  SET(PATCH_OUT "0-${GIT_OUT}")
+ELSE(GIT)
+  SET(PATCH_OUT "0")
+ENDIF(GIT)
+
+SET(CCCC_VERSION_PATCH ${PATCH_OUT})
+
+# Project Version
+SET(CCCC_VERSION_MAJOR "0")
+SET(CCCC_VERSION_MINOR "1")
+SET(CCCC_VERSION_REVISION "0")
+SET(CCCC_VERSION_BUILD "0")
 
 
 if(CMAKE_CXX_FLAGS_RELEASE MATCHES DNDEBUG)
@@ -52,8 +75,7 @@ else()
 	set(ANL anl)
 endif()
 
-# Disable -DHAVE_BUILD_INFO for now to avoid compiler error
-add_definitions("-DHAVE_CONFIG_H -DBOOST_SPIRIT_THREADSAFE -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
+add_definitions("-DHAVE_BUILD_INFO -DHAVE_CONFIG_H -DBOOST_SPIRIT_THREADSAFE -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
 
 add_definitions("-Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector -fstack-protector-all -fPIC")
 #-fvisibility=hidden")
@@ -108,6 +130,19 @@ SET(COMMON_A
 	./src/allocators.cpp
 	./src/eccryptoverify.cpp
 	)
+
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h.in")
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h @ONLY)
+else()
+  message(WARNING "Using Versions defined in clientversion.h - is it up to date?")
+endif()
+   
+    
+add_custom_target(
+  buildHeader
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/share/genbuild.sh ${CMAKE_CURRENT_SOURCE_DIR}/src/obj/build.h ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
 
 SET(UTIL_A
 	./src/utiltime.cpp
@@ -205,13 +240,9 @@ SET(SOURCES
 # NEW
 	./src/zpivtracker.cpp
 	./src/zpivwallet.cpp
-  ./src/univalue/lib/univalue_read.cpp
-  ./src/univalue/lib/univalue_write.cpp
-  ./src/univalue/lib/univalue.cpp
   ./src/httprpc.cpp
   ./src/httpserver.cpp
   ./src/blocksignature.cpp
-  ./src/scheduler.cpp
   ./src/validationinterface.cpp
 	)
 
@@ -221,7 +252,15 @@ SET(ZMQ_SOURCES
   ./src/zmq/zmqabstractnotifier.cpp
   )
   
+SET(UNI_SOURCES
+  ./src/univalue/lib/univalue_write.cpp
+  ./src/univalue/lib/univalue_read.cpp
+  ./src/univalue/lib/univalue.cpp
+  )
 
+SET(SCH_SOURCES
+  ./src/scheduler.cpp
+  )
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(OPENSSL_ROOT_DIR "/usr/local/Cellar/openssl/${OPENSSL_VER}/")
@@ -262,8 +301,9 @@ source_group("CryptoHeaders" FILES ${CRYPTO_HEADERS})
 file(GLOB PRIMITIVE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/primitives/*.h)
 source_group("PrimHeaders" FILES ${PRIMITIVE_HEADERS})
 
-add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${ZMQ_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 set_property(TARGET coin PROPERTY CXX_STANDARD 11)
+add_dependencies(coin buildHeader)
 
 add_subdirectory(src/libzerocoin)
 add_subdirectory(src)
