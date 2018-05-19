@@ -125,7 +125,7 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
         return error("CheckProofOfWork() : nBits below minimum work");
 
     // Check proof of work matches claimed amount
-    //std::cout << "hash = \n" << hash.ToString() << " vs " << bnTarget.ToString() << "\n";
+    std::cout << "hash = \n" << hash.ToString() << " vs " << bnTarget.ToString() << "\n";
     if (hash > bnTarget)
         return error("CheckProofOfWork() : hash doesn't match nBits");
 

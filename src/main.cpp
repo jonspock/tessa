@@ -2054,23 +2054,7 @@ double ConvertBitsToDouble(unsigned int nBits)
 
 int64_t GetBlockValue(int nHeight)
 {
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        if (nHeight < 200 && nHeight > 0)
-            return 250000 * COIN;
-    }
-
-    int64_t nSubsidy = 0;
-    if (nHeight == 0) {
-        nSubsidy = 60001 * COIN;
-    } else if (nHeight < 145000 && nHeight > 0) {
-        nSubsidy = 250 * COIN;
-    } else if (nHeight <= Params().LAST_POW_BLOCK() && nHeight >= 145000) {
-        nSubsidy = 200 * COIN;
-    } else if (nHeight <= 302399 && nHeight > Params().LAST_POW_BLOCK()) {
-        nSubsidy = 200 * COIN;
-    } else {
-        nSubsidy = 200 * COIN;
-    }
+    int64_t nSubsidy = 5000; // for now XXX HACK
     return nSubsidy;
 }
 
