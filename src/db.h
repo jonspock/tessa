@@ -6,6 +6,8 @@
 #ifndef BITCOIN_DB_H
 #define BITCOIN_DB_H
 
+#define KEY_RES 100
+
 #include "clientversion.h"
 #include "serialize.h"
 #include "streams.h"
@@ -122,7 +124,7 @@ protected:
 
         // Key
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-        ssKey.reserve(1000);
+        ssKey.reserve(KEY_RES);
         ssKey << key;
         Dbt datKey(&ssKey[0], ssKey.size());
 
@@ -158,7 +160,7 @@ protected:
 
         // Key
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-        ssKey.reserve(1000);
+        ssKey.reserve(KEY_RES);
         ssKey << key;
         Dbt datKey(&ssKey[0], ssKey.size());
 
@@ -187,7 +189,7 @@ protected:
 
         // Key
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-        ssKey.reserve(1000);
+        ssKey.reserve(KEY_RES);
         ssKey << key;
         Dbt datKey(&ssKey[0], ssKey.size());
 
@@ -207,7 +209,7 @@ protected:
 
         // Key
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-        ssKey.reserve(1000);
+        ssKey.reserve(KEY_RES);
         ssKey << key;
         Dbt datKey(&ssKey[0], ssKey.size());
 

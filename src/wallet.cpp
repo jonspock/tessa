@@ -35,6 +35,8 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#define KEY_RES_SIZE 100
+
 using namespace std;
 
 /**
@@ -2837,7 +2839,7 @@ bool CWallet::NewKeyPool()
         if (IsLocked())
             return false;
 
-        int64_t nKeys = max(GetArg("-keypool", 1000), (int64_t)0);
+        int64_t nKeys = max(GetArg("-keypool", KEY_RES_SIZE), (int64_t)0);
         for (int i = 0; i < nKeys; i++) {
             int64_t nIndex = i + 1;
             walletdb.WritePool(nIndex, CKeyPool(GenerateNewKey()));
@@ -2863,7 +2865,7 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
         if (kpSize > 0)
             nTargetSize = kpSize;
         else
-            nTargetSize = max(GetArg("-keypool", 1000), (int64_t)0);
+            nTargetSize = max(GetArg("-keypool", KEY_RES_SIZE), (int64_t)0);
 
         while (setKeyPool.size() < (nTargetSize + 1)) {
             int64_t nEnd = 1;

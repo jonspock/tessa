@@ -109,13 +109,15 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (Params().MineBlocksOnDemand())
         pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
 
-    // Make sure to create the correct block version after zerocoin is enabled
+    // Check if zerocoin is enabled
     bool fZerocoinActive = GetAdjustedTime() >= Params().Zerocoin_StartTime();
+     /*
     if (fZerocoinActive)
         pblock->nVersion = 4;
     else
         pblock->nVersion = 3;
-
+*/
+    
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
@@ -441,6 +443,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
         //Calculate the accumulator checkpoint only if the previous cached checkpoint need to be updated
         uint256 nCheckpoint;
+        if (nHeight > 10) {
         uint256 hashBlockLastAccumulated = chainActive[nHeight - (nHeight % 10) - 10]->GetBlockHash();
         if (nHeight >= pCheckpointCache.first || pCheckpointCache.second.first != hashBlockLastAccumulated) {
             //For the period before v2 activation, zZZZ will be disabled and previous block's checkpoint is all that will be needed
@@ -461,6 +464,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         }
 
         pblock->nAccumulatorCheckpoint = pCheckpointCache.second.second;
+        }
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
         CValidationState state;
