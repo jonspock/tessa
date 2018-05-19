@@ -209,10 +209,6 @@ static void NotifyNumConnectionsChanged(ClientModel* clientmodel, int newNumConn
         Q_ARG(int, newNumConnections));
 }
 
-static void NotifyAlertChanged(ClientModel* clientmodel, const uint256& hash, ChangeType status)
-{
-}
-
 static void BannedListChanged(ClientModel *clientmodel)
 {
     qDebug() << QString("%1: Requesting update for peer banlist").arg(__func__);
