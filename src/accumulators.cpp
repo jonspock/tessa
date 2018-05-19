@@ -434,6 +434,10 @@ bool GenerateAccumulatorWitness(const PublicCoin &coin, Accumulator& accumulator
     if (!GetTransaction(txid, txMinted, hashBlock))
         return error("%s failed to read tx", __func__);
 
+    int nHeightTest;
+    if (!IsTransactionInChain(txid, nHeightTest))
+        return error("%s: mint tx %s is not in chain", __func__, txid.GetHex());
+
     int nHeightMintAdded = mapBlockIndex[hashBlock]->nHeight;
 
     //get the checkpoint added at the next multiple of 10
@@ -464,6 +468,8 @@ bool GenerateAccumulatorWitness(const PublicCoin &coin, Accumulator& accumulator
     nMintsAdded = 0;
     RandomizeSecurityLevel(nSecurityLevel); //make security level not always the same and predictable
     libzerocoin::Accumulator witnessAccumulator = accumulator;
+
+    bool fDoubleCounted = false;
     while (pindex) {
         if (pindex->nHeight != nAccStartHeight && pindex->pprev->nAccumulatorCheckpoint != pindex->nAccumulatorCheckpoint)
             ++nCheckpointsAdded;
@@ -544,4 +550,5 @@ map<CoinDenomination, int> GetMintMaturityHeight()
         mapRet.insert(make_pair(denom, mapDenomMaturity.at(denom).second));
 
     return mapRet;
+
 }
