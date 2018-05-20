@@ -29,6 +29,13 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     int64_t CountBlocks = 0;
     uint256 PastDifficultyAverage;
     uint256 PastDifficultyAveragePrev;
+    
+    // Quick Exit for testnet for Now XXX
+    if (pindexLast->nHeight < Params().LAST_POW_BLOCK() && Params().AllowMinDifficultyBlocks()) {
+        return Params().ProofOfWorkLimit().GetCompact();
+    }
+    
+
 
     if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || BlockLastSolved->nHeight < PastBlocksMin) {
         return Params().ProofOfWorkLimit().GetCompact();

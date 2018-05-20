@@ -273,7 +273,8 @@ public:
 
     bool ContainsZerocoins() const
     {
-        return IsZerocoinSpend() || IsZerocoinMint();
+        bool yeah = IsZerocoinSpend() || IsZerocoinMint();
+        return yeah;
     }
 
     CAmount GetZerocoinMinted() const;
