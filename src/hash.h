@@ -271,9 +271,9 @@ public:
 
 /** Compute the 256-bit hash of an object's serialization. */
 template <typename T>
-uint256 SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = PROTOCOL_VERSION)
+uint256 SerializeHash(const T& obj, int nType = SER_GETHASH, int nPVersion = PROTOCOL_VERSION)
 {
-    CHashWriter ss(nType, nVersion);
+    CHashWriter ss(nType, nPVersion);
     ss << obj;
     return ss.GetHash();
 }

@@ -444,6 +444,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 return false;
 
             // Undo serialize changes in 31600
+#ifdef PLEASE_REMOVE
             if (31404 <= wtx.fTimeReceivedIsTxTime && wtx.fTimeReceivedIsTxTime <= 31703) {
                 if (!ssValue.empty()) {
                     char fTmp;
@@ -458,7 +459,8 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 }
                 wss.vWalletUpgrade.push_back(hash);
             }
-
+#endif
+            
             if (wtx.nOrderPos == -1)
                 wss.fAnyUnordered = true;
 
@@ -608,8 +610,6 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 pwallet->mapKeyMetadata[keyid] = CKeyMetadata(keypool.nTime);
         } else if (strType == "version") {
             ssValue >> wss.nFileVersion;
-            if (wss.nFileVersion == 10300)
-                wss.nFileVersion = 300;
         } else if (strType == "cscript") {
             uint160 hash;
             ssKey >> hash;
@@ -750,10 +750,6 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
 
     BOOST_FOREACH (uint256 hash, wss.vWalletUpgrade)
         WriteTx(hash, pwallet->mapWallet[hash]);
-
-    // Rewrite encrypted wallets of versions 0.4.0 and 0.5.0rc:
-    if (wss.fIsEncrypted && (wss.nFileVersion == 40000 || wss.nFileVersion == 50000))
-        return DB_NEED_REWRITE;
 
     if (wss.nFileVersion < CLIENT_VERSION) // Update
         WriteVersion(CLIENT_VERSION);

@@ -65,11 +65,9 @@ namespace libzerocoin
     this->serialNumberSoK = SerialNumberSignatureOfKnowledge(paramsCoin, coin, fullCommitmentToCoinUnderSerialParams, hashSig);
 
     // 5. Sign the transaction using the private key associated with the serial number
-    if (version >= PrivateCoin::PUBKEY_VERSION) {
-        this->pubkey = coin.getPubKey();
-        if (!coin.sign(hashSig, this->vchSig))
-            throw std::runtime_error("Coinspend failed to sign signature hash");
-    }
+    this->pubkey = coin.getPubKey();
+    if (!coin.sign(hashSig, this->vchSig))
+        throw std::runtime_error("Coinspend failed to sign signature hash");
 }
 
 bool CoinSpend::Verify(const Accumulator& a) const
@@ -110,7 +108,7 @@ const uint256 CoinSpend::signatureHash() const
     h << serialCommitmentToCoinValue << accCommitmentToCoinValue << commitmentPoK << accumulatorPoK << ptxHash
       << coinSerialNumber << accChecksum << denomination;
 
-    if (version >= PrivateCoin::PUBKEY_VERSION)
+   // if (version >= PrivateCoin::PUBKEY_VERSION)
         h << spendType;
 
     return h.GetHash();
@@ -131,10 +129,6 @@ bool CoinSpend::HasValidSerial(ZerocoinParams* params) const
 //Additional verification layer that requires the spend be signed by the private key associated with the serial
 bool CoinSpend::HasValidSignature() const
 {
-    //No private key for V1
-    if (version < PrivateCoin::PUBKEY_VERSION)
-        return true;
-
     //V2 serial requires that the signature hash be signed by the public key associated with the serial
     uint256 hashedPubkey = Hash(pubkey.begin(), pubkey.end()) >> PrivateCoin::V2_BITSHIFT;
     if (hashedPubkey != GetAdjustedSerial(coinSerialNumber).getuint256()) {

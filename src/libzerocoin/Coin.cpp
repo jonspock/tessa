@@ -85,7 +85,7 @@ PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomin
 #endif
     }
 
-    this->version = CURRENT_VERSION;
+    this->version = PRIVATECOIN_VERSION;
 }
 
 PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum& bnSerial,
@@ -256,9 +256,7 @@ int ExtractVersionFromSerial(const CBigNum& bnSerial)
 {
 	//Serial is marked as v2 only if the first byte is 0xF
 	uint256 nMark = bnSerial.getuint256() >> (256 - PrivateCoin::V2_BITSHIFT);
-	if (nMark == 0xf)
-		return PrivateCoin::PUBKEY_VERSION;
-
+	if (nMark == 0xf) return 1;
 	return 1;
 }
 
@@ -278,8 +276,7 @@ bool IsValidSerial(const ZerocoinParams* params, const CBigNum& bnSerial)
     if (bnSerial <= 0)
         return false;
 
-    if (ExtractVersionFromSerial(bnSerial) < PrivateCoin::PUBKEY_VERSION)
-        return bnSerial < params->coinCommitmentGroup.groupOrder;
+    //    return bnSerial < params->coinCommitmentGroup.groupOrder;
 
     //If V2, the serial is marked with 0xF in the first 4 bits. This is removed for the actual serial.
     CBigNum bnAdjustedSerial = GetAdjustedSerial(bnSerial);

@@ -303,7 +303,7 @@ bool CzPIVWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const 
     uint256 hashPubcoin = GetPubCoinHash(bnValue);
     uint256 nSerial = bnSerial.getuint256();
     uint256 hashStake = Hash(nSerial.begin(), nSerial.end());
-    CDeterministicMint dMint(PrivateCoin::CURRENT_VERSION, pMint.second, hashSeed, hashSerial, hashPubcoin, hashStake);
+    CDeterministicMint dMint(PrivateCoin::PRIVATECOIN_VERSION, pMint.second, hashSeed, hashSerial, hashPubcoin, hashStake);
     dMint.SetDenomination(denom);
     dMint.SetHeight(nHeight);
     dMint.SetTxHash(txid);
@@ -433,7 +433,7 @@ void CzPIVWallet::GenerateMint(const uint32_t& nCount, const CoinDenomination de
     SeedToZPIV(seedZerocoin, bnValue, bnSerial, bnRandomness, key);
     coin = PrivateCoin(Params().Zerocoin_Params(), denom, bnSerial, bnRandomness);
     coin.setPrivKey(key.GetPrivKey());
-    coin.setVersion(PrivateCoin::CURRENT_VERSION);
+    coin.setVersion(PrivateCoin::PRIVATECOIN_VERSION);
 
     uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
     uint256 hashSerial = GetSerialHash(bnSerial);

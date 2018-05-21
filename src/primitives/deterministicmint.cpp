@@ -26,7 +26,7 @@ CDeterministicMint::CDeterministicMint(uint8_t nVersion, const uint32_t& nCount,
 
 void CDeterministicMint::SetNull()
 {
-    nVersion = PrivateCoin::CURRENT_VERSION;
+    nVersion = PrivateCoin::PRIVATECOIN_VERSION;
     nCount = 0;
     hashSeed = 0;
     hashSerial = 0;

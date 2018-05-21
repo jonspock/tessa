@@ -12,6 +12,11 @@
 #include "serialize.h"
 #include "uint256.h"
 
+// For Now
+#define STARTBLOCK_VERSION 1
+#define ZEROBLOCK_VERSION 2
+//enum BlockVersions = { STARTBLOCK_VERSION, ZEROBLOCK_VERSION };
+
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE_CURRENT = 2000000;
 static const unsigned int MAX_BLOCK_SIZE_LEGACY = 1000000;
@@ -27,7 +32,7 @@ class CBlockHeader
 {
 public:
     // header
-    static const int32_t CURRENT_VERSION=1;
+    static const int32_t CURRENT_VERSION=STARTBLOCK_VERSION;
     int32_t nVersion;
     uint256 hashPrevBlock;
     uint256 hashMerkleRoot;
@@ -54,7 +59,7 @@ public:
         READWRITE(nNonce);
 
         //zerocoin active, header changes to include accumulator checksum
-        if(nVersion > 3)
+        if(nVersion > STARTBLOCK_VERSION)
             READWRITE(nAccumulatorCheckpoint);
     }
 

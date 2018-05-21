@@ -50,13 +50,10 @@ public:
         strm >> *this;
 
         //Need to reset some parameters if v2
-        int serialVersion = ExtractVersionFromSerial(coinSerialNumber);
-        if (serialVersion >= PrivateCoin::PUBKEY_VERSION) {
-            accumulatorPoK = AccumulatorProofOfKnowledge(&paramsV2->accumulatorParams);
-            serialNumberSoK = SerialNumberSignatureOfKnowledge(paramsV2);
-            commitmentPoK = CommitmentProofOfKnowledge(&paramsV2->serialNumberSoKCommitmentGroup, &paramsV2->accumulatorParams.accumulatorPoKCommitmentGroup);
-            strmCopy >> *this;
-        }
+        accumulatorPoK = AccumulatorProofOfKnowledge(&paramsV2->accumulatorParams);
+        serialNumberSoK = SerialNumberSignatureOfKnowledge(paramsV2);
+        commitmentPoK = CommitmentProofOfKnowledge(&paramsV2->serialNumberSoKCommitmentGroup, &paramsV2->accumulatorParams.accumulatorPoKCommitmentGroup);
+        strmCopy >> *this;
     }
 
     /**Generates a proof spending a zerocoin.
