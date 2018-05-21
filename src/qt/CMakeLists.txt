@@ -214,40 +214,40 @@ set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
 SET(QT_TRANSLATIONS_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_bg.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_ca.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_cs.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_da.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_de.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_en.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_en_US.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_es.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_es_ES.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_fi.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_fr_FR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_hi_IN.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_hr.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_hr_HR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_it.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_ja.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_ko_KR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_nl.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_pl.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_pt.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_pt_BR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_ro_RO.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_ru.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_sk.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_sv.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_tr.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_uk.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_vi.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_zh_CN.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_zh_TW.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_bg.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ca.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_cs.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_da.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_de.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_en.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_en_US.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_es.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_es_ES.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_fi.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_fr_FR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_hi_IN.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_hr.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_hr_HR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_it.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ja.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ko_KR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_nl.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_pl.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_pt.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_pt_BR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ro_RO.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ru.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_sk.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_sv.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_tr.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_uk.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_vi.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_zh_CN.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_zh_TW.ts
 
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_hr_HR.ts
-  ${CMAKE_CURRENT_SOURCE_DIR}/locale/pivx_lt_LT.ts
+  ${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_hr_HR.ts
+  ${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_lt_LT.ts
   
 	)
 
