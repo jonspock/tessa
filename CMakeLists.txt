@@ -237,8 +237,8 @@ SET(SOURCES
 	./src/walletdb.cpp
 	./src/denomination_functions.cpp
 # NEW
-	./src/zpivtracker.cpp
-	./src/zpivwallet.cpp
+	./src/zerotracker.cpp
+	./src/zerowallet.cpp
   ./src/httprpc.cpp
   ./src/httpserver.cpp
   ./src/blocksignature.cpp

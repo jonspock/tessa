@@ -23,8 +23,8 @@
 #include "validationinterface.h"
 #include "wallet_ismine.h"
 #include "walletdb.h"
-#include "zpivwallet.h"
-#include "zpivtracker.h"
+#include "zerowallet.h"
+#include "zerotracker.h"
 
 #include <algorithm>
 #include <map>

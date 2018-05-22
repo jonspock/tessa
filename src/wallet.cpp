@@ -26,7 +26,7 @@
 
 #include "denomination_functions.h"
 #include "libzerocoin/Denominations.h"
-#include "zpivwallet.h"
+#include "zerowallet.h"
 #include "primitives/deterministicmint.h"
 #include <assert.h>
 

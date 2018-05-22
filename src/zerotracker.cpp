@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <primitives/deterministicmint.h>
-#include "zpivtracker.h"
+#include "zerotracker.h"
 #include "util.h"
 #include "sync.h"
 #include "main.h"
