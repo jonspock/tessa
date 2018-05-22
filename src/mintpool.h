@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef CCCC_MINTPOOL_H
-#define CCCC_MINTPOOL_H
+#ifndef Club_MINTPOOL_H
+#define Club_MINTPOOL_H
 
 #include <map>
 #include <list>
@@ -50,4 +50,4 @@ public:
 };
 
 
-#endif //CCCC_MINTPOOL_H
+#endif //Club_MINTPOOL_H

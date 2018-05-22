@@ -126,7 +126,7 @@ public:
 };
 
 /**
- * CCCC RPC command dispatcher.
+ * Club RPC command dispatcher.
  */
 class CRPCTable
 {

@@ -29,8 +29,8 @@
  *
  * \section intro_sec Introduction
  *
- * This is the developer documentation of the reference client for an experimental new digital currency called CCCC (http://www.pivx.org),
- * which enables instant payments to anyone, anywhere in the world. CCCC uses peer-to-peer technology to operate
+ * This is the developer documentation of the reference client for an experimental new digital currency called Club (http://www.pivx.org),
+ * which enables instant payments to anyone, anywhere in the world. Club uses peer-to-peer technology to operate
  * with no central authority: managing transactions and issuing money are carried out collectively by the network.
  *
  * The software is a community-driven open source project, released under the MIT license.
@@ -119,7 +119,7 @@ bool AppInit(int argc, char* argv[])
 #ifndef WIN32
         fDaemon = GetBoolArg("-daemon", false);
         if (fDaemon) {
-            fprintf(stdout, "CCCC server starting\n");
+            fprintf(stdout, "Club server starting\n");
 
             // Daemonize
             pid_t pid = fork();

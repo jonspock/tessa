@@ -31,7 +31,7 @@ class QUrl;
 class QWidget;
 QT_END_NAMESPACE
 
-/** Utility functions used by the CCCC Qt UI.
+/** Utility functions used by the Club Qt UI.
  */
 namespace GUIUtil
 {
@@ -39,7 +39,7 @@ namespace GUIUtil
 QString dateTimeStr(const QDateTime& datetime);
 QString dateTimeStr(qint64 nTime);
 
-// Render CCCC addresses in monospace font
+// Render Club addresses in monospace font
 QFont bitcoinAddressFont();
 
 // Set up widgets for address and amounts

@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef CCCC_ACCUMULATORMAP_H
-#define CCCC_ACCUMULATORMAP_H
+#ifndef Club_ACCUMULATORMAP_H
+#define Club_ACCUMULATORMAP_H
 
 #include "libzerocoin/Accumulator.h"
 #include "libzerocoin/Coin.h"
@@ -25,4 +25,4 @@ public:
     void Reset();
     void Reset(libzerocoin::ZerocoinParams* params2);
 };
-#endif //CCCC_ACCUMULATORMAP_H
+#endif //Club_ACCUMULATORMAP_H

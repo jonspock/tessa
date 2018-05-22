@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef CCCC_STAKEINPUT_H
-#define CCCC_STAKEINPUT_H
+#ifndef Club_STAKEINPUT_H
+#define Club_STAKEINPUT_H
 
 class CKeyStore;
 class CWallet;
@@ -51,4 +51,4 @@ public:
 };
 
 
-#endif //CCCC_STAKEINPUT_H
+#endif //Club_STAKEINPUT_H

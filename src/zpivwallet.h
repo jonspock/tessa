@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef CCCC_ZPIVWALLET_H
-#define CCCC_ZPIVWALLET_H
+#ifndef Club_ZPIVWALLET_H
+#define Club_ZPIVWALLET_H
 
 #include <map>
 #include "libzerocoin/Coin.h"
@@ -45,4 +45,4 @@ private:
     uint512 GetZerocoinSeed(uint32_t n);
 };
 
-#endif //CCCC_ZPIVWALLET_H
+#endif //Club_ZPIVWALLET_H

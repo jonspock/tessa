@@ -2941,7 +2941,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Generate CCCC Deposit Address</string>
+      <string>Generate Club Deposit Address</string>
      </property>
      <property name="icon">
       <iconset resource="../pivx.qrc">

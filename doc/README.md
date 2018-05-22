@@ -1,13 +1,13 @@
-CCCC Core
+Club Core
 =====================
 
 Setup
 ---------------------
-[CCCC Core](http://pivx.org/wallet) is the original CCCC client and it builds the backbone of the network. However, it downloads and stores the entire history of CCCC transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
+[Club Core](http://pivx.org/wallet) is the original Club client and it builds the backbone of the network. However, it downloads and stores the entire history of Club transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
 
 Running
 ---------------------
-The following are some helpful notes on how to run CCCC on your native platform.
+The following are some helpful notes on how to run Club on your native platform.
 
 ### Unix
 
@@ -22,19 +22,19 @@ Unpack the files into a directory, and then run pivx-qt.exe.
 
 ### OSX
 
-Drag CCCC-Qt to your applications folder, and then run CCCC-Qt.
+Drag Club-Qt to your applications folder, and then run Club-Qt.
 
 ### Need Help?
 
-* See the documentation at the [CCCC Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO***
+* See the documentation at the [Club Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO***
 for help and more information.
-* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [CCCC Forum](http://forum.pivx.org/).
+* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [Club Forum](http://forum.pivx.org/).
 * Join our Discord server [Discord Server](https://discord.pivx.org)
-* Join one of our Slack groups [CCCC Slack Groups](https://pivx.org/slack-logins/) (Main community is replaced by Discord).
+* Join one of our Slack groups [Club Slack Groups](https://pivx.org/slack-logins/) (Main community is replaced by Discord).
 
 Building
 ---------------------
-The following are developer notes on how to build CCCC on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build Club on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [OSX Build Notes](build-osx.md)
 - [Unix Build Notes](build-unix.md)
@@ -42,7 +42,7 @@ The following are developer notes on how to build CCCC on your native platform. 
 
 Development
 ---------------------
-The Pivx repo's [root README](https://github.com/CCCC-Project/CCCC/blob/master/README.md) contains relevant information on the development process and automated testing.
+The Pivx repo's [root README](https://github.com/Club-Project/Club/blob/master/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Multiwallet Qt Development](multiwallet-qt.md)
@@ -56,8 +56,8 @@ The Pivx repo's [root README](https://github.com/CCCC-Project/CCCC/blob/master/R
 
 ### Resources
 
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [CCCC](http://forum.pivx.org/) forum.
-* Join the [CCCC-Dev](https://pivx-dev.slack.com/) Slack group ([Sign-Up](https://pivx-dev.herokuapp.com/)).
+* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [Club](http://forum.pivx.org/) forum.
+* Join the [Club-Dev](https://pivx-dev.slack.com/) Slack group ([Sign-Up](https://pivx-dev.herokuapp.com/)).
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

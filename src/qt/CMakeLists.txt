@@ -1,13 +1,13 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
 # Project Info
-SET(PROJECT_NAME_SHORT   "CCCCQt")
-SET(PROJECT_NAME_LONG    "CMake CCCC Qt project")
+SET(PROJECT_NAME_SHORT   "ClubQt")
+SET(PROJECT_NAME_LONG    "CMake Club Qt project")
 SET(PROJECT_DESCRIPTION  "CMake build system template for Qt based projects")
-SET(PROJECT_COPYRIGHT    "Copyright (C) 2017 CCCC Developers")
+SET(PROJECT_COPYRIGHT    "Copyright (C) 2017 Club Developers")
 SET(PROJECT_CONTACT      "jonspock@protonmail.com")
 SET(PROJECT_VENDOR       "Jon Spock")
-SET(ORG_WEBSITE          "http://CCCC.org")
+SET(ORG_WEBSITE          "http://Clubchain.org")
 
 # Configuring build type
 IF(NOT CMAKE_BUILD_TYPE)
@@ -214,40 +214,40 @@ set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
 SET(QT_TRANSLATIONS_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_bg.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ca.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_cs.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_da.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_de.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_en.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_en_US.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_es.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_es_ES.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_fi.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_fr_FR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_hi_IN.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_hr.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_hr_HR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_it.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ja.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ko_KR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_nl.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_pl.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_pt.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_pt_BR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ro_RO.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_ru.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_sk.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_sv.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_tr.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_uk.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_vi.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_zh_CN.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_zh_TW.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_bg.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ca.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_cs.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_da.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_de.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_en.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_en_US.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_es.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_es_ES.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_fi.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_fr_FR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_hi_IN.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_hr.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_hr_HR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_it.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ja.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ko_KR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_nl.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_pl.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_pt.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_pt_BR.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ro_RO.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ru.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_sk.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_sv.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_tr.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_uk.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_vi.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_zh_CN.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_zh_TW.ts
 
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_hr_HR.ts
-  ${CMAKE_CURRENT_SOURCE_DIR}/locale/cccc_lt_LT.ts
+  ${CMAKE_CURRENT_SOURCE_DIR}/locale/club_hr_HR.ts
+  ${CMAKE_CURRENT_SOURCE_DIR}/locale/club_lt_LT.ts
   
 	)
 
@@ -257,20 +257,20 @@ set_source_files_properties(${QT_TRANSLATIONS_FILES} PROPERTIES OUTPUT_LOCATION 
 QT5_ADD_TRANSLATION( QM ${QT_TRANSLATIONS_FILES} )
 add_custom_target (translations_target DEPENDS ${QM}) 
 
-QT5_ADD_RESOURCES(QRC_RESOURCE pivx.qrc)
-QT5_ADD_RESOURCES(QRC_LOCALE_RESOURCE pivx_locale.qrc)
+QT5_ADD_RESOURCES(QRC_RESOURCE club.qrc)
+QT5_ADD_RESOURCES(QRC_LOCALE_RESOURCE club_locale.qrc)
 
-add_executable(cccc-qt pivx.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} ${GUI_FORM_HEADERS})
-add_dependencies(cccc-qt translations_target)
-#set_property(TARGET cccc-qt PROPERTY CXX_STANDARD 11)
-#set_source_files_properties(pivx.cpp PROPERTIES CMAKE_CXX_FLAGS "-std=c++11")
+add_executable(club-qt club.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} ${GUI_FORM_HEADERS})
+add_dependencies(club-qt translations_target)
+#set_property(TARGET club-qt PROPERTY CXX_STANDARD 11)
+#set_source_files_properties(club.cpp PROPERTIES CMAKE_CXX_FLAGS "-std=c++11")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  # ORIG TARGET_LINK_LIBRARIES(cccc-qt coin qt_stuff mac_stuff db_cxx db secp256k1 bitcoin_crypto zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} ${PROTOBUF_LIBRARIES} qrencode miniupnpc /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a pthread "-framework Cocoa")
+  # ORIG TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff db_cxx db secp256k1 bitcoin_crypto zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} ${PROTOBUF_LIBRARIES} qrencode miniupnpc /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a pthread "-framework Cocoa")
 
-  TARGET_LINK_LIBRARIES(cccc-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} /usr/local/opt/berkeley-db4/lib/libdb_cxx.a /usr/local/opt/berkeley-db4/lib/libdb.a secp256k1 zerocoin leveldb /usr/local/opt/openssl/lib/libssl.a /usr/local/opt/openssl/lib/libcrypto.a ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a /usr/local/lib/libqrencode.a /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
+  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} /usr/local/opt/berkeley-db4/lib/libdb_cxx.a /usr/local/opt/berkeley-db4/lib/libdb.a secp256k1 zerocoin leveldb /usr/local/opt/openssl/lib/libssl.a /usr/local/opt/openssl/lib/libcrypto.a ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a /usr/local/lib/libqrencode.a /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
 else()
-  TARGET_LINK_LIBRARIES(cccc-qt coin qt_stuff db_cxx db secp256k1 zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} ${PROTOBUF_LIBRARIES} qrencode pthread )
+  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff db_cxx db secp256k1 zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} ${PROTOBUF_LIBRARIES} qrencode pthread )
 endif()
 
 #############################################################
@@ -297,14 +297,14 @@ IF(APPLE)
     # Libraries are bundled directly
     SET(CPACK_COMPONENT_LIBRARIES_HIDDEN TRUE)
     # Bundle Properties
-    SET(MACOSX_BUNDLE_BUNDLE_NAME cccc-qt)
+    SET(MACOSX_BUNDLE_BUNDLE_NAME club-qt)
     SET(MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION})
     SET(MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION})
     SET(MACOSX_BUNDLE_LONG_VERSION_STRING "Version ${PROJECT_VERSION}")
 ENDIF(APPLE)
 
-SET(CPACK_PACKAGE_EXECUTABLES "cccc-qt" "cccc-qt")
+SET(CPACK_PACKAGE_EXECUTABLES "club-qt" "club-qt")
 INCLUDE(CPack)
 
 
-#INSTALL(TARGETS cccc-qt DESTINATION bin)
+#INSTALL(TARGETS club-qt DESTINATION bin)

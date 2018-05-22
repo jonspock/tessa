@@ -37,7 +37,7 @@ enum NumConnections {
     CONNECTIONS_ALL = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
 
-/** Model for CCCC network client. */
+/** Model for Club network client. */
 class ClientModel : public QObject
 {
     Q_OBJECT

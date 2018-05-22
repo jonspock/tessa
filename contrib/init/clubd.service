@@ -1,5 +1,5 @@
 [Unit]
-Description=CCCC's distributed currency daemon
+Description=Club's distributed currency daemon
 After=network.target
 
 [Service]

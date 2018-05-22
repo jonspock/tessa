@@ -23,14 +23,13 @@ ELSE(GIT)
   SET(PATCH_OUT "0")
 ENDIF(GIT)
 
-SET(CCCC_VERSION_PATCH ${PATCH_OUT})
+SET(CLUB_VERSION_PATCH ${PATCH_OUT})
 
 # Project Version
-SET(CCCC_VERSION_MAJOR "0")
-SET(CCCC_VERSION_MINOR "9")
-SET(CCCC_VERSION_REVISION "0")
-SET(CCCC_VERSION_BUILD "0")
-
+SET(CLUB_VERSION_MAJOR "0")
+SET(CLUB_VERSION_MINOR "9")
+SET(CLUB_VERSION_REVISION "0")
+SET(CLUB_VERSION_BUILD "0")
 
 if(CMAKE_CXX_FLAGS_RELEASE MATCHES DNDEBUG)
   string(REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -42,7 +41,7 @@ if(CMAKE_CXX_FLAGS_RELWITHDEBINFO MATCHES DNDEBUG)
   string(REPLACE "-DNDEBUG" "" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE}")
 endif()
 
-project(CCCC)
+project(CLUB)
 
 set(OPENSSL_VER "1.0.2n")
 set(BDB_VER "4.8.30")
@@ -89,8 +88,8 @@ else()
 	)
 endif()
 
-# run configure if pivx_config.h doesn't exist, For Linux add "--with-incompatible-bdb"
-if (EXISTS	"${CMAKE_CURRENT_SOURCE_DIR}/src/config/pivx-config.h")
+# run configure if club_config.h doesn't exist, For Linux add "--with-incompatible-bdb"
+if (EXISTS	"${CMAKE_CURRENT_SOURCE_DIR}/src/config/club-config.h")
 else()	
 	IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	  execute_process(
@@ -316,16 +315,16 @@ add_library(secp256k1 ${SECP256})
 
 link_directories(${BDB_ROOT_DIR}/lib)
 
-add_executable(cccc-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/pivx-cli.cpp)
-add_executable(ccccd ${CMAKE_CURRENT_SOURCE_DIR}/src/pivxd.cpp)
+add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
+add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
 
-target_link_libraries(cccc-cli coin zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread)
-###target_link_libraries(pivx-tx coin secp256k1 bitcoin_crypto leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} pthread)
+target_link_libraries(club-cli coin zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread)
+###target_link_libraries(club-tx coin secp256k1 bitcoin_crypto leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} pthread)
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	target_link_libraries(ccccd coin db_cxx db secp256k1 gmp zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event /usr/local/lib/libevent_pthreads.a /usr/local/lib/libzmq.a pthread )
+	target_link_libraries(clubd coin db_cxx db secp256k1 gmp zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event /usr/local/lib/libevent_pthreads.a /usr/local/lib/libzmq.a pthread )
 else()
-	target_link_libraries(ccccd coin db_cxx db secp256k1 zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} pthread)
+	target_link_libraries(clubd coin db_cxx db secp256k1 zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} pthread)
 endif()
 
 #	miniupnpc pthread)

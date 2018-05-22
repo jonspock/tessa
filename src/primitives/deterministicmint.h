@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef CCCC_DETERMINISTICMINT_H
-#define CCCC_DETERMINISTICMINT_H
+#ifndef Club_DETERMINISTICMINT_H
+#define Club_DETERMINISTICMINT_H
 
 #include <libzerocoin/Denominations.h>
 #include <uint256.h>
@@ -64,4 +64,4 @@ public:
     };
 };
 
-#endif //CCCC_DETERMINISTICMINT_H
+#endif //Club_DETERMINISTICMINT_H

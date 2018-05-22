@@ -151,15 +151,15 @@ public:
         pchMessageStart[2] = 0xfd;
         pchMessageStart[3] = 0xe9;
         nDefaultPort = 51472;
-        bnProofOfWorkLimit = ~uint256(0) >> 20; // CCCC starting difficulty is 1 / 2^12
+        bnProofOfWorkLimit = ~uint256(0) >> 20; // Club starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 210000;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 0;
-        nTargetTimespan = 1 * 60; // CCCC: 1 day
-        nTargetSpacing = 1 * 60;  // CCCC: 1 minute
+        nTargetTimespan = 1 * 60; // Club: 1 day
+        nTargetSpacing = 1 * 60;  // Club: 1 minute
         nMaturity = 100;
         nMaxMoneyOut = 21000000 * COIN;
 
@@ -258,8 +258,8 @@ public:
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
-        nTargetTimespan = 1 * 60; // CCCC: 1 day
-        nTargetSpacing = 1 * 60;  // CCCC: 1 minute
+        nTargetTimespan = 1 * 60; // Club: 1 day
+        nTargetSpacing = 1 * 60;  // Club: 1 minute
         nLastPOWBlock = 200;
         nMaturity = 15;
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
@@ -336,8 +336,8 @@ public:
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 1;
-        nTargetTimespan = 24 * 60 * 60; // CCCC: 1 day
-        nTargetSpacing = 1 * 60;        // CCCC: 1 minutes
+        nTargetTimespan = 24 * 60 * 60; // Club: 1 day
+        nTargetSpacing = 1 * 60;        // Club: 1 minutes
         bnProofOfWorkLimit = ~uint256(0) >> 1;
 
         genesis = CreateGenesisBlock(1390748221, 4, 0x207fffff, 1, 5000 * COIN);

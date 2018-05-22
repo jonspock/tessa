@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef CCCC_SPENDTYPE_H
-#define CCCC_SPENDTYPE_H
+#ifndef Club_SPENDTYPE_H
+#define Club_SPENDTYPE_H
 
 #include <cstdint>
 
@@ -16,4 +16,4 @@ namespace libzerocoin {
     };
 }
 
-#endif //CCCC_SPENDTYPE_H
+#endif //Club_SPENDTYPE_H

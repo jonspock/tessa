@@ -37,8 +37,8 @@
         <number>1</number>
        </property>
        <property name="text">
-        <string>MultiSend allows you to automatically send up to 100% of your stake reward to a list of other CCCC addresses after it matures.
-To Add: enter percentage to give and CCCC address to add to the MultiSend vector.
+        <string>MultiSend allows you to automatically send up to 100% of your stake reward to a list of other Club addresses after it matures.
+To Add: enter percentage to give and Club address to add to the MultiSend vector.
 To Delete: Enter address to delete and press delete.
 MultiSend will not be activated unless you have clicked Activate</string>
        </property>

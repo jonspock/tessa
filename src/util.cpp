@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/pivx-config.h"
+#include "config/club-config.h"
 #endif
 
 #include "util.h"
@@ -105,7 +105,7 @@ std::string to_internal(const std::string&);
 
 using namespace std;
 
-// CCCC only features
+// Club only features
 bool fLiteMode = false;
 // SwiftX
 bool fEnableSwiftTX = true;
@@ -231,7 +231,7 @@ bool LogAcceptCategory(const char* category)
             const vector<string>& categories = mapMultiArgs["-debug"];
             ptrCategory.reset(new set<string>(categories.begin(), categories.end()));
             // thread_specific_ptr automatically deletes the set when the thread ends.
-            // "pivx" is a composite category enabling all CCCC-related debug output
+            // "pivx" is a composite category enabling all Club-related debug output
             if (ptrCategory->count(string("pivx"))) {
                 ptrCategory->insert(string("zero"));
             }
@@ -413,13 +413,13 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-// Windows < Vista: C:\Documents and Settings\Username\Application Data\CCCC
-// Windows >= Vista: C:\Users\Username\AppData\Roaming\CCCC
-// Mac: ~/Library/Application Support/CCCC
+// Windows < Vista: C:\Documents and Settings\Username\Application Data\Club
+// Windows >= Vista: C:\Users\Username\AppData\Roaming\Club
+// Mac: ~/Library/Application Support/Club
 // Unix: ~/.pivx
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "CCCC";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Club";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -431,7 +431,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     TryCreateDirectory(pathRet);
-    return pathRet / "CCCC";
+    return pathRet / "Club";
 #else
     // Unix
     return pathRet / ".cccc";

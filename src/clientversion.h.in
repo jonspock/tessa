@@ -5,7 +5,7 @@
 #pragma once
 
 #if defined(HAVE_CONFIG_H)
-#include "config/pivx-config.h"
+#include "config/club-config.h"
 #endif
 
 /**
@@ -13,10 +13,10 @@
  */
 
 //! These need to be macros, as clientversion.cpp's and pivx*-res.rc's voodoo requires it
-#define CLIENT_VERSION_MAJOR @CCCC_VERSION_MAJOR@
-#define CLIENT_VERSION_MINOR @CCCC_VERSION_MINOR@
-#define CLIENT_VERSION_REVISION @CCCC_VERSION_REVISION@
-#define CLIENT_VERSION_BUILD @CCCC_VERSION_BUILD@
+#define CLIENT_VERSION_MAJOR @CLUB_VERSION_MAJOR@
+#define CLIENT_VERSION_MINOR @CLUB_VERSION_MINOR@
+#define CLIENT_VERSION_REVISION @CLUB_VERSION_REVISION@
+#define CLIENT_VERSION_BUILD @CLUB_VERSION_BUILD@
 
 /**
  * Copyright year (2009-this)

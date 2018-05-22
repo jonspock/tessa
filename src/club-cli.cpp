@@ -72,10 +72,10 @@ static bool AppInitRPC(int argc, char* argv[])
     //
     ParseParameters(argc, argv);
     if (argc < 2 || mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
-        std::string strUsage = _("CCCC Core RPC client version") + " " + FormatFullVersion() + "\n";
+        std::string strUsage = _("Club Core RPC client version") + " " + FormatFullVersion() + "\n";
         if (!mapArgs.count("-version")) {
             strUsage += "\n" + _("Usage:") + "\n" +
-                        "  pivx-cli [options] <command> [params]  " + _("Send command to CCCC Core") + "\n" +
+                        "  pivx-cli [options] <command> [params]  " + _("Send command to Club Core") + "\n" +
                         "  pivx-cli [options] help                " + _("List commands") + "\n" +
                         "  pivx-cli [options] help <command>      " + _("Get help for a command") + "\n";
 
