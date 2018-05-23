@@ -55,8 +55,6 @@ QT_TRANSLATE_NOOP("club-core", ""
 "Distributed under the MIT software license, see the accompanying file "
 "COPYING or <http://www.opensource.org/licenses/mit-license.php>."),
 QT_TRANSLATE_NOOP("club-core", ""
-"Enable SwiftX, show confirmations for locked transactions (bool, default: %s)"),
-QT_TRANSLATE_NOOP("club-core", ""
 "Enable automatic wallet backups triggered after each zZZZ minting (0-1, "
 "default: %u)"),
 QT_TRANSLATE_NOOP("club-core", ""
@@ -181,9 +179,6 @@ QT_TRANSLATE_NOOP("club-core", ""
 QT_TRANSLATE_NOOP("club-core", ""
 "Support filtering of blocks and transaction with bloom filters (default: %u)"),
 QT_TRANSLATE_NOOP("club-core", ""
-"SwiftX requires inputs with at least 6 confirmations, you might need to wait "
-"a few minutes and try again."),
-QT_TRANSLATE_NOOP("club-core", ""
 "This is a pre-release test build - use at your own risk - do not use for "
 "staking or merchant applications!"),
 QT_TRANSLATE_NOOP("club-core", ""
@@ -277,10 +272,8 @@ QT_TRANSLATE_NOOP("club-core", "Do you want to rebuild the block database now?")
 QT_TRANSLATE_NOOP("club-core", "Done loading"),
 QT_TRANSLATE_NOOP("club-core", "Enable automatic Zerocoin minting (0-1, default: %u)"),
 QT_TRANSLATE_NOOP("club-core", "Enable publish hash block in <address>"),
-QT_TRANSLATE_NOOP("club-core", "Enable publish hash transaction (locked via SwiftX) in <address>"),
 QT_TRANSLATE_NOOP("club-core", "Enable publish hash transaction in <address>"),
 QT_TRANSLATE_NOOP("club-core", "Enable publish raw block in <address>"),
-QT_TRANSLATE_NOOP("club-core", "Enable publish raw transaction (locked via SwiftX) in <address>"),
 QT_TRANSLATE_NOOP("club-core", "Enable publish raw transaction in <address>"),
 QT_TRANSLATE_NOOP("club-core", "Enable staking functionality (0-1, default: %u)"),
 QT_TRANSLATE_NOOP("club-core", "Entries are full."),
@@ -427,7 +420,6 @@ QT_TRANSLATE_NOOP("club-core", "Spend Valid"),
 QT_TRANSLATE_NOOP("club-core", "Spend unconfirmed change when sending transactions (default: %u)"),
 QT_TRANSLATE_NOOP("club-core", "Staking options:"),
 QT_TRANSLATE_NOOP("club-core", "Stop running after importing blocks from disk (default: %u)"),
-QT_TRANSLATE_NOOP("club-core", "SwiftX options:"),
 QT_TRANSLATE_NOOP("club-core", "Synchronization failed"),
 QT_TRANSLATE_NOOP("club-core", "Synchronization finished"),
 QT_TRANSLATE_NOOP("club-core", "Synchronization pending..."),

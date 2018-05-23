@@ -1015,16 +1015,7 @@ bool AttemptBackupWallet(const CWallet& wallet, const filesystem::path& pathSrc,
     bool retStatus;
     string strMessage;
     try {
-#if BOOST_VERSION >= 105800 /* BOOST_LIB_VERSION 1_58 */
         filesystem::copy_file(pathSrc.c_str(), pathDest, filesystem::copy_option::overwrite_if_exists);
-#else
-        std::ifstream src(pathSrc.c_str(),  std::ios::binary | std::ios::in);
-        std::ofstream dst(pathDest.c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
-        dst << src.rdbuf();
-        dst.flush();
-        src.close();
-        dst.close();
-#endif
         strMessage = strprintf("copied wallet.dat to %s\n", pathDest.string());
         LogPrint(nullptr, strMessage.data());
         retStatus = true;

@@ -34,8 +34,6 @@
 
 extern bool fMasterNode;
 extern bool fLiteMode;
-extern bool fEnableSwiftTX;
-extern int nSwiftTXDepth;
 extern int nPreferredDenom;
 extern int nAnonymizeClubAmount;
 extern int nLiquidityProvider;

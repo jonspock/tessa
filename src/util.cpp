@@ -91,10 +91,6 @@
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 
-// Work around clang compilation problem in Boost 1.46:
-// /usr/include/boost/program_options/detail/config_file.hpp:163:17: error: call to function 'to_internal' that is neither visible in the template definition nor found by argument-dependent lookup
-// See also: http://stackoverflow.com/questions/10020179/compilation-fail-in-boost-librairies-program-options
-//           http://clang.debian.net/status.php?version=3.0&key=CANNOT_FIND_FUNCTION
 namespace boost
 {
 namespace program_options
@@ -108,9 +104,6 @@ using namespace std;
 
 // Club only features
 bool fLiteMode = false;
-// SwiftX
-bool fEnableSwiftTX = true;
-
 int nAnonymizeClubAmount = 1000;
 int nLiquidityProvider = 0;
 /** Spork enforcement enabled time */
@@ -695,25 +688,7 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
 
 boost::filesystem::path GetTempPath()
 {
-#if BOOST_FILESYSTEM_VERSION == 3
     return boost::filesystem::temp_directory_path();
-#else
-    // TODO: remove when we don't support filesystem v2 anymore
-    boost::filesystem::path path;
-#ifdef WIN32
-    char pszPath[MAX_PATH] = "";
-
-    if (GetTempPathA(MAX_PATH, pszPath))
-        path = boost::filesystem::path(pszPath);
-#else
-    path = boost::filesystem::path("/tmp");
-#endif
-    if (path.empty() || !boost::filesystem::is_directory(path)) {
-        LogPrintf("GetTempPath(): failed to find temp path\n");
-        return boost::filesystem::path("");
-    }
-    return path;
-#endif
 }
 
 double double_safe_addition(double fValue, double fIncrement)

@@ -62,9 +62,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent),
 
     // Club specific
     QSettings settings;
-    ui->checkSwiftTX->setVisible(false);
     CoinControlDialog::coinControl->useObfuScation = false;
-    CoinControlDialog::coinControl->useSwiftTX = false;
 
     // Coin Control: clipboard actions
     QAction* clipboardQuantityAction = new QAction(tr("Copy quantity"), this);
@@ -554,10 +552,6 @@ void SendCoinsDialog::updateDisplayUnit()
     ui->customFee->setDisplayUnit(model->getOptionsModel()->getDisplayUnit());
     updateMinFeeLabel();
     updateSmartFeeLabel();
-}
-
-void SendCoinsDialog::updateSwiftTX()
-{
 }
 
 void SendCoinsDialog::processSendCoinsReturn(const WalletModel::SendCoinsReturn& sendCoinsReturn, const QString& msgArg, bool fPrepare)

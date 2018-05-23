@@ -1655,7 +1655,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     strBudgetMode = GetArg("-budgetvotemode", "auto");
 
     nAnonymizeClubAmount = 1;
-    fEnableSwiftTX = false;
     fLiteMode = true;
 
     LogPrintf("fLiteMode %d\n", fLiteMode);
