@@ -846,16 +846,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>&amp;Masternodes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Browse masternodes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+31"/>
         <source>&amp;About Club Core</source>
         <translation type="unfinished"></translation>
@@ -903,16 +893,6 @@
     <message>
         <location line="+13"/>
         <source>Open Wallet &amp;Configuration File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Open &amp;Masternode Configuration File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Open Masternode configuration file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1692,134 +1672,6 @@ Address: %4
     </message>
 </context>
 <context>
-    <name>MasternodeList</name>
-    <message>
-        <location filename="../forms/masternodelist.ui" line="+14"/>
-        <source>Form</source>
-        <translation type="unfinished">Form</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>MASTERNODES</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+101"/>
-        <source>Note: Status of your masternodes in local wallet can potentially be slightly incorrect.&lt;br /&gt;Always wait for wallet to sync additional data and then double check from another node&lt;br /&gt;if your node should be running but you still see &quot;MISSING&quot; in &quot;Status&quot; field.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+71"/>
-        <source>Alias</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Address</source>
-        <translation type="unfinished">Address</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Protocol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Status</source>
-        <translation type="unfinished">Status</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Active</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Last Seen (UTC)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Pubkey</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>S&amp;tart alias</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Start &amp;all</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Start &amp;MISSING</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>&amp;Update status</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Status will be updated automatically in (sec):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../masternodelist.cpp" line="+52"/>
-        <source>Start alias</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+189"/>
-        <source>Confirm masternode start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Are you sure you want to start masternode %1?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Confirm all masternodes start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Are you sure you want to start ALL masternodes?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Command is not available right now</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>You can&apos;t use this command until masternode list is synced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Confirm missing masternodes start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Are you sure you want to start MISSING masternodes?</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MultiSendDialog</name>
     <message>
         <location filename="../forms/multisenddialog.ui" line="+17"/>
@@ -2420,11 +2272,6 @@ Please be patient after clicking import.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Show Masternodes Tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+10"/>
         <source>&amp;Spend unconfirmed change</source>
         <translation>&amp;Spend unconfirmed change</translation>
@@ -2804,7 +2651,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
     <message>
         <location line="+191"/>
         <location line="+19"/>
-        <source>Locked Club or Masternode collaterals. These are excluded from zZZZ minting.</source>
+        <source>Locked Club collaterals. These are excluded from zZZZ minting.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3032,7 +2879,7 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
     </message>
     <message>
         <location line="-644"/>
-        <source>Available for minting are coins which are confirmed and not locked or Masternode collaterals.</source>
+        <source>Available for minting are coins which are confirmed and not locked collaterals.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4057,11 +3904,6 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
         <location line="+79"/>
         <source>Open the Club debug log file from the current data directory. This can take a few seconds for large log files.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-108"/>
-        <source>Number of Masternodes</source>
-        <translation>Number of Masternodes</translation>
     </message>
     <message>
         <location line="+122"/>
@@ -5790,11 +5632,6 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+2"/>
-        <source>Masternode Reward</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Received from</source>
         <translation>Received from</translation>
     </message>
@@ -6000,11 +5837,6 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     <message>
         <location line="+1"/>
         <source>Minted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Masternode Reward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

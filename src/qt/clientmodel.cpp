@@ -33,7 +33,6 @@ ClientModel::ClientModel(OptionsModel* optionsModel, QObject* parent) : QObject(
                                                                         peerTableModel(0),
                                                                         banTableModel(0),
                                                                         cachedNumBlocks(0),
-                                                                        cachedMasternodeCountString(""),
                                                                         cachedReindexing(0), cachedImporting(0),
                                                                         numBlocksAtStartup(-1), pollTimer(0)
 {
@@ -68,11 +67,6 @@ int ClientModel::getNumConnections(unsigned int flags) const
             nNum++;
 
     return nNum;
-}
-
-QString ClientModel::getMasternodeCountString() const
-{
-    return tr("");
 }
 
 int ClientModel::getNumBlocks() const

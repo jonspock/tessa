@@ -31,7 +31,6 @@ class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
-class MasternodeList;
 
 class CWallet;
 
@@ -204,8 +203,6 @@ private slots:
     void gotoHistoryPage();
     /** Switch to Explorer Page */
     void gotoBlockExplorerPage();
-    /** Switch to masternode page */
-    void gotoMasternodePage();
     /** Switch to privacy page */
     void gotoReceiveCoinsPage();
     /** Switch to receive coins page */

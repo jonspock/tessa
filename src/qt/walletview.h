@@ -80,8 +80,6 @@ public slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
-    /** Switch to masternode page */
-    void gotoMasternodePage();
     /** Switch to explorer page */
     void gotoBlockExplorerPage();
     /** Switch to privacy page */

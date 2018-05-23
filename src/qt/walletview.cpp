@@ -244,10 +244,6 @@ void WalletView::gotoBlockExplorerPage()
     setCurrentWidget(explorerWindow);
 }
 
-void WalletView::gotoMasternodePage()
-{
-}
-
 void WalletView::gotoReceiveCoinsPage()
 {
     setCurrentWidget(receiveCoinsPage);

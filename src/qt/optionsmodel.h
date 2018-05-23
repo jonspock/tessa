@@ -50,7 +50,6 @@ public:
         ZeromintPrefDenom,   // int
         HideZeroBalances,    // bool
         AnonymizeClubAmount, //int
-        ShowMasternodesTab,  // bool
         Listen,              // bool
         StakeSplitThreshold, // int
         OptionIDRowCount,
