@@ -103,12 +103,8 @@ std::string to_internal(const std::string&);
 using namespace std;
 
 // Club only features
-int nLiquidityProvider = 0;
 /** Spork enforcement enabled time */
 bool fSucessfullyLoaded = false;
-/** All denominations used by obfuscation */
-std::vector<int64_t> obfuScationDenominations;
-
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
 bool fDebug = false;
@@ -420,7 +416,7 @@ boost::filesystem::path GetDefaultDataDir()
     return pathRet / "Club";
 #else
     // Unix
-    return pathRet / ".cccc";
+    return pathRet / ".club";
 #endif
 #endif
 }

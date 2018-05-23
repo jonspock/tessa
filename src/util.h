@@ -32,13 +32,8 @@
 
 //Club only features
 
-extern int nPreferredDenom;
-extern int nLiquidityProvider;
-extern int64_t enforceMasternodePaymentsTime;
-extern std::string strMasterNodeAddr;
 extern int keysLoaded;
 extern bool fSucessfullyLoaded;
-extern std::vector<int64_t> obfuScationDenominations;
 
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
@@ -111,7 +106,6 @@ bool TryCreateDirectory(const boost::filesystem::path& p);
 boost::filesystem::path GetDefaultDataDir();
 const boost::filesystem::path& GetDataDir(bool fNetSpecific = true);
 boost::filesystem::path GetConfigFile();
-boost::filesystem::path GetMasternodeConfigFile();
 #ifndef WIN32
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path& path, pid_t pid);
