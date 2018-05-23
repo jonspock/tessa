@@ -104,7 +104,6 @@ private slots:
     void on_pushButtonZPivControl_clicked();
     void on_pasteButton_clicked();
     void updateDisplayUnit();
-    void updateAutomintStatus();
     void updateZeroSPORKStatus();
 };
 

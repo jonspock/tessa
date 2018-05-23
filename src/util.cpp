@@ -110,11 +110,6 @@ using namespace std;
 bool fLiteMode = false;
 // SwiftX
 bool fEnableSwiftTX = true;
-// Automatic Zerocoin minting
-bool fEnableZeromint = true;
-int nZeromintPercentage = 10;
-int nPreferredDenom = 0;
-const int64_t AUTOMINT_DELAY = (60 * 5); // Wait at least 5 minutes until Automint starts
 
 int nAnonymizeClubAmount = 1000;
 int nLiquidityProvider = 0;

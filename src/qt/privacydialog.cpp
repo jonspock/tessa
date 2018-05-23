@@ -72,8 +72,6 @@ PrivacyDialog::PrivacyDialog(QWidget* parent) : QDialog(parent),
     ui->labelzDenom7Text->setText(tr("Denom. with value <b>1000</b>:"));
     ui->labelzDenom8Text->setText(tr("Denom. with value <b>5000</b>:"));
 
-    // AutoMint status
-    ui->label_AutoMintStatus->setText(tr("AutoMint Status:"));
 
     // Global Supply labels
     ui->labelZsupplyText1->setText(tr("Denom. <b>1</b>:"));
@@ -132,9 +130,7 @@ void PrivacyDialog::setModel(WalletModel* walletModel)
 
         connect(walletModel, SIGNAL(balanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)), this,
                                SLOT(setBalance(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)));
-        connect(walletModel->getOptionsModel(), SIGNAL(zeromintEnableChanged(bool)), this, SLOT(updateAutomintStatus()));
-        connect(walletModel->getOptionsModel(), SIGNAL(zeromintPercentageChanged(int)), this, SLOT(updateAutomintStatus()));
-        ui->securityLevel->setValue(nSecurityLevel);
+         ui->securityLevel->setValue(nSecurityLevel);
     }
 }
 
@@ -697,10 +693,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
     ui->labelzAvailableAmount_2->setText(QString::number(matureZerocoinBalance/COIN) + QString(" zZZZ "));
     ui->labelZKPAmountValue->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, balance - immatureBalance - nLockedBalance, false, BitcoinUnits::separatorAlways));
 
-    // Display AutoMint status
-    updateAutomintStatus();
-
-    // Update/enable labels and buttons depending on the current SPORK_ZEROCOIN status
+     // Update/enable labels and buttons depending on the current SPORK_ZEROCOIN status
     updateZeroSPORKStatus();
 
     // Display global supply
@@ -765,21 +758,6 @@ void PrivacyDialog::keyPressEvent(QKeyEvent* event)
     } else {
         event->ignore();
     }
-}
-
-void PrivacyDialog::updateAutomintStatus()
-{
-    QString strAutomintStatus = tr("AutoMint Status:");
-
-    if (pwalletMain->isZeromintEnabled ()) {
-       strAutomintStatus += tr(" <b>enabled</b>.");
-    }
-    else {
-       strAutomintStatus += tr(" <b>disabled</b>.");
-    }
-
-    strAutomintStatus += tr(" Configured target percentage: <b>") + QString::number(pwalletMain->getZeromintPercentage()) + "%</b>";
-    ui->label_AutoMintStatus->setText(strAutomintStatus);
 }
 
 void PrivacyDialog::updateZeroSPORKStatus()

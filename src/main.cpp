@@ -2838,10 +2838,6 @@ void static UpdateTip(CBlockIndex* pindexNew)
 {
     chainActive.SetTip(pindexNew);
 
-    // If turned on AutoZeromint will automatically convert GGG to Zkp
-    if (pwalletMain->isZeromintEnabled ())
-        pwalletMain->AutoZeromint ();
-
     // New best block
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);

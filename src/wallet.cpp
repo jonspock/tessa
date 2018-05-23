@@ -3013,12 +3013,6 @@ bool CWallet::GetDestData(const CTxDestination& dest, const std::string& key, st
     return false;
 }
 
-// CWallet::AutoZeromint() gets called with each new incoming block
-void CWallet::AutoZeromint()
-{
-    return;
-}
-
 void CWallet::AutoCombineDust()
 {
     if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300) || IsLocked()) {
