@@ -231,10 +231,10 @@ QT_TRANSLATE_NOOP("club-core", ""
 QT_TRANSLATE_NOOP("club-core", ""
 "Whitelisted peers cannot be DoS banned and their transactions are always "
 "relayed, even if they are already in the mempool, useful e.g. for a gateway"),
-QT_TRANSLATE_NOOP("club-core", "(51472 could be used only on mainnet)"),
+QT_TRANSLATE_NOOP("club-core", "(44444 could be used only on mainnet)"),
 QT_TRANSLATE_NOOP("club-core", "(default: %s)"),
 QT_TRANSLATE_NOOP("club-core", "(default: 1)"),
-QT_TRANSLATE_NOOP("club-core", "(must be 51472 for mainnet)"),
+QT_TRANSLATE_NOOP("club-core", "(must be 44444 for mainnet)"),
 QT_TRANSLATE_NOOP("club-core", "<category> can be:"),
 QT_TRANSLATE_NOOP("club-core", "Accept command line and JSON-RPC commands"),
 QT_TRANSLATE_NOOP("club-core", "Accept connections from outside (default: 1 if no -proxy or -connect)"),
