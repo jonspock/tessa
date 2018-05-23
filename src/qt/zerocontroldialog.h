@@ -1,9 +1,10 @@
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef ZPIVCONTROLDIALOG_H
-#define ZPIVCONTROLDIALOG_H
+#ifndef ZKPCONTROLDIALOG_H
+#define ZKPCONTROLDIALOG_H
 
 #include <QDialog>
 #include <QTreeWidgetItem>
@@ -53,4 +54,4 @@ private slots:
     void ButtonAllClicked();
 };
 
-#endif // ZPIVCONTROLDIALOG_H
+#endif // ZKPCONTROLDIALOG_H

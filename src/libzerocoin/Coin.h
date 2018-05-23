@@ -9,7 +9,8 @@
  * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
  * @license    This project is released under the MIT license.
  **/
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 
 #ifndef COIN_H_
 #define COIN_H_
@@ -93,7 +94,6 @@ class PrivateCoin
 {
 public:
     static int const PRIVATECOIN_VERSION = 1;
-    static int const V2_BITSHIFT = 4;
     template <typename Stream>
     PrivateCoin(const ZerocoinParams* p, Stream& strm) : params(p), publicCoin(p)
     {

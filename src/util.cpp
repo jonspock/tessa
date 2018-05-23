@@ -1,7 +1,8 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2018 The XIVP developers
+// Copyright (c) 2015-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -115,7 +116,7 @@ int nZeromintPercentage = 10;
 int nPreferredDenom = 0;
 const int64_t AUTOMINT_DELAY = (60 * 5); // Wait at least 5 minutes until Automint starts
 
-int nAnonymizePivxAmount = 1000;
+int nAnonymizeClubAmount = 1000;
 int nLiquidityProvider = 0;
 /** Spork enforcement enabled time */
 bool fSucessfullyLoaded = false;
@@ -231,8 +232,8 @@ bool LogAcceptCategory(const char* category)
             const vector<string>& categories = mapMultiArgs["-debug"];
             ptrCategory.reset(new set<string>(categories.begin(), categories.end()));
             // thread_specific_ptr automatically deletes the set when the thread ends.
-            // "pivx" is a composite category enabling all Club-related debug output
-            if (ptrCategory->count(string("pivx"))) {
+            // "club" is a composite category enabling all Club-related debug output
+            if (ptrCategory->count(string("club"))) {
                 ptrCategory->insert(string("zero"));
             }
         }
@@ -392,7 +393,7 @@ static std::string FormatException(std::exception* pex, const char* pszThread)
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "pivx";
+    const char* pszModule = "club";
 #endif
     if (pex)
         return strprintf(
@@ -416,7 +417,7 @@ boost::filesystem::path GetDefaultDataDir()
 // Windows < Vista: C:\Documents and Settings\Username\Application Data\Club
 // Windows >= Vista: C:\Users\Username\AppData\Roaming\Club
 // Mac: ~/Library/Application Support/Club
-// Unix: ~/.pivx
+// Unix: ~/.club
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Club";
@@ -519,7 +520,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 #ifndef WIN32
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "pivxd.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "clubd.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }

@@ -1,5 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2017 The XIVP developers
+// Copyright (c) 2017 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -54,7 +55,7 @@ private:
     Qt::SortOrder order;
 };
 
-/** Model for list of recently generated payment requests / pivx: URIs.
+/** Model for list of recently generated payment requests / club: URIs.
  * Part of wallet model.
  */
 class RecentRequestsTableModel : public QAbstractTableModel

@@ -1,4 +1,5 @@
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -65,8 +66,8 @@ bool CheckBlockSignature(const CBlock& block)
      *  UTXO: The public key that signs must match the public key associated with the first utxo of the coinstake tx.
      */
     CPubKey pubkey;
-    bool fzPIVStake = block.vtx[1].IsZerocoinSpend();
-    if (fzPIVStake) {
+    bool fZkpStake = block.vtx[1].IsZerocoinSpend();
+    if (fZkpStake) {
         /// XXX remove later
         return true;
     } else {

@@ -172,7 +172,7 @@
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_3">
                         <item>
-                         <widget class="QLabel" name="labelzPIVActions">
+                         <widget class="QLabel" name="labelZKPActions">
                           <property name="font">
                            <font>
                             <pointsize>12</pointsize>
@@ -189,7 +189,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="labelzPIVSyncStatus">
+                         <widget class="QLabel" name="labelZKPSyncStatus">
                           <property name="toolTip">
                            <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Club network after a connection is established, but this process has not completed yet.</string>
                           </property>
@@ -244,7 +244,7 @@
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_4">
                         <item>
-                         <widget class="QPushButton" name="pushButtonMintzPIV">
+                         <widget class="QPushButton" name="pushButtonMintZKP">
                           <property name="minimumSize">
                            <size>
                             <width>131</width>
@@ -252,7 +252,7 @@
                            </size>
                           </property>
                           <property name="toolTip">
-                           <string>Enter an amount of Piv to convert to zPIV</string>
+                           <string>Enter an amount of Piv to convert to ZKP</string>
                           </property>
                           <property name="text">
                            <string>Mint Zerocoin</string>
@@ -276,14 +276,14 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="labelzPIV_2">
+                         <widget class="QLabel" name="labelZKP_2">
                           <property name="text">
-                           <string>zPIV</string>
+                           <string>ZKP</string>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="labelzPIVAmountText">
+                         <widget class="QLabel" name="labelZKPAmountText">
                           <property name="toolTip">
                            <string>Available for minting are coins which are confirmed and not locked or Masternode collaterals.</string>
                           </property>
@@ -296,7 +296,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="labelzPIVAmountValue">
+                         <widget class="QLabel" name="labelZKPAmountValue">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -304,10 +304,10 @@
                            </font>
                           </property>
                           <property name="toolTip">
-                           <string>Enter an amount of Piv to convert to zPIV</string>
+                           <string>Enter an amount of Piv to convert to ZKP</string>
                           </property>
                           <property name="text">
-                           <string>0.000 000 00 PIV</string>
+                           <string>0.000 000 00 Club</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -483,7 +483,7 @@
                              <enum>Qt::ActionsContextMenu</enum>
                             </property>
                             <property name="text">
-                             <string notr="true">0.00 PIV</string>
+                             <string notr="true">0.00 Club</string>
                             </property>
                             <property name="textInteractionFlags">
                              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -605,14 +605,14 @@
                         <item>
                          <widget class="QPushButton" name="pushButtonZPivControl">
                           <property name="text">
-                           <string>zPIV Control</string>
+                           <string>ZKP Control</string>
                           </property>
                          </widget>
                         </item>
                         <item>
                          <widget class="QLabel" name="labelzPivSelected">
                           <property name="text">
-                           <string>zPIV Selected:</string>
+                           <string>ZKP Selected:</string>
                           </property>
                          </widget>
                         </item>
@@ -671,7 +671,7 @@
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_6">
                         <item>
-                         <widget class="QPushButton" name="pushButtonSpendzPIV">
+                         <widget class="QPushButton" name="pushButtonSpendZKP">
                           <property name="minimumSize">
                            <size>
                             <width>131</width>
@@ -687,7 +687,7 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="labelzPIVBalanceText">
+                         <widget class="QLabel" name="labelZKPBalanceText">
                           <property name="toolTip">
                            <string>Available (mature and spendable) zZZZ for spending</string>
                           </property>
@@ -710,10 +710,10 @@
                           <property name="toolTip">
                            <string>Available (mature and spendable) zZZZ for spending
 
-zPIV are mature when they have more than 20 confirmations AND more than 2 mints of the same denomination after them were minted</string>
+ZKP are mature when they have more than 20 confirmations AND more than 2 mints of the same denomination after them were minted</string>
                           </property>
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -908,7 +908,7 @@ zPIV are mature when they have more than 20 confirmations AND more than 2 mints 
                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                           </property>
                           <property name="buddy">
-                           <cstring>zPIVpayAmount</cstring>
+                           <cstring>ZKPpayAmount</cstring>
                           </property>
                          </widget>
                         </item>
@@ -918,10 +918,10 @@ zPIV are mature when they have more than 20 confirmations AND more than 2 mints 
                            <number>0</number>
                           </property>
                           <item>
-                           <widget class="QLineEdit" name="zPIVpayAmount"/>
+                           <widget class="QLineEdit" name="ZKPpayAmount"/>
                           </item>
                           <item>
-                           <widget class="QLabel" name="labelzPIV">
+                           <widget class="QLabel" name="labelZKP">
                             <property name="minimumSize">
                              <size>
                               <width>55</width>
@@ -929,7 +929,7 @@ zPIV are mature when they have more than 20 confirmations AND more than 2 mints 
                              </size>
                             </property>
                             <property name="text">
-                             <string>zPIV</string>
+                             <string>ZKP</string>
                             </property>
                             <property name="alignment">
                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1013,7 +1013,7 @@ zPIV are mature when they have more than 20 confirmations AND more than 2 mints 
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_21">
                         <item>
-                         <widget class="QLabel" name="labelzPIVStats">
+                         <widget class="QLabel" name="labelZKPStats">
                           <property name="font">
                            <font>
                             <pointsize>12</pointsize>
@@ -1093,7 +1093,7 @@ zPIV are mature when they have more than 20 confirmations AND more than 2 mints 
                            </font>
                           </property>
                           <property name="toolTip">
-                           <string>Total Balance including unconfirmed and immature zPIV</string>
+                           <string>Total Balance including unconfirmed and immature ZKP</string>
                           </property>
                           <property name="text">
                            <string>Total Zerocoin  Balance:</string>
@@ -1131,10 +1131,10 @@ zPIV are mature when they have more than 20 confirmations AND more than 2 mints 
                            </font>
                           </property>
                           <property name="toolTip">
-                           <string>Total Balance including unconfirmed and immature zPIV</string>
+                           <string>Total Balance including unconfirmed and immature ZKP</string>
                           </property>
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1598,7 +1598,7 @@ To change the status (restart required):
 - disable: add 'enablezeromint=0' to pivx.conf
 
 To change the percentage (no restart required):
-- menu Settings-&gt;Options-&gt;Percentage of autominted zPIV
+- menu Settings-&gt;Options-&gt;Percentage of autominted ZKP
 
 </string>
                           </property>
@@ -1678,7 +1678,7 @@ To change the percentage (no restart required):
                            </font>
                           </property>
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -1709,7 +1709,7 @@ To change the percentage (no restart required):
                         <item>
                          <widget class="QLabel" name="labelZsupplyAmount1">
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -1740,7 +1740,7 @@ To change the percentage (no restart required):
                         <item>
                          <widget class="QLabel" name="labelZsupplyAmount5">
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -1771,7 +1771,7 @@ To change the percentage (no restart required):
                         <item>
                          <widget class="QLabel" name="labelZsupplyAmount10">
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -1802,7 +1802,7 @@ To change the percentage (no restart required):
                         <item>
                          <widget class="QLabel" name="labelZsupplyAmount50">
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -1833,7 +1833,7 @@ To change the percentage (no restart required):
                         <item>
                          <widget class="QLabel" name="labelZsupplyAmount100">
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -1864,7 +1864,7 @@ To change the percentage (no restart required):
                         <item>
                          <widget class="QLabel" name="labelZsupplyAmount500">
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -1895,7 +1895,7 @@ To change the percentage (no restart required):
                         <item>
                          <widget class="QLabel" name="labelZsupplyAmount1000">
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -1926,7 +1926,7 @@ To change the percentage (no restart required):
                         <item>
                          <widget class="QLabel" name="labelZsupplyAmount5000">
                           <property name="text">
-                           <string>0 zPIV</string>
+                           <string>0 ZKP</string>
                           </property>
                          </widget>
                         </item>
@@ -2056,7 +2056,7 @@ To change the percentage (no restart required):
          <enum>Qt::ActionsContextMenu</enum>
         </property>
         <property name="text">
-         <string notr="true">0.000 000 00 PIV</string>
+         <string notr="true">0.000 000 00 Club</string>
         </property>
         <property name="textInteractionFlags">
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -2138,7 +2138,7 @@ To change the percentage (no restart required):
            <enum>Qt::ActionsContextMenu</enum>
           </property>
           <property name="text">
-           <string notr="true">0.00 PIV</string>
+           <string notr="true">0.00 Club</string>
           </property>
           <property name="textInteractionFlags">
            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -2360,7 +2360,7 @@ To change the percentage (no restart required):
          <enum>Qt::ActionsContextMenu</enum>
         </property>
         <property name="text">
-         <string notr="true">0.000 000 00 PIV</string>
+         <string notr="true">0.000 000 00 Club</string>
         </property>
         <property name="textInteractionFlags">
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>

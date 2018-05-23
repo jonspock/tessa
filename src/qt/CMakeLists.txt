@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 SET(PROJECT_NAME_SHORT   "ClubQt")
 SET(PROJECT_NAME_LONG    "CMake Club Qt project")
 SET(PROJECT_DESCRIPTION  "CMake build system template for Qt based projects")
-SET(PROJECT_COPYRIGHT    "Copyright (C) 2017 Club Developers")
+SET(PROJECT_COPYRIGHT    "Copyright (C) 2018 ClubChain Developers")
 SET(PROJECT_CONTACT      "jonspock@protonmail.com")
 SET(PROJECT_VENDOR       "Jon Spock")
 SET(ORG_WEBSITE          "http://Clubchain.org")
@@ -109,7 +109,6 @@ set(GUI_FORMS
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/intro.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/multisenddialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/multisigdialog.ui
-  ${CMAKE_CURRENT_SOURCE_DIR}/forms/obfuscationconfig.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/privacydialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/openuridialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/optionsdialog.ui
@@ -214,41 +213,8 @@ set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
 SET(QT_TRANSLATIONS_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_bg.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ca.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_cs.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_da.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_de.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_en.ts
 	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_en_US.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_es.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_es_ES.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_fi.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_fr_FR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_hi_IN.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_hr.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_hr_HR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_it.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ja.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ko_KR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_nl.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_pl.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_pt.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_pt_BR.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ro_RO.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_ru.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_sk.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_sv.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_tr.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_uk.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_vi.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_zh_CN.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_zh_TW.ts
-
-
-  ${CMAKE_CURRENT_SOURCE_DIR}/locale/club_hr_HR.ts
-  ${CMAKE_CURRENT_SOURCE_DIR}/locale/club_lt_LT.ts
-  
 	)
 
 get_filename_component(QM_FILES_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/locale" ABSOLUTE)

@@ -1,5 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -102,7 +103,7 @@ public slots:
     void showPeers();
     /** Switch to wallet-repair tab and show */
     void showRepair();
-    /** Open external (default) editor with pivx.conf */
+    /** Open external (default) editor with club.conf */
     void showConfEditor();
     /** Handle selection of peer in peers list */
     void peerSelected(const QItemSelection& selected, const QItemSelection& deselected);

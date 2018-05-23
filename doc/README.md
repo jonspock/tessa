@@ -3,7 +3,7 @@ Club Core
 
 Setup
 ---------------------
-[Club Core](http://pivx.org/wallet) is the original Club client and it builds the backbone of the network. However, it downloads and stores the entire history of Club transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
+[Club Core](http://club.org/wallet) is the original Club client and it builds the backbone of the network. However, it downloads and stores the entire history of Club transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
 
 Running
 ---------------------
@@ -13,12 +13,12 @@ The following are some helpful notes on how to run Club on your native platform.
 
 Unpack the files into a directory and run:
 
-- bin/32/pivx-qt (GUI, 32-bit) or bin/32/pivxd (headless, 32-bit)
-- bin/64/pivx-qt (GUI, 64-bit) or bin/64/pivxd (headless, 64-bit)
+- bin/32/club-qt (GUI, 32-bit) or bin/32/clubd (headless, 32-bit)
+- bin/64/club-qt (GUI, 64-bit) or bin/64/clubd (headless, 64-bit)
 
 ### Windows
 
-Unpack the files into a directory, and then run pivx-qt.exe.
+Unpack the files into a directory, and then run club-qt.exe.
 
 ### OSX
 
@@ -28,9 +28,9 @@ Drag Club-Qt to your applications folder, and then run Club-Qt.
 
 * See the documentation at the [Club Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO***
 for help and more information.
-* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [Club Forum](http://forum.pivx.org/).
-* Join our Discord server [Discord Server](https://discord.pivx.org)
-* Join one of our Slack groups [Club Slack Groups](https://pivx.org/slack-logins/) (Main community is replaced by Discord).
+* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [Club Forum](http://forum.club.org/).
+* Join our Discord server [Discord Server](https://discord.club.org)
+* Join one of our Slack groups [Club Slack Groups](https://club.org/slack-logins/) (Main community is replaced by Discord).
 
 Building
 ---------------------
@@ -42,7 +42,7 @@ The following are developer notes on how to build Club on your native platform. 
 
 Development
 ---------------------
-The Pivx repo's [root README](https://github.com/Club-Project/Club/blob/master/README.md) contains relevant information on the development process and automated testing.
+The Club repo's [root README](https://github.com/Club-Project/Club/blob/master/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Multiwallet Qt Development](multiwallet-qt.md)
@@ -56,8 +56,8 @@ The Pivx repo's [root README](https://github.com/Club-Project/Club/blob/master/R
 
 ### Resources
 
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [Club](http://forum.pivx.org/) forum.
-* Join the [Club-Dev](https://pivx-dev.slack.com/) Slack group ([Sign-Up](https://pivx-dev.herokuapp.com/)).
+* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [Club](http://forum.club.org/) forum.
+* Join the [Club-Dev](https://club-dev.slack.com/) Slack group ([Sign-Up](https://club-dev.herokuapp.com/)).
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

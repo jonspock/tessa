@@ -1,4 +1,5 @@
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -76,7 +77,7 @@ private:
 
     int nDisplayUnit;
     bool updateLabel(const QString& address);
-    void sendzPIV();
+    void sendZKP();
 
 private slots:
     void on_payTo_textChanged(const QString& address);
@@ -96,10 +97,10 @@ private slots:
 //    void coinControlClipboardLowOutput();
 //    void coinControlClipboardChange();
 
-    void on_pushButtonMintzPIV_clicked();
+    void on_pushButtonMintZKP_clicked();
     void on_pushButtonMintReset_clicked();
     void on_pushButtonSpentReset_clicked();
-    void on_pushButtonSpendzPIV_clicked();
+    void on_pushButtonSpendZKP_clicked();
     void on_pushButtonZPivControl_clicked();
     void on_pasteButton_clicked();
     void updateDisplayUnit();

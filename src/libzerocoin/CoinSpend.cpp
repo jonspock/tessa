@@ -9,7 +9,8 @@
  * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
  * @license    This project is released under the MIT license.
  **/
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 
 #include "CoinSpend.h"
 #include <iostream>
@@ -106,10 +107,7 @@ const uint256 CoinSpend::signatureHash() const
 {
     CHashWriter h(0, 0);
     h << serialCommitmentToCoinValue << accCommitmentToCoinValue << commitmentPoK << accumulatorPoK << ptxHash
-      << coinSerialNumber << accChecksum << denomination;
-
-   // if (version >= PrivateCoin::PUBKEY_VERSION)
-        h << spendType;
+      << coinSerialNumber << accChecksum << denomination << spendType;
 
     return h.GetHash();
 }
@@ -130,8 +128,8 @@ bool CoinSpend::HasValidSerial(ZerocoinParams* params) const
 bool CoinSpend::HasValidSignature() const
 {
     //V2 serial requires that the signature hash be signed by the public key associated with the serial
-    uint256 hashedPubkey = Hash(pubkey.begin(), pubkey.end()) >> PrivateCoin::V2_BITSHIFT;
-    if (hashedPubkey != GetAdjustedSerial(coinSerialNumber).getuint256()) {
+    uint256 hashedPubkey = Hash(pubkey.begin(), pubkey.end());
+    if (hashedPubkey != coinSerialNumber.getuint256()) {
         //cout << "CoinSpend::HasValidSignature() hashedpubkey is not equal to the serial!\n";
         return false;
     }
@@ -141,8 +139,7 @@ bool CoinSpend::HasValidSignature() const
 
 CBigNum CoinSpend::CalculateValidSerial(ZerocoinParams* params)
 {
-    CBigNum bnSerial = coinSerialNumber;
-    bnSerial = bnSerial.mul_mod(CBigNum(1),params->coinCommitmentGroup.groupOrder);
+    CBigNum bnSerial = coinSerialNumber % params->coinCommitmentGroup.groupOrder;
     return bnSerial;
 }
 

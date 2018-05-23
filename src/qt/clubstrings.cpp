@@ -8,7 +8,7 @@
 #else
 #define UNUSED
 #endif
-static const char UNUSED *pivx_strings[] = {
+static const char UNUSED *club_strings[] = {
 QT_TRANSLATE_NOOP("club-core", " mints deleted\n"),
 QT_TRANSLATE_NOOP("club-core", " mints updated, "),
 QT_TRANSLATE_NOOP("club-core", " unconfirmed transactions removed\n"),
@@ -99,10 +99,10 @@ QT_TRANSLATE_NOOP("club-core", ""
 QT_TRANSLATE_NOOP("club-core", ""
 "Failed to find coin set amongst held coins with less than maxNumber of Spends"),
 QT_TRANSLATE_NOOP("club-core", ""
-"Fees (in PIV/Kb) smaller than this are considered zero fee for relaying "
+"Fees (in Club/Kb) smaller than this are considered zero fee for relaying "
 "(default: %s)"),
 QT_TRANSLATE_NOOP("club-core", ""
-"Fees (in PIV/Kb) smaller than this are considered zero fee for transaction "
+"Fees (in Club/Kb) smaller than this are considered zero fee for transaction "
 "creation (default: %s)"),
 QT_TRANSLATE_NOOP("club-core", ""
 "Flush database activity from memory pool to disk log every <n> megabytes "
@@ -196,10 +196,10 @@ QT_TRANSLATE_NOOP("club-core", ""
 "Unable to locate enough Obfuscation denominated funds for this transaction."),
 QT_TRANSLATE_NOOP("club-core", ""
 "Unable to locate enough Obfuscation non-denominated funds for this "
-"transaction that are not equal 10000 PIV."),
+"transaction that are not equal 10000 Club."),
 QT_TRANSLATE_NOOP("club-core", ""
 "Unable to locate enough funds for this transaction that are not equal 10000 "
-"PIV."),
+"Club."),
 QT_TRANSLATE_NOOP("club-core", ""
 "Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: "
 "%s)"),
@@ -311,7 +311,7 @@ QT_TRANSLATE_NOOP("club-core", "Failed to read block"),
 QT_TRANSLATE_NOOP("club-core", "Failed to select a zerocoin"),
 QT_TRANSLATE_NOOP("club-core", "Failed to wipe zerocoinDB"),
 QT_TRANSLATE_NOOP("club-core", "Failed to write coin serial number into wallet"),
-QT_TRANSLATE_NOOP("club-core", "Fee (in PIV/kB) to add to transactions you send (default: %s)"),
+QT_TRANSLATE_NOOP("club-core", "Fee (in Club/kB) to add to transactions you send (default: %s)"),
 QT_TRANSLATE_NOOP("club-core", "Finalizing transaction."),
 QT_TRANSLATE_NOOP("club-core", "Force safe mode (default: %u)"),
 QT_TRANSLATE_NOOP("club-core", "Found enough users, signing ( waiting %s )"),
@@ -469,7 +469,7 @@ QT_TRANSLATE_NOOP("club-core", "Use UPnP to map the listening port (default: 1 w
 QT_TRANSLATE_NOOP("club-core", "Use a custom max chain reorganization depth (default: %u)"),
 QT_TRANSLATE_NOOP("club-core", "Use the test network"),
 QT_TRANSLATE_NOOP("club-core", "Username for JSON-RPC connections"),
-QT_TRANSLATE_NOOP("club-core", "Value is below the smallest available denomination (= 1) of zPIV"),
+QT_TRANSLATE_NOOP("club-core", "Value is below the smallest available denomination (= 1) of zero"),
 QT_TRANSLATE_NOOP("club-core", "Value more than Obfuscation pool maximum allows."),
 QT_TRANSLATE_NOOP("club-core", "Verifying blocks..."),
 QT_TRANSLATE_NOOP("club-core", "Verifying wallet..."),

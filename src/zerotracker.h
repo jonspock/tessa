@@ -1,16 +1,17 @@
-// Copyright (c) 2018 The XIVP developers
+// Copyright (c) 2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_ZPIVTRACKER_H
-#define Club_ZPIVTRACKER_H
+#ifndef Club_ZKPTRACKER_H
+#define Club_ZKPTRACKER_H
 
 #include "primitives/zerocoin.h"
 #include <list>
 
 class CDeterministicMint;
 
-class CzPIVTracker
+class CZkpTracker
 {
 private:
     bool fInitialized;
@@ -19,8 +20,8 @@ private:
     std::map<uint256, uint256> mapPendingSpends; //serialhash, txid of spend
     bool UpdateStatusInternal(const std::set<uint256>& setMempool, CMintMeta& mint);
 public:
-    CzPIVTracker(std::string strWalletFile);
-    ~CzPIVTracker();
+    CZkpTracker(std::string strWalletFile);
+    ~CZkpTracker();
     void Add(const CDeterministicMint& dMint, bool isNew = false, bool isArchived = false);
     void Add(const CZerocoinMint& mint, bool isNew = false, bool isArchived = false);
     bool Archive(CMintMeta& meta);
@@ -48,4 +49,4 @@ public:
     void Clear();
 };
 
-#endif //Club_ZPIVTRACKER_H
+#endif //Club_ZKPTRACKER_H

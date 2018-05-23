@@ -1,35 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/translations">
-        <file alias="bg">locale/club_bg.qm</file>
-        <file alias="ca">locale/club_ca.qm</file>
-        <file alias="cs">locale/club_cs.qm</file>
-        <file alias="da">locale/club_da.qm</file>
-        <file alias="de">locale/club_de.qm</file>
         <file alias="en">locale/club_en.qm</file>
         <file alias="en_US">locale/club_en_US.qm</file>
-        <file alias="es">locale/club_es.qm</file>
-        <file alias="es_ES">locale/club_es_ES.qm</file>
-        <file alias="fi">locale/club_fi.qm</file>
-        <file alias="fr_FR">locale/club_fr_FR.qm</file>
-        <file alias="hi_IN">locale/club_hi_IN.qm</file>
-        <file alias="hr">locale/club_hr.qm</file>
-        <file alias="hr_HR">locale/club_hr_HR.qm</file>
-        <file alias="it">locale/club_it.qm</file>
-        <file alias="ja">locale/club_ja.qm</file>
-        <file alias="ko_KR">locale/club_ko_KR.qm</file>
-        <file alias="lt_LT">locale/club_lt_LT.qm</file>
-        <file alias="nl">locale/club_nl.qm</file>
-        <file alias="pl">locale/club_pl.qm</file>
-        <file alias="pt">locale/club_pt.qm</file>
-        <file alias="pt_BR">locale/club_pt_BR.qm</file>
-        <file alias="ro_RO">locale/club_ro_RO.qm</file>
-        <file alias="ru">locale/club_ru.qm</file>
-        <file alias="sk">locale/club_sk.qm</file>
-        <file alias="sv">locale/club_sv.qm</file>
-        <file alias="tr">locale/club_tr.qm</file>
-        <file alias="uk">locale/club_uk.qm</file>
-        <file alias="vi">locale/club_vi.qm</file>
-        <file alias="zh_CN">locale/club_zh_CN.qm</file>
-        <file alias="zh_TW">locale/club_zh_TW.qm</file>
     </qresource>
 </RCC>

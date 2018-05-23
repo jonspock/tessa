@@ -59,7 +59,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="labelZPiv">
          <property name="text">
-          <string>zPIV</string>
+          <string>ZKP</string>
          </property>
         </widget>
        </item>
@@ -157,12 +157,12 @@
        </column>
        <column>
         <property name="text">
-         <string notr="true">zPIV ID</string>
+         <string notr="true">ZKP ID</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string notr="true">zPIV Version</string>
+         <string notr="true">ZKP Version</string>
         </property>
        </column>
        <column>

@@ -1,9 +1,10 @@
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_ZPIVWALLET_H
-#define Club_ZPIVWALLET_H
+#ifndef Club_ZKPWALLET_H
+#define Club_ZKPWALLET_H
 
 #include <map>
 #include "libzerocoin/Coin.h"
@@ -13,7 +14,7 @@
 
 class CDeterministicMint;
 
-class CzPIVWallet
+class CZkpWallet
 {
 private:
     uint256 seedMaster;
@@ -22,13 +23,13 @@ private:
     CMintPool mintPool;
 
 public:
-    CzPIVWallet(std::string strWalletFile);
+    CZkpWallet(std::string strWalletFile);
 
     void AddToMintPool(const std::pair<uint256, uint32_t>& pMint, bool fVerbose);
     bool SetMasterSeed(const uint256& seedMaster, bool fResetCount = false);
     uint256 GetMasterSeed() { return seedMaster; }
     void SyncWithChain(bool fGenerateMintPool = true);
-    void GenerateDeterministicZPIV(libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin, CDeterministicMint& dMint, bool fGenerateOnly = false);
+    void GenerateDeterministicZKP(libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin, CDeterministicMint& dMint, bool fGenerateOnly = false);
     void GenerateMint(const uint32_t& nCount, const libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin, CDeterministicMint& dMint);
     void GetState(int& nCount, int& nLastGenerated);
     bool RegenerateMint(const CDeterministicMint& dMint, CZerocoinMint& mint);
@@ -39,10 +40,10 @@ public:
     bool IsInMintPool(const CBigNum& bnValue) { return mintPool.Has(bnValue); }
     void UpdateCount();
     void Lock();
-    void SeedToZPIV(const uint512& seed, CBigNum& bnValue, CBigNum& bnSerial, CBigNum& bnRandomness, CKey& key);
+    void SeedToZKP(const uint512& seed, CBigNum& bnValue, CBigNum& bnSerial, CBigNum& bnRandomness, CKey& key);
 
 private:
     uint512 GetZerocoinSeed(uint32_t n);
 };
 
-#endif //Club_ZPIVWALLET_H
+#endif //Club_ZKPWALLET_H

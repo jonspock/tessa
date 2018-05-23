@@ -1,8 +1,8 @@
 #pragma once
 
 class CWallet;
-class CzPIVWallet;
+class CZkpWallet;
 
 extern CWallet* pwalletMain;
-extern CzPIVWallet* zwalletMain;
+extern CZkpWallet* zwalletMain;
 

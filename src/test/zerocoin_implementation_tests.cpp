@@ -1,4 +1,5 @@
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,7 +16,7 @@
 #include <iostream>
 #include <accumulators.h>
 #include "wallet.h"
-#include "zpivwallet.h"
+#include "zkpwallet.h"
 
 using namespace libzerocoin;
 
@@ -482,7 +483,7 @@ BOOST_AUTO_TEST_CASE(deterministic_tests)
     CWalletDB walletdb(strWalletFile, "cr+");
 
     CWallet wallet(strWalletFile);
-    CzPIVWallet zWallet(wallet.strWalletFile);
+    CZKPWallet zWallet(wallet.strWalletFile);
     zWallet.SetMasterSeed(seedMaster);
     wallet.setZWallet(&zWallet);
 
@@ -494,7 +495,7 @@ BOOST_AUTO_TEST_CASE(deterministic_tests)
     for (int i = 0; i < nTests; i++) {
         PrivateCoin coin(Params().Zerocoin_Params(false), denom, false);
         CDeterministicMint dMint;
-        zWallet.GenerateDeterministicZPIV(denom, coin, dMint);
+        zWallet.GenerateDeterministicZKP(denom, coin, dMint);
         vCoins.emplace_back(coin);
     }
 

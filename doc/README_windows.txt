@@ -11,7 +11,7 @@ with each other, with the help of a P2P network to check for double-spending.
 
 Setup
 -----
-Unpack the files into a directory and run pivx-qt.exe.
+Unpack the files into a directory and run club-qt.exe.
 
 Club Core is the original Club client and it builds the backbone of the network.
 However, it downloads and stores the entire history of Club transactions;

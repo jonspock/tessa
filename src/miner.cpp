@@ -1,7 +1,8 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2018 The XIVP developers
+// Copyright (c) 2015-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -210,8 +211,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                     nTotalIn = tx.GetZerocoinSpent();
 
                     //Give a high priority to zerocoinspends to get into the next block
-                    //Priority = (age^6+100000)*amount - gives higher priority to zpivs that have been in mempool long
-                    //and higher priority to zpivs that are large in value
+                    //Priority = (age^6+100000)*amount - gives higher priority to zkps that have been in mempool long
+                    //and higher priority to zkps that are large in value
                     int64_t nTimeSeen = GetAdjustedTime();
                     double nConfs = 100000;
 
@@ -547,7 +548,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     // Process this block the same as if we had received it from another node
     CValidationState state;
     if (!ProcessNewBlock(state, NULL, pblock)) {
-        //if (pblock->IsZerocoinStake()) pwalletMain->zpivTracker->RemovePending(pblock->vtx[1].GetHash());
+        //if (pblock->IsZerocoinStake()) pwalletMain->zkpTracker->RemovePending(pblock->vtx[1].GetHash());
         return error("ClubMiner : ProcessNewBlock, block not accepted");
     }
 
@@ -568,7 +569,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
     LogPrintf("ClubMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("pivx-miner");
+    RenameThread("club-miner");
 
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);

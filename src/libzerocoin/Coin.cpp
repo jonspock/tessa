@@ -9,7 +9,8 @@
  * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
  * @license    This project is released under the MIT license.
  **/
-// Copyright (c) 2017-2018 The XIVP developers
+// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2081 The ClubChain developers
 
 #include <stdexcept>
 #include <iostream>
@@ -125,19 +126,11 @@ bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey&
     CPubKey pubKey = keyPair.GetPubKey();
     uint256 hashPubKey = Hash(pubKey.begin(), pubKey.end());
 
-    // Make the first half byte 0 which will distinctly mark v2 serials
-    hashPubKey >>= libzerocoin::PrivateCoin::V2_BITSHIFT;
 
     CBigNum s(hashPubKey);
-    uint256 nBits = hashPubKey >> 248; // must be less than 0x0D to be valid serial range
+    uint256 nBits = hashPubKey >> 252; // must be less than 0x0D to be valid serial range
     if (nBits > 12)
         return false;
-
-    //Mark this as v2 by starting with 0xF
-    uint256 nMark = 0xF;
-    nMark <<= 252;
-    hashPubKey |= nMark;
-    s = CBigNum(hashPubKey);
 
     key = keyPair;
     bnSerial = s;
@@ -254,17 +247,12 @@ void PrivateCoin::mintCoinFast(const CoinDenomination denomination) {
 
 int ExtractVersionFromSerial(const CBigNum& bnSerial)
 {
-	//Serial is marked as v2 only if the first byte is 0xF
-	uint256 nMark = bnSerial.getuint256() >> (256 - PrivateCoin::V2_BITSHIFT);
-	if (nMark == 0xf) return 1;
 	return 1;
 }
 
-//Remove the first four bits for V2 serials
 CBigNum GetAdjustedSerial(const CBigNum& bnSerial)
 {
     uint256 serial = bnSerial.getuint256();
-    serial &= ~uint256(0) >> PrivateCoin::V2_BITSHIFT;
     CBigNum bnSerialAdjusted;
     bnSerialAdjusted.setuint256(serial);
     return bnSerialAdjusted;
@@ -276,11 +264,7 @@ bool IsValidSerial(const ZerocoinParams* params, const CBigNum& bnSerial)
     if (bnSerial <= 0)
         return false;
 
-    //    return bnSerial < params->coinCommitmentGroup.groupOrder;
-
-    //If V2, the serial is marked with 0xF in the first 4 bits. This is removed for the actual serial.
-    CBigNum bnAdjustedSerial = GetAdjustedSerial(bnSerial);
-    return bnAdjustedSerial > 0 && bnAdjustedSerial < params->coinCommitmentGroup.groupOrder;
+    return bnSerial < params->coinCommitmentGroup.groupOrder;
 }
 
 } /* namespace libzerocoin */
