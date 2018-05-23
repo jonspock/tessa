@@ -1651,15 +1651,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
             MilliSleep(10);
     }
 
-    //get the mode of budget voting for this masternode
-    strBudgetMode = GetArg("-budgetvotemode", "auto");
-
-    nAnonymizeClubAmount = 1;
-    fLiteMode = true;
-
-    LogPrintf("fLiteMode %d\n", fLiteMode);
-    LogPrintf("Anonymize Club Amount %d\n", nAnonymizeClubAmount);
-
     // ********************************************************* Step 11: start node
 
     if (!CheckDiskSpace())

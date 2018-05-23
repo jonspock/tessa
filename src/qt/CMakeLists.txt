@@ -167,7 +167,6 @@ SET(QT_FILES
 	zerocontroldialog.cpp
 	coincontroltreewidget.cpp
   privacydialog.cpp
-	obfuscationconfig.cpp
 	editaddressdialog.cpp
 	openuridialog.cpp
 	overviewpage.cpp

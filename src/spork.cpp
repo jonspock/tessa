@@ -60,7 +60,7 @@ void LoadSporksFromDB()
 
 void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (fLiteMode) return; //disable all obfuscation/masternode related functionality
+    //    if (fLiteMode) return 0;
     if (strCommand == "spork") {
         //LogPrintf("ProcessSpork::spork\n");
         CDataStream vMsg(vRecv);

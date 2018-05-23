@@ -1347,7 +1347,7 @@ CAmount CWallet::GetUnconfirmedZerocoinBalance() const
 
 CAmount CWallet::GetUnlockedCoins() const
 {
-    if (fLiteMode) return 0;
+//    if (fLiteMode) return 0;
 
     CAmount nTotal = 0;
     {
@@ -1365,7 +1365,7 @@ CAmount CWallet::GetUnlockedCoins() const
 
 CAmount CWallet::GetLockedCoins() const
 {
-    if (fLiteMode) return 0;
+//    if (fLiteMode) return 0;
 
     CAmount nTotal = 0;
     {

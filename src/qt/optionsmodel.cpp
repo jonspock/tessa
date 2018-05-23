@@ -77,11 +77,6 @@ void OptionsModel::Init()
         settings.setValue("fCoinControlFeatures", false);
     fCoinControlFeatures = settings.value("fCoinControlFeatures", false).toBool();
 
-    if (!settings.contains("nAnonymizeClubAmount"))
-        settings.setValue("nAnonymizeClubAmount", 1000);
-
-    nAnonymizeClubAmount = settings.value("nAnonymizeClubAmount").toLongLong();
-
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
     //
@@ -144,9 +139,6 @@ void OptionsModel::Init()
         settings.setValue("language", "");
     if (!SoftSetArg("-lang", settings.value("language").toString().toStdString()))
         addOverriddenOption("-lang");
-
-    if (settings.contains("nAnonymizeClubAmount"))
-        SoftSetArg("-anonymizeclubamount", settings.value("nAnonymizeClubAmount").toString().toStdString());
 
     language = settings.value("language").toString();
 }
@@ -229,8 +221,6 @@ QVariant OptionsModel::data(const QModelIndex& index, int role) const
             return settings.value("nThreadsScriptVerif");
         case HideZeroBalances:
             return settings.value("fHideZeroBalances");
-        case AnonymizeClubAmount:
-            return QVariant(nAnonymizeClubAmount);
         case Listen:
             return settings.value("fListen");
         default:
@@ -338,11 +328,6 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
             emit hideZeroBalancesChanged(fHideZeroBalances);
             break;
 
-        case AnonymizeClubAmount:
-            nAnonymizeClubAmount = value.toInt();
-            settings.setValue("nAnonymizeClubAmount", nAnonymizeClubAmount);
-            emit anonymizeClubAmountChanged(nAnonymizeClubAmount);
-            break;
         case CoinControlFeatures:
             fCoinControlFeatures = value.toBool();
             settings.setValue("fCoinControlFeatures", fCoinControlFeatures);
