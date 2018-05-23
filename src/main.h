@@ -371,7 +371,6 @@ int GetZerocoinStartHeight();
 bool IsTransactionInChain(const uint256& txId, int& nHeightTx, CTransaction& tx);
 bool IsTransactionInChain(const uint256& txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
-bool ValidOutPoint(const COutPoint out, int nHeight);
 void RecalculateZKPSpent();
 void RecalculateZKPMinted();
 bool RecalculateClubSupply(int nHeightStart);
