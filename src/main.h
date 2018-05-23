@@ -355,7 +355,6 @@ bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationSt
 bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidationState& state);
 bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::CoinSpend& spend, CBlockIndex* pindex);
 libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin);
-bool TxOutToPublicCoin(const CTxOut txout, libzerocoin::PublicCoin& pubCoin, CValidationState& state);
 bool BlockToPubcoinList(const CBlock& block, list<libzerocoin::PublicCoin>& listPubcoins, bool fFilterInvalid);
 bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints, bool fFilterInvalid);
 bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom, std::vector<CBigNum>& vValues);

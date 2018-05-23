@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "zerowallet.h"
+#include "zerochain.h"
 #include "main.h"
 #include "txdb.h"
 #include "walletdb.h"
