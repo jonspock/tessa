@@ -6,47 +6,13 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "main.h"
-#ifdef HAVE_BUILD_INFO
-#include "build.h"
-#endif
-
-#include "wallet.h"
-
-#include "accumulators.h"
-#include "accumulatormap.h"
-#include "addrman.h"
-#include "blocksignature.h"
+#include "blockundo.h"
+#include "mainfile.h"
 #include "chainparams.h"
-#include "checkpoints.h"
-#include "checkqueue.h"
-#include "init.h"
-#include "kernel.h"
-#include "merkleblock.h"
-#include "net.h"
-#include "pow.h"
-#include "spork.h"
-#include "sporkdb.h"
-#include "txdb.h"
-#include "txmempool.h"
-#include "ui_interface.h"
-#include "util.h"
-#include "utilmoneystr.h"
-#include "validationinterface.h"
-#include "zerochain.h"
-
-#include "primitives/zerocoin.h"
-#include "libzerocoin/Denominations.h"
-
+#include "clientversion.h"
+#include "streams.h"
 #include <sstream>
 
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/thread.hpp>
-
-using namespace boost;
 using namespace std;
 
 

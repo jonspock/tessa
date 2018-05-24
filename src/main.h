@@ -13,41 +13,9 @@
 #include "config/club-config.h"
 #endif
 
-#include "amount.h"
-#include "chain.h"
-#include "chainparams.h"
-#include "coins.h"
-#include "net.h"
-#include "pow.h"
-#include "primitives/block.h"
-#include "primitives/transaction.h"
-#include "primitives/zerocoin.h"
-#include "script/script.h"
-#include "script/sigcache.h"
-#include "script/standard.h"
-#include "sync.h"
-#include "tinyformat.h"
-#include "txmempool.h"
-#include "uint256.h"
-#include "undo.h"
+#include "mainfile.h"
+#include "main_externs.h"
 
-#include <algorithm>
-#include <exception>
-#include <map>
-#include <set>
-#include <stdint.h>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "libzerocoin/CoinSpend.h"
-
-#include <boost/unordered_map.hpp>
-
-class CBlockIndex;
-class CBlockTreeDB;
-class CZerocoinDB;
-class CSporkDB;
 class CBloomFilter;
 class CInv;
 class CScriptCheck;
@@ -56,6 +24,9 @@ class CValidationState;
 
 struct CBlockTemplate;
 struct CNodeStateStats;
+
+#include "validationstate.h"
+#include "verifydb.h"
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
 static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 750000;
@@ -121,50 +92,7 @@ static const unsigned char REJECT_DUST = 0x41;
 static const unsigned char REJECT_INSUFFICIENTFEE = 0x42;
 static const unsigned char REJECT_CHECKPOINT = 0x43;
 
-struct BlockHasher {
-    size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
-};
 
-extern CScript COINBASE_FLAGS;
-extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
-typedef boost::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
-extern BlockMap mapBlockIndex;
-extern uint64_t nLastBlockTx;
-extern uint64_t nLastBlockSize;
-extern const std::string strMessageMagic;
-extern int64_t nTimeBestReceived;
-extern CWaitableCriticalSection csBestBlock;
-extern CConditionVariable cvBlockChange;
-extern bool fImporting;
-extern bool fReindex;
-extern int nScriptCheckThreads;
-extern bool fTxIndex;
-extern bool fIsBareMultisigStd;
-extern bool fCheckBlockIndex;
-extern unsigned int nCoinCacheSize;
-extern CFeeRate minRelayTxFee;
-extern bool fAlerts;
-extern bool fVerifyingBlocks;
-
-extern bool fLargeWorkForkFound;
-extern bool fLargeWorkInvalidChainFound;
-
-extern unsigned int nStakeMinAge;
-extern int64_t nLastCoinStakeSearchInterval;
-extern int64_t nLastCoinStakeSearchTime;
-extern int64_t nReserveBalance;
-
-extern std::map<uint256, int64_t> mapRejectedBlocks;
-extern std::map<unsigned int, unsigned int> mapHashedBlocks;
-extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
-extern std::map<uint256, int64_t> mapZerocoinspends; //txid, time received
-
-/** Best header we've seen so far (used for getheaders queries' starting points). */
-extern CBlockIndex* pindexBestHeader;
-
-/** Minimum disk space required - used in CheckDiskSpace() */
-static const uint64_t nMinDiskSpace = 52428800;
 
 /** Register a wallet to receive updates from core */
 void RegisterValidationInterface(CValidationInterface* pwalletIn);
@@ -192,14 +120,6 @@ void UnregisterNodeSignals(CNodeSignals& nodeSignals);
  * @return True if state.IsValid()
  */
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
-/** Check whether enough disk space is available for an incoming block */
-bool CheckDiskSpace(uint64_t nAdditionalBytes = 0);
-/** Open a block file (blk?????.dat) */
-FILE* OpenBlockFile(const CDiskBlockPos& pos, bool fReadOnly = false);
-/** Open an undo file (rev?????.dat) */
-FILE* OpenUndoFile(const CDiskBlockPos& pos, bool fReadOnly = false);
-/** Translation to a filesystem path */
-boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix);
 /** Import blocks from an external file */
 bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp = NULL);
 /** Initialize a new block tree database + block data on disk */
@@ -243,10 +163,6 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
 CAmount GetBlockValue(int nHeight);
 
-/** Create a new block index entry for a given block hash */
-CBlockIndex* InsertBlockIndex(uint256 hash);
-/** Abort with a message */
-bool AbortNode(const std::string& msg, const std::string& userMessage = "");
 /** Get statistics from node state */
 bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats);
 /** Increase a node's misbehavior score. */
@@ -392,25 +308,6 @@ bool IsStandardTx(const CTransaction& tx, std::string& reason);
 
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0, int64_t nBlockTime = 0);
 
-/** Undo information for a CBlock */
-class CBlockUndo
-{
-public:
-    std::vector<CTxUndo> vtxundo; // for all but the coinbase
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(vtxundo);
-    }
-
-    bool WriteToDisk(CDiskBlockPos& pos, const uint256& hashBlock);
-    bool ReadFromDisk(const CDiskBlockPos& pos, const uint256& hashBlock);
-};
-
-
 /**
  * Closure representing one script verification
  * Note that this stores references to the spending transaction
@@ -482,146 +379,6 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** pindex, C
 bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex** ppindex = NULL);
 
 
-class CBlockFileInfo
-{
-public:
-    unsigned int nBlocks;      //! number of blocks stored in file
-    unsigned int nSize;        //! number of used bytes of block file
-    unsigned int nUndoSize;    //! number of used bytes in the undo file
-    unsigned int nHeightFirst; //! lowest height of block in file
-    unsigned int nHeightLast;  //! highest height of block in file
-    uint64_t nTimeFirst;       //! earliest time of block in file
-    uint64_t nTimeLast;        //! latest time of block in file
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(VARINT(nBlocks));
-        READWRITE(VARINT(nSize));
-        READWRITE(VARINT(nUndoSize));
-        READWRITE(VARINT(nHeightFirst));
-        READWRITE(VARINT(nHeightLast));
-        READWRITE(VARINT(nTimeFirst));
-        READWRITE(VARINT(nTimeLast));
-    }
-
-    void SetNull()
-    {
-        nBlocks = 0;
-        nSize = 0;
-        nUndoSize = 0;
-        nHeightFirst = 0;
-        nHeightLast = 0;
-        nTimeFirst = 0;
-        nTimeLast = 0;
-    }
-
-    CBlockFileInfo()
-    {
-        SetNull();
-    }
-
-    std::string ToString() const;
-
-    /** update statistics (does not update nSize) */
-    void AddBlock(unsigned int nHeightIn, uint64_t nTimeIn)
-    {
-        if (nBlocks == 0 || nHeightFirst > nHeightIn)
-            nHeightFirst = nHeightIn;
-        if (nBlocks == 0 || nTimeFirst > nTimeIn)
-            nTimeFirst = nTimeIn;
-        nBlocks++;
-        if (nHeightIn > nHeightLast)
-            nHeightLast = nHeightIn;
-        if (nTimeIn > nTimeLast)
-            nTimeLast = nTimeIn;
-    }
-};
-
-/** Capture information about block/transaction validation */
-class CValidationState
-{
-private:
-    enum mode_state {
-        MODE_VALID,   //! everything ok
-        MODE_INVALID, //! network rule violation (DoS value may be set)
-        MODE_ERROR,   //! run-time error
-    } mode;
-    int nDoS;
-    std::string strRejectReason;
-    unsigned char chRejectCode;
-    bool corruptionPossible;
-
-public:
-    CValidationState() : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false) {}
-    bool DoS(int level, bool ret = false, unsigned char chRejectCodeIn = 0, std::string strRejectReasonIn = "", bool corruptionIn = false)
-    {
-        chRejectCode = chRejectCodeIn;
-        strRejectReason = strRejectReasonIn;
-        corruptionPossible = corruptionIn;
-        if (mode == MODE_ERROR)
-            return ret;
-        nDoS += level;
-        mode = MODE_INVALID;
-        return ret;
-    }
-    bool Invalid(bool ret = false,
-        unsigned char _chRejectCode = 0,
-        std::string _strRejectReason = "")
-    {
-        return DoS(0, ret, _chRejectCode, _strRejectReason);
-    }
-    bool Error(std::string strRejectReasonIn = "")
-    {
-        if (mode == MODE_VALID)
-            strRejectReason = strRejectReasonIn;
-        mode = MODE_ERROR;
-        return false;
-    }
-    bool Abort(const std::string& msg)
-    {
-        AbortNode(msg);
-        return Error(msg);
-    }
-    bool IsValid() const
-    {
-        return mode == MODE_VALID;
-    }
-    bool IsInvalid() const
-    {
-        return mode == MODE_INVALID;
-    }
-    bool IsError() const
-    {
-        return mode == MODE_ERROR;
-    }
-    bool IsInvalid(int& nDoSOut) const
-    {
-        if (IsInvalid()) {
-            nDoSOut = nDoS;
-            return true;
-        }
-        return false;
-    }
-    bool CorruptionPossible() const
-    {
-        return corruptionPossible;
-    }
-    unsigned char GetRejectCode() const { return chRejectCode; }
-    std::string GetRejectReason() const { return strRejectReason; }
-};
-
-/** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
-class CVerifyDB
-{
-public:
-    CVerifyDB();
-    ~CVerifyDB();
-    bool VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth);
-};
-
 /** Find the last common block between the parameter chain and a locator. */
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
 
@@ -630,21 +387,6 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex);
 
 /** Remove invalidity status from a block and its descendants. */
 bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
-
-/** The currently-connected chain of blocks. */
-extern CChain chainActive;
-
-/** Global variable that points to the active CCoinsView (protected by cs_main) */
-extern CCoinsViewCache* pcoinsTip;
-
-/** Global variable that points to the active block tree (protected by cs_main) */
-extern CBlockTreeDB* pblocktree;
-
-/** Global variable that points to the zerocoin database (protected by cs_main) */
-extern CZerocoinDB* zerocoinDB;
-
-/** Global variable that points to the spork database (protected by cs_main) */
-extern CSporkDB* pSporkDB;
 
 struct CBlockTemplate {
     CBlock block;

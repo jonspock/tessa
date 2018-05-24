@@ -6,20 +6,38 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "main.h"
-// for "_"
+#include "main_externs.h"
+// for "_" and AbortNode
 #include "ui_interface.h"
-#include "util.h"
-#include "utilmoneystr.h"
 
-#include <sstream>
+// for StartShutdown()
+#include "init.h" 
 
-#include <boost/algorithm/string/replace.hpp>
+/** Minimum disk space required - used in CheckDiskSpace() */
+static const uint64_t nMinDiskSpace = 52428800;
+
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
 using namespace boost;
 using namespace std;
+
+boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix)
+{
+    return GetDataDir() / "blocks" / strprintf("%s%05u.dat", prefix, pos.nFile);
+}
+
+
+bool AbortNode(const std::string& strMessage, const std::string& userMessage)
+{
+    strMiscWarning = strMessage;
+    LogPrintf("*** %s\n", strMessage);
+    uiInterface.ThreadSafeMessageBox(
+        userMessage.empty() ? _("Error: A fatal internal error occured, see debug.log for details") : userMessage,
+        "", CClientUIInterface::MSG_ERROR);
+    StartShutdown();
+    return false;
+}
 
 bool CheckDiskSpace(uint64_t nAdditionalBytes)
 {
@@ -65,10 +83,6 @@ FILE* OpenUndoFile(const CDiskBlockPos& pos, bool fReadOnly)
     return OpenDiskFile(pos, "rev", fReadOnly);
 }
 
-boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix)
-{
-    return GetDataDir() / "blocks" / strprintf("%s%05u.dat", prefix, pos.nFile);
-}
 
 CBlockIndex* InsertBlockIndex(uint256 hash)
 {
