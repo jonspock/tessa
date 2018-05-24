@@ -6,6 +6,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "blockdisk.h"
+
 #include "main.h"
 #ifdef HAVE_BUILD_INFO
 #include "build.h"

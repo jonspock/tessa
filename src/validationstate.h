@@ -6,6 +6,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #pragma once
+#include "mainfile.h"
+#include <string>
 
 /** Capture information about block/transaction validation */
 class CValidationState

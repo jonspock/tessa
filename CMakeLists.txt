@@ -170,6 +170,7 @@ SET(SERVER_A
 	./src/main.cpp
 	./src/mainzero.cpp
 	./src/mainfile.cpp
+  ./src/verifydb.cpp
 	./src/block.cpp
 	./src/blockundo.cpp
 	./src/zerochain.cpp

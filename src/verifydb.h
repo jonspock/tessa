@@ -7,6 +7,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #pragma once
 
+#include "coins.h"
+
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
 {
