@@ -1513,16 +1513,6 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, const
                 continue;
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
-                bool found = false;
-                if (nCoinType == ONLY_NOT10000IFMN) {
-                    found = !(pcoin->vout[i].nValue == 10000 * COIN);
-                } else if (nCoinType == ONLY_10000) {
-                    found = pcoin->vout[i].nValue == 10000 * COIN;
-                } else {
-                    found = true;
-                }
-                if (!found) continue;
-
                 if (nCoinType == STAKABLE_COINS) {
                     if (pcoin->vout[i].IsZerocoinMint())
                         continue;
@@ -1540,7 +1530,7 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, const
                 if (mine == ISMINE_WATCH_ONLY && nWatchonlyConfig == 1)
                     continue;
 
-                if (IsLockedCoin((*it).first, i) && nCoinType != ONLY_10000)
+                if (IsLockedCoin((*it).first, i))
                     continue;
                 if (pcoin->vout[i].nValue <= 0 && !fIncludeZeroValue)
                     continue;
@@ -4157,14 +4147,6 @@ bool CWallet::SpendZerocoin(CAmount nAmount, int nSecurityLevel, CWalletTx& wtxN
     receipt.SetStatus("Spend Successful", ZKP_SPEND_OKAY);  // When we reach this point spending zZZZ was successful
 
     return true;
-}
-
-bool CWallet::GetMintFromStakeHash(const uint256& hashStake, CZerocoinMint& mint)
-{
-    CMintMeta meta;
-    if (!zkpTracker->GetMetaFromStakeHash(hashStake, meta))
-        return error("%s: failed to find meta associated with hashStake", __func__);
-    return GetMint(meta.hashSerial, mint);
 }
 
 bool CWallet::GetMint(const uint256& hashSerial, CZerocoinMint& mint)

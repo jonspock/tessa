@@ -78,10 +78,6 @@ enum WalletFeature {
 
 enum AvailableCoinsType {
     ALL_COINS = 1,
-    ONLY_DENOMINATED = 2,
-    ONLY_NOT10000IFMN = 3,
-    ONLY_NONDENOMINATED_NOT10000IFMN = 4, // ONLY_NONDENOMINATED and not 10000 GGG at the same time
-    ONLY_10000 = 5,                        // find masternode outputs including locked ones (use with caution)
     STAKABLE_COINS = 6                          // UTXO's that are valid for staking
 };
 
@@ -101,8 +97,8 @@ enum ZerocoinSpendStatus {
     ZKP_FAILED_ACCUMULATOR_INITIALIZATION = 11,    // Failed to initialize witness
     ZKP_INVALID_WITNESS = 12,                      // Spend coin transaction did not verify
     ZKP_BAD_SERIALIZATION = 13,                    // Transaction verification failed
-    ZKP_SPENT_USED_ZKP = 14,                      // Coin has already been spend
-    ZKP_TX_TOO_LARGE = 15,                          // The transaction is larger than the max tx size
+    ZKP_SPENT_USED_ZKP = 14,                       // Coin has already been spend
+    ZKP_TX_TOO_LARGE = 15,                         // The transaction is larger than the max tx size
     ZKP_SPEND_V1_SEC_LEVEL                         // Spend is V1 and security level is not set to 100
 };
 
@@ -207,7 +203,6 @@ public:
     bool GetZerocoinKey(const CBigNum& bnSerial, CKey& key);
     bool CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint);
     bool GetMint(const uint256& hashSerial, CZerocoinMint& mint);
-    bool GetMintFromStakeHash(const uint256& hashStake, CZerocoinMint& mint);
     bool DatabaseMint(CDeterministicMint& dMint);
     bool SetMintUnspent(const CBigNum& bnSerial);
     bool UpdateMint(const CBigNum& bnValue, const int& nHeight, const uint256& txid, const libzerocoin::CoinDenomination& denom);
