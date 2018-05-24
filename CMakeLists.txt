@@ -168,6 +168,10 @@ SET(SERVER_A
 	./src/leveldbwrapper.cpp
 	./src/init.cpp
 	./src/main.cpp
+	./src/mainzero.cpp
+	./src/mainfile.cpp
+	./src/block.cpp
+	./src/blockundo.cpp
 	./src/zerochain.cpp
 	./src/merkleblock.cpp
 	./src/miner.cpp

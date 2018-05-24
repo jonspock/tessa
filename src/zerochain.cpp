@@ -63,7 +63,7 @@ bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>&
 }
 
 //return a list of zerocoin mints contained in a specific block
-bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints, bool fFilterInvalid)
+bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints)
 {
     for (const CTransaction& tx : block.vtx) {
         if(!tx.IsZerocoinMint())
@@ -312,7 +312,7 @@ bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CV
 }
 
 //return a list of zerocoin spends contained in a specific block, list may have many denominations
-std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block, bool fFilterInvalid)
+std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block)
 {
     std::list<libzerocoin::CoinDenomination> vSpends;
     for (const CTransaction tx : block.vtx) {
