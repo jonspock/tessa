@@ -45,7 +45,6 @@
 
 #include <sstream>
 
-#include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
 
 using namespace std;
@@ -2871,7 +2870,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
         pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
         pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
         if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
-            LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));
+            LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%lld\n", pindexNew->nHeight, nStakeModifier);
     }
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
