@@ -441,13 +441,6 @@ void PrivacyDialog::sendZKP()
 
     // Display errors during spend
     if (!fSuccess) {
-        if (receipt.GetStatus() == ZKP_SPEND_V1_SEC_LEVEL) {
-            QMessageBox::warning(this, tr("Spend Zerocoin"), tr("Version 1 zZZZ require a security level of 100 to successfully spend."), QMessageBox::Ok, QMessageBox::Ok);
-            ui->TEMintStatus->setPlainText(tr("Failed to spend ZKP"));
-            ui->TEMintStatus->repaint();
-            return;
-        }
-
         int nNeededSpends = receipt.GetNeededSpends(); // Number of spends we would need for this transaction
         const int nMaxSpends = Params().Zerocoin_MaxSpendsPerTransaction(); // Maximum possible spends for one zZZZ transaction
         if (nNeededSpends > nMaxSpends) {

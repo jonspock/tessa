@@ -6,10 +6,11 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "transactionrecord.h"
-
 #include "base58.h"
 #include "timedata.h"
 #include "wallet.h"
+// TxInToZerocoinSpend
+#include "main.h"
 
 #include <stdint.h>
 

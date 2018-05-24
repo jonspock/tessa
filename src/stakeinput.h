@@ -3,8 +3,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_STAKEINPUT_H
-#define Club_STAKEINPUT_H
+#pragma once
+
+#include "streams.h"
 
 class CKeyStore;
 class CWallet;
@@ -52,4 +53,3 @@ public:
 };
 
 
-#endif //Club_STAKEINPUT_H

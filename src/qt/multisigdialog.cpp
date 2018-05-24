@@ -17,6 +17,7 @@
 #include "keystore.h"
 #include "init.h"
 #include "wallet.h"
+#include "main_externs.h"
 #include "script/sign.h"
 #include "script/interpreter.h"
 #include "utilmoneystr.h"
@@ -35,6 +36,8 @@
 #include <QArgument>
 #include <QtGlobal>
 #include <QString>
+
+extern bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock, bool fAllowSlow);
 
 
 MultisigDialog::MultisigDialog(QWidget* parent) : QDialog(parent),

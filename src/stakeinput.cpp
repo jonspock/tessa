@@ -8,6 +8,7 @@
 #include "primitives/deterministicmint.h"
 #include "main.h"
 #include "stakeinput.h"
+#include "kernel.h"
 #include "wallet.h"
 
 

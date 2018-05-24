@@ -6,6 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "transactiondesc.h"
+#include "main_functions.h"
 
 #include "bitcoinunits.h"
 #include "guiutil.h"

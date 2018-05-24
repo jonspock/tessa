@@ -170,6 +170,7 @@ SET(SERVER_A
 	./src/main.cpp
 	./src/mainzero.cpp
 	./src/mainfile.cpp
+	./src/main_functions.cpp
   ./src/verifydb.cpp
 	./src/block.cpp
 	./src/blockundo.cpp
@@ -215,6 +216,11 @@ SET(CONSENSUS_CRYPTO
 )
 
 SET(SOURCES
+  # temp
+  	./src/wallet_hdr.cpp
+  	./src/main_hdr.cpp
+    # end
+    
 	./src/compat/strnlen.cpp
 	./src/db.cpp
 	./src/compat/glibcxx_compat.cpp
@@ -239,8 +245,10 @@ SET(SOURCES
 	./src/torcontrol.cpp
 	./src/txmempool.cpp
 	./src/wallet.cpp
+	./src/wallettx.cpp
 	./src/wallet_ismine.cpp
 	./src/walletdb.cpp
+	./src/wallet_functions.cpp
 	./src/denomination_functions.cpp
 # NEW
 	./src/zerotracker.cpp

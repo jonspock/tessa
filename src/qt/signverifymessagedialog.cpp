@@ -16,6 +16,7 @@
 #include "init.h"
 #include "wallet.h"
 #include "askpassphrasedialog.h"
+#include "main_externs.h"
 
 #include <string>
 #include <vector>

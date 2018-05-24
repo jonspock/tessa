@@ -21,6 +21,7 @@
 #include "scheduler.h"
 #include "ui_interface.h"
 #include "wallet.h"
+#include "main.h"
 
 #ifdef WIN32
 #include <string.h>

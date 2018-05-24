@@ -16,6 +16,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "wallet.h"
+#include "main_externs.h"
 
 #include <cstdlib>
 

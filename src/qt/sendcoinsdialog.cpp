@@ -23,6 +23,7 @@
 #include "ui_interface.h"
 #include "utilmoneystr.h"
 #include "wallet.h"
+#include "main_externs.h"
 
 #include <QMessageBox>
 #include <QScrollBar>
