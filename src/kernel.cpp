@@ -264,6 +264,10 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
 
         pindex = pindexNext;
         pindexNext = chainActive[pindexNext->nHeight + 1];
+        if (!pindexNext) {
+            std::cout << " done early\n";
+            return true;
+        }
         if (pindex->GeneratedStakeModifier()) {
             nStakeModifierHeight = pindex->nHeight;
             nStakeModifierTime = pindex->GetBlockTime();
