@@ -5,8 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_VERSION_H
-#define BITCOIN_VERSION_H
+#pragma once
 
 /**
  * network protocol versioning
@@ -21,4 +20,3 @@ static const int INIT_PROTO_VERSION = 209;
 static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 70912;
 static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 70914;
 
-#endif // BITCOIN_VERSION_H
