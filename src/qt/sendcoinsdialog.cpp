@@ -63,7 +63,6 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent),
 
     // Club specific
     QSettings settings;
-    CoinControlDialog::coinControl->useObfuScation = false;
 
     // Coin Control: clipboard actions
     QAction* clipboardQuantityAction = new QAction(tr("Copy quantity"), this);

@@ -16,8 +16,6 @@ class CCoinControl
 {
 public:
     CTxDestination destChange;
-    bool useObfuScation;
-    bool useSwiftTX;
     bool fSplitBlock;
     int nSplitBlock;
     //! If false, allows unselected inputs, but requires all selected inputs be used
@@ -36,8 +34,6 @@ public:
     {
         destChange = CNoDestination();
         setSelected.clear();
-        useSwiftTX = false;
-        useObfuScation = false;
         fAllowOtherInputs = false;
         fAllowWatchOnly = true;
         nMinimumTotalFee = 0;
