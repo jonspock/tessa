@@ -6,6 +6,8 @@
 #pragma once
 
 #include "streams.h"
+// cblockindex
+#include "chain.h"
 
 class CKeyStore;
 class CWallet;
