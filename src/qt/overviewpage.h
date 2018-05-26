@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2017 The PIVX developers 
+// Copyright (c) 2017 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -16,8 +16,7 @@ class TransactionFilterProxy;
 class TxViewDelegate;
 class WalletModel;
 
-namespace Ui
-{
+namespace Ui {
 class OverviewPage;
 }
 
@@ -26,50 +25,51 @@ class QModelIndex;
 QT_END_NAMESPACE
 
 /** Overview ("home") page widget */
-class OverviewPage : public QWidget
-{
-    Q_OBJECT
+class OverviewPage : public QWidget {
+  Q_OBJECT
 
-public:
-    explicit OverviewPage(QWidget* parent = 0);
-    ~OverviewPage();
+ public:
+  explicit OverviewPage(QWidget* parent = 0);
+  ~OverviewPage();
 
-    void setClientModel(ClientModel* clientModel);
-    void setWalletModel(WalletModel* walletModel);
-    void showOutOfSyncWarning(bool fShow);
+  void setClientModel(ClientModel* clientModel);
+  void setWalletModel(WalletModel* walletModel);
+  void showOutOfSyncWarning(bool fShow);
 
-public slots:
-    void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, 
-                    const CAmount& zerocoinBalance, const CAmount& unconfirmedZerocoinBalance, const CAmount& immatureZerocoinBalance,
-                    const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
+ public slots:
+  void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
+                  const CAmount& zerocoinBalance, const CAmount& unconfirmedZerocoinBalance,
+                  const CAmount& immatureZerocoinBalance, const CAmount& watchOnlyBalance,
+                  const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
 
-signals:
-    void transactionClicked(const QModelIndex& index);
+ signals:
+  void transactionClicked(const QModelIndex& index);
 
-private:
-    QTimer* timer;
-    Ui::OverviewPage* ui;
-    ClientModel* clientModel;
-    WalletModel* walletModel;
-    CAmount currentBalance;
-    CAmount currentUnconfirmedBalance;
-    CAmount currentImmatureBalance;
-    CAmount currentZerocoinBalance;
-    CAmount currentUnconfirmedZerocoinBalance;
-    CAmount currentimmatureZerocoinBalance;
-    CAmount currentWatchOnlyBalance;
-    CAmount currentWatchUnconfBalance;
-    CAmount currentWatchImmatureBalance;
-    int nDisplayUnit;
-    void getPercentage(CAmount nTotalBalance, CAmount nZerocoinBalance, QString& sClubPercentage, QString& sZKPPercentage);
+ private:
+  QTimer* timer;
+  Ui::OverviewPage* ui;
+  ClientModel* clientModel;
+  WalletModel* walletModel;
+  CAmount currentBalance;
+  CAmount currentUnconfirmedBalance;
+  CAmount currentImmatureBalance;
+  CAmount currentZerocoinBalance;
+  CAmount currentUnconfirmedZerocoinBalance;
+  CAmount currentimmatureZerocoinBalance;
+  CAmount currentWatchOnlyBalance;
+  CAmount currentWatchUnconfBalance;
+  CAmount currentWatchImmatureBalance;
+  int nDisplayUnit;
+  void getPercentage(CAmount nTotalBalance, CAmount nZerocoinBalance, QString& sClubPercentage,
+                     QString& sZKPPercentage);
 
-    TxViewDelegate* txdelegate;
-    TransactionFilterProxy* filter;
+  TxViewDelegate* txdelegate;
+  TransactionFilterProxy* filter;
 
-private slots:
-    void updateDisplayUnit();
-    void handleTransactionClicked(const QModelIndex& index);
-    void updateWatchOnlyLabels(bool showWatchOnly);
+ private slots:
+  void updateDisplayUnit();
+  void handleTransactionClicked(const QModelIndex& index);
+  void updateWatchOnlyLabels(bool showWatchOnly);
 };
 
-#endif // BITCOIN_QT_OVERVIEWPAGE_H
+#endif  // BITCOIN_QT_OVERVIEWPAGE_H

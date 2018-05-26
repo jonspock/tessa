@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2017-2018 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -34,8 +34,7 @@ QT_END_NAMESPACE
 
 /** Utility functions used by the Club Qt UI.
  */
-namespace GUIUtil
-{
+namespace GUIUtil {
 // Create human-readable string from date
 QString dateTimeStr(const QDateTime& datetime);
 QString dateTimeStr(qint64 nTime);
@@ -73,7 +72,7 @@ void copyEntryData(QAbstractItemView* view, int column, int role = Qt::EditRole)
        @param[in] role    Data role to extract from the model
        @see  TransactionView::copyLabel, TransactionView::copyAmount, TransactionView::copyAddress
      */
-QString getEntryData(QAbstractItemView *view, int column, int role);
+QString getEntryData(QAbstractItemView* view, int column, int role);
 
 void setClipboard(const QString& str);
 
@@ -87,7 +86,8 @@ void setClipboard(const QString& str);
       @param[out] selectedSuffixOut  Pointer to return the suffix (file type) that was selected (or 0).
                   Can be useful when choosing the save file format based on suffix.
      */
-QString getSaveFileName(QWidget* parent, const QString& caption, const QString& dir, const QString& filter, QString* selectedSuffixOut);
+QString getSaveFileName(QWidget* parent, const QString& caption, const QString& dir, const QString& filter,
+                        QString* selectedSuffixOut);
 
 /** Get open filename, convenience wrapper for QFileDialog::getOpenFileName.
 
@@ -98,7 +98,8 @@ QString getSaveFileName(QWidget* parent, const QString& caption, const QString& 
       @param[out] selectedSuffixOut  Pointer to return the suffix (file type) that was selected (or 0).
                   Can be useful when choosing the save file format based on suffix.
      */
-QString getOpenFileName(QWidget* parent, const QString& caption, const QString& dir, const QString& filter, QString* selectedSuffixOut);
+QString getOpenFileName(QWidget* parent, const QString& caption, const QString& dir, const QString& filter,
+                        QString* selectedSuffixOut);
 
 /** Get connection type to call object slot in GUI thread with invokeMethod. The call will be blocking.
 
@@ -129,72 +130,69 @@ void SubstituteFonts(const QString& language);
       representation if needed. This assures that Qt can word-wrap long tooltip messages.
       Tooltips longer than the provided size threshold (in characters) are wrapped.
      */
-class ToolTipToRichTextFilter : public QObject
-{
-    Q_OBJECT
+class ToolTipToRichTextFilter : public QObject {
+  Q_OBJECT
 
-public:
-    explicit ToolTipToRichTextFilter(int size_threshold, QObject* parent = 0);
+ public:
+  explicit ToolTipToRichTextFilter(int size_threshold, QObject* parent = 0);
 
-protected:
-    bool eventFilter(QObject* obj, QEvent* evt);
+ protected:
+  bool eventFilter(QObject* obj, QEvent* evt);
 
-private:
-    int size_threshold;
+ private:
+  int size_threshold;
 };
 
 /**
-     * Makes a QTableView last column feel as if it was being resized from its left border.
-     * Also makes sure the column widths are never larger than the table's viewport.
-     * In Qt, all columns are resizable from the right, but it's not intuitive resizing the last column from the right.
-     * Usually our second to last columns behave as if stretched, and when on strech mode, columns aren't resizable
-     * interactively or programatically.
-     *
-     * This helper object takes care of this issue.
-     *
-     */
-class TableViewLastColumnResizingFixer : public QObject
-{
-    Q_OBJECT
+ * Makes a QTableView last column feel as if it was being resized from its left border.
+ * Also makes sure the column widths are never larger than the table's viewport.
+ * In Qt, all columns are resizable from the right, but it's not intuitive resizing the last column from the right.
+ * Usually our second to last columns behave as if stretched, and when on strech mode, columns aren't resizable
+ * interactively or programatically.
+ *
+ * This helper object takes care of this issue.
+ *
+ */
+class TableViewLastColumnResizingFixer : public QObject {
+  Q_OBJECT
 
-public:
-    TableViewLastColumnResizingFixer(QTableView* table, int lastColMinimumWidth, int allColsMinimumWidth);
-    void stretchColumnWidth(int column);
+ public:
+  TableViewLastColumnResizingFixer(QTableView* table, int lastColMinimumWidth, int allColsMinimumWidth);
+  void stretchColumnWidth(int column);
 
-private:
-    QTableView* tableView;
-    int lastColumnMinimumWidth;
-    int allColumnsMinimumWidth;
-    int lastColumnIndex;
-    int columnCount;
-    int secondToLastColumnIndex;
+ private:
+  QTableView* tableView;
+  int lastColumnMinimumWidth;
+  int allColumnsMinimumWidth;
+  int lastColumnIndex;
+  int columnCount;
+  int secondToLastColumnIndex;
 
-    void adjustTableColumnsWidth();
-    int getAvailableWidthForColumn(int column);
-    int getColumnsWidth();
-    void connectViewHeadersSignals();
-    void disconnectViewHeadersSignals();
-    void setViewHeaderResizeMode(int logicalIndex, QHeaderView::ResizeMode resizeMode);
-    void resizeColumn(int nColumnIndex, int width);
+  void adjustTableColumnsWidth();
+  int getAvailableWidthForColumn(int column);
+  int getColumnsWidth();
+  void connectViewHeadersSignals();
+  void disconnectViewHeadersSignals();
+  void setViewHeaderResizeMode(int logicalIndex, QHeaderView::ResizeMode resizeMode);
+  void resizeColumn(int nColumnIndex, int width);
 
-private slots:
-    void on_sectionResized(int logicalIndex, int oldSize, int newSize);
-    void on_geometriesChanged();
+ private slots:
+  void on_sectionResized(int logicalIndex, int oldSize, int newSize);
+  void on_geometriesChanged();
 };
 
 /**
-     * Extension to QTableWidgetItem that facilitates proper ordering for "DHMS"
-     * strings (primarily used in the masternode's "active" listing).
-     */
-class DHMSTableWidgetItem : public QTableWidgetItem
-{
-public:
-    DHMSTableWidgetItem(const int64_t seconds);
-    virtual bool operator<(QTableWidgetItem const& item) const;
+ * Extension to QTableWidgetItem that facilitates proper ordering for "DHMS"
+ * strings (primarily used in the masternode's "active" listing).
+ */
+class DHMSTableWidgetItem : public QTableWidgetItem {
+ public:
+  DHMSTableWidgetItem(const int64_t seconds);
+  virtual bool operator<(QTableWidgetItem const& item) const;
 
-private:
-    // Private backing value for DHMS string, used for sorting.
-    int64_t value;
+ private:
+  // Private backing value for DHMS string, used for sorting.
+  int64_t value;
 };
 
 bool GetStartOnSystemStartup();
@@ -233,17 +231,13 @@ QString formatTimeOffset(int64_t nTimeOffset);
 // workaround for Qt OSX Bug:
 // https://bugreports.qt-project.org/browse/QTBUG-15631
 // QProgressBar uses around 10% CPU even when app is in background
-class ProgressBar : public QProgressBar
-{
-    bool event(QEvent* e)
-    {
-        return (e->type() != QEvent::StyleAnimationUpdate) ? QProgressBar::event(e) : false;
-    }
+class ProgressBar : public QProgressBar {
+  bool event(QEvent* e) { return (e->type() != QEvent::StyleAnimationUpdate) ? QProgressBar::event(e) : false; }
 };
 #else
 typedef QProgressBar ProgressBar;
 #endif
 
-} // namespace GUIUtil
+}  // namespace GUIUtil
 
-#endif // BITCOIN_QT_GUIUTIL_H
+#endif  // BITCOIN_QT_GUIUTIL_H

@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2017 The PIVX developers 
+// Copyright (c) 2017 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -9,8 +9,7 @@
 
 #include <QDialog>
 
-namespace Ui
-{
+namespace Ui {
 class TransactionDescDialog;
 }
 
@@ -19,16 +18,15 @@ class QModelIndex;
 QT_END_NAMESPACE
 
 /** Dialog showing transaction details. */
-class TransactionDescDialog : public QDialog
-{
-    Q_OBJECT
+class TransactionDescDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit TransactionDescDialog(const QModelIndex& idx, QWidget* parent = 0);
-    ~TransactionDescDialog();
+ public:
+  explicit TransactionDescDialog(const QModelIndex& idx, QWidget* parent = 0);
+  ~TransactionDescDialog();
 
-private:
-    Ui::TransactionDescDialog* ui;
+ private:
+  Ui::TransactionDescDialog* ui;
 };
 
-#endif // BITCOIN_QT_TRANSACTIONDESCDIALOG_H
+#endif  // BITCOIN_QT_TRANSACTIONDESCDIALOG_H

@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2017 The PIVX developers 
+// Copyright (c) 2017 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -11,8 +11,7 @@
 
 class AddressTableModel;
 
-namespace Ui
-{
+namespace Ui {
 class EditAddressDialog;
 }
 
@@ -22,39 +21,33 @@ QT_END_NAMESPACE
 
 /** Dialog for editing an address and associated information.
  */
-class EditAddressDialog : public QDialog
-{
-    Q_OBJECT
+class EditAddressDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    enum Mode {
-        NewReceivingAddress,
-        NewSendingAddress,
-        EditReceivingAddress,
-        EditSendingAddress
-    };
+ public:
+  enum Mode { NewReceivingAddress, NewSendingAddress, EditReceivingAddress, EditSendingAddress };
 
-    explicit EditAddressDialog(Mode mode, QWidget* parent);
-    ~EditAddressDialog();
+  explicit EditAddressDialog(Mode mode, QWidget* parent);
+  ~EditAddressDialog();
 
-    void setModel(AddressTableModel* model);
-    void loadRow(int row);
+  void setModel(AddressTableModel* model);
+  void loadRow(int row);
 
-    QString getAddress() const;
-    void setAddress(const QString& address);
+  QString getAddress() const;
+  void setAddress(const QString& address);
 
-public slots:
-    void accept();
+ public slots:
+  void accept();
 
-private:
-    bool saveCurrentRow();
+ private:
+  bool saveCurrentRow();
 
-    Ui::EditAddressDialog* ui;
-    QDataWidgetMapper* mapper;
-    Mode mode;
-    AddressTableModel* model;
+  Ui::EditAddressDialog* ui;
+  QDataWidgetMapper* mapper;
+  Mode mode;
+  AddressTableModel* model;
 
-    QString address;
+  QString address;
 };
 
-#endif // BITCOIN_QT_EDITADDRESSDIALOG_H
+#endif  // BITCOIN_QT_EDITADDRESSDIALOG_H
