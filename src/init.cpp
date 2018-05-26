@@ -1359,6 +1359,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // ********************************************************* Step 7: load block chain
 
   // Club: Load Accumulator Checkpoints according to network (main/test/regtest)
+#warning "Need checkpoints"  
   // NO CHECKPOINTS YET : XXX HACK assert(AccumulatorCheckpoints::LoadCheckpoints(Params().NetworkIDString()));
 
   fReindex = GetBoolArg("-reindex", false);

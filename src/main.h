@@ -386,6 +386,4 @@ struct CNodeState {
     fPreferredDownload = false;
   }
 };
-
-CNodeState* State(NodeId pnode);
 }  // namespace

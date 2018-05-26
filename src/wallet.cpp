@@ -1192,66 +1192,65 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
   random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
 
+#warning "Refactoring needed here"
   // move denoms down on the list
   // HACK XXX    sort(vCoins.begin(), vCoins.end(), less_then_denom);
 
   // try to find nondenom first to prevent unneeded spending of mixed coins
   for (unsigned int tryDenom = 0; tryDenom < 2; tryDenom++) {
-    if (fDebug) LogPrint("selectcoins", "tryDenom: %d\n", tryDenom);
-    vValue.clear();
-    nTotalLower = 0;
-    BOOST_FOREACH (const COutput& output, vCoins) {
-      if (!output.fSpendable) continue;
+      if (fDebug) LogPrint("selectcoins", "tryDenom: %d\n", tryDenom);
+      vValue.clear();
+      nTotalLower = 0;
+      for (const COutput& output : vCoins) {
+          if (!output.fSpendable) continue;
 
-      const CWalletTx* pcoin = output.tx;
+          const CWalletTx* pcoin = output.tx;
 
-      //            if (fDebug) LogPrint("selectcoins", "value %s confirms %d\n",
-      //            FormatMoney(pcoin->vout[output.i].nValue), output.nDepth);
-      if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs)) continue;
+          if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs)) continue;
 
-      int i = output.i;
-      CAmount n = pcoin->vout[i].nValue;
-      if (tryDenom == 0) continue;  // we don't want denom values on first run
-
-      pair<CAmount, pair<const CWalletTx*, unsigned int> > coin = make_pair(n, make_pair(pcoin, i));
-
-      if (n == nTargetValue) {
-        setCoinsRet.insert(coin.second);
-        nValueRet += coin.first;
-        return true;
-      } else if (n < nTargetValue + CENT) {
-        vValue.push_back(coin);
-        nTotalLower += n;
-      } else if (n < coinLowestLarger.first) {
-        coinLowestLarger = coin;
+          int i = output.i;
+          CAmount n = pcoin->vout[i].nValue;
+          if (tryDenom == 0) continue;  // we don't want denom values on first run
+          
+          pair<CAmount, pair<const CWalletTx*, unsigned int> > coin = make_pair(n, make_pair(pcoin, i));
+          
+          if (n == nTargetValue) {
+              setCoinsRet.insert(coin.second);
+              nValueRet += coin.first;
+              return true;
+          } else if (n < nTargetValue + CENT) {
+              vValue.push_back(coin);
+              nTotalLower += n;
+          } else if (n < coinLowestLarger.first) {
+              coinLowestLarger = coin;
+          }
       }
-    }
 
-    if (nTotalLower == nTargetValue) {
-      for (unsigned int i = 0; i < vValue.size(); ++i) {
-        setCoinsRet.insert(vValue[i].second);
-        nValueRet += vValue[i].first;
+      if (nTotalLower == nTargetValue) {
+          for (unsigned int i = 0; i < vValue.size(); ++i) {
+              setCoinsRet.insert(vValue[i].second);
+              nValueRet += vValue[i].first;
+          }
+          return true;
       }
-      return true;
-    }
-
-    if (nTotalLower < nTargetValue) {
-      if (coinLowestLarger.second.first == NULL)  // there is no input larger than nTargetValue
-      {
-        if (tryDenom == 0)
-          // we didn't look at denom yet, let's do it
-          continue;
-        else
-          // we looked at everything possible and didn't find anything, no luck
-          return false;
+      
+      if (nTotalLower < nTargetValue) {
+          if (coinLowestLarger.second.first == NULL)  // there is no input larger than nTargetValue
+              {
+                  if (tryDenom == 0)
+                      // we didn't look at denom yet, let's do it
+                      continue;
+                  else
+                      // we looked at everything possible and didn't find anything, no luck
+                      return false;
+              }
+          setCoinsRet.insert(coinLowestLarger.second);
+          nValueRet += coinLowestLarger.first;
+          return true;
       }
-      setCoinsRet.insert(coinLowestLarger.second);
-      nValueRet += coinLowestLarger.first;
-      return true;
-    }
-
-    // nTotalLower > nTargetValue
-    break;
+      
+      // nTotalLower > nTargetValue
+      break;
   }
 
   // Solve subset sum by stochastic approximation

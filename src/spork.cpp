@@ -176,6 +176,7 @@ bool CSporkManager::CheckSignature(CSporkMessage& spork, bool fCheckSigner) {
   std::string errorMessage = "";
 
   /// HACK XXX
+#warning "Need to fix VerifyMessage"
   bool fValidWithNewKey = true;
   // bool fValidWithNewKey = obfuScationSigner.VerifyMessage(pubkeynew, spork.vchSig,strMessage, errorMessage);
 
