@@ -27,11 +27,11 @@ static const int COINBASE_MATURITY = 100;
 
 /** Flags for nSequence and nLockTime locks */
 enum {
-    /* Interpret sequence numbers as relative lock-time constraints. */
-    LOCKTIME_VERIFY_SEQUENCE = (1 << 0),
+  /* Interpret sequence numbers as relative lock-time constraints. */
+  LOCKTIME_VERIFY_SEQUENCE = (1 << 0),
 
-    /* Use GetMedianTimePast() instead of nTime for end point timestamp. */
-    LOCKTIME_MEDIAN_TIME_PAST = (1 << 1),
+  /* Use GetMedianTimePast() instead of nTime for end point timestamp. */
+  LOCKTIME_MEDIAN_TIME_PAST = (1 << 1),
 };
 
 /**
@@ -41,8 +41,8 @@ enum {
  * closest integer.
  */
 inline uint64_t GetMaxBlockSigOpsCount(uint64_t blockSize) {
-    auto nMbRoundedUp = 1 + ((blockSize - 1) / ONE_MEGABYTE);
-    return nMbRoundedUp * MAX_BLOCK_SIGOPS_PER_MB;
+  auto nMbRoundedUp = 1 + ((blockSize - 1) / ONE_MEGABYTE);
+  return nMbRoundedUp * MAX_BLOCK_SIGOPS_PER_MB;
 }
 
-#endif // BITCOIN_CONSENSUS_CONSENSUS_H
+#endif  // BITCOIN_CONSENSUS_CONSENSUS_H
