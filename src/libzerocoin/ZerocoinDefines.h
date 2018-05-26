@@ -10,7 +10,7 @@
 * @license    This project is released under the MIT license.
 **/
 // Copyright (c) 2017 The PIVX developers 
-// Copyright (c) 2081 The ClubChain developers
+// Copyright (c) 2018 The ClubChain developers
 
 #ifndef ZEROCOIN_DEFINES_H_
 #define ZEROCOIN_DEFINES_H_

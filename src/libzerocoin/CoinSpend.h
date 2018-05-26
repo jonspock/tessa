@@ -10,7 +10,7 @@
  * @license    This project is released under the MIT license.
  **/
 // Copyright (c) 2017-2018 The PIVX developers 
-// Copyright (c) 2081 The ClubChain developers
+// Copyright (c) 2018 The ClubChain developers
 
 #ifndef COINSPEND_H_
 #define COINSPEND_H_
