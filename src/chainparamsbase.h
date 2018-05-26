@@ -1,5 +1,5 @@
 // Copyright (c) 2014 The Bitcoin developers
-// Copyright (c) 2017 The PIVX developers 
+// Copyright (c) 2017 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -14,27 +14,26 @@
  * CBaseChainParams defines the base parameters (shared between club-cli and clubd)
  * of a given instance of the Club system.
  */
-class CBaseChainParams
-{
-public:
-    enum Network {
-        MAIN,
-        TESTNET,
-        REGTEST,
-        UNITTEST,
+class CBaseChainParams {
+ public:
+  enum Network {
+    MAIN,
+    TESTNET,
+    REGTEST,
+    UNITTEST,
 
-        MAX_NETWORK_TYPES
-    };
+    MAX_NETWORK_TYPES
+  };
 
-    const std::string& DataDir() const { return strDataDir; }
-    int RPCPort() const { return nRPCPort; }
+  const std::string& DataDir() const { return strDataDir; }
+  int RPCPort() const { return nRPCPort; }
 
-protected:
-    CBaseChainParams() {}
+ protected:
+  CBaseChainParams() {}
 
-    int nRPCPort;
-    std::string strDataDir;
-    Network networkID;
+  int nRPCPort;
+  std::string strDataDir;
+  Network networkID;
 };
 
 /**
@@ -64,4 +63,4 @@ bool SelectBaseParamsFromCommandLine();
  */
 bool AreBaseParamsConfigured();
 
-#endif // BITCOIN_CHAINPARAMSBASE_H
+#endif  // BITCOIN_CHAINPARAMSBASE_H

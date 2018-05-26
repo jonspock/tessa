@@ -33,14 +33,13 @@
 #include <boost/unordered_map.hpp>
 
 struct BlockHasher {
-    size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
+  size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
 };
 
 class CBlockIndex;
 class CBlockTreeDB;
 class CZerocoinDB;
 class CSporkDB;
-
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
@@ -75,7 +74,7 @@ extern int64_t nReserveBalance;
 extern std::map<uint256, int64_t> mapRejectedBlocks;
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
-extern std::map<uint256, int64_t> mapZerocoinspends; //txid, time received
+extern std::map<uint256, int64_t> mapZerocoinspends;  // txid, time received
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex* pindexBestHeader;
@@ -94,5 +93,3 @@ extern CZerocoinDB* zerocoinDB;
 
 /** Global variable that points to the spork database (protected by cs_main) */
 extern CSporkDB* pSporkDB;
-
- 

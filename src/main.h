@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2018 The PIVX developers 
+// Copyright (c) 2015-2018 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -12,15 +12,15 @@
 #include "config/club-config.h"
 #endif
 
-#include "mainfile.h"
+#include "main_constants.h"
 #include "main_externs.h"
 #include "main_functions.h"
-#include "main_constants.h"
+#include "mainfile.h"
 #include "scriptcheck.h"
 
 class CBloomFilter;
 class CInv;
-//class CScriptCheck;
+// class CScriptCheck;
 class CValidationInterface;
 class CValidationState;
 
@@ -49,9 +49,9 @@ void UnregisterNodeSignals(CNodeSignals& nodeSignals);
  * block is made active. Note that it does not, however, guarantee that the
  * specific block passed to it has been checked for validity!
  *
- * @param[out]  state   This may be set to an Error state if any error occurred processing it, including during 
- * validation/connection/etc of otherwise unrelated blocks during reorganisation; or it may be set to an Invalid 
- * state if pblock is itself invalid (but this is not guaranteed even when the block is checked). If you want to 
+ * @param[out]  state   This may be set to an Error state if any error occurred processing it, including during
+ * validation/connection/etc of otherwise unrelated blocks during reorganisation; or it may be set to an Invalid
+ * state if pblock is itself invalid (but this is not guaranteed even when the block is checked). If you want to
  * *possibly* get feedback on whether pblock is valid, you must also install a CValidationInterface - this will
  *  have its BlockChecked method called whenever *any* block completes validation.
  * @param[in]   pfrom   The node which we are receiving the block from; it is added to mapBlockSource and may be
@@ -112,49 +112,44 @@ void Misbehaving(NodeId nodeid, int howmuch);
 void FlushStateToDisk();
 
 /** (try to) add transaction to memory pool **/
-bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee = false, bool ignoreFees = false);
+bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree,
+                        bool* pfMissingInputs, bool fRejectInsaneFee = false, bool ignoreFees = false);
 
-bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee = false, bool isDSTX = false);
+bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree,
+                      bool* pfMissingInputs, bool fRejectInsaneFee = false, bool isDSTX = false);
 
 int GetInputAge(CTxIn& vin);
 int GetInputAgeIX(uint256 nTXHash, CTxIn& vin);
 bool GetCoinAge(const CTransaction& tx, unsigned int nTxTime, uint64_t& nCoinAge);
 
 struct CNodeStateStats {
-    int nMisbehavior;
-    int nSyncHeight;
-    int nCommonHeight;
-    std::vector<int> vHeightInFlight;
+  int nMisbehavior;
+  int nSyncHeight;
+  int nCommonHeight;
+  std::vector<int> vHeightInFlight;
 };
 
 struct CDiskTxPos : public CDiskBlockPos {
-    unsigned int nTxOffset; // after header
+  unsigned int nTxOffset;  // after header
 
-    ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS;
 
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(*(CDiskBlockPos*)this);
-        READWRITE(VARINT(nTxOffset));
-    }
+  template <typename Stream, typename Operation>
+  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+    READWRITE(*(CDiskBlockPos*)this);
+    READWRITE(VARINT(nTxOffset));
+  }
 
-    CDiskTxPos(const CDiskBlockPos& blockIn, unsigned int nTxOffsetIn) : CDiskBlockPos(blockIn.nFile, blockIn.nPos), nTxOffset(nTxOffsetIn)
-    {
-    }
+  CDiskTxPos(const CDiskBlockPos& blockIn, unsigned int nTxOffsetIn)
+      : CDiskBlockPos(blockIn.nFile, blockIn.nPos), nTxOffset(nTxOffsetIn) {}
 
-    CDiskTxPos()
-    {
-        SetNull();
-    }
+  CDiskTxPos() { SetNull(); }
 
-    void SetNull()
-    {
-        CDiskBlockPos::SetNull();
-        nTxOffset = 0;
-    }
+  void SetNull() {
+    CDiskBlockPos::SetNull();
+    nTxOffset = 0;
+  }
 };
-
 
 CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowFree);
 bool MoneyRange(CAmount nValueOut);
@@ -194,16 +189,17 @@ unsigned int GetLegacySigOpCount(const CTransaction& tx);
  */
 unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& mapInputs);
 
-
 /**
  * Check whether all inputs of this transaction are valid (no double spends, scripts & sigs, amounts)
  * This does not modify the UTXO set. If pvChecks is not NULL, script checks are pushed onto it
  * instead of being performed inline.
  */
-bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL);
+bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks,
+                 unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL);
 
 /** Apply the effects of this transaction on the UTXO set represented by view */
-void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
+void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCache& inputs, CTxUndo& txundo,
+                 int nHeight);
 
 /** Context-independent validity checks */
 bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationState& state);
@@ -213,7 +209,8 @@ bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::Coi
 libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin);
 bool BlockToPubcoinList(const CBlock& block, list<libzerocoin::PublicCoin>& listPubcoins, bool fFilterInvalid);
 bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints);
-bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom, std::vector<CBigNum>& vValues);
+bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom,
+                            std::vector<CBigNum>& vValues);
 std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block, bool fFilterInvalid);
 void FindMints(vector<CMintMeta> vMintsToFind, vector<CMintMeta>& vMintsToUpdate, vector<CMintMeta>& vMissingMints);
 bool GetZerocoinMint(const CBigNum& bnPubcoin, uint256& txHash);
@@ -231,7 +228,6 @@ void RecalculateZKPSpent();
 void RecalculateZKPMinted();
 bool RecalculateClubSupply(int nHeightStart);
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError);
-
 
 /**
  * Check if transaction will be final in the next block to be created.
@@ -263,8 +259,9 @@ private:
 
 public:
     CScriptCheck() : ptxTo(0), nIn(0), nFlags(0), cacheStore(false), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
-    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool cacheIn) : scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey),
-                                                                                                                                ptxTo(&txToIn), nIn(nInIn), nFlags(nFlagsIn), cacheStore(cacheIn), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
+    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool
+cacheIn) : scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey), ptxTo(&txToIn), nIn(nInIn),
+nFlags(nFlagsIn), cacheStore(cacheIn), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
 
     bool operator()();
 
@@ -287,12 +284,10 @@ bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos);
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos);
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex);
 
-
 /** Functions for validating blocks and updating the block tree */
 
 /** Reprocess a number of blocks to try and get on the correct chain again **/
 bool DisconnectBlocksAndReprocess(int blocks);
-
 
 /** Context-independent validity checks */
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW = true);
@@ -302,13 +297,15 @@ bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev);
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex* pindexPrev);
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindexPrev);
 
-/** Check a block is completely valid from start to finish (only works on top of our current best block, with cs_main held) */
-bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW = true, bool fCheckMerkleRoot = true);
+/** Check a block is completely valid from start to finish (only works on top of our current best block, with cs_main
+ * held) */
+bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW = true,
+                       bool fCheckMerkleRoot = true);
 
 /** Store block on disk. If dbp is provided, the file is known to already reside on disk */
-bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** pindex, CDiskBlockPos* dbp = NULL, bool fAlreadyCheckedBlock = false);
+bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** pindex, CDiskBlockPos* dbp = NULL,
+                 bool fAlreadyCheckedBlock = false);
 bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex** ppindex = NULL);
-
 
 /** Find the last common block between the parameter chain and a locator. */
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
@@ -320,27 +317,27 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex);
 bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 
 struct CBlockTemplate {
-    CBlock block;
-    std::vector<CAmount> vTxFees;
-    std::vector<int64_t> vTxSigOps;
+  CBlock block;
+  std::vector<CAmount> vTxFees;
+  std::vector<int64_t> vTxSigOps;
 };
 
-namespace
-{
-    
+namespace {
+
 /** Blocks that are in flight, and that are in the queue to be downloaded. Protected by cs_main. */
 struct QueuedBlock {
-    uint256 hash;
-    CBlockIndex* pindex;        //! Optional.
-    int64_t nTime;              //! Time of "getdata" request in microseconds.
-    int nValidatedQueuedBefore; //! Number of blocks queued with validated headers (globally) at the time this one is requested.
-    bool fValidatedHeaders;     //! Whether this block has validated headers at the time of request.
+  uint256 hash;
+  CBlockIndex* pindex;         //! Optional.
+  int64_t nTime;               //! Time of "getdata" request in microseconds.
+  int nValidatedQueuedBefore;  //! Number of blocks queued with validated headers (globally) at the time this one is
+                               //! requested.
+  bool fValidatedHeaders;      //! Whether this block has validated headers at the time of request.
 };
 
 struct CBlockReject {
-    unsigned char chRejectCode;
-    string strRejectReason;
-    uint256 hashBlock;
+  unsigned char chRejectCode;
+  string strRejectReason;
+  uint256 hashBlock;
 };
 /**
  * Maintain validation-specific state about nodes, protected by cs_main, instead
@@ -349,48 +346,46 @@ struct CBlockReject {
  * and we're no longer holding the node's locks.
  */
 struct CNodeState {
-    //! The peer's address
-    CService address;
-    //! Whether we have a fully established connection.
-    bool fCurrentlyConnected;
-    //! Accumulated misbehaviour score for this peer.
-    int nMisbehavior;
-    //! Whether this peer should be disconnected and banned (unless whitelisted).
-    bool fShouldBan;
-    //! String name of this peer (debugging/logging purposes).
-    std::string name;
-    //! List of asynchronously-determined block rejections to notify this peer about.
-    std::vector<CBlockReject> rejects;
-    //! The best known block we know this peer has announced.
-    CBlockIndex* pindexBestKnownBlock;
-    //! The hash of the last unknown block this peer has announced.
-    uint256 hashLastUnknownBlock;
-    //! The last full block we both have.
-    CBlockIndex* pindexLastCommonBlock;
-    //! Whether we've started headers synchronization with this peer.
-    bool fSyncStarted;
-    //! Since when we're stalling block download progress (in microseconds), or 0.
-    int64_t nStallingSince;
-    list<QueuedBlock> vBlocksInFlight;
-    int nBlocksInFlight;
-    //! Whether we consider this a preferred download peer.
-    bool fPreferredDownload;
+  //! The peer's address
+  CService address;
+  //! Whether we have a fully established connection.
+  bool fCurrentlyConnected;
+  //! Accumulated misbehaviour score for this peer.
+  int nMisbehavior;
+  //! Whether this peer should be disconnected and banned (unless whitelisted).
+  bool fShouldBan;
+  //! String name of this peer (debugging/logging purposes).
+  std::string name;
+  //! List of asynchronously-determined block rejections to notify this peer about.
+  std::vector<CBlockReject> rejects;
+  //! The best known block we know this peer has announced.
+  CBlockIndex* pindexBestKnownBlock;
+  //! The hash of the last unknown block this peer has announced.
+  uint256 hashLastUnknownBlock;
+  //! The last full block we both have.
+  CBlockIndex* pindexLastCommonBlock;
+  //! Whether we've started headers synchronization with this peer.
+  bool fSyncStarted;
+  //! Since when we're stalling block download progress (in microseconds), or 0.
+  int64_t nStallingSince;
+  list<QueuedBlock> vBlocksInFlight;
+  int nBlocksInFlight;
+  //! Whether we consider this a preferred download peer.
+  bool fPreferredDownload;
 
-    CNodeState()
-    {
-        fCurrentlyConnected = false;
-        nMisbehavior = 0;
-        fShouldBan = false;
-        pindexBestKnownBlock = NULL;
-        hashLastUnknownBlock = uint256(0);
-        pindexLastCommonBlock = NULL;
-        fSyncStarted = false;
-        nStallingSince = 0;
-        nBlocksInFlight = 0;
-        fPreferredDownload = false;
-    }
+  CNodeState() {
+    fCurrentlyConnected = false;
+    nMisbehavior = 0;
+    fShouldBan = false;
+    pindexBestKnownBlock = NULL;
+    hashLastUnknownBlock = uint256(0);
+    pindexLastCommonBlock = NULL;
+    fSyncStarted = false;
+    nStallingSince = 0;
+    nBlocksInFlight = 0;
+    fPreferredDownload = false;
+  }
 };
 
 CNodeState* State(NodeId pnode);
-}
-
+}  // namespace

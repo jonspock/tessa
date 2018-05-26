@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2016 The Dash developers
-// Copyright (c) 2016-2018 The PIVX developers 
+// Copyright (c) 2016-2018 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -31,9 +31,9 @@ using namespace boost;
 #define SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2 10002
 #define SPORK_ZEROCOIN_MAINTENANCE_MODE 10003
 
-#define SPORK_01_NEW_PROTOCOL_ENFORCEMENT_DEFAULT   4070908800   //OFF
-#define SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2_DEFAULT 4070908800   //OFF
-#define SPORK_ZEROCOIN_MAINTENANCE_MODE_DEFAULT  4070908800   //OFF
+#define SPORK_01_NEW_PROTOCOL_ENFORCEMENT_DEFAULT 4070908800    // OFF
+#define SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2_DEFAULT 4070908800  // OFF
+#define SPORK_ZEROCOIN_MAINTENANCE_MODE_DEFAULT 4070908800      // OFF
 
 class CSporkMessage;
 class CSporkManager;
@@ -53,51 +53,44 @@ void ReprocessBlocks(int nBlocks);
 // Keeps track of all of the network spork settings
 //
 
-class CSporkMessage
-{
-public:
-    std::vector<unsigned char> vchSig;
-    int nSporkID;
-    int64_t nValue;
-    int64_t nTimeSigned;
+class CSporkMessage {
+ public:
+  std::vector<unsigned char> vchSig;
+  int nSporkID;
+  int64_t nValue;
+  int64_t nTimeSigned;
 
-    uint256 GetHash()
-    {
-        uint256 n = Hash(BEGIN(nSporkID), END(nTimeSigned));
-        return n;
-    }
+  uint256 GetHash() {
+    uint256 n = Hash(BEGIN(nSporkID), END(nTimeSigned));
+    return n;
+  }
 
-    ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS;
 
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(nSporkID);
-        READWRITE(nValue);
-        READWRITE(nTimeSigned);
-        READWRITE(vchSig);
-    }
+  template <typename Stream, typename Operation>
+  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+    READWRITE(nSporkID);
+    READWRITE(nValue);
+    READWRITE(nTimeSigned);
+    READWRITE(vchSig);
+  }
 };
 
+class CSporkManager {
+ private:
+  std::vector<unsigned char> vchSig;
+  std::string strMasterPrivKey;
 
-class CSporkManager
-{
-private:
-    std::vector<unsigned char> vchSig;
-    std::string strMasterPrivKey;
+ public:
+  CSporkManager() {}
 
-public:
-    CSporkManager()
-    {
-    }
-
-    std::string GetSporkNameByID(int id);
-    int GetSporkIDByName(std::string strName);
-    bool UpdateSpork(int nSporkID, int64_t nValue);
-    bool SetPrivKey(std::string strPrivKey);
-    bool CheckSignature(CSporkMessage& spork, bool fCheckSigner = false);
-    bool Sign(CSporkMessage& spork);
-    void Relay(CSporkMessage& msg);
+  std::string GetSporkNameByID(int id);
+  int GetSporkIDByName(std::string strName);
+  bool UpdateSpork(int nSporkID, int64_t nValue);
+  bool SetPrivKey(std::string strPrivKey);
+  bool CheckSignature(CSporkMessage& spork, bool fCheckSigner = false);
+  bool Sign(CSporkMessage& spork);
+  void Relay(CSporkMessage& msg);
 };
 
 #endif

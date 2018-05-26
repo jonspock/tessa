@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017 The PIVX developers 
+// Copyright (c) 2017 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -13,19 +13,18 @@
 
 class CBlockIndex;
 
-/** 
+/**
  * Block-chain checkpoints are compiled-in sanity checks.
  * They are updated every release or three.
  */
-namespace Checkpoints
-{
+namespace Checkpoints {
 typedef std::map<int, uint256> MapCheckpoints;
 
 struct CCheckpointData {
-    const MapCheckpoints* mapCheckpoints;
-    int64_t nTimeLastCheckpoint;
-    int64_t nTransactionsLastCheckpoint;
-    double fTransactionsPerDay;
+  const MapCheckpoints* mapCheckpoints;
+  int64_t nTimeLastCheckpoint;
+  int64_t nTransactionsLastCheckpoint;
+  double fTransactionsPerDay;
 };
 
 //! Returns true if block passes checkpoint checks
@@ -41,6 +40,6 @@ double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks = true);
 
 extern bool fEnabled;
 
-} //namespace Checkpoints
+}  // namespace Checkpoints
 
-#endif // BITCOIN_CHECKPOINTS_H
+#endif  // BITCOIN_CHECKPOINTS_H

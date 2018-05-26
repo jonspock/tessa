@@ -5,4 +5,3 @@ class CZkpWallet;
 
 extern CWallet* pwalletMain;
 extern CZkpWallet* zwalletMain;
-

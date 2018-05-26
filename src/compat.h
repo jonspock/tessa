@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017-2018 The PIVX developers 
+// Copyright (c) 2017-2018 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -24,11 +24,11 @@
 #define NOMINMAX
 #endif
 #ifdef FD_SETSIZE
-#undef FD_SETSIZE // prevent redefinition compiler warning
+#undef FD_SETSIZE  // prevent redefinition compiler warning
 #endif
-#define FD_SETSIZE 1024 // max number of fds in fd_set
+#define FD_SETSIZE 1024  // max number of fds in fd_set
 
-#include <winsock2.h> // Must be included before mswsock.h and windows.h
+#include <winsock2.h>  // Must be included before mswsock.h and windows.h
 
 #include <mswsock.h>
 #include <windows.h>
@@ -91,16 +91,15 @@ typedef u_int SOCKET;
 #endif
 
 #if HAVE_DECL_STRNLEN == 0
-size_t strnlen( const char *start, size_t max_len);
-#endif // HAVE_DECL_STRNLEN
+size_t strnlen(const char *start, size_t max_len);
+#endif  // HAVE_DECL_STRNLEN
 
-bool static inline IsSelectableSocket(SOCKET s)
-{
+bool static inline IsSelectableSocket(SOCKET s) {
 #ifdef WIN32
-    return true;
+  return true;
 #else
-    return (s < FD_SETSIZE);
+  return (s < FD_SETSIZE);
 #endif
 }
 
-#endif // BITCOIN_COMPAT_H
+#endif  // BITCOIN_COMPAT_H

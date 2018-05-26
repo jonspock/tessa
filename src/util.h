@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2018 The PIVX developers 
+// Copyright (c) 2015-2018 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -30,7 +30,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread/exceptions.hpp>
 
-//Club only features
+// Club only features
 
 extern int keysLoaded;
 extern bool fSucessfullyLoaded;
@@ -60,21 +60,18 @@ int LogPrintStr(const std::string& str);
  * When we switch to C++11, this can be switched to variadic templates instead
  * of this macro-based construction (see tinyformat.h).
  */
-#define MAKE_ERROR_AND_LOG_FUNC(n)                                                              \
-    /**   Print to debug.log if -debug=category switch is given OR category is NULL. */         \
-    template <TINYFORMAT_ARGTYPES(n)>                                                           \
-    static inline int LogPrint(const char* category, const char* format, TINYFORMAT_VARARGS(n)) \
-    {                                                                                           \
-        if (!LogAcceptCategory(category)) return 0;                                             \
-        return LogPrintStr(tfm::format(format, TINYFORMAT_PASSARGS(n)));                        \
-    }                                                                                           \
-    /**   Log error and return false */                                                         \
-    template <TINYFORMAT_ARGTYPES(n)>                                                           \
-    static inline bool error(const char* format, TINYFORMAT_VARARGS(n))                         \
-    {                                                                                           \
-        LogPrintStr(std::string("ERROR: ") + tfm::format(format, TINYFORMAT_PASSARGS(n)) + "\n");            \
-        return false;                                                                           \
-    }
+#define MAKE_ERROR_AND_LOG_FUNC(n)                                                                        \
+  /**   Print to debug.log if -debug=category switch is given OR category is NULL. */                     \
+  template <TINYFORMAT_ARGTYPES(n)>                                                                       \
+  static inline int LogPrint(const char* category, const char* format, TINYFORMAT_VARARGS(n)) {           \
+    if (!LogAcceptCategory(category)) return 0;                                                           \
+    return LogPrintStr(tfm::format(format, TINYFORMAT_PASSARGS(n)));                                      \
+  }                                                                                                       \
+  /**   Log error and return false */                                                                     \
+  template <TINYFORMAT_ARGTYPES(n)> static inline bool error(const char* format, TINYFORMAT_VARARGS(n)) { \
+    LogPrintStr(std::string("ERROR: ") + tfm::format(format, TINYFORMAT_PASSARGS(n)) + "\n");             \
+    return false;                                                                                         \
+  }
 
 TINYFORMAT_FOREACH_ARGNUM(MAKE_ERROR_AND_LOG_FUNC)
 
@@ -82,15 +79,13 @@ TINYFORMAT_FOREACH_ARGNUM(MAKE_ERROR_AND_LOG_FUNC)
  * Zero-arg versions of logging and error, these are not covered by
  * TINYFORMAT_FOREACH_ARGNUM
  */
-static inline int LogPrint(const char* category, const char* format)
-{
-    if (!LogAcceptCategory(category)) return 0;
-    return LogPrintStr(format);
+static inline int LogPrint(const char* category, const char* format) {
+  if (!LogAcceptCategory(category)) return 0;
+  return LogPrintStr(format);
 }
-static inline bool error(const char* format)
-{
-    LogPrintStr(std::string("ERROR: ") + format + "\n");
-    return false;
+static inline bool error(const char* format) {
+  LogPrintStr(std::string("ERROR: ") + format + "\n");
+  return false;
 }
 
 double double_safe_addition(double fValue, double fIncrement);
@@ -110,7 +105,8 @@ boost::filesystem::path GetConfigFile();
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path& path, pid_t pid);
 #endif
-void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
+void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
+                    std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
 #ifdef WIN32
 boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 #endif
@@ -118,12 +114,11 @@ boost::filesystem::path GetTempPath();
 void ShrinkDebugFile();
 void runCommand(std::string strCommand);
 
-inline bool IsSwitchChar(char c)
-{
+inline bool IsSwitchChar(char c) {
 #ifdef WIN32
-    return c == '-' || c == '/';
+  return c == '-' || c == '/';
 #else
-    return c == '-';
+  return c == '-';
 #endif
 }
 
@@ -195,25 +190,23 @@ void RenameThread(const char* name);
 /**
  * .. and a wrapper that just calls func once
  */
-template <typename Callable>
-void TraceThread(const char* name, Callable func)
-{
-    std::string s = strprintf("club-%s", name);
-    RenameThread(s.c_str());
-    try {
-        LogPrintf("%s thread start\n", name);
-        func();
-        LogPrintf("%s thread exit\n", name);
-    } catch (boost::thread_interrupted) {
-        LogPrintf("%s thread interrupt\n", name);
-        throw;
-    } catch (std::exception& e) {
-        PrintExceptionContinue(&e, name);
-        throw;
-    } catch (...) {
-        PrintExceptionContinue(NULL, name);
-        throw;
-    }
+template <typename Callable> void TraceThread(const char* name, Callable func) {
+  std::string s = strprintf("club-%s", name);
+  RenameThread(s.c_str());
+  try {
+    LogPrintf("%s thread start\n", name);
+    func();
+    LogPrintf("%s thread exit\n", name);
+  } catch (boost::thread_interrupted) {
+    LogPrintf("%s thread interrupt\n", name);
+    throw;
+  } catch (std::exception& e) {
+    PrintExceptionContinue(&e, name);
+    throw;
+  } catch (...) {
+    PrintExceptionContinue(NULL, name);
+    throw;
+  }
 }
 
-#endif // BITCOIN_UTIL_H
+#endif  // BITCOIN_UTIL_H

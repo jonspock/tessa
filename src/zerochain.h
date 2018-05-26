@@ -6,8 +6,8 @@
 #pragma once
 
 #include "libzerocoin/Coin.h"
-#include "libzerocoin/Denominations.h"
 #include "libzerocoin/CoinSpend.h"
+#include "libzerocoin/Denominations.h"
 #include <list>
 #include <string>
 
@@ -21,10 +21,12 @@ class CValidationState;
 class CZerocoinMint;
 class uint256;
 
-bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom, std::vector<CBigNum>& vValues);
+bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom,
+                            std::vector<CBigNum>& vValues);
 bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins, bool fFilterInvalid);
 bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints);
-void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMintsToUpdate, std::vector<CMintMeta>& vMissingMints);
+void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMintsToUpdate,
+               std::vector<CMintMeta>& vMissingMints);
 int GetZerocoinStartHeight();
 bool GetZerocoinMint(const CBigNum& bnPubcoin, uint256& txHash);
 bool IsPubcoinInBlockchain(const uint256& hashPubcoin, uint256& txid);
@@ -37,5 +39,3 @@ std::string ReindexZerocoinDB();
 libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin);
 bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CValidationState& state);
 std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block);
-
-

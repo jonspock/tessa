@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2016 The PIVX developers 
+// Copyright (c) 2016 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -34,4 +34,4 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake);
 extern double dHashesPerSec;
 extern int64_t nHPSTimerStart;
 
-#endif // BITCOIN_MINER_H
+#endif  // BITCOIN_MINER_H

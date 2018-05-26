@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017 The PIVX developers 
+// Copyright (c) 2017 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -52,56 +52,47 @@ int atoi(const std::string& str);
  * @returns true if the entire string could be parsed as valid integer,
  *   false if not the entire string could be parsed or when overflow or underflow occurred.
  */
-bool ParseInt32(const std::string& str, int32_t *out);
+bool ParseInt32(const std::string& str, int32_t* out);
 
 /**
  * Convert string to signed 64-bit integer with strict parse error feedback.
  * @returns true if the entire string could be parsed as valid integer,
  *   false if not the entire string could be parsed or when overflow or underflow occurred.
  */
-bool ParseInt64(const std::string& str, int64_t *out);
+bool ParseInt64(const std::string& str, int64_t* out);
 
 /**
  * Convert string to double with strict parse error feedback.
  * @returns true if the entire string could be parsed as valid double,
  *   false if not the entire string could be parsed or when overflow or underflow occurred.
  */
-bool ParseDouble(const std::string& str, double *out);
+bool ParseDouble(const std::string& str, double* out);
 
-template <typename T>
-std::string HexStr(const T itbegin, const T itend, bool fSpaces = false)
-{
-    std::string rv;
-    static const char hexmap[16] = {'0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-    rv.reserve((itend - itbegin) * 3);
-    for (T it = itbegin; it < itend; ++it) {
-        unsigned char val = (unsigned char)(*it);
-        if (fSpaces && it != itbegin)
-            rv.push_back(' ');
-        rv.push_back(hexmap[val >> 4]);
-        rv.push_back(hexmap[val & 15]);
-    }
+template <typename T> std::string HexStr(const T itbegin, const T itend, bool fSpaces = false) {
+  std::string rv;
+  static const char hexmap[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+  rv.reserve((itend - itbegin) * 3);
+  for (T it = itbegin; it < itend; ++it) {
+    unsigned char val = (unsigned char)(*it);
+    if (fSpaces && it != itbegin) rv.push_back(' ');
+    rv.push_back(hexmap[val >> 4]);
+    rv.push_back(hexmap[val & 15]);
+  }
 
-    return rv;
+  return rv;
 }
 
-template <typename T>
-inline std::string HexStr(const T& vch, bool fSpaces = false)
-{
-    return HexStr(vch.begin(), vch.end(), fSpaces);
+template <typename T> inline std::string HexStr(const T& vch, bool fSpaces = false) {
+  return HexStr(vch.begin(), vch.end(), fSpaces);
 }
 
 /** Reverse the endianess of a string */
-inline std::string ReverseEndianString(std::string in)
-{
-    std::string out = "";
-    unsigned int s = in.size();
-    for (unsigned int i = 0; i < s; i += 2) {
-        out += in.substr(s - i - 2, 2);
-    }
+inline std::string ReverseEndianString(std::string in) {
+  std::string out = "";
+  unsigned int s = in.size();
+  for (unsigned int i = 0; i < s; i += 2) { out += in.substr(s - i - 2, 2); }
 
-    return out;
+  return out;
 }
 
 /**
@@ -115,14 +106,11 @@ std::string FormatParagraph(const std::string in, size_t width = 79, size_t inde
  * Takes time proportional to length
  * of first argument.
  */
-template <typename T>
-bool TimingResistantEqual(const T& a, const T& b)
-{
-    if (b.size() == 0) return a.size() == 0;
-    size_t accumulator = a.size() ^ b.size();
-    for (size_t i = 0; i < a.size(); i++)
-        accumulator |= a[i] ^ b[i % b.size()];
-    return accumulator == 0;
+template <typename T> bool TimingResistantEqual(const T& a, const T& b) {
+  if (b.size() == 0) return a.size() == 0;
+  size_t accumulator = a.size() ^ b.size();
+  for (size_t i = 0; i < a.size(); i++) accumulator |= a[i] ^ b[i % b.size()];
+  return accumulator == 0;
 }
 
-#endif // BITCOIN_UTILSTRENCODINGS_H
+#endif  // BITCOIN_UTILSTRENCODINGS_H

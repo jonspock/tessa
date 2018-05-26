@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The PIVX developers 
+// Copyright (c) 2017 The PIVX developers
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,7 +10,6 @@
 #include "uint256.h"
 
 #include <string>
-
 
 /** 39 bytes - 78 characters
  * 1) Prefix - 2 bytes - 4 chars - strKey[0..3]
@@ -38,4 +37,4 @@ bool BIP38_Decrypt(std::string strPassphrase, std::string strEncryptedKey, uint2
 
 std::string AddressToBip38Hash(std::string address);
 
-#endif // BIP38_H
+#endif  // BIP38_H
