@@ -39,7 +39,7 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "zerochain.h"
-
+#include "reverse_iterate.h"
 #include "libzerocoin/Denominations.h"
 #include "primitives/zerocoin.h"
 
@@ -2486,7 +2486,7 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
     nHeight = nTargetHeight;
 
     // Connect new blocks.
-    BOOST_REVERSE_FOREACH(CBlockIndex * pindexConnect, vpindexToConnect) {
+    for( CBlockIndex * pindexConnect : reverse_iterate(vpindexToConnect)) {
       if (!ConnectTip(state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
         if (state.IsInvalid()) {
           // The block violates a consensus rule.
@@ -3344,12 +3344,12 @@ bool static LoadBlockIndexDB(string& strError) {
   // Calculate nChainWork
   vector<pair<int, CBlockIndex*> > vSortedByHeight;
   vSortedByHeight.reserve(mapBlockIndex.size());
-  for (const PAIRTYPE(uint256, CBlockIndex*) & item : mapBlockIndex) {
+  for (const auto& item : mapBlockIndex) {
     CBlockIndex* pindex = item.second;
     vSortedByHeight.push_back(make_pair(pindex->nHeight, pindex));
   }
   sort(vSortedByHeight.begin(), vSortedByHeight.end());
-  for (const PAIRTYPE(int, CBlockIndex*) & item : vSortedByHeight) {
+  for (const auto& item : vSortedByHeight) {
     CBlockIndex* pindex = item.second;
     pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
     if (pindex->nStatus & BLOCK_HAVE_DATA) {
@@ -3393,7 +3393,7 @@ bool static LoadBlockIndexDB(string& strError) {
   // Check presence of blk files
   LogPrintf("Checking all blk files are present...\n");
   set<int> setBlkDataFiles;
-  for (const PAIRTYPE(uint256, CBlockIndex*) & item : mapBlockIndex) {
+  for (const auto& item : mapBlockIndex) {
     CBlockIndex* pindex = item.second;
     if (pindex->nStatus & BLOCK_HAVE_DATA) { setBlkDataFiles.insert(pindex->nFile); }
   }

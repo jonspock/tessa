@@ -74,7 +74,7 @@ void RPCTypeCheck(const UniValue& params, const list<UniValue::VType>& typesExpe
 }
 
 void RPCTypeCheckObj(const UniValue& o, const map<string, UniValue::VType>& typesExpected, bool fAllowNull) {
-  for (const PAIRTYPE(string, UniValue::VType) & t : typesExpected) {
+  for (const auto& t : typesExpected) {
     const UniValue& v = find_value(o, t.first);
     if (!fAllowNull && v.isNull()) throw JSONRPCError(RPC_TYPE_ERROR, strprintf("Missing %s", t.first));
 
@@ -150,7 +150,7 @@ string CRPCTable::help(string strCommand) const {
     vCommands.push_back(make_pair(mi->second->category + mi->first, mi->second));
   sort(vCommands.begin(), vCommands.end());
 
-  for (const PAIRTYPE(string, const CRPCCommand*) & command : vCommands) {
+  for (const auto& command : vCommands) {
     const CRPCCommand* pcmd = command.second;
     string strMethod = pcmd->name;
     // We already filter duplicates, but these deprecated screw up the sort order
