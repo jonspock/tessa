@@ -24,14 +24,12 @@
 #include "libzerocoin/Coin.h"
 #include "primitives/deterministicmint.h"
 #include "spork.h"
-#include <boost/assign/list_of.hpp>
 #include <boost/thread/thread.hpp>
 
 #include <univalue.h>
 
 using namespace std;
 using namespace boost;
-using namespace boost::assign;
 
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
@@ -1944,9 +1942,9 @@ UniValue lockunspent(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   if (params.size() == 1)
-    RPCTypeCheck(params, boost::assign::list_of(UniValue::VBOOL));
+      RPCTypeCheck(params, {UniValue::VBOOL});
   else
-    RPCTypeCheck(params, boost::assign::list_of(UniValue::VBOOL)(UniValue::VARR));
+      RPCTypeCheck(params, {UniValue::VBOOL,UniValue::VARR});
 
   bool fUnlock = params[0].get_bool();
 
@@ -1961,7 +1959,7 @@ UniValue lockunspent(const UniValue& params, bool fHelp) {
     if (!output.isObject()) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected object");
     const UniValue& o = output.get_obj();
 
-    RPCTypeCheckObj(o, boost::assign::map_list_of("txid", UniValue::VSTR)("vout", UniValue::VNUM));
+    RPCTypeCheckObj(o, { {"txid", UniValue::VSTR},{"vout", UniValue::VNUM} });
 
     string txid = find_value(o, "txid").get_str();
     if (!IsHex(txid)) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected hex txid");
@@ -2614,9 +2612,9 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   if (params.size() == 1) {
-    RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM));
+      RPCTypeCheck(params, {UniValue::VNUM});
   } else {
-    RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM)(UniValue::VARR));
+      RPCTypeCheck(params, {UniValue::VNUM,UniValue::VARR});
   }
 
   int64_t nTime = GetTimeMillis();
@@ -2639,8 +2637,8 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
       if (!output.isObject()) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected object");
       const UniValue& o = output.get_obj();
 
-      RPCTypeCheckObj(o, boost::assign::map_list_of("txid", UniValue::VSTR)("vout", UniValue::VNUM));
-
+      RPCTypeCheckObj(o, { {"txid", UniValue::VSTR},{"vout", UniValue::VNUM} });
+      
       string txid = find_value(o, "txid").get_str();
       if (!IsHex(txid)) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected hex txid");
 
@@ -3074,7 +3072,7 @@ UniValue importzerocoins(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked();
 
-  RPCTypeCheck(params, list_of(UniValue::VARR)(UniValue::VOBJ));
+  RPCTypeCheck(params, {UniValue::VARR,UniValue::VOBJ});
   UniValue arrMints = params[0].get_array();
   CWalletDB walletdb(pwalletMain->strWalletFile);
 
