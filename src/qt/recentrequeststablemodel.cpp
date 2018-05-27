@@ -19,8 +19,7 @@ RecentRequestsTableModel::RecentRequestsTableModel(CWallet* wallet, WalletModel*
   // Load entries from wallet
   std::vector<std::string> vReceiveRequests;
   parent->loadReceiveRequests(vReceiveRequests);
-  for (const std::string& request : vReceiveRequests)
-    addNewRequest(request);
+  for (const std::string& request : vReceiveRequests) addNewRequest(request);
 
   /* These columns must match the indices in the ColumnIndex enumeration */
   columns << tr("Date") << tr("Label") << tr("Message") << getAmountTitle();
@@ -28,7 +27,8 @@ RecentRequestsTableModel::RecentRequestsTableModel(CWallet* wallet, WalletModel*
   connect(walletModel->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
 }
 
-RecentRequestsTableModel::~RecentRequestsTableModel() { /* Intentionally left empty */ }
+RecentRequestsTableModel::~RecentRequestsTableModel() { /* Intentionally left empty */
+}
 
 int RecentRequestsTableModel::rowCount(const QModelIndex& parent) const {
   Q_UNUSED(parent);

@@ -74,7 +74,7 @@ class PeerTablePriv {
     {
       TRY_LOCK(cs_main, lockMain);
       if (lockMain) {
-          for (CNodeCombinedStats& stats : cachedNodeStats)
+        for (CNodeCombinedStats& stats : cachedNodeStats)
           stats.fNodeStateStatsAvailable = GetNodeStateStats(stats.nodeStats.nodeid, stats.nodeStateStats);
       }
     }

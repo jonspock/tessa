@@ -154,8 +154,7 @@ QString TransactionDesc::toHTML(CWallet* wallet, CWalletTx& wtx, TransactionReco
     // Coinbase
     //
     CAmount nUnmatured = 0;
-    for (const CTxOut& txout : wtx.vout)
-      nUnmatured += wallet->GetCredit(txout, ISMINE_ALL);
+    for (const CTxOut& txout : wtx.vout) nUnmatured += wallet->GetCredit(txout, ISMINE_ALL);
     strHTML += "<b>" + tr("Credit") + ":</b> ";
     if (wtx.IsInMainChain())
       strHTML += BitcoinUnits::formatHtmlWithUnit(unit, nUnmatured) + " (" +
@@ -228,11 +227,11 @@ QString TransactionDesc::toHTML(CWallet* wallet, CWalletTx& wtx, TransactionReco
       //
       // Mixed debit transaction
       //
-        for (const CTxIn& txin : wtx.vin)
+      for (const CTxIn& txin : wtx.vin)
         if (wallet->IsMine(txin))
           strHTML += "<b>" + tr("Debit") + ":</b> " +
                      BitcoinUnits::formatHtmlWithUnit(unit, -wallet->GetDebit(txin, ISMINE_ALL)) + "<br>";
-        for (const CTxOut& txout : wtx.vout)
+      for (const CTxOut& txout : wtx.vout)
         if (wallet->IsMine(txout))
           strHTML += "<b>" + tr("Credit") + ":</b> " +
                      BitcoinUnits::formatHtmlWithUnit(unit, wallet->GetCredit(txout, ISMINE_ALL)) + "<br>";

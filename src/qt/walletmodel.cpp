@@ -630,7 +630,7 @@ void WalletModel::listZerocoinMints(std::set<CMintMeta>& setMints, bool fUnusedO
 void WalletModel::loadReceiveRequests(std::vector<std::string>& vReceiveRequests) {
   LOCK(wallet->cs_wallet);
   for (const auto& item : wallet->mapAddressBook)
-      for (const auto& item2 : item.second.destdata)
+    for (const auto& item2 : item.second.destdata)
       if (item2.first.size() > 2 && item2.first.substr(0, 2) == "rr")  // receive request
         vReceiveRequests.push_back(item2.second);
 }
