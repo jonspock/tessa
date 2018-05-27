@@ -11,8 +11,8 @@
 #include "main.h"
 #include "uint256.h"
 
-#include <cstdint>
 #include "reverse_iterate.h"
+#include <cstdint>
 
 namespace Checkpoints {
 /**

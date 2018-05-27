@@ -71,9 +71,9 @@ static bool AppInitRPC(int argc, char* argv[]) {
   // Parameters
   //
   ParseParameters(argc, argv);
-  if (argc < 2 || mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
+  if (argc < 2 || gArgs.IsArgSet("-?") || gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version")) {
     std::string strUsage = _("Club Core RPC client version") + " " + FormatFullVersion() + "\n";
-    if (!mapArgs.count("-version")) {
+    if (!gArgs.IsArgSet("-version")) {
       strUsage += "\n" + _("Usage:") + "\n" + "  club-cli [options] <command> [params]  " +
                   _("Send command to Club Core") + "\n" + "  club-cli [options] help                " +
                   _("List commands") + "\n" + "  club-cli [options] help <command>      " +
@@ -86,11 +86,11 @@ static bool AppInitRPC(int argc, char* argv[]) {
     return false;
   }
   if (!boost::filesystem::is_directory(GetDataDir(false))) {
-    fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", mapArgs["-datadir"].c_str());
+    fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", gArgs.GetArg("-datadir", "").c_str());
     return false;
   }
   try {
-    ReadConfigFile(mapArgs, mapMultiArgs);
+    ReadConfigFile();
   } catch (std::exception& e) {
     fprintf(stderr, "Error reading configuration file: %s\n", e.what());
     return false;
@@ -154,7 +154,7 @@ UniValue CallRPC(const string& strMethod, const UniValue& params) {
 
   // Get credentials
   std::string strRPCUserColonPass;
-  if (mapArgs["-rpcpassword"] == "") {
+  if (gArgs.GetArg("-rpcpassword", "") == "") {
     // Try fall back to cookie-based authentication if no password is provided
     if (!GetAuthCookie(&strRPCUserColonPass)) {
       throw runtime_error(strprintf(_("Could not locate RPC credentials. No authentication cookie could be found, and "
@@ -162,7 +162,7 @@ UniValue CallRPC(const string& strMethod, const UniValue& params) {
                                     GetConfigFile().string().c_str()));
     }
   } else {
-    strRPCUserColonPass = mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"];
+    strRPCUserColonPass = gArgs.GetArg("-rpcuser", "") + ":" + gArgs.GetArg("-rpcpassword", "");
   }
 
   struct evkeyvalq* output_headers = evhttp_request_get_output_headers(req);

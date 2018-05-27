@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Bitcoin Core developers
+// Copyright (c) 2015-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -29,28 +29,26 @@ CZMQNotificationInterface::~CZMQNotificationInterface()
     }
 }
 
-CZMQNotificationInterface* CZMQNotificationInterface::CreateWithArguments(const std::map<std::string, std::string> &args)
+CZMQNotificationInterface* CZMQNotificationInterface::Create()
 {
-    CZMQNotificationInterface* notificationInterface = NULL;
+    CZMQNotificationInterface* notificationInterface = nullptr;
     std::map<std::string, CZMQNotifierFactory> factories;
     std::list<CZMQAbstractNotifier*> notifiers;
 
     factories["pubhashblock"] = CZMQAbstractNotifier::Create<CZMQPublishHashBlockNotifier>;
     factories["pubhashtx"] = CZMQAbstractNotifier::Create<CZMQPublishHashTransactionNotifier>;
-    factories["pubhashtxlock"] = CZMQAbstractNotifier::Create<CZMQPublishHashTransactionLockNotifier>;
     factories["pubrawblock"] = CZMQAbstractNotifier::Create<CZMQPublishRawBlockNotifier>;
     factories["pubrawtx"] = CZMQAbstractNotifier::Create<CZMQPublishRawTransactionNotifier>;
-    factories["pubrawtxlock"] = CZMQAbstractNotifier::Create<CZMQPublishRawTransactionLockNotifier>;
 
-    for (std::map<std::string, CZMQNotifierFactory>::const_iterator i=factories.begin(); i!=factories.end(); ++i)
+    for (const auto& entry : factories)
     {
-        std::map<std::string, std::string>::const_iterator j = args.find("-zmq" + i->first);
-        if (j!=args.end())
+        std::string arg("-zmq" + entry.first);
+        if (gArgs.IsArgSet(arg))
         {
-            CZMQNotifierFactory factory = i->second;
-            std::string address = j->second;
+            CZMQNotifierFactory factory = entry.second;
+            std::string address = gArgs.GetArg(arg, "");
             CZMQAbstractNotifier *notifier = factory();
-            notifier->SetType(i->first);
+            notifier->SetType(entry.first);
             notifier->SetAddress(address);
             notifiers.push_back(notifier);
         }
@@ -64,7 +62,7 @@ CZMQNotificationInterface* CZMQNotificationInterface::CreateWithArguments(const 
         if (!notificationInterface->Initialize())
         {
             delete notificationInterface;
-            notificationInterface = NULL;
+            notificationInterface = nullptr;
         }
     }
 

@@ -525,8 +525,8 @@ int main(int argc, char* argv[]) {
 
   // Show help message immediately after parsing command-line options (for "-lang") and setting locale,
   // but before showing splash screen.
-  if (mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
-    HelpMessageDialog help(NULL, mapArgs.count("-version"));
+  if (gArgs.IsArgSet("-?") || gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version")) {
+    HelpMessageDialog help(NULL, gArgs.IsArgSet("-version"));
     help.showOrPrint();
     return 1;
   }
@@ -540,11 +540,11 @@ int main(int argc, char* argv[]) {
   if (!boost::filesystem::is_directory(GetDataDir(false))) {
     QMessageBox::critical(0, QObject::tr("Club Core"),
                           QObject::tr("Error: Specified data directory \"%1\" does not exist.")
-                              .arg(QString::fromStdString(mapArgs["-datadir"])));
+                          .arg(QString::fromStdString(gArgs.GetArg("-datadir",""))));
     return 1;
   }
   try {
-    ReadConfigFile(mapArgs, mapMultiArgs);
+    ReadConfigFile();
   } catch (std::exception& e) {
     QMessageBox::critical(
         0, QObject::tr("Club Core"),

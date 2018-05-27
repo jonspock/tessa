@@ -1170,10 +1170,10 @@ void static ProcessOneShot() {
 
 void ThreadOpenConnections() {
   // Connect to specific addresses
-  if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0) {
+  if (gArgs.IsArgSet("-connect")) {
     for (int64_t nLoop = 0;; nLoop++) {
       ProcessOneShot();
-      for (string strAddr : mapMultiArgs["-connect"]) {
+      for (auto strAddr : gArgs.GetArgs("-connect")) {
         CAddress addr;
         OpenNetworkConnection(addr, NULL, strAddr.c_str());
         for (int i = 0; i < 10 && i < nLoop; i++) { MilliSleep(500); }
@@ -1255,7 +1255,7 @@ void ThreadOpenConnections() {
 void ThreadOpenAddedConnections() {
   {
     LOCK(cs_vAddedNodes);
-    vAddedNodes = mapMultiArgs["-addnode"];
+    vAddedNodes = gArgs.GetArgs("-addnode");
   }
 
   if (HaveNameProxy()) {
@@ -1952,12 +1952,12 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend) {
   // The -*messagestest options are intentionally not documented in the help message,
   // since they are only used during development to debug the networking code and are
   // not intended for end-users.
-  if (mapArgs.count("-dropmessagestest") && GetRand(GetArg("-dropmessagestest", 2)) == 0) {
+  if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "2")) == 0)) {
     LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
     AbortMessage();
     return;
   }
-  if (mapArgs.count("-fuzzmessagestest")) Fuzz(GetArg("-fuzzmessagestest", 10));
+  if (gArgs.IsArgSet("-fuzzmessagestest")) Fuzz(GetArg("-fuzzmessagestest", 10));
 
   if (ssSend.size() == 0) {
     LEAVE_CRITICAL_SECTION(cs_vSend);

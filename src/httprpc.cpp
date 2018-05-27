@@ -139,7 +139,7 @@ static bool HTTPReq_JSONRPC(HTTPRequest* req, const std::string&) {
 }
 
 static bool InitRPCAuthentication() {
-  if (mapArgs["-rpcpassword"] == "") {
+  if (gArgs.GetArg("-rpcpassword", "") == "") {
     LogPrintf("No rpcpassword set - using random cookie authentication\n");
     if (!GenerateAuthCookie(&strRPCUserColonPass)) {
       uiInterface.ThreadSafeMessageBox(
@@ -148,7 +148,7 @@ static bool InitRPCAuthentication() {
       return false;
     }
   } else {
-    strRPCUserColonPass = mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"];
+    strRPCUserColonPass = gArgs.GetArg("-rpcuser", "") + ":" + gArgs.GetArg("-rpcpassword", "");
   }
   return true;
 }

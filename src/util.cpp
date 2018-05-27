@@ -81,27 +81,18 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/program_options/detail/config_file.hpp>
 #include <boost/thread.hpp>
 
 #include <openssl/conf.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 
-namespace boost {
-namespace program_options {
-std::string to_internal(const std::string&);
-}
-
-}  // namespace boost
-
 using namespace std;
+ArgsManager gArgs;
 
 // Club only features
 /** Spork enforcement enabled time */
 bool fSucessfullyLoaded = false;
-map<string, string> mapArgs;
-map<string, vector<string> > mapMultiArgs;
 bool fDebug = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
@@ -196,7 +187,7 @@ bool LogAcceptCategory(const char* category) {
     // global destructor calls LogPrint()
     static boost::thread_specific_ptr<set<string> > ptrCategory;
     if (ptrCategory.get() == NULL) {
-      const vector<string>& categories = mapMultiArgs["-debug"];
+      const vector<string>& categories = gArgs.GetArgs("-debug");
       ptrCategory.reset(new set<string>(categories.begin(), categories.end()));
       // thread_specific_ptr automatically deletes the set when the thread ends.
       // "club" is a composite category enabling all Club-related debug output
@@ -259,62 +250,46 @@ static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
   }
 }
 
-void ParseParameters(int argc, const char* const argv[]) {
-  mapArgs.clear();
-  mapMultiArgs.clear();
+/* Interpret string as boolean, for argument parsing *
+static bool InterpretBool(const std::string& val)
+{
+    return val != "0";
+}
+*/
 
-  for (int i = 1; i < argc; i++) {
-    std::string str(argv[i]);
-    std::string strValue;
-    size_t is_index = str.find('=');
-    if (is_index != std::string::npos) {
-      strValue = str.substr(is_index + 1);
-      str = str.substr(0, is_index);
+// Treat -nofoo as if the user supplied -foo=0. We also track that this was a
+// negated option. This allows non-boolean options to have a "disabled" setting,
+// e.g. -nodebuglogfile can be used to disable the -debuglogfile option.
+void ArgsManager::InterpretNegatedOption(std::string& key, std::string& val) {
+  if (key.substr(0, 3) == "-no") {
+    bool bool_val = InterpretBool(val);
+    if (!bool_val) {
+      // Double negatives like -nofoo=0 are supported (but discouraged)
+      LogPrintf("Warning: parsed potentially confusing double-negative %s=%s\n", key, val);
     }
-#ifdef WIN32
-    boost::to_lower(str);
-    if (boost::algorithm::starts_with(str, "/")) str = "-" + str.substr(1);
-#endif
-
-    if (str[0] != '-') break;
-
-    // Interpret --foo as -foo.
-    // If both --foo and -foo are set, the last takes effect.
-    if (str.length() > 1 && str[1] == '-') str = str.substr(1);
-    InterpretNegativeSetting(str, strValue);
-
-    mapArgs[str] = strValue;
-    mapMultiArgs[str].push_back(strValue);
+    key.erase(1, 2);
+    m_negated_args.insert(key);
+    val = bool_val ? "0" : "1";
+  } else {
+    // In an invocation like "bitcoind -nofoo -foo" we want to unmark -foo
+    // as negated when we see the second option.
+    m_negated_args.erase(key);
   }
 }
 
+void ParseParameters(int argc, const char* const argv[]) { gArgs.ParseParameters(argc, argv); }
+
 std::string GetArg(const std::string& strArg, const std::string& strDefault) {
-  if (mapArgs.count(strArg)) return mapArgs[strArg];
-  return strDefault;
+  return gArgs.GetArg(strArg, strDefault);
 }
 
-int64_t GetArg(const std::string& strArg, int64_t nDefault) {
-  if (mapArgs.count(strArg)) return atoi64(mapArgs[strArg]);
-  return nDefault;
-}
+int64_t GetArg(const std::string& strArg, int64_t nDefault) { return gArgs.GetArg(strArg, nDefault); }
 
-bool GetBoolArg(const std::string& strArg, bool fDefault) {
-  if (mapArgs.count(strArg)) return InterpretBool(mapArgs[strArg]);
-  return fDefault;
-}
+bool GetBoolArg(const std::string& strArg, bool fDefault) { return gArgs.GetBoolArg(strArg, fDefault); }
 
-bool SoftSetArg(const std::string& strArg, const std::string& strValue) {
-  if (mapArgs.count(strArg)) return false;
-  mapArgs[strArg] = strValue;
-  return true;
-}
+bool SoftSetArg(const std::string& strArg, const std::string& strValue) { return gArgs.SoftSetArg(strArg, strValue); }
 
-bool SoftSetBoolArg(const std::string& strArg, bool fValue) {
-  if (fValue)
-    return SoftSetArg(strArg, std::string("1"));
-  else
-    return SoftSetArg(strArg, std::string("0"));
-}
+bool SoftSetBoolArg(const std::string& strArg, bool fValue) { return gArgs.SoftSetBoolArg(strArg, fValue); }
 
 static const int screenWidth = 79;
 static const int optIndent = 2;
@@ -391,8 +366,8 @@ const boost::filesystem::path& GetDataDir(bool fNetSpecific) {
   // value so we don't have to do memory allocations after that.
   if (!path.empty()) return path;
 
-  if (mapArgs.count("-datadir")) {
-    path = fs::system_complete(mapArgs["-datadir"]);
+  if (gArgs.IsArgSet("-datadir")) {
+    path = fs::system_complete(gArgs.GetArg("-datadir", ""));
     if (!fs::is_directory(path)) {
       path = "";
       return path;
@@ -419,29 +394,7 @@ boost::filesystem::path GetConfigFile() {
   return pathConfigFile;
 }
 
-void ReadConfigFile(map<string, string>& mapSettingsRet, map<string, vector<string> >& mapMultiSettingsRet) {
-  boost::filesystem::ifstream streamConfig(GetConfigFile());
-  if (!streamConfig.good()) {
-    // Create empty club.conf if it does not exist
-    FILE* configFile = fopen(GetConfigFile().string().c_str(), "a");
-    if (configFile != NULL) fclose(configFile);
-    return;  // Nothing to read, so just return
-  }
-
-  set<string> setOptions;
-  setOptions.insert("*");
-
-  for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it) {
-    // Don't overwrite existing settings so command line settings override club.conf
-    string strKey = string("-") + it->string_key;
-    string strValue = it->value[0];
-    InterpretNegativeSetting(strKey, strValue);
-    if (mapSettingsRet.count(strKey) == 0) mapSettingsRet[strKey] = strValue;
-    mapMultiSettingsRet[strKey].push_back(strValue);
-  }
-  // If datadir is changed in .conf file:
-  ClearDatadirCache();
-}
+void ReadConfigFile() { gArgs.ReadConfigFile(); }
 
 #ifndef WIN32
 boost::filesystem::path GetPidFile() {
@@ -692,4 +645,142 @@ void SetThreadPriority(int nPriority) {
   setpriority(PRIO_PROCESS, 0, nPriority);
 #endif  // PRIO_THREAD
 #endif  // WIN32
+}
+
+inline bool not_space(int c) { return !std::isspace(c); }
+
+void ArgsManager::ReadConfigFile() {
+  namespace fs = boost::filesystem;
+  fs::ifstream config_file(GetConfigFile());
+  if (!config_file.good()) return;  // No bitcoin.conf file is OK
+
+  {
+    // left and right trim for strings
+    auto ltrim = [](std::string& s) { s.erase(s.begin(), std::find_if(s.begin(), s.end(), not_space)); };
+    auto rtrim = [](std::string& s) { s.erase(std::find_if(s.rbegin(), s.rend(), not_space).base(), s.end()); };
+
+    LOCK(cs_args);
+    std::string line;
+    while (std::getline(config_file, line)) {
+      size_t eqpos = line.find('=');
+      std::string key, val;
+      if (eqpos == std::string::npos) {
+        key = line;
+      } else {
+        key = line.substr(0, eqpos);
+        val = line.substr(eqpos + 1);
+      }
+
+      // trim whitespace on the key and value
+      ltrim(key);
+      rtrim(key);
+      ltrim(val);
+      rtrim(val);
+
+      // convert to cli argument form
+      key = "-" + key;
+
+      // handle -nofoo options
+      InterpretNegatedOption(key, val);
+
+      if (mapArgs.count(key) == 0) mapArgs[key] = val;
+      mapMultiArgs[key].push_back(val);
+    }
+  }
+  // If datadir is changed in .conf file:
+  ClearDatadirCache();
+  if (!fs::is_directory(GetDataDir(false))) {
+    throw std::runtime_error(
+        strprintf("specified data directory \"%s\" does not exist.", gArgs.GetArg("-datadir", "").c_str()));
+  }
+}
+
+void ArgsManager::ParseParameters(int argc, const char* const argv[]) {
+  LOCK(cs_args);
+  mapArgs.clear();
+  mapMultiArgs.clear();
+  m_negated_args.clear();
+
+  for (int i = 1; i < argc; i++) {
+    std::string key(argv[i]);
+    std::string val;
+    size_t is_index = key.find('=');
+    if (is_index != std::string::npos) {
+      val = key.substr(is_index + 1);
+      key.erase(is_index);
+    }
+#ifdef WIN32
+    std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+    if (key[0] == '/') key[0] = '-';
+#endif
+
+    if (key[0] != '-') break;
+
+    // Transform --foo to -foo
+    if (key.length() > 1 && key[1] == '-') key.erase(0, 1);
+
+    // Transform -nofoo to -foo=0
+    InterpretNegatedOption(key, val);
+
+    mapArgs[key] = val;
+    mapMultiArgs[key].push_back(val);
+  }
+}
+
+std::vector<std::string> ArgsManager::GetArgs(const std::string& strArg) const {
+  LOCK(cs_args);
+  auto it = mapMultiArgs.find(strArg);
+  if (it != mapMultiArgs.end()) return it->second;
+  return {};
+}
+
+bool ArgsManager::IsArgSet(const std::string& strArg) const {
+  LOCK(cs_args);
+  return mapArgs.count(strArg);
+}
+
+bool ArgsManager::IsArgNegated(const std::string& strArg) const {
+  LOCK(cs_args);
+  return m_negated_args.find(strArg) != m_negated_args.end();
+}
+
+std::string ArgsManager::GetArg(const std::string& strArg, const std::string& strDefault) const {
+  LOCK(cs_args);
+  auto it = mapArgs.find(strArg);
+  if (it != mapArgs.end()) return it->second;
+  return strDefault;
+}
+
+int64_t ArgsManager::GetArg(const std::string& strArg, int64_t nDefault) const {
+  LOCK(cs_args);
+  auto it = mapArgs.find(strArg);
+  if (it != mapArgs.end()) return atoi64(it->second);
+  return nDefault;
+}
+
+bool ArgsManager::GetBoolArg(const std::string& strArg, bool fDefault) const {
+  LOCK(cs_args);
+  auto it = mapArgs.find(strArg);
+  if (it != mapArgs.end()) return InterpretBool(it->second);
+  return fDefault;
+}
+
+bool ArgsManager::SoftSetArg(const std::string& strArg, const std::string& strValue) {
+  LOCK(cs_args);
+  if (IsArgSet(strArg)) return false;
+  ForceSetArg(strArg, strValue);
+  return true;
+}
+
+bool ArgsManager::SoftSetBoolArg(const std::string& strArg, bool fValue) {
+  if (fValue)
+    return SoftSetArg(strArg, std::string("1"));
+  else
+    return SoftSetArg(strArg, std::string("0"));
+}
+
+void ArgsManager::ForceSetArg(const std::string& strArg, const std::string& strValue) {
+  LOCK(cs_args);
+  mapArgs[strArg] = strValue;
+  mapMultiArgs[strArg] = {strValue};
 }

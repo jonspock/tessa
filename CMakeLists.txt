@@ -286,7 +286,7 @@ if (OPENSSL_FOUND)
 endif()  
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package( Boost COMPONENTS system filesystem thread program_options)
+find_package( Boost COMPONENTS system filesystem thread)
 link_directories ( ${Boost_LIBRARY_DIRS} )
 
 include_directories(

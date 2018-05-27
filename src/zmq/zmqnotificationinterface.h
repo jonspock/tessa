@@ -8,6 +8,7 @@
 #include "validationinterface.h"
 #include <string>
 #include <map>
+#include <list>
 
 class CBlockIndex;
 class CZMQAbstractNotifier;
@@ -17,7 +18,7 @@ class CZMQNotificationInterface : public CValidationInterface
 public:
     virtual ~CZMQNotificationInterface();
 
-    static CZMQNotificationInterface* CreateWithArguments(const std::map<std::string, std::string> &args);
+    static CZMQNotificationInterface* Create();
 
 protected:
     bool Initialize();

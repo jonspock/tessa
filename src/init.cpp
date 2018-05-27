@@ -24,6 +24,7 @@
 #include "main.h"
 #include "miner.h"
 #include "net.h"
+#include "reverse_iterate.h"
 #include "rpcserver.h"
 #include "scheduler.h"
 #include "script/standard.h"
@@ -36,7 +37,6 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "zerochain.h"
-#include "reverse_iterate.h"
 
 #ifdef ENABLE_WALLET
 #include "accumulators.h"
@@ -845,14 +845,14 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   fLogTimestamps = GetBoolArg("-logtimestamps", true);
   fLogIPs = GetBoolArg("-logips", false);
 
-  if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
+  if (gArgs.IsArgSet("-bind") || gArgs.IsArgSet("-whitebind")) {
     // when specifying an explicit binding address, you want to listen on it
     // even when -connect or -proxy is specified
     if (SoftSetBoolArg("-listen", true))
       LogPrintf("AppInit2 : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
   }
 
-  if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0) {
+  if (gArgs.IsArgSet("-connect")) {
     // when only connecting to trusted nodes, do not seed via DNS, or listen by default
     if (SoftSetBoolArg("-dnsseed", false))
       LogPrintf("AppInit2 : parameter interaction: -connect set -> setting -dnsseed=0\n");
@@ -860,7 +860,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
       LogPrintf("AppInit2 : parameter interaction: -connect set -> setting -listen=0\n");
   }
 
-  if (mapArgs.count("-proxy")) {
+  if (gArgs.IsArgSet("-proxy")) {
     // to protect privacy, do not listen by default if a default proxy server is specified
     if (SoftSetBoolArg("-listen", false))
       LogPrintf("%s: parameter interaction: -proxy set -> setting -listen=0\n", __func__);
@@ -882,7 +882,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
       LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -listenonion=0\n");
   }
 
-  if (mapArgs.count("-externalip")) {
+  if (gArgs.IsArgSet("-externalip")) {
     // if an explicit public IP is specified, do not try to find others
     if (SoftSetBoolArg("-discover", false))
       LogPrintf("AppInit2 : parameter interaction: -externalip set -> setting -discover=0\n");
@@ -900,15 +900,15 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
       LogPrintf("AppInit2 : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
   }
 
-  if (mapArgs.count("-reservebalance")) {
-    if (!ParseMoney(mapArgs["-reservebalance"], nReserveBalance)) {
+  if (gArgs.IsArgSet("-reservebalance")) {
+    if (!ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance)) {
       InitError(_("Invalid amount for -reservebalance=<amount>"));
       return false;
     }
   }
 
   // Make sure enough file descriptors are available
-  int nBind = std::max((int)mapArgs.count("-bind") + (int)mapArgs.count("-whitebind"), 1);
+  int nBind = std::max((int)gArgs.IsArgSet("-bind") + (int)gArgs.IsArgSet("-whitebind"), 1);
   nMaxConnections = GetArg("-maxconnections", 125);
   nMaxConnections = std::max(std::min(nMaxConnections, (int)(FD_SETSIZE - nBind - MIN_CORE_FILEDESCRIPTORS)), 0);
   int nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
@@ -917,9 +917,9 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // ********************************************************* Step 3: parameter-to-internal-flags
 
-  fDebug = !mapMultiArgs["-debug"].empty();
+  fDebug = !gArgs.IsArgSet("-debug");
   // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-  const vector<string>& categories = mapMultiArgs["-debug"];
+  const vector<string>& categories = gArgs.GetArgs("-debug");
   if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
     fDebug = false;
 
@@ -927,14 +927,14 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (GetBoolArg("-debugnet", false))
     InitWarning(_("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
   // Check for -socks - as this is a privacy risk to continue, exit here
-  if (mapArgs.count("-socks"))
+  if (gArgs.IsArgSet("-socks"))
     return InitError(
         _("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies "
           "are supported."));
   // Check for -tor - as this is a privacy risk to continue, exit here
   if (GetBoolArg("-tor", false)) return InitError(_("Error: Unsupported argument -tor found, use -onion."));
   // Check level must be 4 for zerocoin checks
-  if (mapArgs.count("-checklevel"))
+  if (gArgs.IsArgSet("-checklevel"))
     return InitError(_("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
 
   if (GetBoolArg("-benchmark", false))
@@ -976,46 +976,47 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // a transaction spammer can cheaply fill blocks using
   // 1-satoshi-fee transactions. It should be set above the real
   // cost to you of processing a transaction.
-  if (mapArgs.count("-minrelaytxfee")) {
+  if (gArgs.IsArgSet("-minrelaytxfee")) {
     CAmount n = 0;
-    if (ParseMoney(mapArgs["-minrelaytxfee"], n) && n > 0)
+    if (ParseMoney(gArgs.GetArg("-minrelaytxfee", ""), n) && n > 0)
       ::minRelayTxFee = CFeeRate(n);
     else
-      return InitError(strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), mapArgs["-minrelaytxfee"]));
+      return InitError(
+          strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), gArgs.GetArg("-minrelaytxfee", "")));
   }
 
 #ifdef ENABLE_WALLET
-  if (mapArgs.count("-mintxfee")) {
+  if (gArgs.IsArgSet("-mintxfee")) {
     CAmount n = 0;
-    if (ParseMoney(mapArgs["-mintxfee"], n) && n > 0)
+    if (ParseMoney(gArgs.GetArg("-mintxfee", ""), n) && n > 0)
       CWallet::minTxFee = CFeeRate(n);
     else
-      return InitError(strprintf(_("Invalid amount for -mintxfee=<amount>: '%s'"), mapArgs["-mintxfee"]));
+      return InitError(strprintf(_("Invalid amount for -mintxfee=<amount>: '%s'"), gArgs.GetArg("-mintxfee", "")));
   }
-  if (mapArgs.count("-paytxfee")) {
+  if (gArgs.IsArgSet("-paytxfee")) {
     CAmount nFeePerK = 0;
-    if (!ParseMoney(mapArgs["-paytxfee"], nFeePerK))
-      return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s'"), mapArgs["-paytxfee"]));
+    if (!ParseMoney(gArgs.GetArg("-paytxfee", ""), nFeePerK))
+      return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s'"), gArgs.GetArg("-paytxfee", "")));
     if (nFeePerK > nHighTransactionFeeWarning)
       InitWarning(_(
           "Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction."));
     payTxFee = CFeeRate(nFeePerK, 1000);
     if (payTxFee < ::minRelayTxFee) {
       return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
-                                 mapArgs["-paytxfee"], ::minRelayTxFee.ToString()));
+                                 gArgs.GetArg("-paytxfee", ""), ::minRelayTxFee.ToString()));
     }
   }
-  if (mapArgs.count("-maxtxfee")) {
+  if (gArgs.IsArgSet("-maxtxfee")) {
     CAmount nMaxFee = 0;
-    if (!ParseMoney(mapArgs["-maxtxfee"], nMaxFee))
-      return InitError(strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s'"), mapArgs["-maxtxfee"]));
+    if (!ParseMoney(gArgs.GetArg("-maxtxfee", ""), nMaxFee))
+      return InitError(strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s'"), gArgs.GetArg("-maxtxfee", "")));
     if (nMaxFee > nHighTransactionMaxFeeWarning)
       InitWarning(_("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
     maxTxFee = nMaxFee;
     if (CFeeRate(maxTxFee, 1000) < ::minRelayTxFee) {
       return InitError(strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of "
                                    "%s to prevent stuck transactions)"),
-                                 mapArgs["-maxtxfee"], ::minRelayTxFee.ToString()));
+                                 gArgs.GetArg("-maxtxfee", ""), ::minRelayTxFee.ToString()));
     }
   }
   nTxConfirmTarget = GetArg("-txconfirmtarget", 1);
@@ -1076,7 +1077,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     for (int i = 0; i < nScriptCheckThreads - 1; i++) threadGroup.create_thread(&ThreadScriptCheck);
   }
 
-  if (mapArgs.count("-sporkkey"))  // spork priv key
+  if (gArgs.IsArgSet("-sporkkey"))  // spork priv key
   {
     if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
       return InitError(_("Unable to sign spork message, wrong key?"));
@@ -1245,9 +1246,9 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   RegisterNodeSignals(GetNodeSignals());
 
-  if (mapArgs.count("-onlynet")) {
+  if (gArgs.IsArgSet("-onlynet")) {
     std::set<enum Network> nets;
-    for (std::string snet : mapMultiArgs["-onlynet"]) {
+    for (std::string snet : gArgs.GetArgs("-onlynet")) {
       enum Network net = ParseNetwork(snet);
       if (net == NET_UNROUTABLE) return InitError(strprintf(_("Unknown network specified in -onlynet: '%s'"), snet));
       nets.insert(net);
@@ -1258,8 +1259,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     }
   }
 
-  if (mapArgs.count("-whitelist")) {
-    for (const std::string& net : mapMultiArgs["-whitelist"]) {
+  if (gArgs.IsArgSet("-whitelist")) {
+    for (const std::string& net : gArgs.GetArgs("-whitelist")) {
       CSubNet subnet(net);
       if (!subnet.IsValid()) return InitError(strprintf(_("Invalid netmask specified in -whitelist: '%s'"), net));
       CNode::AddWhitelistedRange(subnet);
@@ -1316,14 +1317,14 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   bool fBound = false;
   if (fListen) {
-    if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
-      for (std::string strBind : mapMultiArgs["-bind"]) {
+    if (gArgs.IsArgSet("-bind") || gArgs.IsArgSet("-whitebind")) {
+      for (std::string strBind : gArgs.GetArgs("-bind")) {
         CService addrBind;
         if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
           return InitError(strprintf(_("Cannot resolve -bind address: '%s'"), strBind));
         fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
       }
-      for (std::string strBind : mapMultiArgs["-whitebind"]) {
+      for (std::string strBind : gArgs.GetArgs("-whitebind")) {
         CService addrBind;
         if (!Lookup(strBind.c_str(), addrBind, 0, false))
           return InitError(strprintf(_("Cannot resolve -whitebind address: '%s'"), strBind));
@@ -1340,18 +1341,18 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     if (!fBound) return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));
   }
 
-  if (mapArgs.count("-externalip")) {
-    for (string strAddr : mapMultiArgs["-externalip"]) {
+  if (gArgs.IsArgSet("-externalip")) {
+    for (string strAddr : gArgs.GetArgs("-externalip")) {
       CService addrLocal(strAddr, GetListenPort(), fNameLookup);
       if (!addrLocal.IsValid()) return InitError(strprintf(_("Cannot resolve -externalip address: '%s'"), strAddr));
       AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
     }
   }
 
-  for (string strDest : mapMultiArgs["-seednode"]) AddOneShot(strDest);
+  for (string strDest : gArgs.GetArgs("-seednode")) AddOneShot(strDest);
 
 #if ENABLE_ZMQ
-  pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(mapArgs);
+  pzmqNotificationInterface = CZMQNotificationInterface::Create();
 
   if (pzmqNotificationInterface) { RegisterValidationInterface(pzmqNotificationInterface); }
 #endif
@@ -1686,17 +1687,17 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 #endif  // !ENABLE_WALLET
   // ********************************************************* Step 9: import blocks
 
-  if (mapArgs.count("-blocknotify")) uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
+  if (gArgs.IsArgSet("-blocknotify")) uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
 
-  if (mapArgs.count("-blocksizenotify")) uiInterface.NotifyBlockSize.connect(BlockSizeNotifyCallback);
+  if (gArgs.IsArgSet("-blocksizenotify")) uiInterface.NotifyBlockSize.connect(BlockSizeNotifyCallback);
 
   // scan for better chains in the block chain database, that are not yet connected in the active best chain
   CValidationState state;
   if (!ActivateBestChain(state)) strErrors << "Failed to connect best block";
 
   std::vector<boost::filesystem::path> vImportFiles;
-  if (mapArgs.count("-loadblock")) {
-    for (string strFile : mapMultiArgs["-loadblock"]) vImportFiles.push_back(strFile);
+  if (gArgs.IsArgSet("-loadblock")) {
+    for (string strFile : gArgs.GetArgs("-loadblock")) vImportFiles.push_back(strFile);
   }
   threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
   if (chainActive.Tip() == NULL) {

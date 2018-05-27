@@ -26,10 +26,13 @@
 #include "checkqueue.h"
 #include "init.h"
 #include "kernel.h"
+#include "libzerocoin/Denominations.h"
 #include "mainzero.h"
 #include "merkleblock.h"
 #include "net.h"
 #include "pow.h"
+#include "primitives/zerocoin.h"
+#include "reverse_iterate.h"
 #include "spork.h"
 #include "sporkdb.h"
 #include "txdb.h"
@@ -39,9 +42,6 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "zerochain.h"
-#include "reverse_iterate.h"
-#include "libzerocoin/Denominations.h"
-#include "primitives/zerocoin.h"
 
 #include <sstream>
 
@@ -2486,7 +2486,7 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
     nHeight = nTargetHeight;
 
     // Connect new blocks.
-    for( CBlockIndex * pindexConnect : reverse_iterate(vpindexToConnect)) {
+    for (CBlockIndex* pindexConnect : reverse_iterate(vpindexToConnect)) {
       if (!ConnectTip(state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
         if (state.IsInvalid()) {
           // The block violates a consensus rule.
@@ -3935,7 +3935,7 @@ bool fRequestedSporksIDB = false;
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived) {
   RandAddSeedPerfmon();
   LogPrint("net", "received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
-  if (mapArgs.count("-dropmessagestest") && GetRand(atoi(mapArgs["-dropmessagestest"])) == 0) {
+  if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "0")) == 0)) {
     LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
     return true;
   }
