@@ -259,7 +259,7 @@ class CWalletTx : public CMerkleTx {
       return false;
 
     // Trusted if all inputs are from us and are in the mempool:
-    BOOST_FOREACH (const CTxIn& txin, vin) {
+    for (const CTxIn& txin : vin) {
       // Transactions not sent by us: not trusted
       const CWalletTx* parent = pwallet->GetWalletTx(txin.prevout.hash);
       if (parent == NULL) return false;
