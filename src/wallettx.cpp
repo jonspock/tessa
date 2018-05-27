@@ -311,13 +311,13 @@ void CWalletTx::GetAccountAmounts(const string& strAccount, CAmount& nReceived, 
   GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
 
   if (strAccount == strSentAccount) {
-    BOOST_FOREACH (const COutputEntry& s, listSent)
+      for (const COutputEntry& s : listSent)
       nSent += s.amount;
     nFee = allFee;
   }
   {
     LOCK(pwallet->cs_wallet);
-    BOOST_FOREACH (const COutputEntry& r, listReceived) {
+    for (const COutputEntry& r : listReceived) {
       if (pwallet->mapAddressBook.count(r.destination)) {
         map<CTxDestination, CAddressBookData>::const_iterator mi = pwallet->mapAddressBook.find(r.destination);
         if (mi != pwallet->mapAddressBook.end() && (*mi).second.name == strAccount) nReceived += r.amount;
