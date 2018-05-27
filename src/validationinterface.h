@@ -5,10 +5,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_VALIDATIONINTERFACE_H
-#define BITCOIN_VALIDATIONINTERFACE_H
+#pragma once
 
-#include <boost/shared_ptr.hpp>
 #include <boost/signals2/signal.hpp>
 
 class CBlock;
@@ -72,4 +70,3 @@ struct CMainSignals {
 
 CMainSignals &GetMainSignals();
 
-#endif  // BITCOIN_VALIDATIONINTERFACE_H

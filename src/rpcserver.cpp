@@ -23,7 +23,6 @@
 #include <boost/foreach.hpp>
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/stream.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/signals2/signal.hpp>
 #include <boost/thread.hpp>
 
@@ -39,9 +38,8 @@ static CCriticalSection cs_rpcWarmup;
 
 /* Timer-creating functions */
 static std::vector<RPCTimerInterface*> timerInterfaces;
-/* Map of name to timer.
- * @note Can be changed to std::unique_ptr when C++11 */
-static std::map<std::string, boost::shared_ptr<RPCTimerBase> > deadlineTimers;
+/* Map of name to timer. */
+static std::map<std::string, std::unique_ptr<RPCTimerBase> > deadlineTimers;
 
 static struct CRPCSignals {
   boost::signals2::signal<void()> Started;
@@ -64,7 +62,7 @@ void RPCServer::OnPostCommand(boost::function<void(const CRPCCommand&)> slot) {
 
 void RPCTypeCheck(const UniValue& params, const list<UniValue::VType>& typesExpected, bool fAllowNull) {
   unsigned int i = 0;
-  BOOST_FOREACH (UniValue::VType t, typesExpected) {
+  for (UniValue::VType t : typesExpected) {
     if (params.size() <= i) break;
 
     const UniValue& v = params[i];
@@ -77,7 +75,7 @@ void RPCTypeCheck(const UniValue& params, const list<UniValue::VType>& typesExpe
 }
 
 void RPCTypeCheckObj(const UniValue& o, const map<string, UniValue::VType>& typesExpected, bool fAllowNull) {
-  BOOST_FOREACH (const PAIRTYPE(string, UniValue::VType) & t, typesExpected) {
+ for (const PAIRTYPE(string, UniValue::VType) & t : typesExpected) {
     const UniValue& v = find_value(o, t.first);
     if (!fAllowNull && v.isNull()) throw JSONRPCError(RPC_TYPE_ERROR, strprintf("Missing %s", t.first));
 
@@ -153,7 +151,7 @@ string CRPCTable::help(string strCommand) const {
     vCommands.push_back(make_pair(mi->second->category + mi->first, mi->second));
   sort(vCommands.begin(), vCommands.end());
 
-  BOOST_FOREACH (const PAIRTYPE(string, const CRPCCommand*) & command, vCommands) {
+  for (const PAIRTYPE(string, const CRPCCommand*) & command : vCommands) {
     const CRPCCommand* pcmd = command.second;
     string strMethod = pcmd->name;
     // We already filter duplicates, but these deprecated screw up the sort order
@@ -520,7 +518,7 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
   RPCTimerInterface* timerInterface = timerInterfaces[0];
   LogPrint("rpc", "queue run of timer %s in %i seconds (using %s)\n", name, nSeconds, timerInterface->Name());
   deadlineTimers.insert(
-      std::make_pair(name, boost::shared_ptr<RPCTimerBase>(timerInterface->NewTimer(func, nSeconds * 1000))));
+      std::make_pair(name, std::unique_ptr<RPCTimerBase>(timerInterface->NewTimer(func, nSeconds * 1000))));
 }
 
 const CRPCTable tableRPC;
