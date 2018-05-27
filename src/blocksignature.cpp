@@ -59,8 +59,8 @@ bool CheckBlockSignature(const CBlock& block) {
   const CTxOut& txout = block.vtx[1].vout[1];
   if (!Solver(txout.scriptPubKey, whichType, vSolutions)) return false;
   if (whichType == TX_PUBKEY || whichType == TX_PUBKEYHASH) {
-      valtype& vchPubKey = vSolutions[0];
-      pubkey = CPubKey(vchPubKey);
+    valtype& vchPubKey = vSolutions[0];
+    pubkey = CPubKey(vchPubKey);
   }
 
   if (!pubkey.IsValid()) return error("%s: invalid pubkey %s", __func__, pubkey.GetHex());

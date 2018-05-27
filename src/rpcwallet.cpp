@@ -59,13 +59,11 @@ void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry) {
   uint256 hash = wtx.GetHash();
   entry.push_back(Pair("txid", hash.GetHex()));
   UniValue conflicts(UniValue::VARR);
-  for (const uint256& conflict : wtx.GetConflicts())
-    conflicts.push_back(conflict.GetHex());
+  for (const uint256& conflict : wtx.GetConflicts()) conflicts.push_back(conflict.GetHex());
   entry.push_back(Pair("walletconflicts", conflicts));
   entry.push_back(Pair("time", wtx.GetTxTime()));
   entry.push_back(Pair("timereceived", (int64_t)wtx.nTimeReceived));
-  for (const PAIRTYPE(string, string) & item : wtx.mapValue)
-    entry.push_back(Pair(item.first, item.second));
+  for (const PAIRTYPE(string, string) & item : wtx.mapValue) entry.push_back(Pair(item.first, item.second));
 }
 
 string AccountFromValue(const UniValue& value) {
@@ -709,11 +707,9 @@ UniValue getbalance(const UniValue& params, bool fHelp) {
       list<COutputEntry> listSent;
       wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
       if (wtx.GetDepthInMainChain() >= nMinDepth) {
-          for (const COutputEntry& r : listReceived)
-          nBalance += r.amount;
+        for (const COutputEntry& r : listReceived) nBalance += r.amount;
       }
-      for (const COutputEntry& s : listSent)
-        nBalance -= s.amount;
+      for (const COutputEntry& s : listSent) nBalance -= s.amount;
       nBalance -= allFee;
     }
     return ValueFromAmount(nBalance);
@@ -1096,7 +1092,7 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts) {
       obj.push_back(Pair("bcconfirmations", (nBCConf == std::numeric_limits<int>::max() ? 0 : nBCConf)));
       UniValue transactions(UniValue::VARR);
       if (it != mapTally.end()) {
-          for (const uint256& item : (*it).second.txids) { transactions.push_back(item.GetHex()); }
+        for (const uint256& item : (*it).second.txids) { transactions.push_back(item.GetHex()); }
       }
       obj.push_back(Pair("txids", transactions));
       ret.push_back(obj);
@@ -1218,7 +1214,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
 
   // Sent
   if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
-      for (const COutputEntry& s : listSent) {
+    for (const COutputEntry& s : listSent) {
       UniValue entry(UniValue::VOBJ);
       if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
         entry.push_back(Pair("involvesWatchonly", true));
@@ -1236,7 +1232,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
 
   // Received
   if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth) {
-      for (const COutputEntry& r : listReceived) {
+    for (const COutputEntry& r : listReceived) {
       string account;
       if (pwalletMain->mapAddressBook.count(r.destination)) account = pwalletMain->mapAddressBook[r.destination].name;
       if (fAllAccounts || (account == strAccount)) {
@@ -1455,10 +1451,9 @@ UniValue listaccounts(const UniValue& params, bool fHelp) {
     if (wtx.GetBlocksToMaturity() > 0 || nDepth < 0) continue;
     wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, includeWatchonly);
     mapAccountBalances[strSentAccount] -= nFee;
-    for (const COutputEntry& s : listSent)
-      mapAccountBalances[strSentAccount] -= s.amount;
+    for (const COutputEntry& s : listSent) mapAccountBalances[strSentAccount] -= s.amount;
     if (nDepth >= nMinDepth) {
-        for (const COutputEntry& r : listReceived)
+      for (const COutputEntry& r : listReceived)
         if (pwalletMain->mapAddressBook.count(r.destination))
           mapAccountBalances[pwalletMain->mapAddressBook[r.destination].name] += r.amount;
         else
@@ -1467,8 +1462,7 @@ UniValue listaccounts(const UniValue& params, bool fHelp) {
   }
 
   const list<CAccountingEntry>& acentries = pwalletMain->laccentries;
-  for (const CAccountingEntry& entry : acentries)
-    mapAccountBalances[entry.strAccount] += entry.nCreditDebit;
+  for (const CAccountingEntry& entry : acentries) mapAccountBalances[entry.strAccount] += entry.nCreditDebit;
 
   UniValue ret(UniValue::VOBJ);
   for (const PAIRTYPE(string, CAmount) & accountBalance : mapAccountBalances) {
@@ -1942,9 +1936,9 @@ UniValue lockunspent(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   if (params.size() == 1)
-      RPCTypeCheck(params, {UniValue::VBOOL});
+    RPCTypeCheck(params, {UniValue::VBOOL});
   else
-      RPCTypeCheck(params, {UniValue::VBOOL,UniValue::VARR});
+    RPCTypeCheck(params, {UniValue::VBOOL, UniValue::VARR});
 
   bool fUnlock = params[0].get_bool();
 
@@ -1959,7 +1953,7 @@ UniValue lockunspent(const UniValue& params, bool fHelp) {
     if (!output.isObject()) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected object");
     const UniValue& o = output.get_obj();
 
-    RPCTypeCheckObj(o, { {"txid", UniValue::VSTR},{"vout", UniValue::VNUM} });
+    RPCTypeCheckObj(o, {{"txid", UniValue::VSTR}, {"vout", UniValue::VNUM}});
 
     string txid = find_value(o, "txid").get_str();
     if (!IsHex(txid)) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected hex txid");
@@ -2612,9 +2606,9 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   if (params.size() == 1) {
-      RPCTypeCheck(params, {UniValue::VNUM});
+    RPCTypeCheck(params, {UniValue::VNUM});
   } else {
-      RPCTypeCheck(params, {UniValue::VNUM,UniValue::VARR});
+    RPCTypeCheck(params, {UniValue::VNUM, UniValue::VARR});
   }
 
   int64_t nTime = GetTimeMillis();
@@ -2637,8 +2631,8 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
       if (!output.isObject()) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected object");
       const UniValue& o = output.get_obj();
 
-      RPCTypeCheckObj(o, { {"txid", UniValue::VSTR},{"vout", UniValue::VNUM} });
-      
+      RPCTypeCheckObj(o, {{"txid", UniValue::VSTR}, {"vout", UniValue::VNUM}});
+
       string txid = find_value(o, "txid").get_str();
       if (!IsHex(txid)) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected hex txid");
 
@@ -3072,7 +3066,7 @@ UniValue importzerocoins(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked();
 
-  RPCTypeCheck(params, {UniValue::VARR,UniValue::VOBJ});
+  RPCTypeCheck(params, {UniValue::VARR, UniValue::VOBJ});
   UniValue arrMints = params[0].get_array();
   CWalletDB walletdb(pwalletMain->strWalletFile);
 

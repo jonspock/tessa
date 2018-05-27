@@ -923,8 +923,7 @@ void ThreadSocketHandler() {
     {
       LOCK(cs_vNodes);
       vNodesCopy = vNodes;
-      for (CNode* pnode : vNodesCopy)
-        pnode->AddRef();
+      for (CNode* pnode : vNodesCopy) pnode->AddRef();
     }
     for (CNode* pnode : vNodesCopy) {
       boost::this_thread::interruption_point();
@@ -993,8 +992,7 @@ void ThreadSocketHandler() {
     }
     {
       LOCK(cs_vNodes);
-      for (CNode* pnode : vNodesCopy)
-        pnode->Release();
+      for (CNode* pnode : vNodesCopy) pnode->Release();
     }
   }
 }
@@ -1126,7 +1124,7 @@ void ThreadDNSAddressSeed() {
       vector<CNetAddr> vIPs;
       vector<CAddress> vAdd;
       if (LookupHost(seed.host.c_str(), vIPs)) {
-          for (CNetAddr& ip : vIPs) {
+        for (CNetAddr& ip : vIPs) {
           int nOneDay = 24 * 3600;
           CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
           addr.nTime = GetTime() - 3 * nOneDay - GetRand(4 * nOneDay);  // use a random age between 3 and 7 days old
@@ -1265,8 +1263,7 @@ void ThreadOpenAddedConnections() {
       list<string> lAddresses(0);
       {
         LOCK(cs_vAddedNodes);
-        for (string& strAddNode : vAddedNodes)
-          lAddresses.push_back(strAddNode);
+        for (string& strAddNode : vAddedNodes) lAddresses.push_back(strAddNode);
       }
       for (string& strAddNode : lAddresses) {
         CAddress addr;
@@ -1282,8 +1279,7 @@ void ThreadOpenAddedConnections() {
     list<string> lAddresses(0);
     {
       LOCK(cs_vAddedNodes);
-      for (string& strAddNode : vAddedNodes)
-        lAddresses.push_back(strAddNode);
+      for (string& strAddNode : vAddedNodes) lAddresses.push_back(strAddNode);
     }
 
     list<vector<CService> > lservAddressesToAdd(0);
@@ -1293,8 +1289,7 @@ void ThreadOpenAddedConnections() {
         lservAddressesToAdd.push_back(vservNode);
         {
           LOCK(cs_setservAddNodeAddresses);
-          for (CService& serv : vservNode)
-            setservAddNodeAddresses.insert(serv);
+          for (CService& serv : vservNode) setservAddNodeAddresses.insert(serv);
         }
       }
     }
@@ -1304,7 +1299,7 @@ void ThreadOpenAddedConnections() {
       LOCK(cs_vNodes);
       for (CNode* pnode : vNodes)
         for (list<vector<CService> >::iterator it = lservAddressesToAdd.begin(); it != lservAddressesToAdd.end(); it++)
-            for (CService& addrNode : *(it))
+          for (CService& addrNode : *(it))
             if (pnode->addr == addrNode) {
               it = lservAddressesToAdd.erase(it);
               it--;
@@ -1392,8 +1387,7 @@ void ThreadMessageHandler() {
 
     {
       LOCK(cs_vNodes);
-      for (CNode* pnode : vNodesCopy)
-        pnode->Release();
+      for (CNode* pnode : vNodesCopy) pnode->Release();
     }
 
     if (fSleep)
@@ -1515,7 +1509,7 @@ void static Discover(boost::thread_group& threadGroup) {
   if (gethostname(pszHostName, sizeof(pszHostName)) != SOCKET_ERROR) {
     vector<CNetAddr> vaddr;
     if (LookupHost(pszHostName, vaddr)) {
-        for (const CNetAddr& addr : vaddr) {
+      for (const CNetAddr& addr : vaddr) {
         if (AddLocal(addr, LOCAL_IF)) LogPrintf("%s: %s - %s\n", __func__, pszHostName, addr.ToString());
       }
     }
@@ -1640,10 +1634,8 @@ class CNetCleanup {
           LogPrintf("CloseSocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
 
     // clean up some globals (to help leak detection)
-    for (CNode* pnode : vNodes)
-      delete pnode;
-    for (CNode* pnode : vNodesDisconnected)
-      delete pnode;
+    for (CNode* pnode : vNodes) delete pnode;
+    for (CNode* pnode : vNodesDisconnected) delete pnode;
     vNodes.clear();
     vNodesDisconnected.clear();
     vhListenSocket.clear();

@@ -61,14 +61,12 @@ class CBlockAverage {
 
   size_t FeeSamples() const { return feeSamples.size(); }
   size_t GetFeeSamples(std::vector<CFeeRate>& insertInto) const {
-      for (const CFeeRate& f : feeSamples)
-      insertInto.push_back(f);
+    for (const CFeeRate& f : feeSamples) insertInto.push_back(f);
     return feeSamples.size();
   }
   size_t PrioritySamples() const { return prioritySamples.size(); }
   size_t GetPrioritySamples(std::vector<double>& insertInto) const {
-      for (double d : prioritySamples)
-      insertInto.push_back(d);
+    for (double d : prioritySamples) insertInto.push_back(d);
     return prioritySamples.size();
   }
 
@@ -82,14 +80,14 @@ class CBlockAverage {
     return true;
   }
   static bool AreSane(const std::vector<CFeeRate>& vecFee, const CFeeRate& minRelayFee) {
-      for (CFeeRate fee : vecFee) {
+    for (CFeeRate fee : vecFee) {
       if (!AreSane(fee, minRelayFee)) return false;
     }
     return true;
   }
   static bool AreSane(const double priority) { return priority >= 0; }
   static bool AreSane(const std::vector<double> vecPriority) {
-      for (double priority : vecPriority) {
+    for (double priority : vecPriority) {
       if (!AreSane(priority)) return false;
     }
     return true;
@@ -179,7 +177,7 @@ class CMinerPolicyEstimator {
     // to confirm.
     std::vector<std::vector<const CTxMemPoolEntry*> > entriesByConfirmations;
     entriesByConfirmations.resize(history.size());
-    for (const CTxMemPoolEntry& entry :  entries) {
+    for (const CTxMemPoolEntry& entry : entries) {
       // How many blocks did it take for miners to include this transaction?
       int delta = nBlockHeight - entry.GetHeight();
       if (delta <= 0) {
@@ -388,8 +386,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
           txToRemove.push_back(it->second.ptx->GetHash());
         }
       }
-      for (const CTxIn& txin : tx.vin)
-        mapNextTx.erase(txin.prevout);
+      for (const CTxIn& txin : tx.vin) mapNextTx.erase(txin.prevout);
 
       removed.push_back(tx);
       totalTxSize -= mapTx[hash].GetTxSize();
@@ -448,7 +445,7 @@ void CTxMemPool::removeForBlock(const std::vector<CTransaction>& vtx, unsigned i
     if (mapTx.count(hash)) entries.push_back(mapTx[hash]);
   }
   minerPolicyEstimator->seenBlock(entries, nBlockHeight, minRelayFee);
-  for (const CTransaction& tx :  vtx) {
+  for (const CTransaction& tx : vtx) {
     std::list<CTransaction> dummy;
     remove(tx, dummy, false);
     removeConflicts(tx, conflicts);

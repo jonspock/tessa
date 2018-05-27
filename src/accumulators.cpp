@@ -272,8 +272,8 @@ bool InvalidCheckpointRange(int nHeight) {
 
 bool ValidateAccumulatorCheckpoint(const CBlock& block, CBlockIndex* pindex, AccumulatorMap& mapAccumulators) {
   // V1 accumulators are completely phased out by the time this code hits the public and begins generating new
-  // checkpoints It is VERY IMPORTANT that when this is being run and height < v2_start, then zZZZ need to be disabled at
-  // the same time!!
+  // checkpoints It is VERY IMPORTANT that when this is being run and height < v2_start, then zZZZ need to be disabled
+  // at the same time!!
   if (pindex->nHeight < Params().Zerocoin_StartHeight() || fVerifyingBlocks) return true;
 
   if (pindex->nHeight % 10 == 0) {

@@ -4,8 +4,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "db.h"
 #include "kernel.h"
+#include "db.h"
 #include "script/interpreter.h"
 #include "stakeinput.h"
 #include "timedata.h"
@@ -152,8 +152,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     return error("ComputeNextStakeModifier: unable to get last modifier");
 
   if (GetBoolArg("-printstakemodifier", false))
-    LogPrintf("ComputeNextStakeModifier: prev modifier= %lld time=%s\n",
-              nStakeModifier,
+    LogPrintf("ComputeNextStakeModifier: prev modifier= %lld time=%s\n", nStakeModifier,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nModifierTime).c_str());
 
   if (nModifierTime / getIntervalVersion(fTestNet) >= pindexPrev->GetBlockTime() / getIntervalVersion(fTestNet))
@@ -221,8 +220,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
               pindexPrev->nHeight, strSelectionMap.c_str());
   }
   if (GetBoolArg("-printstakemodifier", false)) {
-    LogPrintf("ComputeNextStakeModifier: new modifier=%lld time=%s\n",
-              nStakeModifierNew,
+    LogPrintf("ComputeNextStakeModifier: new modifier=%lld time=%s\n", nStakeModifierNew,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", pindexPrev->GetBlockTime()).c_str());
   }
 

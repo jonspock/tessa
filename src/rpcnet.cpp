@@ -260,8 +260,7 @@ UniValue getaddednodeinfo(const UniValue& params, bool fHelp) {
   list<string> laddedNodes(0);
   if (params.size() == 1) {
     LOCK(cs_vAddedNodes);
-    for (string& strAddNode : vAddedNodes)
-      laddedNodes.push_back(strAddNode);
+    for (string& strAddNode : vAddedNodes) laddedNodes.push_back(strAddNode);
   } else {
     string strNode = params[1].get_str();
     LOCK(cs_vAddedNodes);
@@ -275,7 +274,7 @@ UniValue getaddednodeinfo(const UniValue& params, bool fHelp) {
 
   UniValue ret(UniValue::VARR);
   if (!fDns) {
-      for (string& strAddNode : laddedNodes) {
+    for (string& strAddNode : laddedNodes) {
       UniValue obj(UniValue::VOBJ);
       obj.push_back(Pair("addednode", strAddNode));
       ret.push_back(obj);

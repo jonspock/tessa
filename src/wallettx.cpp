@@ -311,8 +311,7 @@ void CWalletTx::GetAccountAmounts(const string& strAccount, CAmount& nReceived, 
   GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
 
   if (strAccount == strSentAccount) {
-      for (const COutputEntry& s : listSent)
-      nSent += s.amount;
+    for (const COutputEntry& s : listSent) nSent += s.amount;
     nFee = allFee;
   }
   {

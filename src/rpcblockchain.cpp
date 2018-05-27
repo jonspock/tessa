@@ -198,7 +198,7 @@ UniValue mempoolToJSON(bool fVerbose = false) {
     mempool.queryHashes(vtxid);
 
     UniValue a(UniValue::VARR);
-    for (const uint256& hash : vtxid)   a.push_back(hash.ToString());
+    for (const uint256& hash : vtxid) a.push_back(hash.ToString());
 
     return a;
   }
@@ -623,8 +623,7 @@ UniValue getchaintips(const UniValue& params, bool fHelp) {
      known blocks, and successively remove blocks that appear as pprev
      of another block.  */
   std::set<const CBlockIndex*, CompareBlocksByHeight> setTips;
-  for (const PAIRTYPE(const uint256, CBlockIndex*) & item : mapBlockIndex)
-    setTips.insert(item.second);
+  for (const PAIRTYPE(const uint256, CBlockIndex*) & item : mapBlockIndex) setTips.insert(item.second);
   for (const PAIRTYPE(const uint256, CBlockIndex*) & item : mapBlockIndex) {
     const CBlockIndex* pprev = item.second->pprev;
     if (pprev) setTips.erase(pprev);

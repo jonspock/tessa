@@ -48,8 +48,7 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, UniValue& out, bool fInclud
   out.push_back(Pair("type", GetTxnOutputType(type)));
 
   UniValue a(UniValue::VARR);
-  for (const CTxDestination& addr : addresses)
-    a.push_back(CBitcoinAddress(addr).ToString());
+  for (const CTxDestination& addr : addresses) a.push_back(CBitcoinAddress(addr).ToString());
   out.push_back(Pair("addresses", a));
 }
 
@@ -232,7 +231,7 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
             "listunspent",
             "6, 9999999 \"[\\\"1PGFqEzfmQch1gKD3ra4k18PNj3tTUUSqg\\\",\\\"1LtvqCaApEdUGFkpKMM4MstjcaL4dKg8SP\\\"]\""));
 
-  RPCTypeCheck(params, {UniValue::VNUM,UniValue::VNUM,UniValue::VARR,UniValue::VNUM});
+  RPCTypeCheck(params, {UniValue::VNUM, UniValue::VNUM, UniValue::VARR, UniValue::VNUM});
 
   int nMinDepth = 1;
   if (params.size() > 0) nMinDepth = params[0].get_int();
@@ -340,7 +339,7 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp) {
                        "\"[{\\\"txid\\\":\\\"myid\\\",\\\"vout\\\":0}]\", \"{\\\"address\\\":0.01}\""));
 
   LOCK(cs_main);
-  RPCTypeCheck(params, {UniValue::VARR,UniValue::VOBJ});
+  RPCTypeCheck(params, {UniValue::VARR, UniValue::VOBJ});
 
   UniValue inputs = params[0].get_array();
   UniValue sendTo = params[1].get_obj();
@@ -562,7 +561,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
 #else
   LOCK(cs_main);
 #endif
-  RPCTypeCheck(params, {UniValue::VSTR,UniValue::VARR,UniValue::VARR,UniValue::VSTR},true);
+  RPCTypeCheck(params, {UniValue::VSTR, UniValue::VARR, UniValue::VARR, UniValue::VSTR}, true);
 
   vector<unsigned char> txData(ParseHexV(params[0], "argument 1"));
   CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
@@ -629,7 +628,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
 
       UniValue prevOut = p.get_obj();
 
-      RPCTypeCheckObj(prevOut, {{"txid", UniValue::VSTR},{"vout", UniValue::VNUM},{"scriptPubKey", UniValue::VSTR}});
+      RPCTypeCheckObj(prevOut, {{"txid", UniValue::VSTR}, {"vout", UniValue::VNUM}, {"scriptPubKey", UniValue::VSTR}});
 
       uint256 txid = ParseHashO(prevOut, "txid");
 
@@ -654,12 +653,11 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
       // if redeemScript given and not using the local wallet (private keys
       // given), add redeemScript to the tempKeystore so it can be signed:
       if (fGivenKeys && scriptPubKey.IsPayToScriptHash()) {
-          RPCTypeCheckObj(prevOut, {
-                  {"txid", UniValue::VSTR},
-                      {"vout", UniValue::VNUM},
-                          {"scriptPubKey", UniValue::VSTR},
-                              {"redeemScript", UniValue::VSTR}});
-              UniValue v = find_value(prevOut, "redeemScript");
+        RPCTypeCheckObj(prevOut, {{"txid", UniValue::VSTR},
+                                  {"vout", UniValue::VNUM},
+                                  {"scriptPubKey", UniValue::VSTR},
+                                  {"redeemScript", UniValue::VSTR}});
+        UniValue v = find_value(prevOut, "redeemScript");
         if (!v.isNull()) {
           vector<unsigned char> rsData(ParseHexV(v, "redeemScript"));
           CScript redeemScript(rsData.begin(), rsData.end());
@@ -677,12 +675,13 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
 
   int nHashType = SIGHASH_ALL;
   if (params.size() > 3 && !params[3].isNull()) {
-      static map<string, int> mapSigHashValues = {{string("ALL"), int(SIGHASH_ALL)},
-                                                  {string("ALL|ANYONECANPAY"), int(SIGHASH_ALL | SIGHASH_ANYONECANPAY)},
-                                                  {string("NONE"), int(SIGHASH_NONE)},
-                                                  {string("NONE|ANYONECANPAY"), int(SIGHASH_NONE | SIGHASH_ANYONECANPAY)},
-                                                  {string("SINGLE"), int(SIGHASH_SINGLE)},
-                                                  {string("SINGLE|ANYONECANPAY"), int(SIGHASH_SINGLE | SIGHASH_ANYONECANPAY)}};
+    static map<string, int> mapSigHashValues = {
+        {string("ALL"), int(SIGHASH_ALL)},
+        {string("ALL|ANYONECANPAY"), int(SIGHASH_ALL | SIGHASH_ANYONECANPAY)},
+        {string("NONE"), int(SIGHASH_NONE)},
+        {string("NONE|ANYONECANPAY"), int(SIGHASH_NONE | SIGHASH_ANYONECANPAY)},
+        {string("SINGLE"), int(SIGHASH_SINGLE)},
+        {string("SINGLE|ANYONECANPAY"), int(SIGHASH_SINGLE | SIGHASH_ANYONECANPAY)}};
     string strHashType = params[3].get_str();
     if (mapSigHashValues.count(strHashType))
       nHashType = mapSigHashValues[strHashType];
@@ -752,7 +751,7 @@ UniValue sendrawtransaction(const UniValue& params, bool fHelp) {
         "\nAs a json rpc call\n" + HelpExampleRpc("sendrawtransaction", "\"signedhex\""));
 
   LOCK(cs_main);
-  RPCTypeCheck(params, {UniValue::VSTR,UniValue::VBOOL});
+  RPCTypeCheck(params, {UniValue::VSTR, UniValue::VBOOL});
 
   // parse hex string from parameter
   CTransaction tx;

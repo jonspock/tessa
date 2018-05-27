@@ -188,8 +188,7 @@ static bool InitHTTPAllowList() {
     }
   }
   std::string strAllowed;
-  for (const CSubNet& subnet : rpc_allow_subnets)
-    strAllowed += subnet.ToString() + " ";
+  for (const CSubNet& subnet : rpc_allow_subnets) strAllowed += subnet.ToString() + " ";
   LogPrint("http", "Allowing HTTP connections from: %s\n", strAllowed);
   return true;
 }
@@ -415,7 +414,7 @@ bool StartHTTPServer() {
 void InterruptHTTPServer() {
   LogPrint("http", "Interrupting HTTP server\n");
   if (eventHTTP) {
-      for (evhttp_bound_socket* socket : boundSockets) { evhttp_del_accept_socket(eventHTTP, socket); }
+    for (evhttp_bound_socket* socket : boundSockets) { evhttp_del_accept_socket(eventHTTP, socket); }
     evhttp_set_gencb(eventHTTP, http_reject_request_cb, NULL);
   }
   if (workQueue) workQueue->Interrupt();

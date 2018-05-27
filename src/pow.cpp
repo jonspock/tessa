@@ -30,7 +30,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
   uint256 PastDifficultyAveragePrev;
 
   // Quick Exit for testnet for Now XXX
- #warning "Quick exit for testnet"
+#warning "Quick exit for testnet"
   if (pindexLast->nHeight < Params().LAST_POW_BLOCK() && Params().AllowMinDifficultyBlocks()) {
     return Params().ProofOfWorkLimit().GetCompact();
   }

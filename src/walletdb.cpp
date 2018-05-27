@@ -241,8 +241,7 @@ CAmount CWalletDB::GetAccountCreditDebit(const string& strAccount) {
   ListAccountCreditDebit(strAccount, entries);
 
   CAmount nCreditDebit = 0;
-  for (const CAccountingEntry& entry : entries)
-    nCreditDebit += entry.nCreditDebit;
+  for (const CAccountingEntry& entry : entries) nCreditDebit += entry.nCreditDebit;
 
   return nCreditDebit;
 }
@@ -301,9 +300,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet) {
   }
   list<CAccountingEntry> acentries;
   ListAccountCreditDebit("", acentries);
-  for (CAccountingEntry& entry : acentries) {
-    txByTime.insert(make_pair(entry.nTime, TxPair((CWalletTx*)0, &entry)));
-  }
+  for (CAccountingEntry& entry : acentries) { txByTime.insert(make_pair(entry.nTime, TxPair((CWalletTx*)0, &entry))); }
 
   int64_t& nOrderPosNext = pwallet->nOrderPosNext;
   nOrderPosNext = 0;
@@ -667,8 +664,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
   // nTimeFirstKey is only reliable if all keys have metadata
   if ((wss.nKeys + wss.nCKeys) != wss.nKeyMeta) pwallet->nTimeFirstKey = 1;  // 0 would be considered 'no value'
 
-  for (uint256 hash : wss.vWalletUpgrade)
-    WriteTx(hash, pwallet->mapWallet[hash]);
+  for (uint256 hash : wss.vWalletUpgrade) WriteTx(hash, pwallet->mapWallet[hash]);
 
   if (wss.nFileVersion < CLIENT_VERSION)  // Update
     WriteVersion(CLIENT_VERSION);

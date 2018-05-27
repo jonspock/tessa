@@ -94,7 +94,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
   /* It seems that there are no "const iterators" for LevelDB.  Since we
      only need read operations on it, use a const-cast to get around
      that restriction.  */
-    std::unique_ptr<leveldb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
+  std::unique_ptr<leveldb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
   pcursor->SeekToFirst();
 
   CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
@@ -166,7 +166,7 @@ bool CBlockTreeDB::WriteInt(const std::string& name, int nValue) { return Write(
 bool CBlockTreeDB::ReadInt(const std::string& name, int& nValue) { return Read(std::make_pair('I', name), nValue); }
 
 bool CBlockTreeDB::LoadBlockIndexGuts() {
-    std::unique_ptr<leveldb::Iterator> pcursor(NewIterator());
+  std::unique_ptr<leveldb::Iterator> pcursor(NewIterator());
 
   CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
   ssKeySet << make_pair('b', uint256(0));

@@ -76,8 +76,7 @@ void ScriptPubKeyToUniv(const CScript& scriptPubKey, UniValue& out, bool fInclud
   out.pushKV("type", GetTxnOutputType(type));
 
   UniValue a(UniValue::VARR);
-  for (const CTxDestination& addr : addresses)
-    a.push_back(CBitcoinAddress(addr).ToString());
+  for (const CTxDestination& addr : addresses) a.push_back(CBitcoinAddress(addr).ToString());
   out.pushKV("addresses", a);
 }
 

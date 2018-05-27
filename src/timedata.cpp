@@ -90,8 +90,8 @@ void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample) {
       }
     }
     if (fDebug) {
-        for (int64_t n : vSorted)  LogPrintf("%+d  ", n);
-        LogPrintf("|  ");
+      for (int64_t n : vSorted) LogPrintf("%+d  ", n);
+      LogPrintf("|  ");
     }
     LogPrintf("nTimeOffset = %+d  (%+d minutes)\n", nTimeOffset, nTimeOffset / 60);
   }

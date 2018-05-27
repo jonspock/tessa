@@ -122,8 +122,7 @@ void LeaveCritical() { pop_lock(); }
 
 std::string LocksHeld() {
   std::string result;
-  for (const PAIRTYPE(void*, CLockLocation) & i : *lockstack)
-    result += i.second.ToString() + std::string("\n");
+  for (const PAIRTYPE(void*, CLockLocation) & i : *lockstack) result += i.second.ToString() + std::string("\n");
   return result;
 }
 

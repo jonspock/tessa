@@ -170,10 +170,10 @@ class CMainParams : public CChainParams {
     base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 28);  // Start with "C"
     base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 7);
     base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 212);
-    base58Prefixes[EXT_PUBLIC_KEY] = {0x02,0x2D,0x25,0x33};
-    base58Prefixes[EXT_SECRET_KEY] = {0x02,0x21,0x31,0x2B};
+    base58Prefixes[EXT_PUBLIC_KEY] = {0x02, 0x2D, 0x25, 0x33};
+    base58Prefixes[EXT_SECRET_KEY] = {0x02, 0x21, 0x31, 0x2B};
     // 	BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-    base58Prefixes[EXT_COIN_TYPE] = {0x80,0x00,0x00,0x77};
+    base58Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x77};
 
     fMiningRequiresPeers = true;
     fAllowMinDifficultyBlocks = false;
@@ -263,11 +263,11 @@ class CTestNetParams : public CMainParams {
     base58Prefixes[SECRET_KEY] =
         std::vector<unsigned char>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
     // Testnet club BIP32 pubkeys start with 'DRKV'
-    base58Prefixes[EXT_PUBLIC_KEY] = {0x3a,0x80,0x61,0xa0};
+    base58Prefixes[EXT_PUBLIC_KEY] = {0x3a, 0x80, 0x61, 0xa0};
     // Testnet club BIP32 prvkeys start with 'DRKP'
-    base58Prefixes[EXT_SECRET_KEY] = {0x3a,0x80,0x58,0x37};
+    base58Prefixes[EXT_SECRET_KEY] = {0x3a, 0x80, 0x58, 0x37};
     // Testnet club BIP44 coin type is '1' (All coin's testnet default)
-    base58Prefixes[EXT_COIN_TYPE] = {0x80,0x00,0x00,0x01};
+    base58Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x01};
 
     fAllowMinDifficultyBlocks = true;
     fDefaultConsistencyChecks = false;

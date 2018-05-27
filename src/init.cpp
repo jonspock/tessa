@@ -1258,7 +1258,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   }
 
   if (mapArgs.count("-whitelist")) {
-      for (const std::string& net : mapMultiArgs["-whitelist"]) {
+    for (const std::string& net : mapMultiArgs["-whitelist"]) {
       CSubNet subnet(net);
       if (!subnet.IsValid()) return InitError(strprintf(_("Invalid netmask specified in -whitelist: '%s'"), net));
       CNode::AddWhitelistedRange(subnet);
@@ -1316,13 +1316,13 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   bool fBound = false;
   if (fListen) {
     if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
-        for (std::string strBind : mapMultiArgs["-bind"]) {
+      for (std::string strBind : mapMultiArgs["-bind"]) {
         CService addrBind;
         if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
           return InitError(strprintf(_("Cannot resolve -bind address: '%s'"), strBind));
         fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
       }
-        for (std::string strBind : mapMultiArgs["-whitebind"]) {
+      for (std::string strBind : mapMultiArgs["-whitebind"]) {
         CService addrBind;
         if (!Lookup(strBind.c_str(), addrBind, 0, false))
           return InitError(strprintf(_("Cannot resolve -whitebind address: '%s'"), strBind));
@@ -1340,14 +1340,14 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   }
 
   if (mapArgs.count("-externalip")) {
-      for (string strAddr : mapMultiArgs["-externalip"]) {
+    for (string strAddr : mapMultiArgs["-externalip"]) {
       CService addrLocal(strAddr, GetListenPort(), fNameLookup);
       if (!addrLocal.IsValid()) return InitError(strprintf(_("Cannot resolve -externalip address: '%s'"), strAddr));
       AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
     }
   }
 
-  for (string strDest : mapMultiArgs["-seednode"])  AddOneShot(strDest);
+  for (string strDest : mapMultiArgs["-seednode"]) AddOneShot(strDest);
 
 #if ENABLE_ZMQ
   pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(mapArgs);
@@ -1358,7 +1358,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // ********************************************************* Step 7: load block chain
 
   // Club: Load Accumulator Checkpoints according to network (main/test/regtest)
-#warning "Need checkpoints"  
+#warning "Need checkpoints"
   // NO CHECKPOINTS YET : XXX HACK assert(AccumulatorCheckpoints::LoadCheckpoints(Params().NetworkIDString()));
 
   fReindex = GetBoolArg("-reindex", false);
@@ -1649,7 +1649,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
       // Restore wallet transaction metadata after -zapwallettxes=1
       if (GetBoolArg("-zapwallettxes", false) && GetArg("-zapwallettxes", "1") != "2") {
-          for (const CWalletTx& wtxOld : vWtx) {
+        for (const CWalletTx& wtxOld : vWtx) {
           uint256 hash = wtxOld.GetHash();
           std::map<uint256, CWalletTx>::iterator mi = pwalletMain->mapWallet.find(hash);
           if (mi != pwalletMain->mapWallet.end()) {
@@ -1695,8 +1695,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   std::vector<boost::filesystem::path> vImportFiles;
   if (mapArgs.count("-loadblock")) {
-      for (string strFile : mapMultiArgs["-loadblock"])
-      vImportFiles.push_back(strFile);
+    for (string strFile : mapMultiArgs["-loadblock"]) vImportFiles.push_back(strFile);
   }
   threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
   if (chainActive.Tip() == NULL) {
