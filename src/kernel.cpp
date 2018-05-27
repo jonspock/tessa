@@ -4,9 +4,6 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <boost/assign/list_of.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include "db.h"
 #include "kernel.h"
 #include "script/interpreter.h"
@@ -30,7 +27,7 @@ unsigned int getIntervalVersion(bool fTestNet) {
 }
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
-static std::map<int, unsigned int> mapStakeModifierCheckpoints = boost::assign::map_list_of(0, 0xfd11f4e7u);
+static std::map<int, unsigned int> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7u}};
 
 // Get time weight
 int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd) {
@@ -155,8 +152,8 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     return error("ComputeNextStakeModifier: unable to get last modifier");
 
   if (GetBoolArg("-printstakemodifier", false))
-    LogPrintf("ComputeNextStakeModifier: prev modifier= %s time=%s\n",
-              boost::lexical_cast<std::string>(nStakeModifier).c_str(),
+    LogPrintf("ComputeNextStakeModifier: prev modifier= %lld time=%s\n",
+              nStakeModifier,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nModifierTime).c_str());
 
   if (nModifierTime / getIntervalVersion(fTestNet) >= pindexPrev->GetBlockTime() / getIntervalVersion(fTestNet))
@@ -224,8 +221,8 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
               pindexPrev->nHeight, strSelectionMap.c_str());
   }
   if (GetBoolArg("-printstakemodifier", false)) {
-    LogPrintf("ComputeNextStakeModifier: new modifier=%s time=%s\n",
-              boost::lexical_cast<std::string>(nStakeModifierNew).c_str(),
+    LogPrintf("ComputeNextStakeModifier: new modifier=%lld time=%s\n",
+              nStakeModifierNew,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", pindexPrev->GetBlockTime()).c_str());
   }
 
