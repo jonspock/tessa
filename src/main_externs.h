@@ -29,8 +29,7 @@
 #include <utility>
 
 #include "libzerocoin/CoinSpend.h"
-
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 struct BlockHasher {
   size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
@@ -44,7 +43,7 @@ class CSporkDB;
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-typedef boost::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
+typedef std::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
 extern BlockMap mapBlockIndex;
 extern uint64_t nLastBlockTx;
 extern uint64_t nLastBlockSize;

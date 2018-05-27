@@ -5,8 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_COINS_H
-#define BITCOIN_COINS_H
+#pragma once
 
 #include "compressor.h"
 #include "consensus/consensus.h"
@@ -15,10 +14,9 @@
 #include "uint256.h"
 #include "undo.h"
 
-#include <assert.h>
-#include <stdint.h>
-
-#include <boost/unordered_map.hpp>
+#include <cassert>
+#include <cstdint>
+#include <unordered_map>
 
 /**
 
@@ -280,7 +278,7 @@ struct CCoinsCacheEntry {
   CCoinsCacheEntry() : coins(), flags(0) {}
 };
 
-typedef boost::unordered_map<uint256, CCoinsCacheEntry, CCoinsKeyHasher> CCoinsMap;
+typedef std::unordered_map<uint256, CCoinsCacheEntry, CCoinsKeyHasher> CCoinsMap;
 
 struct CCoinsStats {
   int nHeight;
@@ -438,4 +436,3 @@ class CCoinsViewCache : public CCoinsViewBacked {
   CCoinsMap::const_iterator FetchCoins(const uint256& txid) const;
 };
 
-#endif  // BITCOIN_COINS_H
