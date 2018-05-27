@@ -7,8 +7,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-#include "wallet_functions.h"
 #include "streams.h"
+#include "wallet_functions.h"
 
 /**
  * Account information.

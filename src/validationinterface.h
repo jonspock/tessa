@@ -69,4 +69,3 @@ struct CMainSignals {
 };
 
 CMainSignals &GetMainSignals();
-
