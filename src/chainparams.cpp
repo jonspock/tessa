@@ -15,10 +15,7 @@
 
 #include <assert.h>
 
-#include <boost/assign/list_of.hpp>
-
 using namespace std;
-using namespace boost::assign;
 
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime,
                                  uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward) {
@@ -77,10 +74,10 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 //   (no blocks before with a timestamp after, none after with
 //    timestamp before)
 // + Contains no strange transactions
-static Checkpoints::MapCheckpoints mapCheckpoints =
-    boost::assign::map_list_of(259201, uint256("1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd"))(
-        908000, uint256("202708f8c289b676fceb832a079ff6b308a28608339acbf7584de533619d014d"))(
-        1142400, uint256("98aff9d605bf123247f98b1e3a02567eb5799d208d78ec30fb89737b1c1f79c5"));
+static Checkpoints::MapCheckpoints mapCheckpoints = {
+    {259201, uint256("1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd")},
+    {908000, uint256("202708f8c289b676fceb832a079ff6b308a28608339acbf7584de533619d014d")},
+    {1142400, uint256("98aff9d605bf123247f98b1e3a02567eb5799d208d78ec30fb89737b1c1f79c5")}};
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
     1525106065,  // * UNIX timestamp of last checkpoint block
@@ -89,11 +86,11 @@ static const Checkpoints::CCheckpointData data = {
     2000         // * estimated number of transactions per day after checkpoint
 };
 
-static Checkpoints::MapCheckpoints mapCheckpointsTestnet = boost::assign::map_list_of(0, uint256("0x001"));
+static Checkpoints::MapCheckpoints mapCheckpointsTestnet = {{0, uint256("0x001")}};
 
 static const Checkpoints::CCheckpointData dataTestnet = {&mapCheckpointsTestnet, 1740710, 0, 250};
 
-static Checkpoints::MapCheckpoints mapCheckpointsRegtest = boost::assign::map_list_of(0, uint256("0x001"));
+static Checkpoints::MapCheckpoints mapCheckpointsRegtest = {{0, uint256("0x001")}};
 
 static const Checkpoints::CCheckpointData dataRegtest = {&mapCheckpointsRegtest, 1454124731, 0, 100};
 
@@ -173,13 +170,10 @@ class CMainParams : public CChainParams {
     base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 28);  // Start with "C"
     base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 7);
     base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 212);
-    base58Prefixes[EXT_PUBLIC_KEY] =
-        boost::assign::list_of(0x02)(0x2D)(0x25)(0x33).convert_to_container<std::vector<unsigned char> >();
-    base58Prefixes[EXT_SECRET_KEY] =
-        boost::assign::list_of(0x02)(0x21)(0x31)(0x2B).convert_to_container<std::vector<unsigned char> >();
+    base58Prefixes[EXT_PUBLIC_KEY] = {0x02,0x2D,0x25,0x33};
+    base58Prefixes[EXT_SECRET_KEY] = {0x02,0x21,0x31,0x2B};
     // 	BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-    base58Prefixes[EXT_COIN_TYPE] =
-        boost::assign::list_of(0x80)(0x00)(0x00)(0x77).convert_to_container<std::vector<unsigned char> >();
+    base58Prefixes[EXT_COIN_TYPE] = {0x80,0x00,0x00,0x77};
 
     fMiningRequiresPeers = true;
     fAllowMinDifficultyBlocks = false;
@@ -269,14 +263,11 @@ class CTestNetParams : public CMainParams {
     base58Prefixes[SECRET_KEY] =
         std::vector<unsigned char>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
     // Testnet club BIP32 pubkeys start with 'DRKV'
-    base58Prefixes[EXT_PUBLIC_KEY] =
-        boost::assign::list_of(0x3a)(0x80)(0x61)(0xa0).convert_to_container<std::vector<unsigned char> >();
+    base58Prefixes[EXT_PUBLIC_KEY] = {0x3a,0x80,0x61,0xa0};
     // Testnet club BIP32 prvkeys start with 'DRKP'
-    base58Prefixes[EXT_SECRET_KEY] =
-        boost::assign::list_of(0x3a)(0x80)(0x58)(0x37).convert_to_container<std::vector<unsigned char> >();
+    base58Prefixes[EXT_SECRET_KEY] = {0x3a,0x80,0x58,0x37};
     // Testnet club BIP44 coin type is '1' (All coin's testnet default)
-    base58Prefixes[EXT_COIN_TYPE] =
-        boost::assign::list_of(0x80)(0x00)(0x00)(0x01).convert_to_container<std::vector<unsigned char> >();
+    base58Prefixes[EXT_COIN_TYPE] = {0x80,0x00,0x00,0x01};
 
     fAllowMinDifficultyBlocks = true;
     fDefaultConsistencyChecks = false;
