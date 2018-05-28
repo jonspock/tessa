@@ -1084,8 +1084,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   }
 
   // Start the lightweight task scheduler thread
-  CScheduler::Function serviceLoop = boost::bind(&CScheduler::serviceQueue, &scheduler);
-  threadGroup.create_thread(boost::bind(&TraceThread<CScheduler::Function>, "scheduler", serviceLoop));
+  CScheduler::Function serviceLoop = std::bind(&CScheduler::serviceQueue, &scheduler);
+  threadGroup.create_thread(std::bind(&TraceThread<CScheduler::Function>, "scheduler", serviceLoop));
 
   /* Start the RPC server already.  It will be started in "warmup" mode
    * and not really process calls already (but it will signify connections
@@ -1699,7 +1699,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (gArgs.IsArgSet("-loadblock")) {
     for (string strFile : gArgs.GetArgs("-loadblock")) vImportFiles.push_back(strFile);
   }
-  threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
+  threadGroup.create_thread(std::bind(&ThreadImport, vImportFiles));
   if (chainActive.Tip() == NULL) {
     LogPrintf("Waiting for genesis block to be imported...\n");
     while (!fRequestShutdown && chainActive.Tip() == NULL) MilliSleep(10);
@@ -1742,7 +1742,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     pwalletMain->ReacceptWalletTransactions();
 
     // Run a thread to flush wallet periodically
-    threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
+    threadGroup.create_thread(std::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
   }
 #endif
 

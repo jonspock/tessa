@@ -28,7 +28,6 @@
 #include "validationinterface.h"
 
 #include <boost/thread.hpp>
-#include <boost/tuple/tuple.hpp>
 
 using namespace std;
 
@@ -60,7 +59,7 @@ uint64_t nLastBlockSize = 0;
 int64_t nLastCoinStakeSearchInterval = 0;
 
 // We want to sort transactions by priority and fee rate, so:
-typedef boost::tuple<double, CFeeRate, const CTransaction*> TxPriority;
+typedef std::tuple<double, CFeeRate, const CTransaction*> TxPriority;
 class TxPriorityCompare {
   bool byFee;
 
@@ -69,11 +68,11 @@ class TxPriorityCompare {
 
   bool operator()(const TxPriority& a, const TxPriority& b) {
     if (byFee) {
-      if (a.get<1>() == b.get<1>()) return a.get<0>() < b.get<0>();
-      return a.get<1>() < b.get<1>();
+      if (get<1>(a) == get<1>(b)) return get<0>(a) < get<0>(b);
+      return get<1>(a) < get<1>(b);
     } else {
-      if (a.get<0>() == b.get<0>()) return a.get<1>() < b.get<1>();
-      return a.get<0>() < b.get<0>();
+      if (get<0>(a) == get<0>(b)) return get<1>(a) < get<1>(b);
+      return get<0>(a) < get<0>(a);
     }
   }
 };
@@ -283,9 +282,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     vector<CBigNum> vTxSerials;
     while (!vecPriority.empty()) {
       // Take highest priority transaction off the priority queue:
-      double dPriority = vecPriority.front().get<0>();
-      CFeeRate feeRate = vecPriority.front().get<1>();
-      const CTransaction& tx = *(vecPriority.front().get<2>());
+      double dPriority = get<0>(vecPriority.front());
+      CFeeRate feeRate = get<1>(vecPriority.front());
+      const CTransaction& tx = *(get<2>(vecPriority.front()));
 
       std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
       vecPriority.pop_back();
@@ -724,7 +723,7 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads) {
   if (nThreads == 0 || !fGenerate) return;
 
   minerThreads = new boost::thread_group();
-  for (int i = 0; i < nThreads; i++) minerThreads->create_thread(boost::bind(&ThreadBitcoinMiner, pwallet));
+  for (int i = 0; i < nThreads; i++) minerThreads->create_thread(std::bind(&ThreadBitcoinMiner, pwallet));
 }
 
 #endif  // ENABLE_WALLET
