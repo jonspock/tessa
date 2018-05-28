@@ -65,8 +65,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 #set(CMAKE_AUTOUIC ON)
 
-add_definitions("-DENABLE_ZMQ")
-#set(CMAKE_EXE_LINKER_FLAGS "-static --std=libc++")
+IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  add_definitions("-DENABLE_ZMQ")
+endif()
 
 unset(Qt5Enables)
 foreach(comp Widgets Core Gui Network LinguistTools DBus)
