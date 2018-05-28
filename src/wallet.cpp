@@ -1575,15 +1575,10 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
   if (nBalance > 0 && nBalance <= nReserveBalance) return false;
 
-  // Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
-  static int nLastStakeSetUpdate = 0;
-  static list<std::unique_ptr<CStakeInput> > listInputs;
-  if (GetTime() - nLastStakeSetUpdate > nStakeSetUpdateTime) {
-    listInputs.clear();
-    if (!SelectStakeCoins(listInputs, nBalance - nReserveBalance)) return false;
-
-    nLastStakeSetUpdate = GetTime();
-  }
+  // Get the list of stakable inputs
+  std::list<std::unique_ptr<CStakeInput> > listInputs;
+  if (!SelectStakeCoins(listInputs, nBalance - nReserveBalance))
+      return false;
 
   if (listInputs.empty()) return false;
 
