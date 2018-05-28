@@ -158,13 +158,13 @@ class CInit {
  * the mutex).
  */
 
-static boost::once_flag debugPrintInitFlag = BOOST_ONCE_INIT;
+static std::once_flag debugPrintInitFlag;
 /**
- * We use boost::call_once() to make sure these are initialized
+ * We use std::call_once() to make sure these are initialized
  * in a thread-safe manner the first time called:
  */
 static FILE* fileout = NULL;
-static boost::mutex* mutexDebugLog = NULL;
+static std::mutex* mutexDebugLog = NULL;
 
 static void DebugPrintInit() {
   assert(fileout == NULL);
@@ -174,7 +174,7 @@ static void DebugPrintInit() {
   fileout = fopen(pathDebug.string().c_str(), "a");
   if (fileout) setbuf(fileout, NULL);  // unbuffered
 
-  mutexDebugLog = new boost::mutex();
+  mutexDebugLog = new std::mutex();
 }
 
 bool LogAcceptCategory(const char* category) {
@@ -209,11 +209,11 @@ int LogPrintStr(const std::string& str) {
     fflush(stdout);
   } else if (fPrintToDebugLog && AreBaseParamsConfigured()) {
     static bool fStartedNewLine = true;
-    boost::call_once(&DebugPrintInit, debugPrintInitFlag);
+    std::call_once(debugPrintInitFlag, &DebugPrintInit);
 
     if (fileout == NULL) return ret;
 
-    boost::mutex::scoped_lock scoped_lock(*mutexDebugLog);
+    std::lock_guard<std::mutex> scoped_lock(*mutexDebugLog);
 
     // reopen the log file, if requested
     if (fReopenDebugLog) {
