@@ -25,7 +25,6 @@
 #include "primitives/deterministicmint.h"
 #include "spork.h"
 #include <boost/thread/thread.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include <univalue.h>
 
@@ -2232,7 +2231,7 @@ UniValue printMultiSend() {
 
   UniValue vMS(UniValue::VOBJ);
   for (unsigned int i = 0; i < pwalletMain->vMultiSend.size(); i++) {
-    vMS.push_back(Pair("Address " + boost::lexical_cast<std::string>(i), pwalletMain->vMultiSend[i].first));
+    vMS.push_back(Pair("Address " + std::to_string(i), pwalletMain->vMultiSend[i].first));
     vMS.push_back(Pair("Percent", pwalletMain->vMultiSend[i].second));
   }
 
@@ -2336,7 +2335,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
     }
   }
   if (params.size() == 2 && params[0].get_str() == "delete") {
-    int del = boost::lexical_cast<int>(params[1].get_str());
+    int del = std::stoi(params[1].get_str());
     if (!walletdb.EraseMultiSend(pwalletMain->vMultiSend))
       throw JSONRPCError(RPC_DATABASE_ERROR, "failed to delete old MultiSend vector from database");
 
@@ -2392,12 +2391,12 @@ UniValue multisend(const UniValue& params, bool fHelp) {
   string strAddress = params[0].get_str();
   CBitcoinAddress address(strAddress);
   if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid GGG address");
-  if (boost::lexical_cast<int>(params[1].get_str()) < 0)
+  if (std::stoi(params[1].get_str()) < 0)
     throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid percentage");
   if (pwalletMain->IsLocked())
     throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED,
                        "Error: Please enter the wallet passphrase with walletpassphrase first.");
-  unsigned int nPercent = boost::lexical_cast<unsigned int>(params[1].get_str());
+  unsigned int nPercent = (unsigned int)std::stoi(params[1].get_str());
 
   LOCK(pwalletMain->cs_wallet);
   {
