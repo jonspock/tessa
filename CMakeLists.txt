@@ -343,7 +343,7 @@ target_link_libraries(club-cli coin zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boos
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(clubd coin db_cxx db secp256k1 gmp zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event /usr/local/lib/libevent_pthreads.a /usr/local/lib/libzmq.a pthread )
 else()
-	target_link_libraries(clubd coin db_cxx db secp256k1 zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} pthread)
+	target_link_libraries(clubd coin db_cxx db secp256k1 zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} event event_pthreads pthread)
 endif()
 
 #	miniupnpc pthread)
