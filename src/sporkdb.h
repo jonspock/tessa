@@ -3,12 +3,10 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_CSPORKDB_H
-#define Club_CSPORKDB_H
+#pragma once
 
-#include "leveldbwrapper.h"
 #include "spork.h"
-#include <boost/filesystem/path.hpp>
+#include "leveldbwrapper.h"
 
 class CSporkDB : public CLevelDBWrapper {
  public:
@@ -23,5 +21,3 @@ class CSporkDB : public CLevelDBWrapper {
   bool ReadSpork(const int nSporkId, CSporkMessage& spork);
   bool SporkExists(const int nSporkId);
 };
-
-#endif  // Club_CSPORKDB_H

@@ -4,8 +4,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef SPORK_H
-#define SPORK_H
+#pragma once
 
 #include "base58.h"
 #include "key.h"
@@ -13,11 +12,7 @@
 #include "net.h"
 #include "sync.h"
 #include "util.h"
-
 #include "protocol.h"
-
-using namespace std;
-using namespace boost;
 
 /*
     Don't ever reuse these IDs for other sporks
@@ -92,4 +87,3 @@ class CSporkManager {
   void Relay(CSporkMessage& msg);
 };
 
-#endif

@@ -5,6 +5,7 @@
 
 #include "sporkdb.h"
 #include "spork.h"
+#include <boost/filesystem/path.hpp>
 
 CSporkDB::CSporkDB(size_t nCacheSize, bool fMemory, bool fWipe)
     : CLevelDBWrapper(GetDataDir() / "sporks", nCacheSize, fMemory, fWipe) {}
