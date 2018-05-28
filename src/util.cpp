@@ -10,6 +10,8 @@
 #include "config/club-config.h"
 #endif
 
+#include <mutex>
+
 #include "util.h"
 
 #include "allocators.h"
