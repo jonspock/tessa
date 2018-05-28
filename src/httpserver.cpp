@@ -464,7 +464,7 @@ static void httpevent_callback_fn(evutil_socket_t, short, void* data) {
   if (self->deleteWhenTriggered) delete self;
 }
 
-HTTPEvent::HTTPEvent(struct event_base* base, bool deleteWhenTriggered, const boost::function<void(void)>& handler)
+HTTPEvent::HTTPEvent(struct event_base* base, bool deleteWhenTriggered, const std::function<void(void)>& handler)
     : deleteWhenTriggered(deleteWhenTriggered), handler(handler) {
   ev = event_new(base, -1, 0, httpevent_callback_fn, this);
   assert(ev);
@@ -531,8 +531,8 @@ void HTTPRequest::WriteReply(int nStatus, const std::string& strReply) {
   struct evbuffer* evb = evhttp_request_get_output_buffer(req);
   assert(evb);
   evbuffer_add(evb, strReply.data(), strReply.size());
-  HTTPEvent* ev = new HTTPEvent(
-      eventBase, true, std::bind(evhttp_send_reply, req, nStatus, (const char*)NULL, (struct evbuffer*)NULL));
+  HTTPEvent* ev = new HTTPEvent(eventBase, true,
+                                std::bind(evhttp_send_reply, req, nStatus, (const char*)NULL, (struct evbuffer*)NULL));
   ev->trigger(0);
   replySent = true;
   req = 0;  // transferred back to main thread

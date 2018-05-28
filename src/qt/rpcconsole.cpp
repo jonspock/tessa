@@ -89,7 +89,7 @@ class RPCExecutor : public QObject {
 class QtRPCTimerBase : public QObject, public RPCTimerBase {
   Q_OBJECT
  public:
-  QtRPCTimerBase(boost::function<void(void)>& func, int64_t millis) : func(func) {
+  QtRPCTimerBase(std::function<void(void)>& func, int64_t millis) : func(func) {
     timer.setSingleShot(true);
     connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
     timer.start(millis);
@@ -100,14 +100,14 @@ class QtRPCTimerBase : public QObject, public RPCTimerBase {
 
  private:
   QTimer timer;
-  boost::function<void(void)> func;
+  std::function<void(void)> func;
 };
 
 class QtRPCTimerInterface : public RPCTimerInterface {
  public:
   ~QtRPCTimerInterface() {}
   const char* Name() { return "Qt"; }
-  RPCTimerBase* NewTimer(boost::function<void(void)>& func, int64_t millis) { return new QtRPCTimerBase(func, millis); }
+  RPCTimerBase* NewTimer(std::function<void(void)>& func, int64_t millis) { return new QtRPCTimerBase(func, millis); }
 };
 
 #include "rpcconsole.moc"

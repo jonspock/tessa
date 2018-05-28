@@ -13,8 +13,8 @@
 #include <string>
 
 #include <boost/chrono/chrono.hpp>
-#include <boost/function.hpp>
 #include <boost/thread.hpp>
+#include <functional>
 
 extern const std::string DEFAULT_TOR_CONTROL;
 static const bool DEFAULT_LISTEN_ONION = true;

@@ -24,7 +24,7 @@
  */
 class HTTPRPCTimer : public RPCTimerBase {
  public:
-  HTTPRPCTimer(struct event_base* eventBase, boost::function<void(void)>& func, int64_t millis)
+  HTTPRPCTimer(struct event_base* eventBase, std::function<void(void)>& func, int64_t millis)
       : ev(eventBase, false, func) {
     struct timeval tv;
     tv.tv_sec = millis / 1000;
@@ -40,7 +40,7 @@ class HTTPRPCTimerInterface : public RPCTimerInterface {
  public:
   HTTPRPCTimerInterface(struct event_base* base) : base(base) {}
   const char* Name() { return "HTTP"; }
-  RPCTimerBase* NewTimer(boost::function<void(void)>& func, int64_t millis) {
+  RPCTimerBase* NewTimer(std::function<void(void)>& func, int64_t millis) {
     return new HTTPRPCTimer(base, func, millis);
   }
 
