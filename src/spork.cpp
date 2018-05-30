@@ -22,39 +22,39 @@ class CSporkManager;
 
 CSporkManager sporkManager;
 
-std::map<uint256, CSporkMessage> mapSporks;
-std::map<int, CSporkMessage> mapSporksActive;
+
 
 // Club: on startup load spork values from previous session if they exist in the sporkDB
-void LoadSporksFromDB() {
-  for (int i = SPORK_START; i <= SPORK_END; ++i) {
-    // Since not all spork IDs are in use, we have to exclude undefined IDs
-    std::string strSpork = sporkManager.GetSporkNameByID(i);
-    if (strSpork == "Unknown") continue;
+void CSporkManager::LoadSporksFromDB() {
+    for (unsigned int i = 0; i < sporkList.size(); ++i) {
+        // Since not all spork IDs are in use, we have to exclude undefined IDs
+        SporkID sporkID = sporkList[i];
+        std::string strSpork = GetSporkNameByID(sporkID);
+        if (strSpork == "Unknown") continue;
 
-    // attempt to read spork from sporkDB
-    CSporkMessage spork;
-    if (!pSporkDB->ReadSpork(i, spork)) {
-      LogPrintf("%s : no previous value for %s found in database\n", __func__, strSpork);
-      continue;
-    }
+        // attempt to read spork from sporkDB
+        CSporkMessage spork;
+        if (!pSporkDB->ReadSpork(sporkID, spork)) {
+            LogPrintf("%s : no previous value for %s found in database\n", __func__, strSpork);
+            continue;
+        }
 
-    // add spork to memory
-    mapSporks[spork.GetHash()] = spork;
-    mapSporksActive[spork.nSporkID] = spork;
-    std::time_t result = spork.nValue;
-    // If SPORK Value is greater than 1,000,000 assume it's actually a Date and then convert to a more readable format
-    if (spork.nValue > 1000000) {
-      LogPrintf("%s : loaded spork %s with value %d : %s", __func__, sporkManager.GetSporkNameByID(spork.nSporkID),
-                spork.nValue, std::ctime(&result));
-    } else {
-      LogPrintf("%s : loaded spork %s with value %d\n", __func__, sporkManager.GetSporkNameByID(spork.nSporkID),
-                spork.nValue);
+        // add spork to memory
+        mapSporks[spork.GetHash()] = spork;
+        mapSporksActive[spork.nSporkID] = spork;
+        std::time_t result = spork.nValue;
+        // If SPORK Value is greater than 1,000,000 assume it's actually a Date and then convert to a more readable format
+        if (spork.nValue > 1000000) {
+            LogPrintf("%s : loaded spork %s with value %d : %s", __func__, sporkManager.GetSporkNameByID(sporkID),
+                      spork.nValue, std::ctime(&result));
+        } else {
+            LogPrintf("%s : loaded spork %s with value %d\n", __func__, sporkManager.GetSporkNameByID(sporkID),
+                      spork.nValue);
+        }
     }
-  }
 }
 
-void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv) {
+void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv) {
   //    if (fLiteMode) return 0;
   if (strCommand == "spork") {
     // LogPrintf("ProcessSpork::spork\n");
@@ -65,7 +65,8 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv) {
     if (chainActive.Tip() == NULL) return;
 
     // Ignore spork messages about unknown/deleted sporks
-    std::string strSpork = sporkManager.GetSporkNameByID(spork.nSporkID);
+    SporkID id = sporkManager.GetSporkIDByInt(spork.nSporkID);
+    std::string strSpork = sporkManager.GetSporkNameByID(id);
     if (strSpork == "Unknown") return;
 
     uint256 hash = spork.GetHash();
@@ -101,43 +102,30 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv) {
     sporkManager.Relay(spork);
 
     // Club: add to spork database.
-    pSporkDB->WriteSpork(spork.nSporkID, spork);
+    pSporkDB->WriteSpork(id, spork);
   }
   if (strCommand == "getsporks") {
-    std::map<int, CSporkMessage>::iterator it = mapSporksActive.begin();
-
-    while (it != mapSporksActive.end()) {
-      pfrom->PushMessage("spork", it->second);
-      it++;
-    }
+      for (auto& it : mapSporksActive) pfrom->PushMessage("spork", it.second);
   }
 }
 
 // grab the value of the spork on the network, or the default
-int64_t GetSporkValue(int nSporkID) {
+int64_t CSporkManager::GetSporkValue(SporkID i) {
   int64_t r = -1;
-
-  if (mapSporksActive.count(nSporkID)) {
-    r = mapSporksActive[nSporkID].nValue;
-  } else {
-    if (nSporkID == SPORK_01_NEW_PROTOCOL_ENFORCEMENT) r = SPORK_01_NEW_PROTOCOL_ENFORCEMENT_DEFAULT;
-    if (nSporkID == SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2) r = SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2_DEFAULT;
-    if (nSporkID == SPORK_ZEROCOIN_MAINTENANCE_MODE) r = SPORK_ZEROCOIN_MAINTENANCE_MODE_DEFAULT;
-
-    if (r == -1) LogPrintf("%s : Unknown Spork %d\n", __func__, nSporkID);
-  }
-
+  int64_t nSporkID = (int)i;
+  if (mapSporksActive.count(nSporkID)) return mapSporksActive[nSporkID].nValue;
   return r;
 }
 
+
 // grab the spork value, and see if it's off
-bool IsSporkActive(int nSporkID) {
+bool CSporkManager::IsSporkActive(SporkID nSporkID) {
   int64_t r = GetSporkValue(nSporkID);
   if (r == -1) return false;
   return r < GetTime();
 }
 
-void ReprocessBlocks(int nBlocks) {
+void CSporkManager::ReprocessBlocks(int nBlocks) {
   std::map<uint256, int64_t>::iterator it = mapRejectedBlocks.begin();
   while (it != mapRejectedBlocks.end()) {
     // use a window twice as large as is usual for the nBlocks we want to reset
@@ -183,16 +171,16 @@ bool CSporkManager::CheckSignature(CSporkMessage& spork, bool fCheckSigner) {
 
 bool CSporkManager::Sign(CSporkMessage& spork) { return true; }
 
-bool CSporkManager::UpdateSpork(int nSporkID, int64_t nValue) {
+bool CSporkManager::UpdateSpork(SporkID nSporkID, int64_t nValue) {
   CSporkMessage msg;
-  msg.nSporkID = nSporkID;
+  msg.nSporkID = (int)nSporkID;
   msg.nValue = nValue;
   msg.nTimeSigned = GetTime();
 
   if (Sign(msg)) {
     Relay(msg);
     mapSporks[msg.GetHash()] = msg;
-    mapSporksActive[nSporkID] = msg;
+    mapSporksActive[(int)nSporkID] = msg;
     return true;
   }
 
@@ -220,18 +208,18 @@ bool CSporkManager::SetPrivKey(std::string strPrivKey) {
   }
 }
 
-int CSporkManager::GetSporkIDByName(std::string strName) {
-  if (strName == "SPORK_01_NEW_PROTOCOL_ENFORCEMENT") return SPORK_01_NEW_PROTOCOL_ENFORCEMENT;
-  if (strName == "SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2") return SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2;
-  if (strName == "SPORK_ZEROCOIN_MAINTENANCE_MODE") return SPORK_ZEROCOIN_MAINTENANCE_MODE;
-
-  return -1;
+SporkID CSporkManager::GetSporkIDByName(std::string strName) {
+    if (strName == "SPORK_PROTOCOL_ENFORCEMENT") return SporkID::SPORK_PROTOCOL_ENFORCEMENT;
+    else return SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE;
 }
 
-std::string CSporkManager::GetSporkNameByID(int id) {
-  if (id == SPORK_01_NEW_PROTOCOL_ENFORCEMENT) return "SPORK_01_NEW_PROTOCOL_ENFORCEMENT";
-  if (id == SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2) return "SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2";
-  if (id == SPORK_ZEROCOIN_MAINTENANCE_MODE) return "SPORK_ZEROCOIN_MAINTENANCE_MODE";
+SporkID CSporkManager::GetSporkIDByInt(int i) {
+    if (i == 10001) return SporkID::SPORK_PROTOCOL_ENFORCEMENT;
+    else return SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE;
+}
 
-  return "Unknown";
+std::string CSporkManager::GetSporkNameByID(SporkID id) {
+    if (id == SporkID::SPORK_PROTOCOL_ENFORCEMENT) return "SPORK_PROTOCOL_ENFORCEMENT";
+    if (id == SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE) return "SPORK_ZEROCOIN_MAINTENANCE_MODE";
+    return "Unknown";
 }

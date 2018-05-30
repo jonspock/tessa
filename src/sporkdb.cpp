@@ -10,11 +10,11 @@
 CSporkDB::CSporkDB(size_t nCacheSize, bool fMemory, bool fWipe)
     : CLevelDBWrapper(GetDataDir() / "sporks", nCacheSize, fMemory, fWipe) {}
 
-bool CSporkDB::WriteSpork(const int nSporkId, const CSporkMessage& spork) {
+bool CSporkDB::WriteSpork(const SporkID nSporkId, const CSporkMessage& spork) {
   LogPrintf("Wrote spork %s to database\n", sporkManager.GetSporkNameByID(nSporkId));
-  return Write(nSporkId, spork);
+  return Write((int)nSporkId, spork);
 }
 
-bool CSporkDB::ReadSpork(const int nSporkId, CSporkMessage& spork) { return Read(nSporkId, spork); }
+bool CSporkDB::ReadSpork(const SporkID nSporkId, CSporkMessage& spork) { return Read((int)nSporkId, spork); }
 
-bool CSporkDB::SporkExists(const int nSporkId) { return Exists(nSporkId); }
+bool CSporkDB::SporkExists(const SporkID nSporkId) { return Exists((int)nSporkId); }

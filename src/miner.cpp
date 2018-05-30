@@ -180,7 +180,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi) {
       const CTransaction& tx = mi->second.GetTx();
       if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)) { continue; }
-      if (GetAdjustedTime() > GetSporkValue(SPORK_ZEROCOIN_MAINTENANCE_MODE) && tx.ContainsZerocoins()) { continue; }
 
       COrphan* porphan = NULL;
       double dPriority = 0;

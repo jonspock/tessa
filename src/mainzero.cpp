@@ -97,7 +97,6 @@ bool ContextualCheckZerocoinSpend(const CTransaction& tx, const CoinSpend& spend
     if (!spend.HasValidSignature()) return error("%s: V2 zZZZ spend does not have a valid signature", __func__);
 
     libzerocoin::SpendType expectedType = libzerocoin::SpendType::SPEND;
-    if (tx.IsCoinStake()) expectedType = libzerocoin::SpendType::STAKE;
     if (spend.getSpendType() != expectedType) {
       return error("%s: trying to spend zZZZ without the correct spend type. txid=%s", __func__, tx.GetHash().GetHex());
     }

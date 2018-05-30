@@ -17,7 +17,7 @@ class CSporkDB : public CLevelDBWrapper {
   void operator=(const CSporkDB&);
 
  public:
-  bool WriteSpork(const int nSporkId, const CSporkMessage& spork);
-  bool ReadSpork(const int nSporkId, CSporkMessage& spork);
-  bool SporkExists(const int nSporkId);
+  bool WriteSpork(const SporkID nSporkId, const CSporkMessage& spork);
+  bool ReadSpork(const SporkID nSporkId, CSporkMessage& spork);
+  bool SporkExists(const SporkID nSporkId);
 };

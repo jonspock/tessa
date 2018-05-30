@@ -10,37 +10,19 @@
 #include "key.h"
 #include "main.h"
 #include "net.h"
+#include "protocol.h"
 #include "sync.h"
 #include "util.h"
-#include "protocol.h"
 
 /*
     Don't ever reuse these IDs for other sporks
     - This would result in old clients getting confused about which spork is for what
 */
-#define SPORK_START 10001
-#define SPORK_END 10005
-
-#define SPORK_01_NEW_PROTOCOL_ENFORCEMENT 10001
-#define SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2 10002
-#define SPORK_ZEROCOIN_MAINTENANCE_MODE 10003
-
-#define SPORK_01_NEW_PROTOCOL_ENFORCEMENT_DEFAULT 4070908800    // OFF
-#define SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2_DEFAULT 4070908800  // OFF
-#define SPORK_ZEROCOIN_MAINTENANCE_MODE_DEFAULT 4070908800      // OFF
 
 class CSporkMessage;
 class CSporkManager;
 
-extern std::map<uint256, CSporkMessage> mapSporks;
-extern std::map<int, CSporkMessage> mapSporksActive;
 extern CSporkManager sporkManager;
-
-void LoadSporksFromDB();
-void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
-int64_t GetSporkValue(int nSporkID);
-bool IsSporkActive(int nSporkID);
-void ReprocessBlocks(int nBlocks);
 
 //
 // Spork Class
@@ -50,40 +32,57 @@ void ReprocessBlocks(int nBlocks);
 class CSporkMessage {
  public:
   std::vector<unsigned char> vchSig;
-  int nSporkID;
-  int64_t nValue;
-  int64_t nTimeSigned;
+    int nSporkID;
+    int64_t nValue;
+    int64_t nTimeSigned;
 
-  uint256 GetHash() {
-    uint256 n = Hash(BEGIN(nSporkID), END(nTimeSigned));
-    return n;
-  }
-
-  ADD_SERIALIZE_METHODS;
-
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-    READWRITE(nSporkID);
-    READWRITE(nValue);
-    READWRITE(nTimeSigned);
-    READWRITE(vchSig);
+    uint256 GetHash() {
+        uint256 n = Hash(BEGIN(nSporkID), END(nTimeSigned));
+        return n;
+    }
+    
+    ADD_SERIALIZE_METHODS;
+    
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+        READWRITE(nSporkID);
+        READWRITE(nValue);
+        READWRITE(nTimeSigned);
+        READWRITE(vchSig);
   }
 };
 
+enum class SporkID { SPORK_PROTOCOL_ENFORCEMENT = 1000, SPORK_ZEROCOIN_MAINTENANCE_MODE };
+
+const std::vector<SporkID> sporkList = {SporkID::SPORK_PROTOCOL_ENFORCEMENT,
+                                        SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE };
+
 class CSporkManager {
+ public:
  private:
   std::vector<unsigned char> vchSig;
   std::string strMasterPrivKey;
+  std::map<uint256, CSporkMessage> mapSporks;
+  std::map<int, CSporkMessage> mapSporksActive;
 
  public:
   CSporkManager() {}
-
-  std::string GetSporkNameByID(int id);
-  int GetSporkIDByName(std::string strName);
-  bool UpdateSpork(int nSporkID, int64_t nValue);
+  int count(const uint256& h) { return mapSporks.count(h); }
+  CSporkMessage getSpork(const uint256& s) { return mapSporks[s]; }
+    
+  std::string GetSporkNameByID(SporkID id);
+  SporkID GetSporkIDByName(std::string strName);
+  SporkID GetSporkIDByInt(int i);
+  int64_t GetSporkValue(SporkID i);
+  bool IsSporkActive(SporkID nSporkID);
+    
+  bool UpdateSpork(SporkID nSporkID, int64_t nValue);
   bool SetPrivKey(std::string strPrivKey);
   bool CheckSignature(CSporkMessage& spork, bool fCheckSigner = false);
   bool Sign(CSporkMessage& spork);
   void Relay(CSporkMessage& msg);
-};
 
+  void LoadSporksFromDB();
+  void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+  void ReprocessBlocks(int nBlocks);
+};

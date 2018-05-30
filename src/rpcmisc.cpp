@@ -196,34 +196,32 @@ class DescribeAddressVisitor : public boost::static_visitor<UniValue> {
 /*
     Used for updating/reading spork settings on the network
 */
+
 UniValue spork(const UniValue& params, bool fHelp) {
   if (params.size() == 1 && params[0].get_str() == "show") {
     UniValue ret(UniValue::VOBJ);
-    for (int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++) {
-      if (sporkManager.GetSporkNameByID(nSporkID) != "Unknown")
-        ret.push_back(Pair(sporkManager.GetSporkNameByID(nSporkID), GetSporkValue(nSporkID)));
+    for (unsigned int nSporkID = 0; nSporkID < sporkList.size(); nSporkID++) {
+      if (sporkManager.GetSporkNameByID(sporkList[nSporkID]) != "Unknown")
+        ret.push_back(Pair(sporkManager.GetSporkNameByID(sporkList[nSporkID]), sporkManager.GetSporkValue(sporkList[nSporkID])));
     }
     return ret;
   } else if (params.size() == 1 && params[0].get_str() == "active") {
     UniValue ret(UniValue::VOBJ);
-    for (int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++) {
-      if (sporkManager.GetSporkNameByID(nSporkID) != "Unknown")
-        ret.push_back(Pair(sporkManager.GetSporkNameByID(nSporkID), IsSporkActive(nSporkID)));
+    for (unsigned int nSporkID = 0; nSporkID < sporkList.size(); nSporkID++) {
+      if (sporkManager.GetSporkNameByID(sporkList[nSporkID]) != "Unknown")
+        ret.push_back(Pair(sporkManager.GetSporkNameByID(sporkList[nSporkID]), sporkManager.IsSporkActive(sporkList[nSporkID])));
     }
     return ret;
   } else if (params.size() == 2) {
-    int nSporkID = sporkManager.GetSporkIDByName(params[0].get_str());
-    if (nSporkID == -1) { return "Invalid spork name"; }
-
-    // SPORK VALUE
-    int64_t nValue = params[1].get_int64();
-
-    // broadcast new spork
-    if (sporkManager.UpdateSpork(nSporkID, nValue)) {
-      return "success";
-    } else {
-      return "failure";
-    }
+      SporkID nSporkID = sporkManager.GetSporkIDByName(params[0].get_str());
+      // SPORK VALUE
+      int64_t nValue = params[1].get_int64();
+      // broadcast new spork
+      if (sporkManager.UpdateSpork(nSporkID, nValue)) {
+          return "success";
+      } else {
+          return "failure";
+      }
   }
 
   throw runtime_error(

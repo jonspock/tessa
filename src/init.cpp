@@ -1433,7 +1433,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
         // Club: load previous sessions sporks if we have them.
         uiInterface.InitMessage(_("Loading sporks..."));
-        LoadSporksFromDB();
+        sporkManager.LoadSporksFromDB();
 
         uiInterface.InitMessage(_("Loading block index..."));
         string strBlockIndexError = "";

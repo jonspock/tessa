@@ -133,7 +133,7 @@ class CMainParams : public CChainParams {
     /** Height or Time Based Activations **/
     nLastPOWBlock = 259200;
     nModifierUpdateBlock = 615800;
-    nZerocoinStartHeight = 500;
+    nZerocoinStartHeight = 250;
     nZerocoinStartTime = 1508214600;         // October 17, 2017 4:30:00 AM
     nBlockEnforceSerialRange = 0;            // Enforce serial range starting this block
     nBlockRecalculateAccumulators = 908000;  // Trigger a recalculation of accumulators
@@ -236,7 +236,7 @@ class CTestNetParams : public CMainParams {
     nMaturity = 15;
     nModifierUpdateBlock = 51197;  // approx Mon, 17 Apr 2017 04:00:00 GMT
     nMaxMoneyOut = 43199500 * COIN;
-    nZerocoinStartHeight = 500;
+    nZerocoinStartHeight = 250;
     nZerocoinStartTime = 1501776000;
     nBlockEnforceSerialRange = 1;             // Enforce serial range starting this block
     nBlockRecalculateAccumulators = 9908000;  // Trigger a recalculation of accumulators

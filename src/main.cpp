@@ -831,11 +831,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
   AssertLockHeld(cs_main);
   if (pfMissingInputs) *pfMissingInputs = false;
 
-  // Temporarily disable zerocoin for maintenance
-  if (GetAdjustedTime() > GetSporkValue(SPORK_ZEROCOIN_MAINTENANCE_MODE) && tx.ContainsZerocoins())
-    return state.DoS(10, error("AcceptToMemoryPool : Zerocoin transactions are temporarily disabled for maintenance"),
-                     REJECT_INVALID, "bad-tx");
-
   if (!CheckTransaction(tx, chainActive.Height() >= Params().Zerocoin_StartHeight(), state))
     return state.DoS(100, error("AcceptToMemoryPool: : CheckTransaction failed"), REJECT_INVALID, "bad-tx");
 
@@ -1870,12 +1865,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     nSigOps += GetLegacySigOpCount(tx);
     if (nSigOps > nMaxBlockSigOps)
       return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
-
-    // Temporarily disable zerocoin transactions for maintenance
-    if (block.nTime > GetSporkValue(SPORK_ZEROCOIN_MAINTENANCE_MODE) && !IsInitialBlockDownload() &&
-        tx.ContainsZerocoins()) {
-      return state.DoS(100, error("ConnectBlock() : zerocoin transactions are currently in maintenance mode"));
-    }
 
     if (tx.IsZerocoinSpend()) {
       int nHeightTx = 0;
@@ -3794,7 +3783,7 @@ bool static AlreadyHave(const CInv& inv) {
     case MSG_BLOCK:
       return mapBlockIndex.count(inv.hash);
     case MSG_SPORK:
-      return mapSporks.count(inv.hash);
+      return sporkManager.count(inv.hash);
   }
   // Don't know what it is, just say we already got one
   return true;
@@ -3896,10 +3885,10 @@ void static ProcessGetData(CNode* pfrom) {
           }
         }
         if (!pushed && inv.type == MSG_SPORK) {
-          if (mapSporks.count(inv.hash)) {
+          if (sporkManager.count(inv.hash)) {
             CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
             ss.reserve(1000);
-            ss << mapSporks[inv.hash];
+            ss << sporkManager.getSpork(inv.hash);
             pfrom->PushMessage("spork", ss);
             pushed = true;
           }
@@ -3949,10 +3938,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     // Club: We use certain sporks during IBD, so check to see if they are
     // available. If not, ask the first peer connected for them.
-    bool fMissingSporks = !pSporkDB->SporkExists(SPORK_01_NEW_PROTOCOL_ENFORCEMENT) &&
-                          !pSporkDB->SporkExists(SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2) &&
-                          !pSporkDB->SporkExists(SPORK_ZEROCOIN_MAINTENANCE_MODE);
-
+    bool fMissingSporks = !pSporkDB->SporkExists(SporkID::SPORK_PROTOCOL_ENFORCEMENT);
     if (fMissingSporks || !fRequestedSporksIDB) {
       LogPrintf("asking peer for sporks\n");
       pfrom->PushMessage("getsporks");
@@ -4617,7 +4603,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
   } else {
     // probably one the extensions
-    ProcessSpork(pfrom, strCommand, vRecv);
+      sporkManager.ProcessSpork(pfrom, strCommand, vRecv);
   }
 
   return true;
@@ -4628,14 +4614,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 //       Those old clients won't react to the changes of the other (new) SPORK because at the time of their
 //       implementation it was the one which was commented out
 int ActiveProtocol() {
-  // SPORK_01 is used for 70913 (v3.1.0+)
-  if (IsSporkActive(SPORK_01_NEW_PROTOCOL_ENFORCEMENT)) return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
-
-  // SPORK_02 was used for 70912 (v3.0.5+), commented out now.
-  // if (IsSporkActive(SPORK_02_NEW_PROTOCOL_ENFORCEMENT_2))
-  //        return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
-
-  return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
+    if (sporkManager.IsSporkActive(SporkID::SPORK_PROTOCOL_ENFORCEMENT)) return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
+    return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 
 // requires LOCK(cs_vRecvMsg)

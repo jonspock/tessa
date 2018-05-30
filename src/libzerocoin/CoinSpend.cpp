@@ -18,15 +18,17 @@
 
 namespace libzerocoin
 {
-    CoinSpend::CoinSpend(const ZerocoinParams* paramsCoin, const ZerocoinParams* paramsAcc, const PrivateCoin& coin, Accumulator& a, const uint32_t& checksum,
-                     const AccumulatorWitness& witness, const uint256& ptxHash, const SpendType& spendType) : accChecksum(checksum),
-                                                                                  ptxHash(ptxHash),
-                                                                                  coinSerialNumber((coin.getSerialNumber())),
-                                                                                  accumulatorPoK(&paramsAcc->accumulatorParams),
-                                                                                  serialNumberSoK(paramsCoin),
-                                                                                  commitmentPoK(&paramsCoin->serialNumberSoKCommitmentGroup,
-                                                                                                &paramsAcc->accumulatorParams.accumulatorPoKCommitmentGroup),
-                                                                                  spendType(spendType)
+    CoinSpend::CoinSpend(const ZerocoinParams* paramsCoin, const ZerocoinParams* paramsAcc,
+                         const PrivateCoin& coin, Accumulator& a, const uint32_t& checksum,
+                         const AccumulatorWitness& witness, const uint256& ptxHash,
+                         const SpendType& spendType) : accChecksum(checksum),
+                                                       ptxHash(ptxHash),
+                                                       coinSerialNumber((coin.getSerialNumber())),
+                                                       accumulatorPoK(&paramsAcc->accumulatorParams),
+                                                       serialNumberSoK(paramsCoin),
+                                                       commitmentPoK(&paramsCoin->serialNumberSoKCommitmentGroup,
+                                                                     &paramsAcc->accumulatorParams.accumulatorPoKCommitmentGroup),
+                                                       spendType(spendType)
 {
     denomination = coin.getPublicCoin().getDenomination();
     version = coin.getVersion();

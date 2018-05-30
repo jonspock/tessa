@@ -2612,8 +2612,6 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
   }
 
   int64_t nTime = GetTimeMillis();
-  if (GetAdjustedTime() > GetSporkValue(SPORK_ZEROCOIN_MAINTENANCE_MODE))
-    throw JSONRPCError(RPC_WALLET_ERROR, "zZZZ is currently disabled due to maintenance.");
 
   EnsureWalletIsUnlocked(true);
 
@@ -2713,9 +2711,6 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
         HelpExampleRpc("spendzerocoin", "5000 false true 100 \"DMJRSsuU9zfyrvxVaAEFQqK4MxZg6vgeS6\""));
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
-
-  if (GetAdjustedTime() > GetSporkValue(SPORK_ZEROCOIN_MAINTENANCE_MODE))
-    throw JSONRPCError(RPC_WALLET_ERROR, "zZZZ is currently disabled due to maintenance.");
 
   EnsureWalletIsUnlocked();
 
