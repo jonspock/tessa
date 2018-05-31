@@ -46,8 +46,7 @@ class CZerocoinMint {
   bool isUsed;
 
  public:
-  static const int STAKABLE_VERSION = 2;
-  static const int CURRENT_VERSION = 2;
+  static const int CURRENT_MINT_VERSION = 1; // No special processing
 
   CZerocoinMint() { SetNull(); }
 
@@ -150,18 +149,9 @@ class CZerocoinMint {
     READWRITE(denomination);
     READWRITE(nHeight);
     READWRITE(txid);
-
-    bool fVersionedMint = true;
-    try {
-      READWRITE(version);
-    } catch (...) { fVersionedMint = false; }
-
-    if (version > CURRENT_VERSION) {
-      version = 1;
-      fVersionedMint = false;
-    }
-
-    if (fVersionedMint) READWRITE(privkey);
+    // These weren't in original code but now not-optional
+    READWRITE(version);
+    READWRITE(privkey);
   };
 };
 

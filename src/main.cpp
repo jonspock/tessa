@@ -2909,7 +2909,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
   }
 
   // Check transactions
-  bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
+  //bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
+#warning "Check zerocoin start here"
+    bool fZerocoinActive = true; // FOR NOW XXXX
   vector<CBigNum> vBlockSerials;
   for (const CTransaction& tx : block.vtx) {
     if (!CheckTransaction(tx, fZerocoinActive, state)) return error("CheckBlock() : CheckTransaction failed");

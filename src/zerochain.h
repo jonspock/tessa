@@ -21,9 +21,8 @@ class CValidationState;
 class CZerocoinMint;
 class uint256;
 
-bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom,
-                            std::vector<CBigNum>& vValues);
-bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins, bool fFilterInvalid);
+bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom, std::vector<CBigNum>& vValues);
+bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins);
 bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints);
 void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMintsToUpdate,
                std::vector<CMintMeta>& vMissingMints);

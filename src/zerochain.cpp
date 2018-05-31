@@ -33,9 +33,11 @@ bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomina
   return true;
 }
 
-bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins, bool fFilterInvalid) {
-  for (const CTransaction tx : block.vtx) {
-    if (!tx.IsZerocoinMint()) continue;
+bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins)
+{
+    for (const CTransaction tx : block.vtx) {
+        if(!tx.IsZerocoinMint())
+            continue;
 
     uint256 txHash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {

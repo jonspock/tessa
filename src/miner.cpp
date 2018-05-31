@@ -98,7 +98,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
   if (Params().MineBlocksOnDemand()) pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
 
   // Check if zerocoin is enabled
-  bool fZerocoinActive = GetAdjustedTime() >= Params().Zerocoin_StartTime();
+#warning "Check zerocoin start here too""
+    bool fZerocoinActive = true; // FOR NOW XXXX
+  //bool fZerocoinActive = GetAdjustedTime() >= Params().Zerocoin_StartTime();
   /*
  if (fZerocoinActive)
      pblock->nVersion = 4;
@@ -584,6 +586,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
     // Create new block
     //
     if (chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK()) {
+        fProofOfStake = 1;
       // return;
     }
 

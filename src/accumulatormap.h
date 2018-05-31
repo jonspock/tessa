@@ -14,7 +14,7 @@
 class AccumulatorMap {
  private:
   libzerocoin::ZerocoinParams* params;
-  std::map<libzerocoin::CoinDenomination, std::unique_ptr<libzerocoin::Accumulator> > mapAccumulators;
+  std::map<libzerocoin::CoinDenomination, std::unique_ptr<libzerocoin::Accumulator> > mapAccumValues;
 
  public:
   explicit AccumulatorMap(libzerocoin::ZerocoinParams* params);

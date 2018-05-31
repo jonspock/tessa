@@ -32,7 +32,7 @@ static const unsigned int MAX_BLOCK_SIZE_LEGACY = 1000000;
 class CBlockHeader {
  public:
   // header
-  static const int32_t CURRENT_VERSION = STARTBLOCK_VERSION;
+  static const int32_t CURRENT_VERSION = ZEROBLOCK_VERSION;
   int32_t nVersion;
   uint256 hashPrevBlock;
   uint256 hashMerkleRoot;

@@ -24,10 +24,7 @@ uint256 GetPubCoinHash(const CBigNum& bnValue) {
 }
 
 bool CZerocoinMint::GetKeyPair(CKey& key) const {
-  if (version < STAKABLE_VERSION) return error("%s: version is %d", __func__, version);
-
   if (privkey.empty()) return error("%s: empty privkey %s", __func__, privkey.data());
-
   return key.SetPrivKey(privkey, true);
 }
 

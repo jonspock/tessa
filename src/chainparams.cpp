@@ -133,15 +133,7 @@ class CMainParams : public CChainParams {
     /** Height or Time Based Activations **/
     nLastPOWBlock = 259200;
     nModifierUpdateBlock = 615800;
-    nZerocoinStartHeight = 250;
-    nZerocoinStartTime = 1508214600;         // October 17, 2017 4:30:00 AM
-    nBlockEnforceSerialRange = 0;            // Enforce serial range starting this block
-    nBlockRecalculateAccumulators = 908000;  // Trigger a recalculation of accumulators
-    nBlockLastGoodCheckpoint = 891730;       // Last valid accumulator checkpoint
-    nEnforceNewSporkKey =
-        1525158000;  //!> Sporks signed after (GMT): Tuesday, May 1, 2018 7:00:00 AM GMT must use the new spork key
-    nRejectOldSporkKey = 1527811200;  //!> Fully reject old spork key after (GMT): Friday, June 1, 2018 12:00:00 AM
-
+    nZerocoinStartHeight = 230;
     /**
      * Build the genesis block. Note that the output of the genesis coinbase cannot
      * be spent as it did not originally exist in the database.
@@ -190,17 +182,12 @@ class CMainParams : public CChainParams {
         "D83B9B7F469A6C45A717";
 
     /** Zerocoin */
-    zerocoinModulus =
-        "25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784"
-        "40691829064124951508218929855914917618450280848912007284499268739280728777673597141834727026189637501497182469"
-        "11"
-        "65077613379859095700097330459748808428401797429100642458691817195118746121515172654632282216869987549182422433"
-        "63"
-        "72590851418654620435767984233871847744479207399342365848238242811981638150106748104516603773060562016196762561"
-        "33"
-        "84414360383390441495263443219011465754445417842402092461651572335077870774981712577246796292638635637328991215"
-        "48"
-        "31438167899885040445364023527381951378636564391212010397122822120720357";
+        zerocoinModulus = "25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784"
+            "4069182906412495150821892985591491761845028084891200728449926873928072877767359714183472702618963750149718246911"
+            "6507761337985909570009733045974880842840179742910064245869181719511874612151517265463228221686998754918242243363"
+            "7259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133"
+            "8441436038339044149526344321901146575444541784240209246165157233507787077498171257724679629263863563732899121548"
+            "31438167899885040445364023527381951378636564391212010397122822120720357";
     nMaxZerocoinSpendsPerTransaction = 7;  // Assume about 20kb each
     nMinZerocoinMintFee = 1 * CENT;        // high fee required for zerocoin mints
     nMintRequiredConfirmations = 20;       // the maximum amount of confirmations until accumulated in 19
@@ -236,15 +223,7 @@ class CTestNetParams : public CMainParams {
     nMaturity = 15;
     nModifierUpdateBlock = 51197;  // approx Mon, 17 Apr 2017 04:00:00 GMT
     nMaxMoneyOut = 43199500 * COIN;
-    nZerocoinStartHeight = 250;
-    nZerocoinStartTime = 1501776000;
-    nBlockEnforceSerialRange = 1;             // Enforce serial range starting this block
-    nBlockRecalculateAccumulators = 9908000;  // Trigger a recalculation of accumulators
-    nBlockLastGoodCheckpoint = 9891730;       // Last valid accumulator checkpoint
-    nEnforceNewSporkKey =
-        1521604800;  //!> Sporks signed after Wednesday, March 21, 2018 4:00:00 AM GMT must use the new spork key
-    nRejectOldSporkKey = 1522454400;  //!> Reject old spork key after Saturday, March 31, 2018 12:00:00 AM GMT
-
+    nZerocoinStartHeight = 230;
     //! Modify the testnet genesis block so the timestamp is valid for a later start.
     genesis = CreateGenesisBlock(1411587941, 2091634749, 0x1e0ffff0, 1, 5000 * COIN);
     hashGenesisBlock = genesis.GetHash();

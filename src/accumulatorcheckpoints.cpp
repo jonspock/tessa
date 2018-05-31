@@ -20,6 +20,19 @@ bool LoadCheckpoints(const std::string& strNetwork) {
   // if (strNetwork == "main") v = read_json(GetMainCheckpoints());
   // else if (strNetwork == "test")  v = read_json(GetTestCheckpoints());
   // else if (strNetwork == "regtest")  v = read_json(GetRegTestCheckpoints());
+
+    // Just start with Checkpoints all 0s initially
+    // For now put at height 200
+#warning "Get height from parameters instead"
+    int H=200;
+    Checkpoint checkpoint;
+    CBigNum bn = 0;
+    for (auto denom : libzerocoin::zerocoinDenomList) {
+        checkpoint.insert(std::make_pair(denom, bn));
+        mapCheckpoints.insert(make_pair(H, checkpoint));
+    }
+    
+    
   // else
   return false;
 
