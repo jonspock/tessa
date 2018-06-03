@@ -16,50 +16,14 @@ UniValue read_json(const std::string& jsondata) {
 }
 
 bool LoadCheckpoints(const std::string& strNetwork) {
-  UniValue v;
-  // if (strNetwork == "main") v = read_json(GetMainCheckpoints());
-  // else if (strNetwork == "test")  v = read_json(GetTestCheckpoints());
-  // else if (strNetwork == "regtest")  v = read_json(GetRegTestCheckpoints());
-
     // Just start with Checkpoints all 0s initially
-    // For now put at height 200
-#warning "Get height from parameters instead"
-    int H=200;
     Checkpoint checkpoint;
     CBigNum bn = 0;
-    for (auto denom : libzerocoin::zerocoinDenomList) {
-        checkpoint.insert(std::make_pair(denom, bn));
-        mapCheckpoints.insert(make_pair(H, checkpoint));
-    }
-    
-    
-  // else
-  return false;
-
-  if (v.empty()) return false;
-
-  for (unsigned int idx = 0; idx < v.size(); idx++) {
-    const UniValue& val = v[idx];
-    const UniValue& o = val.get_obj();
-
-    const UniValue& vHeight = find_value(o, "height");
-    if (!vHeight.isNum()) return false;
-
-    int nHeight = vHeight.get_int();
-    if (nHeight < 0) return false;
-
-    Checkpoint checkpoint;
-    for (auto denom : libzerocoin::zerocoinDenomList) {
-      const UniValue& vDenomValue = find_value(o, std::to_string(denom));
-      if (!vDenomValue.isStr()) { return false; }
-      CBigNum bn = 0;
-      bn.SetHex(vDenomValue.get_str());
-      checkpoint.insert(std::make_pair(denom, bn));
-    }
-
-    mapCheckpoints.insert(make_pair(nHeight, checkpoint));
-  }
-  return true;
+#warning "Check checkpoints"
+    int StartHeight=100;
+    for (auto denom : libzerocoin::zerocoinDenomList) checkpoint.insert(std::make_pair(denom, bn));
+    mapCheckpoints.insert(make_pair(StartHeight, checkpoint));
+    return true;
 }
 
 Checkpoint GetClosestCheckpoint(const int& nHeight, int& nHeightCheckpoint) {

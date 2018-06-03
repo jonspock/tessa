@@ -218,7 +218,7 @@ class CTestNetParams : public CMainParams {
     nToCheckBlockUpgradeMajority = 100;
     nMinerThreads = 0;
     nTargetTimespan = 1 * 60;  // Club: 1 day
-    nTargetSpacing = 1 * 60;   // Club: 1 minute
+    nTargetSpacing = 20;
     nLastPOWBlock = 200;
     nMaturity = 15;
     nModifierUpdateBlock = 51197;  // approx Mon, 17 Apr 2017 04:00:00 GMT
