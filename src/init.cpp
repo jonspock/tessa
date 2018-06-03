@@ -1079,7 +1079,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   if (gArgs.IsArgSet("-sporkkey"))  // spork priv key
   {
-    if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
+    if (!gSporkManager.SetPrivKey(GetArg("-sporkkey", "")))
       return InitError(_("Unable to sign spork message, wrong key?"));
   }
 
@@ -1432,7 +1432,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
         // Club: load previous sessions sporks if we have them.
         uiInterface.InitMessage(_("Loading sporks..."));
-        sporkManager.LoadSporksFromDB();
+        gSporkManager.LoadSporksFromDB();
 
         uiInterface.InitMessage(_("Loading block index..."));
         string strBlockIndexError = "";

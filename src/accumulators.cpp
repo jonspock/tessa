@@ -74,18 +74,20 @@ bool GetAccumulatorValueFromDB(uint256 nCheckpoint, CoinDenomination denom, CBig
 
 void AddAccumulatorChecksum(const uint32_t nChecksum, const CBigNum& bnValue) {
   // Since accumulators are switching at v2, stop databasing v1 because its useless. Only focus on v2.
-  if (chainActive.Height() >= Params().Zerocoin_StartHeight()) {
+  //if (chainActive.Height() >= Params().Zerocoin_StartHeight()) {
     zerocoinDB->WriteAccumulatorValue(nChecksum, bnValue);
     mapAccumulatorValues.insert(make_pair(nChecksum, bnValue));
-  }
+  //}
 }
 
 void DatabaseChecksums(AccumulatorMap& mapAccumulators) {
   uint256 nCheckpoint = 0;
+    int count=0;
   for (auto& denom : zerocoinDenomList) {
     CBigNum bnValue = mapAccumulators.GetValue(denom);
     uint32_t nCheckSum = GetChecksum(bnValue);
     AddAccumulatorChecksum(nCheckSum, bnValue);
+      LogPrintf(" DBing checksum %d with %s for Denom[%d]\n",nCheckSum,bnValue.ToString(),count++);
     nCheckpoint = nCheckpoint << 32 | nCheckSum;
   }
 }
@@ -235,6 +237,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
 
     //add the pubcoins to accumulator
     for (const PublicCoin pubcoin : listPubcoins) {
+        LogPrintf("Adding pubcoins to mapAccumulators\n");
         if(!mapAccumulators.Accumulate(pubcoin, true))
             return error("%s: failed to add pubcoin to accumulator at height %d", __func__, pindex->nHeight);
     }
@@ -412,7 +415,6 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
   RandomizeSecurityLevel(nSecurityLevel);  // make security level not always the same and predictable
   libzerocoin::Accumulator witnessAccumulator = accumulator;
 
-  bool fDoubleCounted = false;
   while (pindex) {
     if (pindex->nHeight != nAccStartHeight && pindex->pprev->nAccumulatorCheckpoint != pindex->nAccumulatorCheckpoint)
       ++nCheckpointsAdded;

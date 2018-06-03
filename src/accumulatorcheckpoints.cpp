@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "accumulatorcheckpoints.h"
+#include <iostream>
 
 namespace AccumulatorCheckpoints {
 std::map<int, Checkpoint> mapCheckpoints;
@@ -18,10 +19,13 @@ UniValue read_json(const std::string& jsondata) {
 bool LoadCheckpoints(const std::string& strNetwork) {
     // Just start with Checkpoints all 0s initially
     Checkpoint checkpoint;
-    CBigNum bn = 0;
+    CBigNum bn(0);
 #warning "Check checkpoints"
     int StartHeight=100;
-    for (auto denom : libzerocoin::zerocoinDenomList) checkpoint.insert(std::make_pair(denom, bn));
+    for (auto denom : libzerocoin::zerocoinDenomList) {
+        checkpoint.insert(std::make_pair(denom, bn));
+        std::cout << "bnValue = " << bn.ToString() << "\n";
+    }
     mapCheckpoints.insert(make_pair(StartHeight, checkpoint));
     return true;
 }

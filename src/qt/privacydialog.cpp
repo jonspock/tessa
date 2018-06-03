@@ -145,7 +145,7 @@ void PrivacyDialog::on_addressBookButton_clicked() {
 void PrivacyDialog::on_pushButtonMintZKP_clicked() {
   if (!walletModel || !walletModel->getOptionsModel()) return;
 
-  if (GetAdjustedTime() > sporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
+  if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     QMessageBox::information(this, tr("Mint Zerocoin"), tr("ZKP is currently undergoing maintenance."), QMessageBox::Ok,
                              QMessageBox::Ok);
     return;
@@ -257,7 +257,7 @@ void PrivacyDialog::on_pushButtonSpentReset_clicked() {
 void PrivacyDialog::on_pushButtonSpendZKP_clicked() {
   if (!walletModel || !walletModel->getOptionsModel() || !pwalletMain) return;
 
-  if (GetAdjustedTime() > sporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
+  if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     QMessageBox::information(this, tr("Mint Zerocoin"), tr("ZKP is currently undergoing maintenance."), QMessageBox::Ok,
                              QMessageBox::Ok);
     return;
@@ -724,7 +724,7 @@ void PrivacyDialog::keyPressEvent(QKeyEvent* event) {
 
 void PrivacyDialog::updateZeroSPORKStatus() {
   // Update/enable labels, buttons and tooltips depending on the current SPORK status
-  if (GetAdjustedTime() > sporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
+  if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     // Mint ZKP
     ui->pushButtonMintZKP->setEnabled(false);
     ui->pushButtonMintZKP->setToolTip(tr("ZKP is currently disabled due to maintenance."));

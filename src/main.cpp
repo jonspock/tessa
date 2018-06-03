@@ -3785,7 +3785,7 @@ bool static AlreadyHave(const CInv& inv) {
     case MSG_BLOCK:
       return mapBlockIndex.count(inv.hash);
     case MSG_SPORK:
-      return sporkManager.count(inv.hash);
+      return gSporkManager.count(inv.hash);
   }
   // Don't know what it is, just say we already got one
   return true;
@@ -3887,10 +3887,10 @@ void static ProcessGetData(CNode* pfrom) {
           }
         }
         if (!pushed && inv.type == MSG_SPORK) {
-          if (sporkManager.count(inv.hash)) {
+          if (gSporkManager.count(inv.hash)) {
             CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
             ss.reserve(1000);
-            ss << sporkManager.getSpork(inv.hash);
+            ss << gSporkManager.getSpork(inv.hash);
             pfrom->PushMessage("spork", ss);
             pushed = true;
           }
@@ -4605,7 +4605,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
   } else {
     // probably one the extensions
-      sporkManager.ProcessSpork(pfrom, strCommand, vRecv);
+      gSporkManager.ProcessSpork(pfrom, strCommand, vRecv);
   }
 
   return true;
@@ -4616,7 +4616,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 //       Those old clients won't react to the changes of the other (new) SPORK because at the time of their
 //       implementation it was the one which was commented out
 int ActiveProtocol() {
-    if (sporkManager.IsSporkActive(SporkID::SPORK_PROTOCOL_ENFORCEMENT)) return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
+    if (gSporkManager.IsSporkActive(SporkID::SPORK_PROTOCOL_ENFORCEMENT)) return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
     return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 
