@@ -177,9 +177,7 @@ UniValue setgenerate(const UniValue& params, bool fHelp) {
     return blockHashes;
   } else  // Not -regtest: start generate thread, return immediately
   {
-#warning "Trying to set Args!"
-    // mapArgs["-gen"] = (fGenerate ? "1" : "0");
-    // mapArgs["-genproclimit"] = itostr(nGenProcLimit);
+    // previous was back setting 'args' here
     GenerateBitcoins(fGenerate, pwalletMain, nGenProcLimit);
   }
 

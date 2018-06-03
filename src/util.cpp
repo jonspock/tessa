@@ -244,13 +244,14 @@ static bool InterpretBool(const std::string& strValue) {
   return (atoi(strValue) != 0);
 }
 
-/** Turn -noX into -X=0 */
+/** Turn -noX into -X=0
 static void InterpretNegativeSetting(std::string& strKey, std::string& strValue) {
   if (strKey.length() > 3 && strKey[0] == '-' && strKey[1] == 'n' && strKey[2] == 'o') {
     strKey = "-" + strKey.substr(3);
     strValue = InterpretBool(strValue) ? "0" : "1";
   }
 }
+ */
 
 /* Interpret string as boolean, for argument parsing *
 static bool InterpretBool(const std::string& val)

@@ -426,7 +426,7 @@ bool CZkpWallet::RegenerateMint(const CDeterministicMint& dMint, CZerocoinMint& 
                  hashSeed.GetHex(), seedMaster.GetHex());
 
   // Generate the coin
-  PrivateCoin coin(Params().Zerocoin_Params(), dMint.GetDenomination(), false);
+  PrivateCoin coin(Params().Zerocoin_Params());
   CDeterministicMint dMintDummy;
   GenerateMint(dMint.GetCount(), dMint.GetDenomination(), coin, dMintDummy);
 

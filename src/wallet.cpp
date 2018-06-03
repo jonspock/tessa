@@ -1190,26 +1190,17 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
   random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
 
-#warning "Refactoring needed here"
-  // move denoms down on the list
-  // HACK XXX    sort(vCoins.begin(), vCoins.end(), less_then_denom);
+#warning "Refactoring done here - need to test"
 
-  // try to find nondenom first to prevent unneeded spending of mixed coins
-  for (unsigned int tryDenom = 0; tryDenom < 2; tryDenom++) {
-    if (fDebug) LogPrint("selectcoins", "tryDenom: %d\n", tryDenom);
     vValue.clear();
     nTotalLower = 0;
     for (const COutput& output : vCoins) {
       if (!output.fSpendable) continue;
-
       const CWalletTx* pcoin = output.tx;
-
       if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs)) continue;
-
       int i = output.i;
       CAmount n = pcoin->vout[i].nValue;
-      if (tryDenom == 0) continue;  // we don't want denom values on first run
-
+ 
       pair<CAmount, pair<const CWalletTx*, unsigned int> > coin = make_pair(n, make_pair(pcoin, i));
 
       if (n == nTargetValue) {
@@ -1235,10 +1226,6 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     if (nTotalLower < nTargetValue) {
       if (coinLowestLarger.second.first == NULL)  // there is no input larger than nTargetValue
       {
-        if (tryDenom == 0)
-          // we didn't look at denom yet, let's do it
-          continue;
-        else
           // we looked at everything possible and didn't find anything, no luck
           return false;
       }
@@ -1246,10 +1233,6 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
       nValueRet += coinLowestLarger.first;
       return true;
     }
-
-    // nTotalLower > nTargetValue
-    break;
-  }
 
   // Solve subset sum by stochastic approximation
   sort(vValue.rbegin(), vValue.rend(), CompareValueOnly());
@@ -2661,7 +2644,7 @@ bool CWallet::GetZerocoinKey(const CBigNum& bnSerial, CKey& key) {
 
 bool CWallet::CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint) {
   // mint a new coin (create Pedersen Commitment) and extract PublicCoin that is shareable from it
-  libzerocoin::PrivateCoin coin(Params().Zerocoin_Params(), denomination, false);
+  libzerocoin::PrivateCoin coin(Params().Zerocoin_Params());
   zwalletMain->GenerateDeterministicZKP(denomination, coin, dMint);
 
   libzerocoin::PublicCoin pubCoin = coin.getPublicCoin();
@@ -2805,7 +2788,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
   }
 
   // Construct the CoinSpend object. This acts like a signature on the transaction.
-  libzerocoin::PrivateCoin privateCoin(paramsCoin, denomination);
+  libzerocoin::PrivateCoin privateCoin(paramsCoin);
   privateCoin.setPublicCoin(pubCoinSelected);
   privateCoin.setRandomness(zerocoinSelected.GetRandomness());
   privateCoin.setSerialNumber(zerocoinSelected.GetSerialNumber());

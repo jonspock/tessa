@@ -177,9 +177,6 @@ class CMainParams : public CChainParams {
     fHeadersFirstSyncingActive = false;
 
     nPoolMaxTransactions = 3;
-    strSporkKey =
-        "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830"
-        "D83B9B7F469A6C45A717";
 
     /** Zerocoin */
         zerocoinModulus = "25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784"
@@ -259,9 +256,6 @@ class CTestNetParams : public CMainParams {
     bnProofOfWorkLimit = ~uint256(0) >> 1;
 
     nPoolMaxTransactions = 2;
-    strSporkKey =
-        "04348C2F50F90267E64FACC65BFDC9D0EB147D090872FB97ABAE92E9A36E6CA60983E28E741F8E7277B11A7479B626AC115BA31463AC48"
-        "178A5075C5A9319D4A38";
   }
   const Checkpoints::CCheckpointData& Checkpoints() const { return dataTestnet; }
 };
