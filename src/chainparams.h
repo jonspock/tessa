@@ -15,7 +15,7 @@
 #include "protocol.h"
 #include "uint256.h"
 
-#include "libzerocoin/Params.h"
+#include "libzerocoin/ZerocoinParams.h"
 #include <vector>
 
 typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
@@ -92,7 +92,6 @@ public:
     CBaseChainParams::Network NetworkID() const { return networkID; }
 
     /** Zerocoin **/
-    std::string Zerocoin_Modulus() const { return zerocoinModulus; }
     libzerocoin::ZerocoinParams* Zerocoin_Params() const;
     int Zerocoin_MaxSpendsPerTransaction() const { return nMaxZerocoinSpendsPerTransaction; }
     CAmount Zerocoin_MintFee() const { return nMinZerocoinMintFee; }

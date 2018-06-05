@@ -1,11 +1,6 @@
 /**
- * @file       Params.cpp
- *
  * @brief      Parameter class for Zerocoin.
- *
  * @author     Ian Miers, Christina Garman and Matthew Green
- * @date       June 2013
- *
  * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
  *  license    This project is released under the MIT license.
  **/
@@ -16,16 +11,19 @@
 #include "ModulusType.h"
 #include "ParamGeneration.h"
 
+
 namespace libzerocoin {
-ZerocoinParams::ZerocoinParams(CBigNum N, uint32_t securityLevel) {
+
+ZerocoinParams ZCParamsDec(ZEROCOIN_DEFAULT_SECURITYLEVEL);
+ZerocoinParams* gpZerocoinParams = &ZCParamsDec;
+    
+ZerocoinParams::ZerocoinParams(uint32_t securityLevel) {
   this->zkp_hash_len = securityLevel;
   this->zkp_iterations = securityLevel;
 
   this->accumulatorParams.k_prime = ACCPROOF_KPRIME;
   this->accumulatorParams.k_dprime = ACCPROOF_KDPRIME;
 
-  this->initialized = false;
-  this->accumulatorParams.initialized = false;
   // Set the accumulator modulus to "N".
   this->accumulatorParams.accumulatorModulus = IntegerModModulus<ACCUMULATOR_MODULUS>::getModulus();
 
@@ -57,52 +55,6 @@ ZerocoinParams::ZerocoinParams(CBigNum N, uint32_t securityLevel) {
       "5e257cc3861dfbbd85a95f16fdc867780188c0bc469a7744871f9fa79cfb942d3eb60642736d3e6db940f69fd05d19d57a2b1aa686ad8d26"
       "95b39fef8a4c6c92c99636a6172e5b2b9df49e113508185d15b18158f05d63fa4d6819c126f9065b01183043a17022f6c583735797f3e72c"
       "3c9c2485327127158e4cf0eb23391d739");
-
-  // TBD - temporary HACK
-  this->serialNumberSoKCommitmentGroup.g1.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.g2.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.g3.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.g4.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.g5.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.g6.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.g7.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.g8.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.g9.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.ga.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
-  this->serialNumberSoKCommitmentGroup.gb.SetHex(
-      "371817107be75218225abe8a00155bfd8762a18b3d8ae8e61f42503e75b18e8d8f681381319ffb60644bef2163df4036026524e290417bef"
-      "415a7441173c519248e8db54c0cd6d8ea1d30a218a121babcda8705989d1e0a48198f096a12745ae3c5969c23d7b40fa8bfcf79acee4657a"
-      "03574cbb04da1d9f7a2b88c2f48aeb00b6");
 
   //-------------------------
 

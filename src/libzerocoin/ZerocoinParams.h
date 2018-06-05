@@ -23,8 +23,7 @@ namespace libzerocoin {
 
 class ZerocoinParams {
  public:
-  /** @brief Construct a set of Zerocoin parameters from a modulus "N".
-   * @param N                A trusted RSA modulus
+  /** @brief Construct the set of Zerocoin parameters 
    * @param securityLevel    A security level expressed in symmetric bits (default 80)
    *
    * Allocates and derives a set of Zerocoin parameters from
@@ -39,7 +38,7 @@ class ZerocoinParams {
    * compromised. The integer "N" must be a MINIMUM of 1024
    * in length. 3072 bits is strongly recommended.
    **/
-  ZerocoinParams(CBigNum accumulatorModulus, uint32_t securityLevel = ZEROCOIN_DEFAULT_SECURITYLEVEL);
+  ZerocoinParams(uint32_t securityLevel = ZEROCOIN_DEFAULT_SECURITYLEVEL);
 
   bool initialized;
 
@@ -82,5 +81,8 @@ class ZerocoinParams {
     READWRITE(zkp_hash_len);
   }
 };
+
+extern ZerocoinParams* gpZerocoinParams;
+    
 
 } /* namespace libzerocoin */
