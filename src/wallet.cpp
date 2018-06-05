@@ -1661,7 +1661,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     for (const CTxOut& out : txNew.vout) {
       if (!out.IsZerocoinMint()) continue;
 
-      libzerocoin::PublicCoin pubcoin(Params().Zerocoin_Params());
+      libzerocoin::PublicCoin pubcoin;
       CValidationState state;
       if (!TxOutToPublicCoin(out, pubcoin, state)) return error("%s: extracting pubcoin from txout failed", __func__);
 

@@ -208,7 +208,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
         for (const CTxOut& out : tx.vout) {
           if (!out.scriptPubKey.IsZerocoinMint()) continue;
 
-          PublicCoin pubcoin(Params().Zerocoin_Params());
+          PublicCoin pubcoin;
           CValidationState state;
           if (!TxOutToPublicCoin(out, pubcoin, state)) {
             LogPrintf("%s : failed to get mint from txout for %s!\n", __func__, pMint.first.GetHex());

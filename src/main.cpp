@@ -914,7 +914,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
-          PublicCoin coin(Params().Zerocoin_Params());
+          PublicCoin coin;
           if (!TxOutToPublicCoin(out, coin, state))
             return state.Invalid(
                 error("%s: failed final check of zerocoinmint for tx %s", __func__, tx.GetHash().GetHex()));
@@ -1570,7 +1570,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
         for (const CTxOut txout : tx.vout) {
           if (txout.scriptPubKey.empty() || !txout.scriptPubKey.IsZerocoinMint()) continue;
 
-          PublicCoin pubCoin(Params().Zerocoin_Params());
+          PublicCoin pubCoin;
           if (!TxOutToPublicCoin(txout, pubCoin, state)) return error("DisconnectBlock(): TxOutToPublicCoin() failed");
 
           if (!zerocoinDB->EraseCoinMint(pubCoin.getValue()))
@@ -1901,7 +1901,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
-          PublicCoin coin(Params().Zerocoin_Params());
+          PublicCoin coin;
           if (!TxOutToPublicCoin(out, coin, state))
             return state.DoS(
                 100, error("%s: failed final check of zerocoinmint for tx %s", __func__, tx.GetHash().GetHex()));
@@ -1922,7 +1922,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
-          PublicCoin coin(Params().Zerocoin_Params());
+          PublicCoin coin;
           if (!TxOutToPublicCoin(out, coin, state))
             return state.DoS(
                 100, error("%s: failed final check of zerocoinmint for tx %s", __func__, tx.GetHash().GetHex()));

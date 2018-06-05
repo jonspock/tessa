@@ -47,14 +47,14 @@ bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey&
   return true;
 }
 
-PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p), publicCoin(p) {
+PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p) {
   // Verify that the parameters are valid
   if (this->params->initialized == false) { throw std::runtime_error("Params are not initialized"); }
 }
 
 PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum Serial,
                          const CBigNum Randomness)
-    : params(p), publicCoin(p) {
+    : params(p) {
   // Verify that the parameters are valid
   if (this->params->initialized == false) { throw std::runtime_error("Params are not initialized"); }
 
@@ -140,8 +140,6 @@ CBigNum PrivateCoin::CoinFromSeed(const uint512& seedZerocoin) {
   }
 }
 
-
-  
 void PrivateCoin::mintCoinFast(const CoinDenomination denomination, CBigNum s, CBigNum r) {
   // Generate a random serial number in the range 0...{q-1} where
   // "q" is the order of the commitment group.

@@ -17,3 +17,4 @@ bool ContextualCheckZerocoinMint(const CTransaction& tx, const libzerocoin::Publ
 bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::CoinSpend& spend, CBlockIndex* pindex,
                                   const uint256& hashBlock);
 bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidationState& state);
+bool ValidatePublicCoin(const CBigNum& value);

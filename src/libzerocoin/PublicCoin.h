@@ -25,7 +25,7 @@ namespace libzerocoin {
  */
 class PublicCoin {
  public:
-  PublicCoin(const ZerocoinParams* p) {
+  PublicCoin() {
     denomination = ZQ_ERROR; }  // Assume this will get set by another method later
 
   /**Generates a public coin
