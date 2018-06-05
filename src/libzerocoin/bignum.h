@@ -54,12 +54,19 @@ public:
 /** C++ wrapper for BIGNUM (OpenSSL bignum) */
 class CBigNum
 {
-    BIGNUM* bn;
 public:
+    BIGNUM* bn;
     CBigNum()
     {
         bn = BN_new();
     }
+    
+    // Initialize from a Hex String (for zerocoin modulus)
+    CBigNum(const std::string& str) {
+        bn = BN_new();
+        SetHexBool(str);
+    }
+
 
     CBigNum(const CBigNum& b)
     {

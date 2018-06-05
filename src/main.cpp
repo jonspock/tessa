@@ -717,8 +717,9 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
       return state.DoS(100, error("CheckTransaction() : txout total out of range"), REJECT_INVALID,
                        "bad-txns-txouttotal-toolarge");
     if (fZerocoinActive && txout.IsZerocoinMint()) {
-      if (!CheckZerocoinMint(tx.GetHash(), txout, state, true))
-        return state.DoS(100, error("CheckTransaction() : invalid zerocoin mint"));
+        if (!CheckZerocoinMint(tx.GetHash(), txout, state, true)) {
+            return state.DoS(100, error("CheckTransaction() : invalid zerocoin mint"));
+        }
     }
     if (fZerocoinActive && txout.scriptPubKey.IsZerocoinSpend()) nZCSpendCount++;
   }
@@ -2914,7 +2915,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     bool fZerocoinActive = true; // FOR NOW XXXX
   vector<CBigNum> vBlockSerials;
   for (const CTransaction& tx : block.vtx) {
-    if (!CheckTransaction(tx, fZerocoinActive, state)) return error("CheckBlock() : CheckTransaction failed");
+      if (!CheckTransaction(tx, fZerocoinActive, state)) {
+          return error("CheckBlock() : CheckTransaction failed");
+      }
 
     // double check that there are no double spent zZZZ spends in this block
     if (tx.IsZerocoinSpend()) {

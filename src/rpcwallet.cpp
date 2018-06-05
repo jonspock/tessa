@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 
-#include "libzerocoin/Coin.h"
+#include "libzerocoin/PrivateCoin.h"
 #include "primitives/deterministicmint.h"
 #include "spork.h"
 #include <boost/thread/thread.hpp>
@@ -3309,13 +3309,10 @@ void static SearchThread(CZkpWallet* zwallet, int nCountStart, int nCountEnd) {
       CDataStream ss(SER_GETHASH, 0);
       ss << seedMaster << i;
       uint512 zerocoinSeed = Hash512(ss.begin(), ss.end());
-
-      CBigNum bnValue;
-      CBigNum bnSerial;
-      CBigNum bnRandomness;
-      CKey key;
-      zwallet->SeedToZKP(zerocoinSeed, bnValue, bnSerial, bnRandomness, key);
-
+        
+      libzerocoin::PrivateCoin MintedCoin(Params().Zerocoin_Params());
+      CBigNum bnValue = MintedCoin.CoinFromSeed(zerocoinSeed);
+ 
       uint256 hashPubcoin = GetPubCoinHash(bnValue);
       zwallet->AddToMintPool(make_pair(hashPubcoin, i), true);
       walletDB.WriteMintPoolPair(hashSeed, hashPubcoin, i);

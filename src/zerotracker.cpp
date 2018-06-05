@@ -87,17 +87,6 @@ CMintMeta CZkpTracker::GetMetaFromPubcoin(const uint256& hashPubcoin) {
   return CMintMeta();
 }
 
-bool CZkpTracker::GetMetaFromStakeHash(const uint256& hashStake, CMintMeta& meta) const {
-  for (auto& it : mapSerialHashes) {
-    if (it.second.hashStake == hashStake) {
-      meta = it.second;
-      return true;
-    }
-  }
-
-  return false;
-}
-
 std::vector<uint256> CZkpTracker::GetSerialHashes() {
   vector<uint256> vHashes;
   for (auto it : mapSerialHashes) {
@@ -221,7 +210,6 @@ bool CZkpTracker::UpdateState(const CMintMeta& meta) {
     dMint.SetHeight(meta.nHeight);
     dMint.SetUsed(meta.isUsed);
     dMint.SetDenomination(meta.denom);
-    dMint.SetStakeHash(meta.hashStake);
 
     if (!walletdb.WriteDeterministicMint(dMint))
       return error("%s: failed to update deterministic mint when writing to db", __func__);
@@ -247,11 +235,10 @@ void CZkpTracker::Add(const CDeterministicMint& dMint, bool isNew, bool isArchiv
   CMintMeta meta;
   meta.hashPubcoin = dMint.GetPubcoinHash();
   meta.nHeight = dMint.GetHeight();
-  meta.nVersion = dMint.GetVersion();
+  //  meta.nVersion = dMint.GetVersion();
   meta.txid = dMint.GetTxHash();
   meta.isUsed = dMint.IsUsed();
   meta.hashSerial = dMint.GetSerialHash();
-  meta.hashStake = dMint.GetStakeHash();
   meta.denom = dMint.GetDenomination();
   meta.isArchived = isArchived;
   meta.isDeterministic = true;
@@ -264,12 +251,11 @@ void CZkpTracker::Add(const CZerocoinMint& mint, bool isNew, bool isArchived) {
   CMintMeta meta;
   meta.hashPubcoin = GetPubCoinHash(mint.GetValue());
   meta.nHeight = mint.GetHeight();
-  meta.nVersion = libzerocoin::ExtractVersionFromSerial(mint.GetSerialNumber());
   meta.txid = mint.GetTxHash();
   meta.isUsed = mint.IsUsed();
   meta.hashSerial = GetSerialHash(mint.GetSerialNumber());
-  uint256 nSerial = mint.GetSerialNumber().getuint256();
-  meta.hashStake = Hash(nSerial.begin(), nSerial.end());
+  // uint256 nSerial = mint.GetSerialNumber().getuint256();
+  // HACK XXXX  meta.nVersion = libzerocoin::ExtractVersionFromSerial(mint.GetSerialNumber());
   meta.denom = mint.GetDenomination();
   meta.isArchived = isArchived;
   meta.isDeterministic = false;

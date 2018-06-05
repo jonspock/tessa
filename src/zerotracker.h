@@ -3,8 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_ZKPTRACKER_H
-#define Club_ZKPTRACKER_H
+#pragma once
 
 #include "primitives/zerocoin.h"
 #include <list>
@@ -34,7 +33,6 @@ class CZkpTracker {
   void Init();
   CMintMeta Get(const uint256& hashSerial);
   CMintMeta GetMetaFromPubcoin(const uint256& hashPubcoin);
-  bool GetMetaFromStakeHash(const uint256& hashStake, CMintMeta& meta) const;
   CAmount GetBalance(bool fConfirmedOnly, bool fUnconfirmedOnly) const;
   std::vector<uint256> GetSerialHashes();
   std::vector<CMintMeta> GetMints(bool fConfirmedOnly) const;
@@ -49,4 +47,3 @@ class CZkpTracker {
   void Clear();
 };
 
-#endif  // Club_ZKPTRACKER_H

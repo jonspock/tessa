@@ -3,13 +3,13 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_ACCUMULATORS_H
-#define Club_ACCUMULATORS_H
+#pragma once
 
 #include "accumulatormap.h"
 #include "chain.h"
 #include "libzerocoin/Accumulator.h"
-#include "libzerocoin/Coin.h"
+#include "libzerocoin/AccumulatorWitness.h"
+#include "libzerocoin/PublicCoin.h"
 #include "libzerocoin/Denominations.h"
 #include "primitives/zerocoin.h"
 #include "uint256.h"
@@ -31,5 +31,3 @@ uint32_t ParseChecksum(uint256 nChecksum, libzerocoin::CoinDenomination denomina
 uint32_t GetChecksum(const CBigNum& bnValue);
 int GetChecksumHeight(uint32_t nChecksum, libzerocoin::CoinDenomination denomination);
 bool ValidateAccumulatorCheckpoint(const CBlock& block, CBlockIndex* pindex, AccumulatorMap& mapAccumulators);
-
-#endif  // Club_ACCUMULATORS_H

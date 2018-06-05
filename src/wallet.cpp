@@ -1192,47 +1192,47 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
 #warning "Refactoring done here - need to test"
 
-    vValue.clear();
-    nTotalLower = 0;
-    for (const COutput& output : vCoins) {
-      if (!output.fSpendable) continue;
-      const CWalletTx* pcoin = output.tx;
-      if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs)) continue;
-      int i = output.i;
-      CAmount n = pcoin->vout[i].nValue;
- 
-      pair<CAmount, pair<const CWalletTx*, unsigned int> > coin = make_pair(n, make_pair(pcoin, i));
+  vValue.clear();
+  nTotalLower = 0;
+  for (const COutput& output : vCoins) {
+    if (!output.fSpendable) continue;
+    const CWalletTx* pcoin = output.tx;
+    if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs)) continue;
+    int i = output.i;
+    CAmount n = pcoin->vout[i].nValue;
 
-      if (n == nTargetValue) {
-        setCoinsRet.insert(coin.second);
-        nValueRet += coin.first;
-        return true;
-      } else if (n < nTargetValue + CENT) {
-        vValue.push_back(coin);
-        nTotalLower += n;
-      } else if (n < coinLowestLarger.first) {
-        coinLowestLarger = coin;
-      }
-    }
+    pair<CAmount, pair<const CWalletTx*, unsigned int> > coin = make_pair(n, make_pair(pcoin, i));
 
-    if (nTotalLower == nTargetValue) {
-      for (unsigned int i = 0; i < vValue.size(); ++i) {
-        setCoinsRet.insert(vValue[i].second);
-        nValueRet += vValue[i].first;
-      }
+    if (n == nTargetValue) {
+      setCoinsRet.insert(coin.second);
+      nValueRet += coin.first;
       return true;
+    } else if (n < nTargetValue + CENT) {
+      vValue.push_back(coin);
+      nTotalLower += n;
+    } else if (n < coinLowestLarger.first) {
+      coinLowestLarger = coin;
     }
+  }
 
-    if (nTotalLower < nTargetValue) {
-      if (coinLowestLarger.second.first == NULL)  // there is no input larger than nTargetValue
-      {
-          // we looked at everything possible and didn't find anything, no luck
-          return false;
-      }
-      setCoinsRet.insert(coinLowestLarger.second);
-      nValueRet += coinLowestLarger.first;
-      return true;
+  if (nTotalLower == nTargetValue) {
+    for (unsigned int i = 0; i < vValue.size(); ++i) {
+      setCoinsRet.insert(vValue[i].second);
+      nValueRet += vValue[i].first;
     }
+    return true;
+  }
+
+  if (nTotalLower < nTargetValue) {
+    if (coinLowestLarger.second.first == NULL)  // there is no input larger than nTargetValue
+    {
+      // we looked at everything possible and didn't find anything, no luck
+      return false;
+    }
+    setCoinsRet.insert(coinLowestLarger.second);
+    nValueRet += coinLowestLarger.first;
+    return true;
+  }
 
   // Solve subset sum by stochastic approximation
   sort(vValue.rbegin(), vValue.rend(), CompareValueOnly());
@@ -1560,8 +1560,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
   // Get the list of stakable inputs
   std::list<std::unique_ptr<CStakeInput> > listInputs;
-  if (!SelectStakeCoins(listInputs, nBalance - nReserveBalance))
-      return false;
+  if (!SelectStakeCoins(listInputs, nBalance - nReserveBalance)) return false;
 
   if (listInputs.empty()) return false;
 
@@ -2650,7 +2649,7 @@ bool CWallet::CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut
   libzerocoin::PublicCoin pubCoin = coin.getPublicCoin();
 
   // Validate
-  if (!pubCoin.validate()) return error("%s: newly created pubcoin is not valid", __func__);
+  if (!pubCoin.validate()) { return error("%s: newly created pubcoin is not valid", __func__); }
 
   zwalletMain->UpdateCount();
 
@@ -2762,12 +2761,10 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
   libzerocoin::ZerocoinParams* paramsAccumulator = Params().Zerocoin_Params();
 
   libzerocoin::ZerocoinParams* paramsCoin = Params().Zerocoin_Params();
-  // LogPrintf("%s: *** using v1 coin params=%b, using v1 acc params=%b\n", __func__, isV1Coin, chainActive.Height() <
-  // Params().Zerocoin_Block_V2_Start());
 
   // 2. Get pubcoin from the private coin
   libzerocoin::CoinDenomination denomination = zerocoinSelected.GetDenomination();
-  libzerocoin::PublicCoin pubCoinSelected(paramsCoin, zerocoinSelected.GetValue(), denomination);
+  libzerocoin::PublicCoin pubCoinSelected(zerocoinSelected.GetValue(), denomination);
   // LogPrintf("%s : selected mint %s\n pubcoinhash=%s\n", __func__, zerocoinSelected.ToString(),
   // GetPubCoinHash(zerocoinSelected.GetValue()).GetHex());
   if (!pubCoinSelected.validate()) {
@@ -2809,17 +2806,18 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
     return error("%s: could not find checksum used for spend\n", __func__);
 
   try {
-    libzerocoin::CoinSpend spend(paramsCoin, paramsAccumulator, privateCoin, accumulator, nChecksum, witness, hashTxOut,
-                                 spendType);
-    LogPrintf("%s\n", spend.ToString());
+    libzerocoin::CoinSpend spend(paramsCoin, privateCoin, accumulator, nChecksum, witness, hashTxOut);
+    //                              spendType);
+
+    // LogPrintf("%s\n", spend.ToString());
 
     if (!spend.Verify(accumulator)) {
       receipt.SetStatus(_("The new spend coin transaction did not verify"), ZKP_INVALID_WITNESS);
       // return false;
       LogPrintf("** spend.verify failed, trying with different params\n");
 
-      libzerocoin::CoinSpend spend2(Params().Zerocoin_Params(), paramsAccumulator, privateCoin, accumulator, nChecksum,
-                                    witness, hashTxOut, libzerocoin::SpendType::SPEND);
+      libzerocoin::CoinSpend spend2(Params().Zerocoin_Params(), privateCoin, accumulator, nChecksum, witness,
+                                    hashTxOut);  //, libzerocoin::SpendType::SPEND);
       LogPrintf("*** spend2 valid=%d\n", spend2.Verify(accumulator));
       return false;
     }
@@ -2847,7 +2845,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
       return false;
     }
 
-    libzerocoin::CoinSpend newSpendChecking(paramsCoin, paramsAccumulator, serializedCoinSpendChecking);
+    libzerocoin::CoinSpend newSpendChecking(paramsCoin, serializedCoinSpendChecking);
     if (!newSpendChecking.Verify(accumulator)) {
       receipt.SetStatus(_("The transaction did not verify"), ZKP_BAD_SERIALIZATION);
       return false;

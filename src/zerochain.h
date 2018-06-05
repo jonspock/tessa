@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "libzerocoin/Coin.h"
+#include "libzerocoin/PublicCoin.h"
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"
 #include <list>

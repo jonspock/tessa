@@ -250,7 +250,7 @@ libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin) {
   CDataStream serializedCoinSpend(dataTxIn, SER_NETWORK, PROTOCOL_VERSION);
 
   libzerocoin::ZerocoinParams* paramsAccumulator = Params().Zerocoin_Params();
-  libzerocoin::CoinSpend spend(Params().Zerocoin_Params(), paramsAccumulator, serializedCoinSpend);
+  libzerocoin::CoinSpend spend(paramsAccumulator, serializedCoinSpend);
 
   return spend;
 }
@@ -267,7 +267,7 @@ bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CV
   if (denomination == libzerocoin::ZQ_ERROR)
     return state.DoS(100, error("TxOutToPublicCoin : txout.nValue is not correct"));
 
-  libzerocoin::PublicCoin checkPubCoin(Params().Zerocoin_Params(), publicZerocoin, denomination);
+  libzerocoin::PublicCoin checkPubCoin(publicZerocoin, denomination);
   pubCoin = checkPubCoin;
 
   return true;

@@ -60,6 +60,8 @@ static const unsigned int MAX_REJECT_MESSAGE_LENGTH = 111;
 /** Enable bloom filter */
 static const bool DEFAULT_PEERBLOOMFILTERS = true;
 
+static const int ACC_BLOCK_INTERVAL=10;
+
 /** "reject" message codes */
 static const unsigned char REJECT_MALFORMED = 0x01;
 static const unsigned char REJECT_INVALID = 0x10;

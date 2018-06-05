@@ -72,7 +72,9 @@ bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationSt
   if (!TxOutToPublicCoin(txout, pubCoin, state))
     return state.DoS(100, error("CheckZerocoinMint(): TxOutToPublicCoin() failed"));
 
-  if (!pubCoin.validate()) return state.DoS(100, error("CheckZerocoinMint() : PubCoin does not validate"));
+    if (!pubCoin.validate()) {
+        return state.DoS(100, error("CheckZerocoinMint() : PubCoin does not validate"));
+    }
 
   return true;
 }
@@ -95,11 +97,6 @@ bool ContextualCheckZerocoinSpend(const CTransaction& tx, const CoinSpend& spend
   // Check to see if the zZZZ is properly signed
   if (pindex->nHeight >= Params().Zerocoin_StartHeight()) {
     if (!spend.HasValidSignature()) return error("%s: V2 zZZZ spend does not have a valid signature", __func__);
-
-    libzerocoin::SpendType expectedType = libzerocoin::SpendType::SPEND;
-    if (spend.getSpendType() != expectedType) {
-      return error("%s: trying to spend zZZZ without the correct spend type. txid=%s", __func__, tx.GetHash().GetHex());
-    }
   }
 
   // Reject serial's that are already in the blockchain

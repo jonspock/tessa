@@ -917,7 +917,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // ********************************************************* Step 3: parameter-to-internal-flags
 
-  fDebug = !gArgs.IsArgSet("-debug");
+  fDebug = gArgs.IsArgSet("-debug");
   // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
   const vector<string>& categories = gArgs.GetArgs("-debug");
   if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())

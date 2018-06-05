@@ -19,7 +19,6 @@ struct CMintMeta {
   int nHeight;
   uint256 hashSerial;
   uint256 hashPubcoin;
-  uint256 hashStake;  // requires different hashing method than hashSerial above
   uint8_t nVersion;
   libzerocoin::CoinDenomination denom;
   uint256 txid;

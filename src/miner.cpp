@@ -412,8 +412,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
     // Calculate the accumulator checkpoint only if the previous cached checkpoint need to be updated
     uint256 nCheckpoint;
-    if (nHeight > 10) {
-      uint256 hashBlockLastAccumulated = chainActive[nHeight - (nHeight % 10) - 10]->GetBlockHash();
+    if (nHeight > ACC_BLOCK_INTERVAL) {
+      uint256 hashBlockLastAccumulated = chainActive[nHeight - (nHeight % ACC_BLOCK_INTERVAL) - ACC_BLOCK_INTERVAL]->GetBlockHash();
       if (nHeight >= pCheckpointCache.first || pCheckpointCache.second.first != hashBlockLastAccumulated) {
         // For the period before v2 activation, zZZZ will be disabled and previous block's checkpoint is all that will
         // be needed
@@ -423,8 +423,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
           if (fZerocoinActive && !CalculateAccumulatorCheckpoint(nHeight, nCheckpoint, mapAccumulators)) {
             LogPrintf("%s: failed to get accumulator checkpoint\n", __func__);
           } else {
-            // the next time the accumulator checkpoint should be recalculated ( the next height that is multiple of 10)
-            pCheckpointCache.first = nHeight + (10 - (nHeight % 10));
+            // the next time the accumulator checkpoint should be recalculated ( the next height that is multiple of ACC_BLOCK_INTERVAL)
+            pCheckpointCache.first = nHeight + (ACC_BLOCK_INTERVAL - (nHeight % ACC_BLOCK_INTERVAL));
 
             // the block hash of the last block used in the accumulator checkpoint calc. This will handle reorg
             // situations.

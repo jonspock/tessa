@@ -129,12 +129,9 @@ void CZkpWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
     if (fFound) continue;
 
     uint512 seedZerocoin = GetZerocoinSeed(i);
-    CBigNum bnValue;
-    CBigNum bnSerial;
-    CBigNum bnRandomness;
-    CKey key;
-    SeedToZKP(seedZerocoin, bnValue, bnSerial, bnRandomness, key);
-
+    libzerocoin::PrivateCoin MintedCoin(Params().Zerocoin_Params());
+    CBigNum bnValue = MintedCoin.CoinFromSeed(seedZerocoin);
+      
     mintPool.Add(bnValue, i);
     CWalletDB(strWalletFile).WriteMintPoolPair(hashSeed, GetPubCoinHash(bnValue), i);
     LogPrintf("%s : %s count=%d\n", __func__, bnValue.GetHex().substr(0, 6), i);
@@ -264,20 +261,17 @@ bool CZkpWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const u
 
   // Regenerate the mint
   uint512 seedZerocoin = GetZerocoinSeed(pMint.second);
-  CBigNum bnValueGen;
-  CBigNum bnSerial;
-  CBigNum bnRandomness;
-  CKey key;
-  SeedToZKP(seedZerocoin, bnValueGen, bnSerial, bnRandomness, key);
-
+  libzerocoin::PrivateCoin MintedCoin(Params().Zerocoin_Params());
+  CBigNum bnValueGen = MintedCoin.CoinFromSeed(seedZerocoin);
+    
   // Sanity check
   if (bnValueGen != bnValue) return error("%s: generated pubcoin and expected value do not match!", __func__);
 
   // Create mint object and database it
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
-  uint256 hashSerial = GetSerialHash(bnSerial);
+  uint256 hashSerial = GetSerialHash(MintedCoin.getSerialNumber());
   uint256 hashPubcoin = GetPubCoinHash(bnValue);
-  uint256 nSerial = bnSerial.getuint256();
+  uint256 nSerial = MintedCoin.getSerialNumber().getuint256();
   uint256 hashStake = Hash(nSerial.begin(), nSerial.end());
   CDeterministicMint dMint(PrivateCoin::PRIVATECOIN_VERSION, pMint.second, hashSeed, hashSerial, hashPubcoin,
                            hashStake);
@@ -323,57 +317,6 @@ bool IsValidCoinValue(const CBigNum& bnValue) {
          bnValue <= Params().Zerocoin_Params()->accumulatorParams.maxCoinValue && bnValue.isPrime();
 }
 
-void CZkpWallet::SeedToZKP(const uint512& seedZerocoin, CBigNum& bnValue, CBigNum& bnSerial, CBigNum& bnRandomness,
-                           CKey& key) {
-  ZerocoinParams* params = Params().Zerocoin_Params();
-
-  // convert state seed into a seed for the private key
-  uint256 nSeedPrivKey = seedZerocoin.trim256();
-
-  bool isValidKey = false;
-  key = CKey();
-  while (!isValidKey) {
-    nSeedPrivKey = Hash(nSeedPrivKey.begin(), nSeedPrivKey.end());
-    isValidKey = libzerocoin::GenerateKeyPair(params->coinCommitmentGroup.groupOrder, nSeedPrivKey, key, bnSerial);
-  }
-
-  // hash randomness seed with Bottom 256 bits of seedZerocoin & attempts256 which is initially 0
-  uint256 randomnessSeed = uint512(seedZerocoin >> 256).trim256();
-  uint256 hashRandomness = Hash(randomnessSeed.begin(), randomnessSeed.end());
-  bnRandomness.setuint256(hashRandomness);
-  bnRandomness = bnRandomness % params->coinCommitmentGroup.groupOrder;
-
-  // See if serial and randomness make a valid commitment
-  // Generate a Pedersen commitment to the serial number
-  CBigNum commitmentValue =
-      params->coinCommitmentGroup.g.pow_mod(bnSerial, params->coinCommitmentGroup.modulus)
-          .mul_mod(params->coinCommitmentGroup.h.pow_mod(bnRandomness, params->coinCommitmentGroup.modulus),
-                   params->coinCommitmentGroup.modulus);
-
-  CBigNum random;
-  uint256 attempts256 = 0;
-  // Iterate on Randomness until a valid commitmentValue is found
-  while (true) {
-    // Now verify that the commitment is a prime number
-    // in the appropriate range. If not, we'll throw this coin
-    // away and generate a new one.
-    if (IsValidCoinValue(commitmentValue)) {
-      bnValue = commitmentValue;
-      return;
-    }
-
-    // Did not create a valid commitment value.
-    // Change randomness to something new and random and try again
-    attempts256++;
-    hashRandomness = Hash(randomnessSeed.begin(), randomnessSeed.end(), attempts256.begin(), attempts256.end());
-    random.setuint256(hashRandomness);
-    bnRandomness = (bnRandomness + random) % params->coinCommitmentGroup.groupOrder;
-    commitmentValue =
-        commitmentValue.mul_mod(params->coinCommitmentGroup.h.pow_mod(random, params->coinCommitmentGroup.modulus),
-                                params->coinCommitmentGroup.modulus);
-  }
-}
-
 uint512 CZkpWallet::GetZerocoinSeed(uint32_t n) {
   CDataStream ss(SER_GETHASH, 0);
   ss << seedMaster << n;
@@ -400,18 +343,12 @@ void CZkpWallet::GenerateDeterministicZKP(CoinDenomination denom, PrivateCoin& c
 void CZkpWallet::GenerateMint(const uint32_t& nCount, const CoinDenomination denom, PrivateCoin& coin,
                               CDeterministicMint& dMint) {
   uint512 seedZerocoin = GetZerocoinSeed(nCount);
-  CBigNum bnValue;
-  CBigNum bnSerial;
-  CBigNum bnRandomness;
-  CKey key;
-  SeedToZKP(seedZerocoin, bnValue, bnSerial, bnRandomness, key);
-  coin = PrivateCoin(Params().Zerocoin_Params(), denom, bnSerial, bnRandomness);
-  coin.setPrivKey(key.GetPrivKey());
+  CBigNum bnValue = coin.CoinFromSeed(seedZerocoin);
   coin.setVersion(PrivateCoin::PRIVATECOIN_VERSION);
 
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
-  uint256 hashSerial = GetSerialHash(bnSerial);
-  uint256 nSerial = bnSerial.getuint256();
+  uint256 hashSerial = GetSerialHash(coin.getSerialNumber());
+  uint256 nSerial = coin.getSerialNumber().getuint256();
   uint256 hashStake = Hash(nSerial.begin(), nSerial.end());
   uint256 hashPubcoin = GetPubCoinHash(bnValue);
   dMint = CDeterministicMint(coin.getVersion(), nCount, hashSeed, hashSerial, hashPubcoin, hashStake);

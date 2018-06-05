@@ -3,10 +3,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_ZKPWALLET_H
-#define Club_ZKPWALLET_H
+#pragma once
 
-#include "libzerocoin/Coin.h"
+#include "libzerocoin/PrivateCoin.h"
 #include "mintpool.h"
 #include "primitives/zerocoin.h"
 #include "uint256.h"
@@ -42,10 +41,8 @@ class CZkpWallet {
   bool IsInMintPool(const CBigNum& bnValue) { return mintPool.Has(bnValue); }
   void UpdateCount();
   void Lock();
-  void SeedToZKP(const uint512& seed, CBigNum& bnValue, CBigNum& bnSerial, CBigNum& bnRandomness, CKey& key);
-
+ 
  private:
   uint512 GetZerocoinSeed(uint32_t n);
 };
 
-#endif  // Club_ZKPWALLET_H

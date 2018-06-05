@@ -5,6 +5,7 @@
 
 #include "accumulatorcheckpoints.h"
 #include <iostream>
+#include "zerochain.h"
 
 namespace AccumulatorCheckpoints {
 std::map<int, Checkpoint> mapCheckpoints;

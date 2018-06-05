@@ -3,8 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_ACCUMULATORCHECKPOINTS_H
-#define Club_ACCUMULATORCHECKPOINTS_H
+#pragma once
 
 #include <libzerocoin/bignum.h>
 #include <univalue/include/univalue.h>
@@ -18,4 +17,3 @@ bool LoadCheckpoints(const std::string& strNetwork);
 Checkpoint GetClosestCheckpoint(const int& nHeight, int& nHeightCheckpoint);
 }  // namespace AccumulatorCheckpoints
 
-#endif  // Club_ACCUMULATORCHECKPOINTS_H

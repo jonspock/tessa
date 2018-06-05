@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "deterministicmint.h"
-#include <libzerocoin/Coin.h>
+#include <libzerocoin/PrivateCoin.h>
 #include <tinyformat.h>
 
 using namespace libzerocoin;
