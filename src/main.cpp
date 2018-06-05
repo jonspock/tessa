@@ -717,9 +717,9 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
       return state.DoS(100, error("CheckTransaction() : txout total out of range"), REJECT_INVALID,
                        "bad-txns-txouttotal-toolarge");
     if (fZerocoinActive && txout.IsZerocoinMint()) {
-      if (!CheckZerocoinMint(tx.GetHash(), txout, state, true)) {
-        return state.DoS(100, error("CheckTransaction() : invalid zerocoin mint"));
-      }
+        if (!CheckZerocoinMint(tx.GetHash(), txout, state, true)) {
+            return state.DoS(100, error("CheckTransaction() : invalid zerocoin mint"));
+        }
     }
     if (fZerocoinActive && txout.scriptPubKey.IsZerocoinSpend()) nZCSpendCount++;
   }
@@ -914,7 +914,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
-          PublicCoin coin;
+          PublicCoin coin(Params().Zerocoin_Params());
           if (!TxOutToPublicCoin(out, coin, state))
             return state.Invalid(
                 error("%s: failed final check of zerocoinmint for tx %s", __func__, tx.GetHash().GetHex()));
@@ -1570,7 +1570,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
         for (const CTxOut txout : tx.vout) {
           if (txout.scriptPubKey.empty() || !txout.scriptPubKey.IsZerocoinMint()) continue;
 
-          PublicCoin pubCoin;
+          PublicCoin pubCoin(Params().Zerocoin_Params());
           if (!TxOutToPublicCoin(txout, pubCoin, state)) return error("DisconnectBlock(): TxOutToPublicCoin() failed");
 
           if (!zerocoinDB->EraseCoinMint(pubCoin.getValue()))
@@ -1834,12 +1834,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   // two in the chain that violate it. This prevents exploiting the issue against nodes in their
   // initial block download.
   if (!pindex->phashBlock) {
-    for (const CTransaction& tx : block.vtx) {
-      const CCoins* coins = view.AccessCoins(tx.GetHash());
-      if (coins && !coins->IsPruned())
-        return state.DoS(100, error("ConnectBlock() : tried to overwrite transaction"), REJECT_INVALID,
-                         "bad-txns-BIP30");
-    }
+      for (const CTransaction& tx : block.vtx) {
+          const CCoins* coins = view.AccessCoins(tx.GetHash());
+          if (coins && !coins->IsPruned())
+              return state.DoS(100, error("ConnectBlock() : tried to overwrite transaction"), REJECT_INVALID, "bad-txns-BIP30");
+      }
   }
 
   CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
@@ -1902,7 +1901,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
-          PublicCoin coin;
+          PublicCoin coin(Params().Zerocoin_Params());
           if (!TxOutToPublicCoin(out, coin, state))
             return state.DoS(
                 100, error("%s: failed final check of zerocoinmint for tx %s", __func__, tx.GetHash().GetHex()));
@@ -1923,7 +1922,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
-          PublicCoin coin;
+          PublicCoin coin(Params().Zerocoin_Params());
           if (!TxOutToPublicCoin(out, coin, state))
             return state.DoS(
                 100, error("%s: failed final check of zerocoinmint for tx %s", __func__, tx.GetHash().GetHex()));
@@ -2911,12 +2910,14 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
   }
 
   // Check transactions
-  // bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
+  //bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
 #warning "Check zerocoin start here"
-  bool fZerocoinActive = true;  // FOR NOW XXXX
+    bool fZerocoinActive = true; // FOR NOW XXXX
   vector<CBigNum> vBlockSerials;
   for (const CTransaction& tx : block.vtx) {
-    if (!CheckTransaction(tx, fZerocoinActive, state)) { return error("CheckBlock() : CheckTransaction failed"); }
+      if (!CheckTransaction(tx, fZerocoinActive, state)) {
+          return error("CheckBlock() : CheckTransaction failed");
+      }
 
     // double check that there are no double spent zZZZ spends in this block
     if (tx.IsZerocoinSpend()) {
@@ -3751,7 +3752,9 @@ string GetWarnings(string strFor) {
   if (GetBoolArg("-testsafemode", false)) strStatusBar = strRPC = "testsafemode enabled";
 
   // Misc warnings like out of disk space and clock is wrong
-  if (strMiscWarning != "") { strStatusBar = strMiscWarning; }
+  if (strMiscWarning != "") {
+    strStatusBar = strMiscWarning;
+  }
 
   if (fLargeWorkForkFound) {
     strStatusBar = strRPC =
@@ -4605,7 +4608,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
   } else {
     // probably one the extensions
-    gSporkManager.ProcessSpork(pfrom, strCommand, vRecv);
+      gSporkManager.ProcessSpork(pfrom, strCommand, vRecv);
   }
 
   return true;
@@ -4616,8 +4619,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 //       Those old clients won't react to the changes of the other (new) SPORK because at the time of their
 //       implementation it was the one which was commented out
 int ActiveProtocol() {
-  if (gSporkManager.IsSporkActive(SporkID::SPORK_PROTOCOL_ENFORCEMENT)) return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
-  return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
+    if (gSporkManager.IsSporkActive(SporkID::SPORK_PROTOCOL_ENFORCEMENT)) return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
+    return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 
 // requires LOCK(cs_vRecvMsg)

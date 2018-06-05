@@ -36,14 +36,14 @@ bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey&
  */
 class PrivateCoin {
  public:
-  template <typename Stream> PrivateCoin(const ZerocoinParams* p, Stream& strm) : params(p) { strm >> *this; }
+  template <typename Stream> PrivateCoin(const ZerocoinParams* p, Stream& strm) : params(p), publicCoin(p) { strm >> *this; }
   PrivateCoin(const ZerocoinParams* p);
   //  PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination);
   PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum Serial,
               const CBigNum Randonmess);
 
   CBigNum CoinFromSeed(const uint512& seedZerocoin);
-
+  
   const PublicCoin& getPublicCoin() const { return this->publicCoin; }
   // @return the coins serial number
   const CBigNum& getSerialNumber() const { return this->serialNumber; }

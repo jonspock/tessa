@@ -13,8 +13,8 @@
 // Copyright (c) 2018 The PIVX developer
 // Copyright (c) 2018 The ClubChain developers
 #include "PrivateCoin.h"
-#include "Commit.h"
 #include "Commitment.h"
+#include "Commit.h"
 #include "Denominations.h"
 #include "IntegerMod.h"
 #include "ModulusType.h"
@@ -23,11 +23,12 @@
 
 namespace libzerocoin {
 
-bool IsValidCoinValue(const ZerocoinParams* params, const IntegerMod<COIN_COMMITMENT_MODULUS>& C) {
-  return (C >= params->accumulatorParams.minCoinValue) && (C <= params->accumulatorParams.maxCoinValue) &&
-         C.isPrime(ZEROCOIN_MINT_PRIME_PARAM);
+bool IsValidCoinValue(const ZerocoinParams* params,
+                      const IntegerMod<COIN_COMMITMENT_MODULUS>& C) {
+  return (C >= params->accumulatorParams.minCoinValue) &&
+    (C <= params->accumulatorParams.maxCoinValue) && C.isPrime(ZEROCOIN_MINT_PRIME_PARAM);
 }
-
+  
 bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey& key, CBigNum& bnSerial) {
   // Generate a new key pair, which also has a 256-bit pubkey hash that qualifies as a serial #
   // This builds off of Tim Ruffing's work on libzerocoin, but has a different implementation
@@ -46,14 +47,14 @@ bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey&
   return true;
 }
 
-PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p) {
+PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p), publicCoin(p) {
   // Verify that the parameters are valid
   if (this->params->initialized == false) { throw std::runtime_error("Params are not initialized"); }
 }
 
 PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum Serial,
                          const CBigNum Randomness)
-    : params(p) {
+    : params(p), publicCoin(p) {
   // Verify that the parameters are valid
   if (this->params->initialized == false) { throw std::runtime_error("Params are not initialized"); }
 
@@ -85,8 +86,8 @@ PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomin
 CBigNum PrivateCoin::CoinFromSeed(const uint512& seedZerocoin) {
   CBigNum bnRandomness;
   CBigNum bnSerial;
-  CoinDenomination denomination = CoinDenomination::ZQ_ERROR;  // Not used, set to ERROR just in case
-
+  CoinDenomination denomination = CoinDenomination::ZQ_ONE; // Not used
+  
   // convert state seed into a seed for the private key
   uint256 nSeedPrivKey = seedZerocoin.trim256();
   const IntegerMod<COIN_COMMITMENT_MODULUS> g(this->params->coinCommitmentGroup.g);
@@ -139,6 +140,8 @@ CBigNum PrivateCoin::CoinFromSeed(const uint512& seedZerocoin) {
   }
 }
 
+
+  
 void PrivateCoin::mintCoinFast(const CoinDenomination denomination, CBigNum s, CBigNum r) {
   // Generate a random serial number in the range 0...{q-1} where
   // "q" is the order of the commitment group.

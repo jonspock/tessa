@@ -21,7 +21,7 @@ bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomina
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
 
       CValidationState state;
-      libzerocoin::PublicCoin coin;
+      libzerocoin::PublicCoin coin(Params().Zerocoin_Params());
       if (!TxOutToPublicCoin(txOut, coin, state)) return false;
 
       if (coin.getDenomination() != denom) continue;
@@ -33,9 +33,11 @@ bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomina
   return true;
 }
 
-bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins) {
-  for (const CTransaction tx : block.vtx) {
-    if (!tx.IsZerocoinMint()) continue;
+bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins)
+{
+    for (const CTransaction tx : block.vtx) {
+        if(!tx.IsZerocoinMint())
+            continue;
 
     uint256 txHash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
@@ -43,7 +45,7 @@ bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>&
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
 
       CValidationState state;
-      libzerocoin::PublicCoin pubCoin;
+      libzerocoin::PublicCoin pubCoin(Params().Zerocoin_Params());
       if (!TxOutToPublicCoin(txOut, pubCoin, state)) return false;
 
       listPubcoins.emplace_back(pubCoin);
@@ -64,7 +66,7 @@ bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMin
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
 
       CValidationState state;
-      libzerocoin::PublicCoin pubCoin;
+      libzerocoin::PublicCoin pubCoin(Params().Zerocoin_Params());
       if (!TxOutToPublicCoin(txOut, pubCoin, state)) return false;
 
       // version should not actually matter here since it is just a reference to the pubcoin, not to the privcoin
@@ -132,7 +134,7 @@ void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMin
     // is the denomination correct?
     for (auto& out : tx.vout) {
       if (!out.IsZerocoinMint()) continue;
-      libzerocoin::PublicCoin pubcoin;
+      libzerocoin::PublicCoin pubcoin(Params().Zerocoin_Params());
       CValidationState state;
       TxOutToPublicCoin(out, pubcoin, state);
       if (GetPubCoinHash(pubcoin.getValue()) == meta.hashPubcoin && pubcoin.getDenomination() != meta.denom) {
@@ -225,7 +227,7 @@ std::string ReindexZerocoinDB() {
               if (!out.IsZerocoinMint()) continue;
 
               CValidationState state;
-              libzerocoin::PublicCoin coin;
+              libzerocoin::PublicCoin coin(Params().Zerocoin_Params());
               TxOutToPublicCoin(out, coin, state);
               zerocoinDB->WriteCoinMint(coin, txid);
             }
