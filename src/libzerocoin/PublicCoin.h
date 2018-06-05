@@ -15,8 +15,6 @@
 #include "amount.h"
 #include "bignum.h"
 #include "util.h"
-// for Global params (for now)
-#include "chainparams.h"
 
 namespace libzerocoin {
 /** A Public coin is the part of a coin that is published to the network and what is handled
@@ -51,7 +49,7 @@ class PublicCoin {
     return (p->minCoinValue < value) && (value < p->maxCoinValue) && value.isPrime(iterations);
   }
   bool validate() const {
-    libzerocoin::ZerocoinParams* p = Params().Zerocoin_Params();
+    ZerocoinParams* p = gpZerocoinParams;
     return (p->accumulatorParams.minCoinValue < value) && (value <= p->accumulatorParams.maxCoinValue)
       && value.isPrime(p->zkp_iterations);
   }

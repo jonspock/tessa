@@ -21,15 +21,15 @@
 namespace libzerocoin {
 // Accumulator class
 Accumulator::Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination d, int iterations) : params(p) {
-  if (!(params->initialized)) { throw std::runtime_error("Invalid parameters for accumulator"); }
+  assert(p);
   denomination = d;
   this->value = this->params->accumulatorBase;
   this->zkp_iterations = iterations;
 }
 
 Accumulator::Accumulator(const ZerocoinParams* p, const CoinDenomination d, const Bignum bnValue) : denomination(d) {
+  assert(p);
   this->params = &(p->accumulatorParams);
-  if (!(params->initialized)) { throw std::runtime_error("Invalid parameters for accumulator"); }
   this->zkp_iterations = p->zkp_iterations;
 
   if (bnValue != 0)
@@ -46,9 +46,9 @@ void Accumulator::increment(const CBigNum& bnValue) {
 void Accumulator::accumulate(const PublicCoin& coin) {
   // Make sure we're initialized
   if (!(this->value)) {
-    std::cout << "Accumulator is not initialized"
-              << "\n";
-    throw std::runtime_error("Accumulator is not initialized");
+      std::cout << "Accumulator is not initialized"
+                << "\n";
+      throw std::runtime_error("Accumulator is not initialized");
   }
 
   if (this->denomination != coin.getDenomination()) {

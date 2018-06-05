@@ -48,15 +48,14 @@ bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey&
 }
 
 PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p) {
-  // Verify that the parameters are valid
-  if (this->params->initialized == false) { throw std::runtime_error("Params are not initialized"); }
+    assert(p);
 }
 
 PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum Serial,
                          const CBigNum Randomness)
     : params(p) {
   // Verify that the parameters are valid
-  if (this->params->initialized == false) { throw std::runtime_error("Params are not initialized"); }
+  assert(p);
 
   // Save Parameters & do Commitment
   serialNumber = Serial;
