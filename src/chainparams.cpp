@@ -128,7 +128,6 @@ class CMainParams : public CChainParams {
 
     /** Height or Time Based Activations **/
     nLastPOWBlock = 259200;
-    nModifierUpdateBlock = 615800;
     nZerocoinStartHeight = 200;
     /**
      * Build the genesis block. Note that the output of the genesis coinbase cannot
