@@ -168,13 +168,13 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
    */
   mutable CCriticalSection cs_wallet;
 
-  CZkpWallet* zwalletMain;
+  CZeroWallet* zwalletMain;
 
   bool fFileBacked;
   bool fWalletUnlockAnonymizeOnly;
   std::string strWalletFile;
   bool fBackupMints;
-  std::unique_ptr<CZkpTracker> zkpTracker;
+  std::unique_ptr<CZeroTracker> zkpTracker;
 
   std::set<int64_t> setKeyPool;
   std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
@@ -246,12 +246,12 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
     nAutoCombineThreshold = 0;
   }
 
-  void setZWallet(CZkpWallet* zwallet) {
+  void setZWallet(CZeroWallet* zwallet) {
     zwalletMain = zwallet;
-    zkpTracker = std::unique_ptr<CZkpTracker>(new CZkpTracker(strWalletFile));
+    zkpTracker = std::unique_ptr<CZeroTracker>(new CZeroTracker(strWalletFile));
   }
 
-  CZkpWallet* getZWallet() { return zwalletMain; }
+  CZeroWallet* getZWallet() { return zwalletMain; }
 
   void setZPivAutoBackups(bool fEnabled) { fBackupMints = fEnabled; }
 

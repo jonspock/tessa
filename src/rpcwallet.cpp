@@ -2814,7 +2814,7 @@ UniValue resetmintzerocoin(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   CWalletDB walletdb(pwalletMain->strWalletFile);
-  CZkpTracker* zkpTracker = pwalletMain->zkpTracker.get();
+  CZeroTracker* zkpTracker = pwalletMain->zkpTracker.get();
   set<CMintMeta> setMints = zkpTracker->ListMints(false, false, true);
   vector<CMintMeta> vMintsToFind(setMints.begin(), setMints.end());
   vector<CMintMeta> vMintsMissing;
@@ -2866,7 +2866,7 @@ UniValue resetspentzerocoin(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   CWalletDB walletdb(pwalletMain->strWalletFile);
-  CZkpTracker* zkpTracker = pwalletMain->zkpTracker.get();
+  CZeroTracker* zkpTracker = pwalletMain->zkpTracker.get();
   set<CMintMeta> setMints = zkpTracker->ListMints(false, false, false);
   list<CZerocoinSpend> listSpends = walletdb.ListSpentCoins();
   list<CZerocoinSpend> listUnconfirmedSpends;
@@ -3002,7 +3002,7 @@ UniValue exportzerocoins(const UniValue& params, bool fHelp) {
   libzerocoin::CoinDenomination denomination = libzerocoin::ZQ_ERROR;
   if (params.size() == 2) denomination = libzerocoin::IntToZerocoinDenomination(params[1].get_int());
 
-  CZkpTracker* zkpTracker = pwalletMain->zkpTracker.get();
+  CZeroTracker* zkpTracker = pwalletMain->zkpTracker.get();
   set<CMintMeta> setMints = zkpTracker->ListMints(!fIncludeSpent, false, false);
 
   UniValue jsonList(UniValue::VARR);
@@ -3193,7 +3193,7 @@ UniValue setzkpseed(const UniValue& params, bool fHelp) {
   uint256 seed;
   seed.SetHex(params[0].get_str());
 
-  CZkpWallet* zwallet = pwalletMain->getZWallet();
+  CZeroWallet* zwallet = pwalletMain->getZWallet();
   bool fSuccess = zwallet->SetMasterSeed(seed, true);
   if (fSuccess) zwallet->SyncWithChain();
 
@@ -3219,7 +3219,7 @@ UniValue getzkpseed(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked();
 
-  CZkpWallet* zwallet = pwalletMain->getZWallet();
+  CZeroWallet* zwallet = pwalletMain->getZWallet();
   uint256 seed = zwallet->GetMasterSeed();
 
   UniValue ret(UniValue::VOBJ);
@@ -3258,7 +3258,7 @@ UniValue generatemintlist(const UniValue& params, bool fHelp) {
 
   int nCount = params[0].get_int();
   int nRange = params[1].get_int();
-  CZkpWallet* zwallet = pwalletMain->zwalletMain;
+  CZeroWallet* zwallet = pwalletMain->zwalletMain;
 
   UniValue arrRet(UniValue::VARR);
   for (int i = nCount; i < nCount + nRange; i++) {
@@ -3288,7 +3288,7 @@ UniValue dzkpstate(const UniValue& params, bool fHelp) {
         "\nExamples\n" +
         HelpExampleCli("mintpoolstatus", "") + HelpExampleRpc("mintpoolstatus", ""));
 
-  CZkpWallet* zwallet = pwalletMain->zwalletMain;
+  CZeroWallet* zwallet = pwalletMain->zwalletMain;
   UniValue obj(UniValue::VOBJ);
   int nCount, nCountLastUsed;
   zwallet->GetState(nCount, nCountLastUsed);
@@ -3298,7 +3298,7 @@ UniValue dzkpstate(const UniValue& params, bool fHelp) {
   return obj;
 }
 
-void static SearchThread(CZkpWallet* zwallet, int nCountStart, int nCountEnd) {
+void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
   LogPrintf("%s: start=%d end=%d\n", __func__, nCountStart, nCountEnd);
   CWalletDB walletDB(pwalletMain->strWalletFile);
   try {
@@ -3349,7 +3349,7 @@ UniValue searchdzkp(const UniValue& params, bool fHelp) {
 
   int nThreads = params[2].get_int();
 
-  CZkpWallet* zwallet = pwalletMain->zwalletMain;
+  CZeroWallet* zwallet = pwalletMain->zwalletMain;
 
   boost::thread_group* dzkpThreads = new boost::thread_group();
   int nRangePerThread = nRange / nThreads;

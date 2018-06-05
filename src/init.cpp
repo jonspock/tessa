@@ -70,7 +70,7 @@ using namespace std;
 
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
-CZkpWallet* zwalletMain = NULL;
+CZeroWallet* zwalletMain = NULL;
 int nWalletBackups = 10;
 #endif
 volatile bool fFeeEstimatesInitialized = false;
@@ -1622,7 +1622,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
     LogPrintf("%s", strErrors.str());
     LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
-    zwalletMain = new CZkpWallet(pwalletMain->strWalletFile);
+    zwalletMain = new CZeroWallet(pwalletMain->strWalletFile);
     pwalletMain->setZWallet(zwalletMain);
 
     RegisterValidationInterface(pwalletMain);

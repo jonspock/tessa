@@ -14,7 +14,7 @@
 
 using namespace libzerocoin;
 
-CZkpWallet::CZkpWallet(std::string strWalletFile) {
+CZeroWallet::CZeroWallet(std::string strWalletFile) {
   this->strWalletFile = strWalletFile;
   CWalletDB walletdb(strWalletFile);
 
@@ -69,7 +69,7 @@ CZkpWallet::CZkpWallet(std::string strWalletFile) {
   this->mintPool = CMintPool(nCountLastUsed);
 }
 
-bool CZkpWallet::SetMasterSeed(const uint256& seedMaster, bool fResetCount) {
+bool CZeroWallet::SetMasterSeed(const uint256& seedMaster, bool fResetCount) {
   CWalletDB walletdb(strWalletFile);
   if (pwalletMain->IsLocked()) return false;
 
@@ -91,14 +91,14 @@ bool CZkpWallet::SetMasterSeed(const uint256& seedMaster, bool fResetCount) {
   return true;
 }
 
-void CZkpWallet::Lock() { seedMaster = 0; }
+void CZeroWallet::Lock() { seedMaster = 0; }
 
-void CZkpWallet::AddToMintPool(const std::pair<uint256, uint32_t>& pMint, bool fVerbose) {
+void CZeroWallet::AddToMintPool(const std::pair<uint256, uint32_t>& pMint, bool fVerbose) {
   mintPool.Add(pMint, fVerbose);
 }
 
 // Add the next 20 mints to the mint pool
-void CZkpWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
+void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
   // Is locked
   if (seedMaster == 0) return;
 
@@ -140,7 +140,7 @@ void CZkpWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
 
 // pubcoin hashes are stored to db so that a full accounting of mints belonging to the seed can be tracked without
 // regenerating
-bool CZkpWallet::LoadMintPoolFromDB() {
+bool CZeroWallet::LoadMintPoolFromDB() {
   map<uint256, vector<pair<uint256, uint32_t> > > mapMintPool = CWalletDB(strWalletFile).MapMintPool();
 
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
@@ -149,17 +149,17 @@ bool CZkpWallet::LoadMintPoolFromDB() {
   return true;
 }
 
-void CZkpWallet::RemoveMintsFromPool(const std::vector<uint256>& vPubcoinHashes) {
+void CZeroWallet::RemoveMintsFromPool(const std::vector<uint256>& vPubcoinHashes) {
   for (const uint256& hash : vPubcoinHashes) mintPool.Remove(hash);
 }
 
-void CZkpWallet::GetState(int& nCount, int& nLastGenerated) {
+void CZeroWallet::GetState(int& nCount, int& nLastGenerated) {
   nCount = this->nCountLastUsed + 1;
   nLastGenerated = mintPool.CountOfLastGenerated();
 }
 
 // Catch the counter up with the chain
-void CZkpWallet::SyncWithChain(bool fGenerateMintPool) {
+void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
   uint32_t nLastCountUsed = 0;
   bool found = true;
   CWalletDB walletdb(strWalletFile);
@@ -254,7 +254,7 @@ void CZkpWallet::SyncWithChain(bool fGenerateMintPool) {
   }
 }
 
-bool CZkpWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const uint256& txid,
+bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const uint256& txid,
                              const CoinDenomination& denom) {
   if (!mintPool.Has(bnValue)) return error("%s: value not in pool", __func__);
   pair<uint256, uint32_t> pMint = mintPool.Get(bnValue);
@@ -311,26 +311,20 @@ bool CZkpWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const u
   return true;
 }
 
-// Check if the value of the commitment meets requirements
-bool IsValidCoinValue(const CBigNum& bnValue) {
-  return bnValue >= Params().Zerocoin_Params()->accumulatorParams.minCoinValue &&
-         bnValue <= Params().Zerocoin_Params()->accumulatorParams.maxCoinValue && bnValue.isPrime();
-}
-
-uint512 CZkpWallet::GetZerocoinSeed(uint32_t n) {
+uint512 CZeroWallet::GetZerocoinSeed(uint32_t n) {
   CDataStream ss(SER_GETHASH, 0);
   ss << seedMaster << n;
   uint512 zerocoinSeed = Hash512(ss.begin(), ss.end());
   return zerocoinSeed;
 }
 
-void CZkpWallet::UpdateCount() {
+void CZeroWallet::UpdateCount() {
   nCountLastUsed++;
   CWalletDB walletdb(strWalletFile);
   walletdb.WriteZKPCount(nCountLastUsed);
 }
 
-void CZkpWallet::GenerateDeterministicZKP(CoinDenomination denom, PrivateCoin& coin, CDeterministicMint& dMint,
+void CZeroWallet::GenerateDeterministicZKP(CoinDenomination denom, PrivateCoin& coin, CDeterministicMint& dMint,
                                           bool fGenerateOnly) {
   GenerateMint(nCountLastUsed + 1, denom, coin, dMint);
   if (fGenerateOnly) return;
@@ -340,7 +334,7 @@ void CZkpWallet::GenerateDeterministicZKP(CoinDenomination denom, PrivateCoin& c
   // coin.getPublicCoin().getValue().GetHex().substr(0,6), seedZerocoin.GetHex().substr(0, 4));
 }
 
-void CZkpWallet::GenerateMint(const uint32_t& nCount, const CoinDenomination denom, PrivateCoin& coin,
+void CZeroWallet::GenerateMint(const uint32_t& nCount, const CoinDenomination denom, PrivateCoin& coin,
                               CDeterministicMint& dMint) {
   uint512 seedZerocoin = GetZerocoinSeed(nCount);
   CBigNum bnValue = coin.CoinFromSeed(seedZerocoin);
@@ -355,7 +349,7 @@ void CZkpWallet::GenerateMint(const uint32_t& nCount, const CoinDenomination den
   dMint.SetDenomination(denom);
 }
 
-bool CZkpWallet::RegenerateMint(const CDeterministicMint& dMint, CZerocoinMint& mint) {
+bool CZeroWallet::RegenerateMint(const CDeterministicMint& dMint, CZerocoinMint& mint) {
   // Check that the seed is correct    todo:handling of incorrect, or multiple seeds
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
   if (hashSeed != dMint.GetSeedHash())

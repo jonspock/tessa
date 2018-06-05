@@ -10,7 +10,7 @@
 
 class CDeterministicMint;
 
-class CZkpTracker {
+class CZeroTracker {
  private:
   bool fInitialized;
   std::string strWalletFile;
@@ -19,8 +19,8 @@ class CZkpTracker {
   bool UpdateStatusInternal(const std::set<uint256>& setMempool, CMintMeta& mint);
 
  public:
-  CZkpTracker(std::string strWalletFile);
-  ~CZkpTracker();
+  CZeroTracker(std::string strWalletFile);
+  ~CZeroTracker();
   void Add(const CDeterministicMint& dMint, bool isNew = false, bool isArchived = false);
   void Add(const CZerocoinMint& mint, bool isNew = false, bool isArchived = false);
   bool Archive(CMintMeta& meta);
