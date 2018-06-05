@@ -16,6 +16,7 @@
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "kernel.h"
+#include "mainzero.h"
 #include "net.h"
 #include "primitives/transaction.h"
 #include "script/script.h"
@@ -1661,7 +1662,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     for (const CTxOut& out : txNew.vout) {
       if (!out.IsZerocoinMint()) continue;
 
-      libzerocoin::PublicCoin pubcoin(Params().Zerocoin_Params());
+      libzerocoin::PublicCoin pubcoin;
       CValidationState state;
       if (!TxOutToPublicCoin(out, pubcoin, state)) return error("%s: extracting pubcoin from txout failed", __func__);
 
@@ -2649,7 +2650,7 @@ bool CWallet::CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut
   libzerocoin::PublicCoin pubCoin = coin.getPublicCoin();
 
   // Validate
-  if (!pubCoin.validate()) { return error("%s: newly created pubcoin is not valid", __func__); }
+  if (ValidatePublicCoin(pubCoin.getValue())) { return error("%s: newly created pubcoin is not valid", __func__); }
 
   zwalletMain->UpdateCount();
 
@@ -2767,7 +2768,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
   libzerocoin::PublicCoin pubCoinSelected(zerocoinSelected.GetValue(), denomination);
   // LogPrintf("%s : selected mint %s\n pubcoinhash=%s\n", __func__, zerocoinSelected.ToString(),
   // GetPubCoinHash(zerocoinSelected.GetValue()).GetHex());
-  if (!pubCoinSelected.validate()) {
+  if (ValidatePublicCoin(pubCoinSelected.getValue())) {
     receipt.SetStatus(_("The selected mint coin is an invalid coin"), ZKP_INVALID_COIN);
     return false;
   }

@@ -68,13 +68,13 @@ bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nC
 }
 
 bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationState& state, bool fCheckOnly) {
-  PublicCoin pubCoin(Params().Zerocoin_Params());
+  PublicCoin pubCoin;
   if (!TxOutToPublicCoin(txout, pubCoin, state))
     return state.DoS(100, error("CheckZerocoinMint(): TxOutToPublicCoin() failed"));
 
-    if (!pubCoin.validate()) {
-        return state.DoS(100, error("CheckZerocoinMint() : PubCoin does not validate"));
-    }
+  if (ValidatePublicCoin(pubCoin.getValue())) {
+    return state.DoS(100, error("CheckZerocoinMint() : PubCoin does not validate"));
+  }
 
   return true;
 }
@@ -239,4 +239,10 @@ void RecalculateZKPSpent() {
     else
       break;
   }
+}
+
+bool ValidatePublicCoin(const CBigNum& value) {
+  libzerocoin::ZerocoinParams* p = Params().Zerocoin_Params();
+  return (p->accumulatorParams.minCoinValue < value) && (value <= p->accumulatorParams.maxCoinValue) &&
+         value.isPrime(p->zkp_iterations);
 }
