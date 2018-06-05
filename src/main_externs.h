@@ -28,7 +28,6 @@
 #include <string>
 #include <utility>
 
-#include "libzerocoin/CoinSpend.h"
 #include <unordered_map>
 
 struct BlockHasher {
