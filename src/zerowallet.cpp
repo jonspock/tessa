@@ -129,7 +129,7 @@ void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
     if (fFound) continue;
 
     uint512 seedZerocoin = GetZerocoinSeed(i);
-    libzerocoin::PrivateCoin MintedCoin(Params().Zerocoin_Params());
+    libzerocoin::PrivateCoin MintedCoin(libzerocoin::gpZerocoinParams);
     CBigNum bnValue = MintedCoin.CoinFromSeed(seedZerocoin);
       
     mintPool.Add(bnValue, i);
@@ -261,7 +261,7 @@ bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const 
 
   // Regenerate the mint
   uint512 seedZerocoin = GetZerocoinSeed(pMint.second);
-  libzerocoin::PrivateCoin MintedCoin(Params().Zerocoin_Params());
+  libzerocoin::PrivateCoin MintedCoin(libzerocoin::gpZerocoinParams);
   CBigNum bnValueGen = MintedCoin.CoinFromSeed(seedZerocoin);
     
   // Sanity check
@@ -357,7 +357,7 @@ bool CZeroWallet::RegenerateMint(const CDeterministicMint& dMint, CZerocoinMint&
                  hashSeed.GetHex(), seedMaster.GetHex());
 
   // Generate the coin
-  PrivateCoin coin(Params().Zerocoin_Params());
+  PrivateCoin coin(libzerocoin::gpZerocoinParams);
   CDeterministicMint dMintDummy;
   GenerateMint(dMint.GetCount(), dMint.GetDenomination(), coin, dMintDummy);
 

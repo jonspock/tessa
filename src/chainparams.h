@@ -6,8 +6,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CHAINPARAMS_H
-#define BITCOIN_CHAINPARAMS_H
+#pragma once
 
 #include "chainparamsbase.h"
 #include "checkpoints.h"
@@ -15,7 +14,6 @@
 #include "protocol.h"
 #include "uint256.h"
 
-#include "libzerocoin/ZerocoinParams.h"
 #include <vector>
 
 typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
@@ -92,7 +90,6 @@ public:
     CBaseChainParams::Network NetworkID() const { return networkID; }
 
     /** Zerocoin **/
-    libzerocoin::ZerocoinParams* Zerocoin_Params() const;
     int Zerocoin_MaxSpendsPerTransaction() const { return nMaxZerocoinSpendsPerTransaction; }
     CAmount Zerocoin_MintFee() const { return nMinZerocoinMintFee; }
     int Zerocoin_MintRequiredConfirmations() const { return nMintRequiredConfirmations; }
@@ -188,4 +185,3 @@ void SelectParams(CBaseChainParams::Network network);
  */
 bool SelectParamsFromCommandLine();
 
-#endif  // BITCOIN_CHAINPARAMS_H

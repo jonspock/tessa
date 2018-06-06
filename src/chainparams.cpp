@@ -8,7 +8,6 @@
 
 #include "chainparams.h"
 #include "consensus/merkle.h"
-#include "libzerocoin/ZerocoinParams.h"
 #include "random.h"
 #include "util.h"
 #include "utilstrencodings.h"
@@ -93,11 +92,6 @@ static const Checkpoints::CCheckpointData dataTestnet = {&mapCheckpointsTestnet,
 static Checkpoints::MapCheckpoints mapCheckpointsRegtest = {{0, uint256("0x001")}};
 
 static const Checkpoints::CCheckpointData dataRegtest = {&mapCheckpointsRegtest, 1454124731, 0, 100};
-
-libzerocoin::ZerocoinParams* CChainParams::Zerocoin_Params() const {
-  assert(this);
-  return libzerocoin::gpZerocoinParams;
-}
 
 class CMainParams : public CChainParams {
  public:

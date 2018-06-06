@@ -1701,7 +1701,7 @@ bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError
         if (find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint) !=
             listMissingCheckpoints.end()) {
           uint256 nCheckpointCalculated = 0;
-          AccumulatorMap mapAccumulators(Params().Zerocoin_Params());
+          AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
           if (!CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators)) {
             // GetCheckpoint could have terminated due to a shutdown request. Check this here.
             if (ShutdownRequested()) break;
@@ -1992,7 +1992,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   */
 
   // Ensure that accumulator checkpoints are valid and in the same state as this instance of the chain
-  AccumulatorMap mapAccumulators(Params().Zerocoin_Params());
+  AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
   if (!ValidateAccumulatorCheckpoint(block, pindex, mapAccumulators))
     return state.DoS(100,
                      error("%s: Failed to validate accumulator checkpoint for block=%s height=%d", __func__,

@@ -3263,7 +3263,7 @@ UniValue generatemintlist(const UniValue& params, bool fHelp) {
   UniValue arrRet(UniValue::VARR);
   for (int i = nCount; i < nCount + nRange; i++) {
     libzerocoin::CoinDenomination denom = libzerocoin::CoinDenomination::ZQ_ONE;
-    libzerocoin::PrivateCoin coin(Params().Zerocoin_Params());
+    libzerocoin::PrivateCoin coin(libzerocoin::gpZerocoinParams);
     CDeterministicMint dMint;
     zwallet->GenerateMint(i, denom, coin, dMint);
     UniValue obj(UniValue::VOBJ);
@@ -3310,7 +3310,7 @@ void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
       ss << seedMaster << i;
       uint512 zerocoinSeed = Hash512(ss.begin(), ss.end());
         
-      libzerocoin::PrivateCoin MintedCoin(Params().Zerocoin_Params());
+      libzerocoin::PrivateCoin MintedCoin(libzerocoin::gpZerocoinParams);
       CBigNum bnValue = MintedCoin.CoinFromSeed(zerocoinSeed);
  
       uint256 hashPubcoin = GetPubCoinHash(bnValue);

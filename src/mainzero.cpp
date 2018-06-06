@@ -157,7 +157,7 @@ bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidati
                                     __func__, HexStr(BEGIN(nChecksum), END(nChecksum))));
       }
 
-      Accumulator accumulator(Params().Zerocoin_Params(), newSpend.getDenomination(), bnAccumulatorValue);
+      Accumulator accumulator(libzerocoin::gpZerocoinParams, newSpend.getDenomination(), bnAccumulatorValue);
 
       // Check that the coin has been accumulated
       if (!newSpend.Verify(accumulator))
@@ -242,7 +242,7 @@ void RecalculateZKPSpent() {
 }
 
 bool ValidatePublicCoin(const CBigNum& value) {
-  libzerocoin::ZerocoinParams* p = Params().Zerocoin_Params();
+  libzerocoin::ZerocoinParams* p = gpZerocoinParams;
   return (p->accumulatorParams.minCoinValue < value) && (value <= p->accumulatorParams.maxCoinValue) &&
          value.isPrime(p->zkp_iterations);
 }

@@ -2643,7 +2643,7 @@ bool CWallet::GetZerocoinKey(const CBigNum& bnSerial, CKey& key) {
 
 bool CWallet::CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint) {
   // mint a new coin (create Pedersen Commitment) and extract PublicCoin that is shareable from it
-  libzerocoin::PrivateCoin coin(Params().Zerocoin_Params());
+  libzerocoin::PrivateCoin coin(libzerocoin::gpZerocoinParams);
   zwalletMain->GenerateDeterministicZKP(denomination, coin, dMint);
 
   libzerocoin::PublicCoin pubCoin = coin.getPublicCoin();
@@ -2758,9 +2758,8 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
                          CBlockIndex* pindexCheckpoint) {
   // Default error status if not changed below
   receipt.SetStatus(_("Transaction Mint Started"), ZKP_TXMINT_GENERAL);
-  libzerocoin::ZerocoinParams* paramsAccumulator = Params().Zerocoin_Params();
-
-  libzerocoin::ZerocoinParams* paramsCoin = Params().Zerocoin_Params();
+  libzerocoin::ZerocoinParams* paramsAccumulator = libzerocoin::gpZerocoinParams;
+  libzerocoin::ZerocoinParams* paramsCoin = libzerocoin::gpZerocoinParams;
 
   // 2. Get pubcoin from the private coin
   libzerocoin::CoinDenomination denomination = zerocoinSelected.GetDenomination();
@@ -2816,7 +2815,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
       // return false;
       LogPrintf("** spend.verify failed, trying with different params\n");
 
-      libzerocoin::CoinSpend spend2(Params().Zerocoin_Params(), privateCoin, accumulator, nChecksum, witness,
+      libzerocoin::CoinSpend spend2(libzerocoin::gpZerocoinParams, privateCoin, accumulator, nChecksum, witness,
                                     hashTxOut);  //, libzerocoin::SpendType::SPEND);
       LogPrintf("*** spend2 valid=%d\n", spend2.Verify(accumulator));
       return false;

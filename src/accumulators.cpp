@@ -344,7 +344,7 @@ bool GetAccumulatorValue(int& nHeight, const libzerocoin::CoinDenomination denom
       AccumulatorCheckpoints::GetClosestCheckpoint(nHeight, nHeightCheckpoint);
   if (nHeightCheckpoint < 0) {
     // Start at the first zerocoin
-    libzerocoin::Accumulator accumulator(Params().Zerocoin_Params(), denom);
+    libzerocoin::Accumulator accumulator(libzerocoin::gpZerocoinParams, denom);
     bnAccValue = accumulator.getValue();
     nHeight = Params().Zerocoin_StartHeight() + ACC_BLOCK_INTERVAL;
     return true;
