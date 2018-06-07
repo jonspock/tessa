@@ -240,6 +240,8 @@ class CTestNetParams : public CMainParams {
     bnProofOfWorkLimit = ~uint256(0) >> 1;
 
     nStakeMinAge = 1 * 60; // 1 minute for Testnet
+    nModifierInterval = 60; // ? why this value
+    nStakeTargetSpacing = 60;
     
     nPoolMaxTransactions = 2;
   }

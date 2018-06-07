@@ -101,6 +101,8 @@ public:
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
     int Zerocoin_StartHeight() const { return nZerocoinStartHeight; }
     int StakeMinAge() const { return nStakeMinAge; }
+    int ModifierInterval() const { return nModifierInterval; }
+    int StakeTargetSpacing() const { return nStakeTargetSpacing; }
     
 protected:
     CChainParams() {}
@@ -118,7 +120,6 @@ protected:
     int64_t nTargetSpacing;
     int nLastPOWBlock;
     int nMaturity;
-    int nModifierUpdateBlock;
     CAmount nMaxMoneyOut;
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;
@@ -145,6 +146,9 @@ protected:
     int nZerocoinHeaderVersion;
     int nZerocoinStartHeight;
     int nStakeMinAge;
+    int nStakeTargetSpacing;
+    int nModifierUpdateBlock;
+    int nModifierInterval;
  };
 
 /**

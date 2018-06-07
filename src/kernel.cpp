@@ -5,6 +5,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "kernel.h"
+#include "chainparams.h"
 #include "db.h"
 #include "script/interpreter.h"
 #include "stakeinput.h"
@@ -12,21 +13,6 @@
 #include "util.h"
 
 using namespace std;
-
-// XXXX ugly!
-bool fTestNet = false;  // Params().NetworkID() == CBaseChainParams::TESTNET;
-
-// Modifier interval: time to elapse before new modifier is computed
-// Set to 3-hour for production network and 20-minute for test network
-int nStakeTargetSpacing = 60;
-unsigned int getIntervalVersion(bool bTestNet=false) {
-    const unsigned int MODIFIER_INTERVAL = 60;
-    const unsigned int MODIFIER_INTERVAL_TESTNET = 60;
-    if (bTestNet)
-        return MODIFIER_INTERVAL_TESTNET;
-    else
-        return MODIFIER_INTERVAL;
-}
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7u}};
@@ -49,7 +35,7 @@ static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModi
 // Get selection interval section (in seconds)
 static int64_t GetStakeModifierSelectionIntervalSection(int nSection) {
   assert(nSection >= 0 && nSection < 64);
-  int64_t a = getIntervalVersion() * 63 / (63 + ((63 - nSection) * (MODIFIER_INTERVAL_RATIO - 1)));
+  int64_t a = Params().ModifierInterval() * 63 / (63 + ((63 - nSection) * (MODIFIER_INTERVAL_RATIO - 1)));
   return a;
 }
 
@@ -145,19 +131,19 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     LogPrintf("ComputeNextStakeModifier: prev modifier= %lld time=%s\n", nStakeModifier,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nModifierTime).c_str());
 
-  if (nModifierTime / getIntervalVersion() >= pindexPrev->GetBlockTime() / getIntervalVersion())
+  if (nModifierTime / Params().ModifierInterval() >= pindexPrev->GetBlockTime() / Params().ModifierInterval())
     return true;
 
   // Sort candidate blocks by timestamp
   vector<pair<int64_t, uint256> > vSortedByTimestamp;
-  vSortedByTimestamp.reserve(64 * getIntervalVersion() / nStakeTargetSpacing);
+  vSortedByTimestamp.reserve(64 * Params().ModifierInterval() / Params().StakeTargetSpacing());
   int64_t nSelectionInterval = GetStakeModifierSelectionInterval();
   int64_t nSelectionIntervalStart =
-      (pindexPrev->GetBlockTime() / getIntervalVersion()) * getIntervalVersion() - nSelectionInterval;
+      (pindexPrev->GetBlockTime() / Params().ModifierInterval()) * Params().ModifierInterval() - nSelectionInterval;
   const CBlockIndex* pindex = pindexPrev;
 
   while (pindex && pindex->GetBlockTime() >= nSelectionIntervalStart) {
-      // See SolarCoin regarding uint256 sorting XXXX https://github.com/onsightit/solarcoin/blob/master/src/kernel.cpp
+    // See SolarCoin regarding uint256 sorting XXXX https://github.com/onsightit/solarcoin/blob/master/src/kernel.cpp
     vSortedByTimestamp.push_back(make_pair(pindex->GetBlockTime(), pindex->GetBlockHash()));
     pindex = pindex->pprev;
   }
@@ -395,7 +381,7 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex) {
 
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum) {
-  if (fTestNet) return true;  // Testnet has no checkpoints
+  if (Params().NetworkID() == CBaseChainParams::TESTNET) return true;  // Testnet has no checkpoints
   if (mapStakeModifierCheckpoints.count(nHeight)) {
     return nStakeModifierChecksum == mapStakeModifierCheckpoints[nHeight];
   }
