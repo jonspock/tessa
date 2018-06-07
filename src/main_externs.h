@@ -58,7 +58,6 @@ extern bool fIsBareMultisigStd;
 extern bool fCheckBlockIndex;
 extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
-extern bool fAlerts;
 extern bool fVerifyingBlocks;
 
 extern bool fLargeWorkForkFound;
