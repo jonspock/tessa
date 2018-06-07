@@ -19,6 +19,7 @@
 #include "optionsmodel.h"
 #include "rpcconsole.h"
 #include "utilitydialog.h"
+#include "staker.h"
 
 #ifdef ENABLE_WALLET
 #include "blockexplorer.h"
@@ -1037,7 +1038,7 @@ bool BitcoinGUI::eventFilter(QObject* object, QEvent* event) {
 void BitcoinGUI::setStakingStatus() {
   if (pwalletMain) fMultiSend = pwalletMain->isMultiSendEnabled();
 
-  if (nLastCoinStakeSearchInterval) {
+  if (gStaker.getLastCoinStakeSearchInterval()) {
     labelStakingIcon->show();
     labelStakingIcon->setPixmap(QIcon(":/icons/staking_active").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
     labelStakingIcon->setToolTip(

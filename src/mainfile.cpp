@@ -12,6 +12,7 @@
 
 // for StartShutdown()
 #include "init.h"
+#include "staker.h"
 
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
@@ -83,7 +84,7 @@ CBlockIndex* InsertBlockIndex(uint256 hash) {
   mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
 
   // mark as PoS seen
-  if (pindexNew->IsProofOfStake()) setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
+  if (pindexNew->IsProofOfStake()) gStaker.setSeen(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
   pindexNew->phashBlock = &((*mi).first);
 

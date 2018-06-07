@@ -35,6 +35,7 @@
 #include "reverse_iterate.h"
 #include "spork.h"
 #include "sporkdb.h"
+#include "staker.h"
 #include "txdb.h"
 #include "txmempool.h"
 #include "ui_interface.h"
@@ -62,7 +63,6 @@ CCriticalSection cs_main;
 
 BlockMap mapBlockIndex;
 map<uint256, uint256> mapProofOfStake;
-set<pair<COutPoint, unsigned int> > setStakeSeen;
 map<unsigned int, unsigned int> mapHashedBlocks;
 CChain chainActive;
 CBlockIndex* pindexBestHeader = NULL;
@@ -78,7 +78,6 @@ bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
 
-unsigned int nStakeMinAge = 1 * 60;
 int64_t nReserveBalance = 0;
 
 /** Fees smaller than this (in upiv) are considered zero fee (for relaying and mining)
@@ -2661,7 +2660,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block) {
   BlockMap::iterator mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
 
   // mark as PoS seen
-  if (pindexNew->IsProofOfStake()) setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
+  if (pindexNew->IsProofOfStake()) gStaker.setSeen(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
   pindexNew->phashBlock = &((*mi).first);
   BlockMap::iterator miPrev = mapBlockIndex.find(block.hashPrevBlock);

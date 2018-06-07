@@ -100,7 +100,8 @@ public:
     /** Height or Time Based Activations **/
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
     int Zerocoin_StartHeight() const { return nZerocoinStartHeight; }
-
+    int StakeMinAge() const { return nStakeMinAge; }
+    
 protected:
     CChainParams() {}
 
@@ -143,7 +144,7 @@ protected:
     int nDefaultSecurityLevel;
     int nZerocoinHeaderVersion;
     int nZerocoinStartHeight;
-
+    int nStakeMinAge;
  };
 
 /**

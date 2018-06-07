@@ -177,6 +177,7 @@ SET(SERVER_A
 	./src/zerochain.cpp
 	./src/merkleblock.cpp
 	./src/miner.cpp
+	./src/staker.cpp
 	./src/net.cpp
 	./src/noui.cpp
 	./src/pow.cpp

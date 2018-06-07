@@ -14,6 +14,7 @@
 #include "netbase.h"
 #include "rpcserver.h"
 #include "spork.h"
+#include "staker.h"
 #include "timedata.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
@@ -140,7 +141,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   bool nStaking = false;
   if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
     nStaking = true;
-  else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && nLastCoinStakeSearchInterval)
+  else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && gStaker.getLastCoinStakeSearchInterval())
     nStaking = true;
   obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
   obj.push_back(Pair("errors", GetWarnings("statusbar")));
@@ -513,7 +514,7 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp) {
   bool nStaking = false;
   if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
     nStaking = true;
-  else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && nLastCoinStakeSearchInterval)
+  else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && gStaker.getLastCoinStakeSearchInterval())
     nStaking = true;
   obj.push_back(Pair("staking status", nStaking));
 

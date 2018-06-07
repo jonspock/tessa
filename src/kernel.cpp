@@ -13,17 +13,19 @@
 
 using namespace std;
 
+// XXXX ugly!
 bool fTestNet = false;  // Params().NetworkID() == CBaseChainParams::TESTNET;
 
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
-unsigned int nModifierInterval;
 int nStakeTargetSpacing = 60;
-unsigned int getIntervalVersion(bool fTestNet) {
-  if (fTestNet)
-    return MODIFIER_INTERVAL_TESTNET;
-  else
-    return MODIFIER_INTERVAL;
+unsigned int getIntervalVersion(bool bTestNet=false) {
+    const unsigned int MODIFIER_INTERVAL = 60;
+    const unsigned int MODIFIER_INTERVAL_TESTNET = 60;
+    if (bTestNet)
+        return MODIFIER_INTERVAL_TESTNET;
+    else
+        return MODIFIER_INTERVAL;
 }
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
@@ -31,7 +33,7 @@ static std::map<int, unsigned int> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7
 
 // Get time weight
 int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd) {
-  return nIntervalEnd - nIntervalBeginning - nStakeMinAge;
+  return nIntervalEnd - nIntervalBeginning - Params().StakeMinAge();
 }
 
 // Get the last stake modifier and its generation time from a given block
@@ -47,7 +49,7 @@ static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModi
 // Get selection interval section (in seconds)
 static int64_t GetStakeModifierSelectionIntervalSection(int nSection) {
   assert(nSection >= 0 && nSection < 64);
-  int64_t a = getIntervalVersion(fTestNet) * 63 / (63 + ((63 - nSection) * (MODIFIER_INTERVAL_RATIO - 1)));
+  int64_t a = getIntervalVersion() * 63 / (63 + ((63 - nSection) * (MODIFIER_INTERVAL_RATIO - 1)));
   return a;
 }
 
@@ -82,7 +84,7 @@ static bool SelectBlockFromCandidates(vector<pair<int64_t, uint256> >& vSortedBy
 
     // compute the selection hash by hashing an input that is unique to that block
     uint256 hashProof = pindex->GetBlockHash();
-  
+
     CDataStream ss(SER_GETHASH, 0);
     ss << hashProof << nStakeModifierPrev;
     uint256 hashSelection = Hash(ss.begin(), ss.end());
@@ -143,18 +145,19 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     LogPrintf("ComputeNextStakeModifier: prev modifier= %lld time=%s\n", nStakeModifier,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nModifierTime).c_str());
 
-  if (nModifierTime / getIntervalVersion(fTestNet) >= pindexPrev->GetBlockTime() / getIntervalVersion(fTestNet))
+  if (nModifierTime / getIntervalVersion() >= pindexPrev->GetBlockTime() / getIntervalVersion())
     return true;
 
   // Sort candidate blocks by timestamp
   vector<pair<int64_t, uint256> > vSortedByTimestamp;
-  vSortedByTimestamp.reserve(64 * getIntervalVersion(fTestNet) / nStakeTargetSpacing);
+  vSortedByTimestamp.reserve(64 * getIntervalVersion() / nStakeTargetSpacing);
   int64_t nSelectionInterval = GetStakeModifierSelectionInterval();
   int64_t nSelectionIntervalStart =
-      (pindexPrev->GetBlockTime() / getIntervalVersion(fTestNet)) * getIntervalVersion(fTestNet) - nSelectionInterval;
+      (pindexPrev->GetBlockTime() / getIntervalVersion()) * getIntervalVersion() - nSelectionInterval;
   const CBlockIndex* pindex = pindexPrev;
 
   while (pindex && pindex->GetBlockTime() >= nSelectionIntervalStart) {
+      // See SolarCoin regarding uint256 sorting XXXX https://github.com/onsightit/solarcoin/blob/master/src/kernel.cpp
     vSortedByTimestamp.push_back(make_pair(pindex->GetBlockTime(), pindex->GetBlockHash()));
     pindex = pindex->pprev;
   }
@@ -240,7 +243,7 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     pindex = pindexNext;
     pindexNext = chainActive[pindexNext->nHeight + 1];
     if (!pindexNext) {
-      //std::cout << " done early\n";
+      // std::cout << " done early\n";
       return true;
     }
     if (pindex->GeneratedStakeModifier()) {
@@ -276,9 +279,9 @@ bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockF
            uint256& hashProofOfStake) {
   if (nTimeTx < nTimeBlockFrom) return error("CheckStakeKernelHash() : nTime violation");
 
-  if (nTimeBlockFrom + nStakeMinAge > nTimeTx)  // Min age requirement
+  if (nTimeBlockFrom + Params().StakeMinAge() > nTimeTx)  // Min age requirement
     return error("CheckStakeKernelHash() : min age violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d",
-                 nTimeBlockFrom, nStakeMinAge, nTimeTx);
+                 nTimeBlockFrom, Params().StakeMinAge(), nTimeTx);
 
   // grab difficulty
   uint256 bnTargetPerCoinDay;
@@ -396,5 +399,54 @@ bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierCheck
   if (mapStakeModifierCheckpoints.count(nHeight)) {
     return nStakeModifierChecksum == mapStakeModifierCheckpoints[nHeight];
   }
+  return true;
+}
+
+// ppcoin: total coin age spent in transaction, in the unit of coin-days.
+// Only those coins meeting minimum age requirement counts. As those
+// transactions not in main chain are not currently indexed so we
+// might not find out about their coin age. Older transactions are
+// guaranteed to be in main chain by sync-checkpoint. This rule is
+// introduced to help nodes establish a consistent view of the coin
+// age (trust score) of competing branches.
+bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nCoinAge) {
+  uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
+  nCoinAge = 0;
+
+  CBlockIndex* pindex = NULL;
+  for (const CTxIn& txin : tx.vin) {
+    // First try finding the previous transaction in database
+    CTransaction txPrev;
+    uint256 hashBlockPrev;
+    if (!GetTransaction(txin.prevout.hash, txPrev, hashBlockPrev, true)) {
+      LogPrintf("GetCoinAge: failed to find vin transaction \n");
+      continue;  // previous transaction not in main chain
+    }
+
+    BlockMap::iterator it = mapBlockIndex.find(hashBlockPrev);
+    if (it != mapBlockIndex.end())
+      pindex = it->second;
+    else {
+      LogPrintf("GetCoinAge() failed to find block index \n");
+      continue;
+    }
+
+    // Read block header
+    CBlockHeader prevblock = pindex->GetBlockHeader();
+
+    if (prevblock.nTime + Params().StakeMinAge() > nTxTime) continue;  // only count coins meeting min age requirement
+
+    if (nTxTime < prevblock.nTime) {
+      LogPrintf("GetCoinAge: Timestamp Violation: txtime less than txPrev.nTime");
+      return false;  // Transaction timestamp violation
+    }
+
+    int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
+    bnCentSecond += uint256(nValueIn) * (nTxTime - prevblock.nTime);
+  }
+
+  uint256 bnCoinDay = bnCentSecond / COIN / (24 * 60 * 60);
+  LogPrintf("coin age bnCoinDay=%s\n", bnCoinDay.ToString().c_str());
+  nCoinAge = bnCoinDay.GetCompact();
   return true;
 }
