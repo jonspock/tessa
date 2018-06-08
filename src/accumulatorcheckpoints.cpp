@@ -23,10 +23,7 @@ bool LoadCheckpoints(const std::string& strNetwork) {
     CBigNum bn(0);
 #warning "Check checkpoints"
     int StartHeight=100;
-    for (auto denom : libzerocoin::zerocoinDenomList) {
-        checkpoint.insert(std::make_pair(denom, bn));
-        std::cout << "bnValue = " << bn.ToString() << "\n";
-    }
+    for (auto denom : libzerocoin::zerocoinDenomList) checkpoint.insert(std::make_pair(denom, bn));
     mapCheckpoints.insert(make_pair(StartHeight, checkpoint));
     return true;
 }
