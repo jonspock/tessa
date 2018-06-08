@@ -8,8 +8,7 @@
 /**
  * Utilities for converting data from/to strings.
  */
-#ifndef BITCOIN_UTILSTRENCODINGS_H
-#define BITCOIN_UTILSTRENCODINGS_H
+#pragma once
 
 #include "allocators.h"
 #include <stdint.h>
@@ -40,9 +39,6 @@ std::string EncodeBase32(const std::string& str);
 
 std::string i64tostr(int64_t n);
 std::string itostr(int n);
-int64_t atoi64(const char* psz);
-int64_t atoi64(const std::string& str);
-int atoi(const std::string& str);
 
 /**
  * Convert string to signed 32-bit integer with strict parse error feedback.
@@ -110,4 +106,3 @@ template <typename T> bool TimingResistantEqual(const T& a, const T& b) {
   return accumulator == 0;
 }
 
-#endif  // BITCOIN_UTILSTRENCODINGS_H

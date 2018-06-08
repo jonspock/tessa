@@ -241,7 +241,7 @@ int LogPrintStr(const std::string& str) {
 /** Interpret string as boolean, for argument parsing */
 static bool InterpretBool(const std::string& strValue) {
   if (strValue.empty()) return true;
-  return (atoi(strValue) != 0);
+  return (atoi(strValue.c_str()) != 0);
 }
 
 /** Turn -noX into -X=0
@@ -757,7 +757,7 @@ std::string ArgsManager::GetArg(const std::string& strArg, const std::string& st
 int64_t ArgsManager::GetArg(const std::string& strArg, int64_t nDefault) const {
   LOCK(cs_args);
   auto it = mapArgs.find(strArg);
-  if (it != mapArgs.end()) return atoi64(it->second);
+  if (it != mapArgs.end()) return std::atoi(it->second.c_str());
   return nDefault;
 }
 

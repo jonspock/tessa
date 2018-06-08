@@ -1952,7 +1952,7 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend) {
   // The -*messagestest options are intentionally not documented in the help message,
   // since they are only used during development to debug the networking code and are
   // not intended for end-users.
-  if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "2")) == 0)) {
+    if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "2").c_str()) == 0)) {
     LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
     AbortMessage();
     return;

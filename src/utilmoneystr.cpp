@@ -59,7 +59,7 @@ bool ParseMoney(const char* pszIn, CAmount& nRet) {
   if (strWhole.size() > 10)  // guard against 63 bit overflow
     return false;
   if (nUnits < 0 || nUnits > COIN) return false;
-  int64_t nWhole = atoi64(strWhole);
+  int64_t nWhole = std::atoi(strWhole.c_str());
   CAmount nValue = nWhole * COIN + nUnits;
 
   nRet = nValue;

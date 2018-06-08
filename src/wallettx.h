@@ -7,8 +7,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-// for atoi64
-#include "main_functions.h"
 #include "utilstrencodings.h"
 
 typedef std::map<std::string, std::string> mapValue_t;
@@ -190,7 +188,7 @@ class CWalletTx : public CMerkleTx {
 
       ReadOrderPos(nOrderPos, mapValue);
 
-      nTimeSmart = mapValue.count("timesmart") ? (unsigned int)atoi64(mapValue["timesmart"]) : 0;
+      nTimeSmart = mapValue.count("timesmart") ? (unsigned int)std::atoi(mapValue["timesmart"].c_str()) : 0;
     }
 
     mapValue.erase("fromaccount");

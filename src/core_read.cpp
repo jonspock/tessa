@@ -53,7 +53,7 @@ CScript ParseScript(std::string s) {
       // Empty string, ignore. (boost::split given '' will return one word)
     } else if (all(*w, is_digit()) || (starts_with(*w, "-") && all(string(w->begin() + 1, w->end()), is_digit()))) {
       // Number
-      int64_t n = atoi64(*w);
+      int64_t n = std::atoi((*w).c_str());
       result << n;
     } else if (starts_with(*w, "0x") && (w->begin() + 2 != w->end()) && IsHex(string(w->begin() + 2, w->end()))) {
       // Raw hex data, inserted NOT pushed onto stack:

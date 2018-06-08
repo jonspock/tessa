@@ -140,7 +140,7 @@ void TorControlConnection::readcb(struct bufferevent *bev, void *ctx) {
     if (s.size() < 4)  // Short line
       continue;
     // <status>(-|+| )<data><CRLF>
-    self->message.code = atoi(s.substr(0, 3));
+    self->message.code = std::atoi(s.substr(0, 3).c_str());
     self->message.lines.push_back(s.substr(4));
     char ch = s[3];  // '-','+' or ' '
     if (ch == ' ') {
