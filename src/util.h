@@ -10,8 +10,7 @@
  * Server/client environment: argument handling, config file parsing,
  * logging, thread wrappers
  */
-#ifndef BITCOIN_UTIL_H
-#define BITCOIN_UTIL_H
+#pragma once
 
 #if defined(HAVE_CONFIG_H)
 #include "config/club-config.h"
@@ -301,4 +300,3 @@ class ArgsManager {
 
 extern ArgsManager gArgs;
 
-#endif  // BITCOIN_UTIL_H
