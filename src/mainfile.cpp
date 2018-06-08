@@ -48,20 +48,20 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes) {
 }
 
 FILE* OpenDiskFile(const CDiskBlockPos& pos, const char* prefix, bool fReadOnly) {
-  if (pos.IsNull()) return NULL;
+  if (pos.IsNull()) return nullptr;
   boost::filesystem::path path = GetBlockPosFilename(pos, prefix);
   boost::filesystem::create_directories(path.parent_path());
   FILE* file = fopen(path.string().c_str(), "rb+");
   if (!file && !fReadOnly) file = fopen(path.string().c_str(), "wb+");
   if (!file) {
     LogPrintf("Unable to open file %s\n", path.string());
-    return NULL;
+    return nullptr;
   }
   if (pos.nPos) {
     if (fseek(file, pos.nPos, SEEK_SET)) {
       LogPrintf("Unable to seek to position %u of %s\n", pos.nPos, path.string());
       fclose(file);
-      return NULL;
+      return nullptr;
     }
   }
   return file;
@@ -72,7 +72,7 @@ FILE* OpenBlockFile(const CDiskBlockPos& pos, bool fReadOnly) { return OpenDiskF
 FILE* OpenUndoFile(const CDiskBlockPos& pos, bool fReadOnly) { return OpenDiskFile(pos, "rev", fReadOnly); }
 
 CBlockIndex* InsertBlockIndex(uint256 hash) {
-  if (hash == 0) return NULL;
+  if (hash == 0) return nullptr;
 
   // Return existing
   BlockMap::iterator mi = mapBlockIndex.find(hash);

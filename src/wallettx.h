@@ -118,7 +118,7 @@ class CWalletTx : public CMerkleTx {
   mutable CAmount nAvailableWatchCreditCached;
   mutable CAmount nChangeCached;
 
-  CWalletTx() { Init(NULL); }
+  CWalletTx() { Init(nullptr); }
 
   CWalletTx(const CWallet* pwalletIn) { Init(pwalletIn); }
 
@@ -164,7 +164,7 @@ class CWalletTx : public CMerkleTx {
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-    if (ser_action.ForRead()) Init(NULL);
+    if (ser_action.ForRead()) Init(nullptr);
     char fSpent = false;
 
     if (!ser_action.ForRead()) {
@@ -262,7 +262,7 @@ class CWalletTx : public CMerkleTx {
     for (const CTxIn& txin : vin) {
       // Transactions not sent by us: not trusted
       const CWalletTx* parent = pwallet->GetWalletTx(txin.prevout.hash);
-      if (parent == NULL) return false;
+      if (parent == nullptr) return false;
       const CTxOut& parentOut = parent->vout[txin.prevout.n];
       if (pwallet->IsMine(parentOut) != ISMINE_SPENDABLE) return false;
     }

@@ -23,7 +23,7 @@ CVerifyDB::~CVerifyDB() { uiInterface.ShowProgress("", 100); }
 
 bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth) {
   LOCK(cs_main);
-  if (chainActive.Tip() == NULL || chainActive.Tip()->pprev == NULL) return true;
+  if (chainActive.Tip() == nullptr || chainActive.Tip()->pprev == nullptr) return true;
 
   // Verify blocks in the best chain
   if (nCheckDepth <= 0) nCheckDepth = 1000000000;  // suffices until the year 19000
@@ -32,7 +32,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
   LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
   CCoinsViewCache coins(coinsview);
   CBlockIndex* pindexState = chainActive.Tip();
-  CBlockIndex* pindexFailure = NULL;
+  CBlockIndex* pindexFailure = nullptr;
   int nGoodTransactions = 0;
   CValidationState state;
   for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {

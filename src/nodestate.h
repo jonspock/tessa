@@ -69,9 +69,9 @@ struct CNodeState {
     fCurrentlyConnected = false;
     nMisbehavior = 0;
     fShouldBan = false;
-    pindexBestKnownBlock = NULL;
+    pindexBestKnownBlock = nullptr;
     hashLastUnknownBlock = uint256(0);
-    pindexLastCommonBlock = NULL;
+    pindexLastCommonBlock = nullptr;
     fSyncStarted = false;
     nStallingSince = 0;
     nBlocksInFlight = 0;

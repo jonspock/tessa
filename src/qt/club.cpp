@@ -143,13 +143,13 @@ static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTrans
 /* qDebug() message handler --> debug.log */
 #if QT_VERSION < 0x050000
 void DebugMessageHandler(QtMsgType type, const char* msg) {
-  const char* category = (type == QtDebugMsg) ? "qt" : NULL;
+  const char* category = (type == QtDebugMsg) ? "qt" : nullptr;
   LogPrint(category, "GUI: %s\n", msg);
 }
 #else
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg) {
   Q_UNUSED(context);
-  const char* category = (type == QtDebugMsg) ? "qt" : NULL;
+  const char* category = (type == QtDebugMsg) ? "qt" : nullptr;
   LogPrint(category, "GUI: %s\n", msg.toStdString());
 }
 #endif
@@ -257,7 +257,7 @@ void BitcoinCore::initialize() {
     int rv = AppInit2(threadGroup, scheduler);
     emit initializeResult(rv);
   } catch (std::exception& e) { handleRunawayException(&e); } catch (...) {
-    handleRunawayException(NULL);
+    handleRunawayException(nullptr);
   }
 }
 
@@ -276,7 +276,7 @@ void BitcoinCore::restart(QStringList args) {
       qDebug() << __func__ << ": Restart initiated...";
       QApplication::quit();
     } catch (std::exception& e) { handleRunawayException(&e); } catch (...) {
-      handleRunawayException(NULL);
+      handleRunawayException(nullptr);
     }
   }
 }
@@ -290,7 +290,7 @@ void BitcoinCore::shutdown() {
     qDebug() << __func__ << ": Shutdown finished";
     emit shutdownResult(1);
   } catch (std::exception& e) { handleRunawayException(&e); } catch (...) {
-    handleRunawayException(NULL);
+    handleRunawayException(nullptr);
   }
 }
 
@@ -526,7 +526,7 @@ int main(int argc, char* argv[]) {
   // Show help message immediately after parsing command-line options (for "-lang") and setting locale,
   // but before showing splash screen.
   if (gArgs.IsArgSet("-?") || gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version")) {
-    HelpMessageDialog help(NULL, gArgs.IsArgSet("-version"));
+    HelpMessageDialog help(nullptr, gArgs.IsArgSet("-version"));
     help.showOrPrint();
     return 1;
   }
@@ -628,7 +628,7 @@ int main(int argc, char* argv[]) {
     PrintExceptionContinue(&e, "Runaway exception");
     app.handleRunawayException(QString::fromStdString(strMiscWarning));
   } catch (...) {
-    PrintExceptionContinue(NULL, "Runaway exception");
+    PrintExceptionContinue(nullptr, "Runaway exception");
     app.handleRunawayException(QString::fromStdString(strMiscWarning));
   }
   return app.getReturnValue();

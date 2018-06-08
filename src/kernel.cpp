@@ -399,7 +399,7 @@ bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nC
   uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
   nCoinAge = 0;
 
-  CBlockIndex* pindex = NULL;
+  CBlockIndex* pindex = nullptr;
   for (const CTxIn& txin : tx.vin) {
     // First try finding the previous transaction in database
     CTransaction txPrev;

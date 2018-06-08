@@ -412,7 +412,7 @@ class CScript : public std::vector<unsigned char> {
 
   bool GetOp(iterator& pc, opcodetype& opcodeRet) {
     const_iterator pc2 = pc;
-    bool fRet = GetOp2(pc2, opcodeRet, NULL);
+    bool fRet = GetOp2(pc2, opcodeRet, nullptr);
     pc = begin() + (pc2 - begin());
     return fRet;
   }
@@ -421,7 +421,7 @@ class CScript : public std::vector<unsigned char> {
     return GetOp2(pc, opcodeRet, &vchRet);
   }
 
-  bool GetOp(const_iterator& pc, opcodetype& opcodeRet) const { return GetOp2(pc, opcodeRet, NULL); }
+  bool GetOp(const_iterator& pc, opcodetype& opcodeRet) const { return GetOp2(pc, opcodeRet, nullptr); }
 
   bool GetOp2(const_iterator& pc, opcodetype& opcodeRet, std::vector<unsigned char>* pvchRet) const {
     opcodeRet = OP_INVALIDOPCODE;

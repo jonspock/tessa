@@ -314,7 +314,7 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
   // Create and send the transaction
   CReserveKey reservekey(pwalletMain);
   CAmount nFeeRequired;
-  if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError, NULL, ALL_COINS,
+  if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError, nullptr, ALL_COINS,
                                       fUseIX, (CAmount)0)) {
     if (nValue + nFeeRequired > pwalletMain->GetBalance())
       strError = strprintf(
@@ -1526,7 +1526,7 @@ UniValue listsinceblock(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  CBlockIndex* pindex = NULL;
+  CBlockIndex* pindex = nullptr;
   int target_confirms = 1;
   isminefilter filter = ISMINE_SPENDABLE;
 

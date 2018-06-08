@@ -347,7 +347,7 @@ void CWalletTx::RelayWalletTransaction(std::string strCommand) {
 
 set<uint256> CWalletTx::GetConflicts() const {
   set<uint256> result;
-  if (pwallet != NULL) {
+  if (pwallet != nullptr) {
     uint256 myHash = GetHash();
     result = pwallet->GetConflicts(myHash);
     result.erase(myHash);

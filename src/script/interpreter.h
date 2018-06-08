@@ -107,8 +107,8 @@ class MutableTransactionSignatureChecker : public TransactionSignatureChecker {
 };
 
 bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& script, unsigned int flags,
-                const BaseSignatureChecker& checker, ScriptError* error = NULL);
+                const BaseSignatureChecker& checker, ScriptError* error = nullptr);
 bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, unsigned int flags,
-                  const BaseSignatureChecker& checker, ScriptError* error = NULL);
+                  const BaseSignatureChecker& checker, ScriptError* error = nullptr);
 
 #endif  // BITCOIN_SCRIPT_INTERPRETER_H

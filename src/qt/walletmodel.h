@@ -127,7 +127,7 @@ class WalletModel : public QObject {
   TransactionTableModel* getTransactionTableModel();
   RecentRequestsTableModel* getRecentRequestsTableModel();
 
-  CAmount getBalance(const CCoinControl* coinControl = NULL) const;
+  CAmount getBalance(const CCoinControl* coinControl = nullptr) const;
   CAmount getUnconfirmedBalance() const;
   CAmount getImmatureBalance() const;
   CAmount getLockedBalance() const;
@@ -155,7 +155,7 @@ class WalletModel : public QObject {
   };
 
   // prepare transaction for getting txfee before sending coins
-  SendCoinsReturn prepareTransaction(WalletModelTransaction& transaction, const CCoinControl* coinControl = NULL);
+  SendCoinsReturn prepareTransaction(WalletModelTransaction& transaction, const CCoinControl* coinControl = nullptr);
 
   // Send coins to a list of recipients
   SendCoinsReturn sendCoins(WalletModelTransaction& transaction);

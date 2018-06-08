@@ -35,7 +35,7 @@ void OpenURIDialog::accept() {
 }
 
 void OpenURIDialog::on_selectFileButton_clicked() {
-  QString filename = GUIUtil::getOpenFileName(this, tr("Select payment request file to open"), "", "", NULL);
+  QString filename = GUIUtil::getOpenFileName(this, tr("Select payment request file to open"), "", "", nullptr);
   if (filename.isEmpty()) return;
   QUrl fileUri = QUrl::fromLocalFile(filename);
   ui->uriEdit->setText("club:?r=" + QUrl::toPercentEncoding(fileUri.toString()));

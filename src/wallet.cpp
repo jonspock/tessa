@@ -108,7 +108,7 @@ CAmount COutput::Value() const { return tx->vout[i].nValue; }
 const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const {
   LOCK(cs_wallet);
   std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(hash);
-  if (it == mapWallet.end()) return NULL;
+  if (it == mapWallet.end()) return nullptr;
   return &(it->second);
 }
 
@@ -374,7 +374,7 @@ void CWallet::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterator> range) {
   // So: find smallest nOrderPos:
 
   int nMinOrderPos = std::numeric_limits<int>::max();
-  const CWalletTx* copyFrom = NULL;
+  const CWalletTx* copyFrom = nullptr;
   for (TxSpends::iterator it = range.first; it != range.second; ++it) {
     const uint256& hash = it->second;
     int n = mapWallet[hash].nOrderPos;
@@ -476,7 +476,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase) {
       pwalletdbEncryption = new CWalletDB(strWalletFile);
       if (!pwalletdbEncryption->TxnBegin()) {
         delete pwalletdbEncryption;
-        pwalletdbEncryption = NULL;
+        pwalletdbEncryption = nullptr;
         return false;
       }
       pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey);
@@ -504,7 +504,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase) {
       }
 
       delete pwalletdbEncryption;
-      pwalletdbEncryption = NULL;
+      pwalletdbEncryption = nullptr;
     }
 
     Lock();
@@ -1118,7 +1118,7 @@ static void ApproximateBestSubset(vector<pair<CAmount, pair<const CWalletTx*, un
 bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInputs, CAmount nTargetAmount) {
   // Add Club
   vector<COutput> vCoins;
-  AvailableCoins(vCoins, true, NULL, false, STAKABLE_COINS);
+  AvailableCoins(vCoins, true, nullptr, false, STAKABLE_COINS);
   CAmount nAmountSelected = 0;
   if (GetBoolArg("-pivstake", true)) {
     for (const COutput& out : vCoins) {
@@ -1187,7 +1187,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
   // List of values less than target
   pair<CAmount, pair<const CWalletTx*, unsigned int> > coinLowestLarger;
   coinLowestLarger.first = std::numeric_limits<CAmount>::max();
-  coinLowestLarger.second.first = NULL;
+  coinLowestLarger.second.first = nullptr;
   vector<pair<CAmount, pair<const CWalletTx*, unsigned int> > > vValue;
   CAmount nTotalLower = 0;
 
@@ -1227,7 +1227,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
   }
 
   if (nTotalLower < nTargetValue) {
-    if (coinLowestLarger.second.first == NULL)  // there is no input larger than nTargetValue
+    if (coinLowestLarger.second.first == nullptr)  // there is no input larger than nTargetValue
     {
       // we looked at everything possible and didn't find anything, no luck
       return false;
@@ -1691,7 +1691,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
       // This is only to keep the database open to defeat the auto-flush for the
       // duration of this scope.  This is the only place where this optimization
       // maybe makes sense; please don't do it anywhere else.
-      CWalletDB* pwalletdb = fFileBacked ? new CWalletDB(strWalletFile, "r") : NULL;
+      CWalletDB* pwalletdb = fFileBacked ? new CWalletDB(strWalletFile, "r") : nullptr;
 
       // Take key pair from key pool so it won't be used again
       reservekey.KeepKey();
@@ -2600,7 +2600,7 @@ int CMerkleTx::GetBlocksToMaturity() const {
 
 bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree, bool fRejectInsaneFee, bool ignoreFees) {
   CValidationState state;
-  bool fAccepted = ::AcceptToMemoryPool(mempool, state, *this, fLimitFree, NULL, fRejectInsaneFee, ignoreFees);
+  bool fAccepted = ::AcceptToMemoryPool(mempool, state, *this, fLimitFree, nullptr, fRejectInsaneFee, ignoreFees);
   if (!fAccepted) LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
   return fAccepted;
 }
@@ -3039,7 +3039,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
         if (fMintChange) {
           CAmount nFeeRet = 0;
           string strFailReason = "";
-          if (!CreateZerocoinMintTransaction(nChange, txNew, vNewMints, &reserveKey, nFeeRet, strFailReason, NULL,
+          if (!CreateZerocoinMintTransaction(nChange, txNew, vNewMints, &reserveKey, nFeeRet, strFailReason, nullptr,
                                              true)) {
             receipt.SetStatus(_("Failed to create mint"), nStatus);
             return false;

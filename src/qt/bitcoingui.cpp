@@ -960,7 +960,7 @@ void BitcoinGUI::message(const QString& title, const QString& message, unsigned 
     showNormalIfMinimized();
     QMessageBox mBox((QMessageBox::Icon)nMBoxIcon, strTitle, message, buttons, this);
     int r = mBox.exec();
-    if (ret != NULL) *ret = r == QMessageBox::Ok;
+    if (ret != nullptr) *ret = r == QMessageBox::Ok;
   } else
     notificator->notify((Notificator::Class)nNotifyIcon, strTitle, message);
 }

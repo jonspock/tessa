@@ -227,11 +227,11 @@ class CSemaphoreGrant {
     grant.Release();
     grant.sem = sem;
     grant.fHaveGrant = fHaveGrant;
-    sem = NULL;
+    sem = nullptr;
     fHaveGrant = false;
   }
 
-  CSemaphoreGrant() : sem(NULL), fHaveGrant(false) {}
+  CSemaphoreGrant() : sem(nullptr), fHaveGrant(false) {}
 
   CSemaphoreGrant(CSemaphore& sema, bool fTry = false) : sem(&sema), fHaveGrant(false) {
     if (fTry)

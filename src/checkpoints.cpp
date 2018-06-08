@@ -39,9 +39,9 @@ bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint) {
 
 //! Guess how far we are in the verification process at the given block index
 double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks) {
-  if (pindex == NULL) return 0.0;
+  if (pindex == nullptr) return 0.0;
 
-  int64_t nNow = time(NULL);
+  int64_t nNow = time(nullptr);
 
   double fSigcheckVerificationFactor = fSigchecks ? SIGCHECK_VERIFICATION_FACTOR : 1.0;
   double fWorkBefore = 0.0;  // Amount of work done before pindex
@@ -77,7 +77,7 @@ int GetTotalBlocksEstimate() {
 }
 
 CBlockIndex* GetLastCheckpoint() {
-  if (!fEnabled) return NULL;
+  if (!fEnabled) return nullptr;
 
   const MapCheckpoints& checkpoints = *Params().Checkpoints().mapCheckpoints;
 
@@ -86,7 +86,7 @@ CBlockIndex* GetLastCheckpoint() {
     BlockMap::const_iterator t = mapBlockIndex.find(hash);
     if (t != mapBlockIndex.end()) return t->second;
   }
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace Checkpoints

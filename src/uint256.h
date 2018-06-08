@@ -285,7 +285,7 @@ class uint256 : public base_uint<256> {
    * complexities of the sign bit and using base 256 are probably an
    * implementation accident.
    */
-  uint256& SetCompact(uint32_t nCompact, bool* pfNegative = NULL, bool* pfOverflow = NULL);
+  uint256& SetCompact(uint32_t nCompact, bool* pfNegative = nullptr, bool* pfOverflow = nullptr);
   uint32_t GetCompact(bool fNegative = false) const;
   uint64_t GetHash(const uint256& salt) const;
 };

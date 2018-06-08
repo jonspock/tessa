@@ -143,7 +143,7 @@ class CInit {
     // Securely erase the memory used by the PRNG
     RAND_cleanup();
     // Shutdown OpenSSL library multithreading support
-    CRYPTO_set_locking_callback(NULL);
+    CRYPTO_set_locking_callback(nullptr);
     for (int i = 0; i < CRYPTO_num_locks(); i++) delete ppmutexOpenSSL[i];
     OPENSSL_free(ppmutexOpenSSL);
   }
@@ -165,22 +165,22 @@ static std::once_flag debugPrintInitFlag;
  * We use std::call_once() to make sure these are initialized
  * in a thread-safe manner the first time called:
  */
-static FILE* fileout = NULL;
-static std::mutex* mutexDebugLog = NULL;
+static FILE* fileout = nullptr;
+static std::mutex* mutexDebugLog = nullptr;
 
 static void DebugPrintInit() {
-  assert(fileout == NULL);
-  assert(mutexDebugLog == NULL);
+  assert(fileout == nullptr);
+  assert(mutexDebugLog == nullptr);
 
   boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
   fileout = fopen(pathDebug.string().c_str(), "a");
-  if (fileout) setbuf(fileout, NULL);  // unbuffered
+  if (fileout) setbuf(fileout, nullptr);  // unbuffered
 
   mutexDebugLog = new std::mutex();
 }
 
 bool LogAcceptCategory(const char* category) {
-  if (category != NULL) {
+  if (category != nullptr) {
     if (!fDebug) return false;
 
     // Give each thread quick access to -debug settings.
@@ -188,7 +188,7 @@ bool LogAcceptCategory(const char* category) {
     // where mapMultiArgs might be deleted before another
     // global destructor calls LogPrint()
     static boost::thread_specific_ptr<set<string> > ptrCategory;
-    if (ptrCategory.get() == NULL) {
+    if (ptrCategory.get() == nullptr) {
       const vector<string>& categories = gArgs.GetArgs("-debug");
       ptrCategory.reset(new set<string>(categories.begin(), categories.end()));
       // thread_specific_ptr automatically deletes the set when the thread ends.
@@ -213,7 +213,7 @@ int LogPrintStr(const std::string& str) {
     static bool fStartedNewLine = true;
     std::call_once(debugPrintInitFlag, &DebugPrintInit);
 
-    if (fileout == NULL) return ret;
+    if (fileout == nullptr) return ret;
 
     std::lock_guard<std::mutex> scoped_lock(*mutexDebugLog);
 
@@ -221,7 +221,7 @@ int LogPrintStr(const std::string& str) {
     if (fReopenDebugLog) {
       fReopenDebugLog = false;
       boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
-      if (freopen(pathDebug.string().c_str(), "a", fileout) != NULL) setbuf(fileout, NULL);  // unbuffered
+      if (freopen(pathDebug.string().c_str(), "a", fileout) != nullptr) setbuf(fileout, nullptr);  // unbuffered
     }
 
     // Debug print useful for profiling
@@ -308,7 +308,7 @@ std::string HelpMessageOpt(const std::string& option, const std::string& message
 static std::string FormatException(std::exception* pex, const char* pszThread) {
 #ifdef WIN32
   char pszModule[MAX_PATH] = "";
-  GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
+  GetModuleFileNameA(nullptr, pszModule, sizeof(pszModule));
 #else
   const char* pszModule = "club";
 #endif
@@ -338,7 +338,7 @@ boost::filesystem::path GetDefaultDataDir() {
 #else
   fs::path pathRet;
   char* pszHome = getenv("HOME");
-  if (pszHome == NULL || strlen(pszHome) == 0)
+  if (pszHome == nullptr || strlen(pszHome) == 0)
     pathRet = fs::path("/");
   else
     pathRet = fs::path(pszHome);
@@ -547,7 +547,7 @@ void ShrinkDebugFile() {
       fwrite(begin_ptr(vch), 1, nBytes, file);
       fclose(file);
     }
-  } else if (file != NULL)
+  } else if (file != nullptr)
     fclose(file);
 }
 
@@ -557,7 +557,7 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate) {
 
   char pszPath[MAX_PATH] = "";
 
-  if (SHGetSpecialFolderPathA(NULL, pszPath, nFolder, fCreate)) { return fs::path(pszPath); }
+  if (SHGetSpecialFolderPathA(nullptr, pszPath, nFolder, fCreate)) { return fs::path(pszPath); }
 
   LogPrintf("SHGetSpecialFolderPathA() failed, could not obtain requested path.\n");
   return fs::path("");

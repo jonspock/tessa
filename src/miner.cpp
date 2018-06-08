@@ -91,7 +91,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
   // Create new block
   unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
-  if (!pblocktemplate.get()) return NULL;
+  if (!pblocktemplate.get()) return nullptr;
   CBlock* pblock = &pblocktemplate->block;  // pointer for convenience
 
   // -regtest only: allow overriding block.nVersion with
@@ -125,7 +125,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
   if (fProofOfStake) {
     boost::this_thread::interruption_point();
     bool fStakeFound = gStaker.FindStake(GetAdjustedTime(), chainActive.Tip(), pblock, pwallet);
-    if (!fStakeFound) return NULL;
+    if (!fStakeFound) return nullptr;
   }
 
   // Largest block you're willing to create:
@@ -166,7 +166,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       const CTransaction& tx = mi->second.GetTx();
       if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)) { continue; }
 
-      COrphan* porphan = NULL;
+      COrphan* porphan = nullptr;
       double dPriority = 0;
       CAmount nTotalIn = 0;
       bool fMissingInputs = false;
@@ -428,7 +428,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
       LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
       mempool.clear();
-      return NULL;
+      return nullptr;
     }
 
     //        if (pblock->IsZerocoinStake()) {
@@ -467,7 +467,7 @@ int64_t nHPSTimerStart = 0;
 
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake) {
   CPubKey pubkey;
-  if (!reservekey.GetReservedKey(pubkey)) return NULL;
+  if (!reservekey.GetReservedKey(pubkey)) return nullptr;
 
   CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
   return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
@@ -498,7 +498,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 
   // Process this block the same as if we had received it from another node
   CValidationState state;
-  if (!ProcessNewBlock(state, NULL, pblock)) {
+  if (!ProcessNewBlock(state, nullptr, pblock)) {
     // if (pblock->IsZerocoinStake()) pwalletMain->zkpTracker->RemovePending(pblock->vtx[1].GetHash());
     return error("ClubMiner : ProcessNewBlock, block not accepted");
   }
@@ -689,7 +689,7 @@ void static ThreadBitcoinMiner(void* parg) {
 }
 
 void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads) {
-  static boost::thread_group* minerThreads = NULL;
+  static boost::thread_group* minerThreads = nullptr;
   fGenerateBitcoins = fGenerate;
 
   if (nThreads < 0) {
@@ -700,10 +700,10 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads) {
       nThreads = boost::thread::hardware_concurrency();
   }
 
-  if (minerThreads != NULL) {
+  if (minerThreads != nullptr) {
     minerThreads->interrupt_all();
     delete minerThreads;
-    minerThreads = NULL;
+    minerThreads = nullptr;
   }
 
   if (nThreads == 0 || !fGenerate) return;

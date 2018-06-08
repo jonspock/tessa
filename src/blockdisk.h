@@ -32,4 +32,4 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW = t
  *  will be true if no problems were found. Otherwise, the return value will be false in case
  *  of problems. Note that in any case, coins may be modified. */
 bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins,
-                     bool* pfClean = NULL);
+                     bool* pfClean = nullptr);

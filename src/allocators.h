@@ -178,12 +178,12 @@ template <typename T> struct secure_allocator : public std::allocator<T> {
   T* allocate(std::size_t n, const void* hint = 0) {
     T* p;
     p = std::allocator<T>::allocate(n, hint);
-    if (p != NULL) LockedPageManager::Instance().LockRange(p, sizeof(T) * n);
+    if (p != nullptr) LockedPageManager::Instance().LockRange(p, sizeof(T) * n);
     return p;
   }
 
   void deallocate(T* p, std::size_t n) {
-    if (p != NULL) {
+    if (p != nullptr) {
       OPENSSL_cleanse(p, sizeof(T) * n);
       LockedPageManager::Instance().UnlockRange(p, sizeof(T) * n);
     }
@@ -211,7 +211,7 @@ template <typename T> struct zero_after_free_allocator : public std::allocator<T
   template <typename _Other> struct rebind { typedef zero_after_free_allocator<_Other> other; };
 
   void deallocate(T* p, std::size_t n) {
-    if (p != NULL) OPENSSL_cleanse(p, sizeof(T) * n);
+    if (p != nullptr) OPENSSL_cleanse(p, sizeof(T) * n);
     std::allocator<T>::deallocate(p, n);
   }
 };

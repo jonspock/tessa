@@ -34,20 +34,20 @@ public:
     CAutoBN_CTX()
     {
         pctx = BN_CTX_new();
-        if (pctx == NULL)
-            throw bignum_error("CAutoBN_CTX : BN_CTX_new() returned NULL");
+        if (pctx == nullptr)
+            throw bignum_error("CAutoBN_CTX : BN_CTX_new() returned nullptr");
     }
 
     ~CAutoBN_CTX()
     {
-        if (pctx != NULL)
+        if (pctx != nullptr)
             BN_CTX_free(pctx);
     }
 
     operator BN_CTX*() { return pctx; }
     BN_CTX& operator*() { return *pctx; }
     BN_CTX** operator&() { return &pctx; }
-    bool operator!() { return (pctx == NULL); }
+    bool operator!() { return (pctx == nullptr); }
 };
 
 
@@ -271,7 +271,7 @@ public:
 
     uint256 getuint256() const
     {
-        unsigned int nSize = BN_bn2mpi(bn, NULL);
+        unsigned int nSize = BN_bn2mpi(bn, nullptr);
         if (nSize < 4)
             return 0;
         std::vector<unsigned char> vch(nSize);
@@ -301,7 +301,7 @@ public:
 
     std::vector<unsigned char> getvch() const
     {
-        unsigned int nSize = BN_bn2mpi(bn, NULL);
+        unsigned int nSize = BN_bn2mpi(bn, nullptr);
         if (nSize <= 4)
             return std::vector<unsigned char>();
         std::vector<unsigned char> vch(nSize);
@@ -553,7 +553,7 @@ public:
      */
     static CBigNum generatePrime(const unsigned int numBits, bool safe = false) {
         CBigNum ret;
-        if(!BN_generate_prime_ex(ret.bn, numBits, (safe == true), NULL, NULL, NULL))
+        if(!BN_generate_prime_ex(ret.bn, numBits, (safe == true), nullptr, nullptr, nullptr))
             throw bignum_error("CBigNum::generatePrime*= :BN_generate_prime_ex");
         return ret;
     }
@@ -579,7 +579,7 @@ public:
     */
     bool isPrime(const int checks=BN_prime_checks) const {
         CAutoBN_CTX pctx;
-        int ret = BN_is_prime_ex(bn, checks, pctx, NULL);
+        int ret = BN_is_prime_ex(bn, checks, pctx, nullptr);
         if(ret < 0){
             throw bignum_error("CBigNum::isPrime :BN_is_prime");
         }
@@ -743,7 +743,7 @@ inline const CBigNum operator/(const CBigNum& a, const CBigNum& b)
 {
     CAutoBN_CTX pctx;
     CBigNum r;
-    if (!BN_div(r.bn, NULL, a.bn, b.bn, pctx))
+    if (!BN_div(r.bn, nullptr, a.bn, b.bn, pctx))
         throw bignum_error("CBigNum::operator/ : BN_div failed");
     return r;
 }

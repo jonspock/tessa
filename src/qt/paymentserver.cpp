@@ -239,7 +239,7 @@ bool PaymentServer::ipcSendCommandLine() {
     socket->connectToServer(ipcServerName(), QIODevice::WriteOnly);
     if (!socket->waitForConnected(BITCOIN_IPC_CONNECT_TIMEOUT)) {
       delete socket;
-      socket = NULL;
+      socket = nullptr;
       return false;
     }
 
@@ -255,7 +255,7 @@ bool PaymentServer::ipcSendCommandLine() {
     socket->disconnectFromServer();
 
     delete socket;
-    socket = NULL;
+    socket = nullptr;
     fResult = true;
   }
 
@@ -314,7 +314,7 @@ bool PaymentServer::eventFilter(QObject* object, QEvent* event) {
 
 void PaymentServer::initNetManager() {
   if (!optionsModel) return;
-  if (netManager != NULL) delete netManager;
+  if (netManager != nullptr) delete netManager;
 
   // netManager is used to fetch paymentrequests given in club: URIs
   netManager = new QNetworkAccessManager(this);

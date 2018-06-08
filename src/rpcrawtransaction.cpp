@@ -262,9 +262,9 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
 
   UniValue results(UniValue::VARR);
   vector<COutput> vecOutputs;
-  assert(pwalletMain != NULL);
+  assert(pwalletMain != nullptr);
   LOCK2(cs_main, pwalletMain->cs_wallet);
-  pwalletMain->AvailableCoins(vecOutputs, false, NULL, false, ALL_COINS, false, nWatchonlyConfig);
+  pwalletMain->AvailableCoins(vecOutputs, false, nullptr, false, ALL_COINS, false, nWatchonlyConfig);
   for (const COutput& out : vecOutputs) {
     if (out.nDepth < nMinDepth || out.nDepth > nMaxDepth) continue;
 
@@ -558,7 +558,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
         HelpExampleCli("signrawtransaction", "\"myhex\"") + HelpExampleRpc("signrawtransaction", "\"myhex\""));
 
 #ifdef ENABLE_WALLET
-  LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : NULL);
+  LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
 #else
   LOCK(cs_main);
 #endif
@@ -699,7 +699,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
   for (unsigned int i = 0; i < mergedTx.vin.size(); i++) {
     CTxIn& txin = mergedTx.vin[i];
     const CCoins* coins = view.AccessCoins(txin.prevout.hash);
-    if (coins == NULL || !coins->IsAvailable(txin.prevout.n)) {
+    if (coins == nullptr || !coins->IsAvailable(txin.prevout.n)) {
       TxInErrorToJSON(txin, vErrors, "Input not found or already spent");
       continue;
     }
@@ -769,7 +769,7 @@ UniValue sendrawtransaction(const UniValue& params, bool fHelp) {
   if (!fHaveMempool && !fHaveChain) {
     // push to local node and sync with wallets
     CValidationState state;
-    if (!AcceptToMemoryPool(mempool, state, tx, false, NULL, !fOverrideFees)) {
+    if (!AcceptToMemoryPool(mempool, state, tx, false, nullptr, !fOverrideFees)) {
       if (state.IsInvalid())
         throw JSONRPCError(RPC_TRANSACTION_REJECTED,
                            strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));

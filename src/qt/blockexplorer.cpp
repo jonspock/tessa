@@ -21,7 +21,7 @@
 #include <QMessageBox>
 #include <set>
 
-extern double GetDifficulty(const CBlockIndex* blockindex = NULL);
+extern double GetDifficulty(const CBlockIndex* blockindex = nullptr);
 
 inline std::string utostr(unsigned int n) { return strprintf("%u", n); }
 
@@ -84,7 +84,7 @@ static std::string makeHTMLTable(const std::string* pCells, int nRows, int nColu
 }
 
 static std::string TxToRow(const CTransaction& tx, const CScript& Highlight = CScript(),
-                           const std::string& Prepend = std::string(), int64_t* pSum = NULL) {
+                           const std::string& Prepend = std::string(), int64_t* pSum = nullptr) {
   std::string InAmounts, InAddresses, OutAmounts, OutAddresses;
   int64_t Delta = 0;
   for (unsigned int j = 0; j < tx.vin.size(); j++) {
