@@ -2,10 +2,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_LIMITEDMAP_H
-#define BITCOIN_LIMITEDMAP_H
+#pragma once
 
-#include <assert.h>
+#include <cassert>
 #include <map>
 
 /** STL-like map container that only keeps the N elements with the highest value. */
@@ -83,4 +82,3 @@ template <typename K, typename V> class limitedmap {
   }
 };
 
-#endif  // BITCOIN_LIMITEDMAP_H
