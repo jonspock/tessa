@@ -4597,7 +4597,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             LIMITED_STRING(strReason, MAX_REJECT_MESSAGE_LENGTH);
 
         ostringstream ss;
-        ss << strMsg << " code " << itostr(ccode) << ": " << strReason;
+        ss << strMsg << " code " << std::to_string(ccode) << ": " << strReason;
 
         if (strMsg == "block" || strMsg == "tx") {
           uint256 hash;

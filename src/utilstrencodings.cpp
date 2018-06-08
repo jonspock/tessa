@@ -487,5 +487,3 @@ std::string FormatParagraph(const std::string in, size_t width, size_t indent) {
   return out.str();
 }
 
-std::string i64tostr(int64_t n) { return strprintf("%d", n); }
-std::string itostr(int n) { return strprintf("%d", n); }

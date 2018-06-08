@@ -21,5 +21,5 @@ void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue) {
 
 void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue) {
   if (nOrderPos == -1) return;
-  mapValue["n"] = i64tostr(nOrderPos);
+  mapValue["n"] = std::to_string(nOrderPos);
 }

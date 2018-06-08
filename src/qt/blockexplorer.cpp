@@ -197,11 +197,11 @@ std::string BlockToString(CBlockIndex* pBlock) {
 
   std::string BlockContentCells[] = {
       _("Height"),
-      itostr(pBlock->nHeight),
+      std::to_string(pBlock->nHeight),
       _("Size"),
-      itostr(GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)),
+      std::to_string(GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)),
       _("Number of Transactions"),
-      itostr(block.vtx.size()),
+      std::to_string(block.vtx.size()),
       _("Value Out"),
       ValueToString(OutVolume),
       _("Fees"),
@@ -217,7 +217,7 @@ std::string BlockToString(CBlockIndex* pBlock) {
       _("Nonce"),
       utostr(block.nNonce),
       _("Version"),
-      itostr(block.nVersion),
+      std::to_string(block.nVersion),
       _("Hash"),
       "<pre>" + block.GetHash().GetHex() + "</pre>",
       _("Merkle Root"),
@@ -230,13 +230,13 @@ std::string BlockToString(CBlockIndex* pBlock) {
 
   std::string Content;
   Content += "<h2><a class=\"nav\" href=";
-  Content += itostr(pBlock->nHeight - 1);
+  Content += std::to_string(pBlock->nHeight - 1);
   Content += ">◄&nbsp;</a>";
   Content += _("Block");
   Content += " ";
-  Content += itostr(pBlock->nHeight);
+  Content += std::to_string(pBlock->nHeight);
   Content += "<a class=\"nav\" href=";
-  Content += itostr(pBlock->nHeight + 1);
+  Content += std::to_string(pBlock->nHeight + 1);
   Content += ">&nbsp;►</a></h2>";
   Content += BlockContent;
   Content += "</br>";
@@ -248,7 +248,7 @@ std::string BlockToString(CBlockIndex* pBlock) {
       {
           for (unsigned int j = 0; j < block.vvotes[i].size(); j++)
           {
-              votes[i].push_back(block.vvotes[i][j].hash.ToString() + ':' + itostr(block.vvotes[i][j].n));
+              votes[i].push_back(block.vvotes[i][j].hash.ToString() + ':' + std::to_string(block.vvotes[i][j].n));
           }
       }
       Content += "<h3>" + _("Votes +") + "</h3>";
@@ -285,8 +285,8 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
         Input = -Params().MaxMoneyOut();
       else
         Input += PrevOut.nValue;
-      std::string InputsContentCells[] = {itostr(i),
-                                          "<span>" + makeHRef(Out.hash.GetHex()) + ":" + itostr(Out.n) + "</span>",
+      std::string InputsContentCells[] = {std::to_string(i),
+                                          "<span>" + makeHRef(Out.hash.GetHex()) + ":" + std::to_string(Out.n) + "</span>",
                                           ScriptToString(PrevOut.scriptPubKey, true), ValueToString(PrevOut.nValue)};
       InputsContent += makeHTMLTableRow(InputsContentCells, sizeof(InputsContentCells) / sizeof(std::string));
     }
@@ -298,10 +298,10 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
     unsigned int nNext = 0;
     bool fAddrIndex = false;
     getNextIn(COutPoint(TxHash, i), HashNext, nNext);
-    std::string OutputsContentCells[] = {itostr(i),
+    std::string OutputsContentCells[] = {std::to_string(i),
                                          (HashNext == uint256S("0"))
                                              ? (fAddrIndex ? _("no") : _("unknown"))
-                                             : "<span>" + makeHRef(HashNext.GetHex()) + ":" + itostr(nNext) + "</span>",
+                                             : "<span>" + makeHRef(HashNext.GetHex()) + ":" + std::to_string(nNext) + "</span>",
                                          ScriptToString(Out.scriptPubKey, true), ValueToString(Out.nValue)};
     OutputsContent += makeHTMLTableRow(OutputsContentCells, sizeof(OutputsContentCells) / sizeof(std::string));
   }
@@ -313,7 +313,7 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
 
   std::string Labels[] = {
       _("In Block"),  "",
-      _("Size"),      itostr(GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION)),
+      _("Size"),      std::to_string(GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION)),
       _("Input"),     tx.IsCoinBase() ? "-" : ValueToString(Input),
       _("Output"),    ValueToString(Output),
       _("Fees"),      tx.IsCoinBase() ? "-" : ValueToString(Input - Output),
@@ -325,7 +325,7 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
   BlockMap::iterator iter = mapBlockIndex.find(BlockHash);
   if (iter != mapBlockIndex.end()) {
     CBlockIndex* pIndex = iter->second;
-    Labels[0 * 2 + 1] = makeHRef(itostr(pIndex->nHeight));
+    Labels[0 * 2 + 1] = makeHRef(std::to_string(pIndex->nHeight));
     Labels[5 * 2 + 1] = TimeToString(pIndex->nTime);
   }
 
@@ -373,7 +373,7 @@ std::string AddressToString(const CBitcoinAddress& Address) {
           CBlockIndex* pindex = (*mi).second;
           if (!pindex || !chainActive.Contains(pindex))
               continue;
-          std::string Prepend = "<a href=\"" + itostr(pindex->nHeight) + "\">" + TimeToString(pindex->nTime) + "</a>";
+          std::string Prepend = "<a href=\"" + std::to_string(pindex->nHeight) + "\">" + TimeToString(pindex->nTime) + "</a>";
           TxContent += TxToRow(tx, AddressScript, Prepend, &Sum);
       }
   }
