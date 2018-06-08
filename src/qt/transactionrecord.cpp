@@ -11,6 +11,7 @@
 #include "wallet.h"
 // TxInToZerocoinSpend
 #include "main.h"
+#include "libzerocoin/CoinSpend.h"
 
 #include <stdint.h>
 

@@ -9,7 +9,7 @@
 #include <list>
 #include <map>
 
-#include "libzerocoin/bignum.h"
+#include "bignum.h"
 #include "primitives/zerocoin.h"
 #include "uint256.h"
 

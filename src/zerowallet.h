@@ -5,13 +5,16 @@
 
 #pragma once
 
-#include "libzerocoin/PrivateCoin.h"
 #include "mintpool.h"
 #include "primitives/zerocoin.h"
 #include "uint256.h"
 #include <map>
 
 class CDeterministicMint;
+
+namespace libzerocoin {
+    class PrivateCoin;
+}
 
 class CZeroWallet {
  private:

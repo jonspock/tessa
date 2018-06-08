@@ -17,13 +17,15 @@
 #include "main_functions.h"
 #include "mainfile.h"
 #include "scriptcheck.h"
-#include "libzerocoin/CoinSpend.h"
 
 class CBloomFilter;
 class CInv;
-// class CScriptCheck;
 class CValidationInterface;
 class CValidationState;
+namespace libzerocoin {
+    class CoinSpend;
+    class PublicCoin;
+}
 
 struct CBlockTemplate;
 struct CNodeStateStats;
@@ -120,8 +122,6 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
                       bool* pfMissingInputs, bool fRejectInsaneFee = false, bool isDSTX = false);
 
 int GetInputAge(CTxIn& vin);
-int GetInputAgeIX(uint256 nTXHash, CTxIn& vin);
-bool GetCoinAge(const CTransaction& tx, unsigned int nTxTime, uint64_t& nCoinAge);
 
 struct CNodeStateStats {
   int nMisbehavior;
@@ -130,27 +130,6 @@ struct CNodeStateStats {
   std::vector<int> vHeightInFlight;
 };
 
-struct CDiskTxPos : public CDiskBlockPos {
-  unsigned int nTxOffset;  // after header
-
-  ADD_SERIALIZE_METHODS;
-
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-    READWRITE(*(CDiskBlockPos*)this);
-    READWRITE(VARINT(nTxOffset));
-  }
-
-  CDiskTxPos(const CDiskBlockPos& blockIn, unsigned int nTxOffsetIn)
-      : CDiskBlockPos(blockIn.nFile, blockIn.nPos), nTxOffset(nTxOffsetIn) {}
-
-  CDiskTxPos() { SetNull(); }
-
-  void SetNull() {
-    CDiskBlockPos::SetNull();
-    nTxOffset = 0;
-  }
-};
 
 CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowFree);
 bool MoneyRange(CAmount nValueOut);
@@ -215,9 +194,6 @@ std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock
 void FindMints(vector<CMintMeta> vMintsToFind, vector<CMintMeta>& vMintsToUpdate, vector<CMintMeta>& vMissingMints);
 bool GetZerocoinMint(const CBigNum& bnPubcoin, uint256& txHash);
 bool IsSerialKnown(const CBigNum& bnSerial);
-//bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx);
-//bool IsSerialInBlockchain(const uint256& hashSerial, int& nHeightTx, uint256& txidSpend);
-//bool IsSerialInBlockchain(const uint256& hashSerial, int& nHeightTx, uint256& txidSpend, CTransaction& tx);
 bool IsPubcoinInBlockchain(const uint256& hashPubcoin, uint256& txid);
 bool RemoveSerialFromDB(const CBigNum& bnSerial);
 int GetZerocoinStartHeight();
@@ -242,42 +218,6 @@ bool CheckFinalTx(const CTransaction& tx, int flags = -1);
  * @return True if all outputs (scriptPubKeys) use only standard transaction forms
  */
 bool IsStandardTx(const CTransaction& tx, std::string& reason);
-
-/**
- * Closure representing one script verification
- * Note that this stores references to the spending transaction
- *
-class CScriptCheck
-{
-private:
-    CScript scriptPubKey;
-    const CTransaction* ptxTo;
-    unsigned int nIn;
-    unsigned int nFlags;
-    bool cacheStore;
-    ScriptError error;
-
-public:
-    CScriptCheck() : ptxTo(0), nIn(0), nFlags(0), cacheStore(false), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
-    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool
-cacheIn) : scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey), ptxTo(&txToIn), nIn(nInIn),
-nFlags(nFlagsIn), cacheStore(cacheIn), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
-
-    bool operator()();
-
-    void swap(CScriptCheck& check)
-    {
-        scriptPubKey.swap(check.scriptPubKey);
-        std::swap(ptxTo, check.ptxTo);
-        std::swap(nIn, check.nIn);
-        std::swap(nFlags, check.nFlags);
-        std::swap(cacheStore, check.cacheStore);
-        std::swap(error, check.error);
-    }
-
-    ScriptError GetScriptError() const { return error; }
-};
-*/
 
 /** Functions for disk access for blocks */
 bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos);
@@ -322,68 +262,3 @@ struct CBlockTemplate {
   std::vector<int64_t> vTxSigOps;
 };
 
-namespace {
-
-/** Blocks that are in flight, and that are in the queue to be downloaded. Protected by cs_main. */
-struct QueuedBlock {
-  uint256 hash;
-  CBlockIndex* pindex;         //! Optional.
-  int64_t nTime;               //! Time of "getdata" request in microseconds.
-  int nValidatedQueuedBefore;  //! Number of blocks queued with validated headers (globally) at the time this one is
-                               //! requested.
-  bool fValidatedHeaders;      //! Whether this block has validated headers at the time of request.
-};
-
-struct CBlockReject {
-  unsigned char chRejectCode;
-  string strRejectReason;
-  uint256 hashBlock;
-};
-/**
- * Maintain validation-specific state about nodes, protected by cs_main, instead
- * by CNode's own locks. This simplifies asynchronous operation, where
- * processing of incoming data is done after the ProcessMessage call returns,
- * and we're no longer holding the node's locks.
- */
-struct CNodeState {
-  //! The peer's address
-  CService address;
-  //! Whether we have a fully established connection.
-  bool fCurrentlyConnected;
-  //! Accumulated misbehaviour score for this peer.
-  int nMisbehavior;
-  //! Whether this peer should be disconnected and banned (unless whitelisted).
-  bool fShouldBan;
-  //! String name of this peer (debugging/logging purposes).
-  std::string name;
-  //! List of asynchronously-determined block rejections to notify this peer about.
-  std::vector<CBlockReject> rejects;
-  //! The best known block we know this peer has announced.
-  CBlockIndex* pindexBestKnownBlock;
-  //! The hash of the last unknown block this peer has announced.
-  uint256 hashLastUnknownBlock;
-  //! The last full block we both have.
-  CBlockIndex* pindexLastCommonBlock;
-  //! Whether we've started headers synchronization with this peer.
-  bool fSyncStarted;
-  //! Since when we're stalling block download progress (in microseconds), or 0.
-  int64_t nStallingSince;
-  list<QueuedBlock> vBlocksInFlight;
-  int nBlocksInFlight;
-  //! Whether we consider this a preferred download peer.
-  bool fPreferredDownload;
-
-  CNodeState() {
-    fCurrentlyConnected = false;
-    nMisbehavior = 0;
-    fShouldBan = false;
-    pindexBestKnownBlock = NULL;
-    hashLastUnknownBlock = uint256(0);
-    pindexLastCommonBlock = NULL;
-    fSyncStarted = false;
-    nStallingSince = 0;
-    nBlocksInFlight = 0;
-    fPreferredDownload = false;
-  }
-};
-}  // namespace

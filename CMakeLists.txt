@@ -61,7 +61,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     endif()
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
 
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -336,7 +336,9 @@ add_library(secp256k1 ${SECP256})
 link_directories(${BDB_ROOT_DIR}/lib)
 
 add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
+set_property(TARGET club-cli PROPERTY CXX_STANDARD 11)
 add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
+set_property(TARGET clubd PROPERTY CXX_STANDARD 11)
 
 target_link_libraries(club-cli coin zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread)
 ###target_link_libraries(club-tx coin secp256k1 bitcoin_crypto leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} pthread)

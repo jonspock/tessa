@@ -12,6 +12,8 @@
 #include "primitives/zerocoin.h"
 #include "utilmoneystr.h"
 #include "zerochain.h"
+#include "libzerocoin/PublicCoin.h"
+#include "libzerocoin/CoinSpend.h"
 
 #include <sstream>
 

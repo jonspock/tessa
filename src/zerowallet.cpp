@@ -11,8 +11,7 @@
 #include "wallet.h"
 #include "walletdb.h"
 #include "zerochain.h"
-
-using namespace libzerocoin;
+#include "libzerocoin/PrivateCoin.h"
 
 CZeroWallet::CZeroWallet(std::string strWalletFile) {
   this->strWalletFile = strWalletFile;
@@ -202,13 +201,13 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
         }
 
         // Find the denomination
-        CoinDenomination denomination = CoinDenomination::ZQ_ERROR;
+        libzerocoin::CoinDenomination denomination = libzerocoin::ZQ_ERROR;
         bool fFoundMint = false;
         CBigNum bnValue = 0;
         for (const CTxOut& out : tx.vout) {
           if (!out.scriptPubKey.IsZerocoinMint()) continue;
 
-          PublicCoin pubcoin;
+          libzerocoin::PublicCoin pubcoin;
           CValidationState state;
           if (!TxOutToPublicCoin(out, pubcoin, state)) {
             LogPrintf("%s : failed to get mint from txout for %s!\n", __func__, pMint.first.GetHex());
@@ -225,7 +224,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
           }
         }
 
-        if (!fFoundMint || denomination == ZQ_ERROR) {
+        if (!fFoundMint || denomination == libzerocoin::ZQ_ERROR) {
           LogPrintf("%s : failed to get mint %s from tx %s!\n", __func__, pMint.first.GetHex(), tx.GetHash().GetHex());
           found = false;
           break;
@@ -255,7 +254,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
 }
 
 bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const uint256& txid,
-                             const CoinDenomination& denom) {
+                             const libzerocoin::CoinDenomination& denom) {
   if (!mintPool.Has(bnValue)) return error("%s: value not in pool", __func__);
   pair<uint256, uint32_t> pMint = mintPool.Get(bnValue);
 
@@ -273,7 +272,7 @@ bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const 
   uint256 hashPubcoin = GetPubCoinHash(bnValue);
   uint256 nSerial = MintedCoin.getSerialNumber().getuint256();
   uint256 hashStake = Hash(nSerial.begin(), nSerial.end());
-  CDeterministicMint dMint(PrivateCoin::PRIVATECOIN_VERSION, pMint.second, hashSeed, hashSerial, hashPubcoin,
+  CDeterministicMint dMint(libzerocoin::PrivateCoin::PRIVATECOIN_VERSION, pMint.second, hashSeed, hashSerial, hashPubcoin,
                            hashStake);
   dMint.SetDenomination(denom);
   dMint.SetHeight(nHeight);
@@ -324,7 +323,7 @@ void CZeroWallet::UpdateCount() {
   walletdb.WriteZKPCount(nCountLastUsed);
 }
 
-void CZeroWallet::GenerateDeterministicZKP(CoinDenomination denom, PrivateCoin& coin, CDeterministicMint& dMint,
+void CZeroWallet::GenerateDeterministicZKP(libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin, CDeterministicMint& dMint,
                                           bool fGenerateOnly) {
   GenerateMint(nCountLastUsed + 1, denom, coin, dMint);
   if (fGenerateOnly) return;
@@ -334,11 +333,11 @@ void CZeroWallet::GenerateDeterministicZKP(CoinDenomination denom, PrivateCoin& 
   // coin.getPublicCoin().getValue().GetHex().substr(0,6), seedZerocoin.GetHex().substr(0, 4));
 }
 
-void CZeroWallet::GenerateMint(const uint32_t& nCount, const CoinDenomination denom, PrivateCoin& coin,
+void CZeroWallet::GenerateMint(const uint32_t& nCount, const libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin,
                               CDeterministicMint& dMint) {
   uint512 seedZerocoin = GetZerocoinSeed(nCount);
   CBigNum bnValue = coin.CoinFromSeed(seedZerocoin);
-  coin.setVersion(PrivateCoin::PRIVATECOIN_VERSION);
+  coin.setVersion(libzerocoin::PrivateCoin::PRIVATECOIN_VERSION);
 
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
   uint256 hashSerial = GetSerialHash(coin.getSerialNumber());
@@ -357,7 +356,7 @@ bool CZeroWallet::RegenerateMint(const CDeterministicMint& dMint, CZerocoinMint&
                  hashSeed.GetHex(), seedMaster.GetHex());
 
   // Generate the coin
-  PrivateCoin coin(libzerocoin::gpZerocoinParams);
+  libzerocoin::PrivateCoin coin(libzerocoin::gpZerocoinParams);
   CDeterministicMint dMintDummy;
   GenerateMint(dMint.GetCount(), dMint.GetDenomination(), coin, dMintDummy);
 

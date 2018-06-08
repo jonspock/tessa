@@ -18,7 +18,6 @@
 #include <boost/thread.hpp>
 
 using namespace std;
-using namespace libzerocoin;
 
 void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCoins& coins) {
   if (coins.IsPruned())
@@ -247,7 +246,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
 CZerocoinDB::CZerocoinDB(size_t nCacheSize, bool fMemory, bool fWipe)
     : CLevelDBWrapper(GetDataDir() / "zerocoin", nCacheSize, fMemory, fWipe) {}
 
-bool CZerocoinDB::WriteCoinMint(const PublicCoin& pubCoin, const uint256& hashTx) {
+bool CZerocoinDB::WriteCoinMint(const libzerocoin::PublicCoin& pubCoin, const uint256& hashTx) {
   uint256 hash = GetPubCoinHash(pubCoin.getValue());
   return Write(make_pair('m', hash), hashTx, true);
 }

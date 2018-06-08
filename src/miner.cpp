@@ -29,6 +29,7 @@
 #include "validationinterface.h"
 
 #include <boost/thread.hpp>
+#include "libzerocoin/CoinSpend.h"
 
 using namespace std;
 

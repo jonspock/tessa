@@ -23,6 +23,7 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
+#include "libzerocoin/CoinSpend.h"
 
 #include <cstdint>
 

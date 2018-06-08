@@ -29,6 +29,9 @@
 #include "zerochain.h"
 
 #include "denomination_functions.h"
+#include "libzerocoin/CoinSpend.h"
+#include "libzerocoin/PublicCoin.h"
+#include "libzerocoin/PrivateCoin.h"
 #include "libzerocoin/Denominations.h"
 #include "primitives/deterministicmint.h"
 #include "zerowallet.h"
@@ -1625,9 +1628,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
       unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
       if (nBytes >= DEFAULT_BLOCK_MAX_SIZE / 5) return error("CreateCoinStake : exceeded coinstake size limit");
 
-      // Masternode payment
-      // FillBlockPayee(txNew, nMinFee, true, stakeInput->IsZKP());
-
       uint256 hashTxOut = txNew.GetHash();
       CTxIn in;
       if (!stakeInput->CreateTxIn(this, in, hashTxOut)) {
@@ -2349,7 +2349,7 @@ void CWallet::AutoCombineDust() {
     // we use 50 bytes as a base tx size (2 output: 2*34 + overhead: 10 -> 90 to be certain)
     unsigned int txSizeEstimate = 90;
 
-    // find masternode rewards that need to be combined
+    // find rewards that need to be combined
     CCoinControl* coinControl = new CCoinControl();
     CAmount nTotalRewardsValue = 0;
     for (const COutput& out : vCoins) {

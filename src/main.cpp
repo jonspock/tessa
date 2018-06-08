@@ -7,6 +7,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "main.h"
+#include "nodestate.h"
+
 #ifdef HAVE_BUILD_INFO
 #include "build.h"
 #endif
@@ -26,7 +28,6 @@
 #include "checkqueue.h"
 #include "init.h"
 #include "kernel.h"
-#include "libzerocoin/Denominations.h"
 #include "mainzero.h"
 #include "merkleblock.h"
 #include "net.h"
@@ -43,6 +44,10 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "zerochain.h"
+
+#include "libzerocoin/Denominations.h"
+#include "libzerocoin/PublicCoin.h"
+#include "libzerocoin/CoinSpend.h"
 
 #include <sstream>
 

@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include <libzerocoin/bignum.h>
+#include "bignum.h"
+#include "libzerocoin/Denominations.h"
 #include <univalue/include/univalue.h>
 
 namespace AccumulatorCheckpoints {

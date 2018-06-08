@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #pragma once
 #include "serialize.h"
-#include <libzerocoin/bignum.h>
+#include "bignum.h"
 #include <openssl/bn.h>
 #include <stdexcept>
 #include <vector>

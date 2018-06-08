@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "libzerocoin/PublicCoin.h"
-#include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"
 #include <list>
 #include <string>
@@ -20,6 +18,12 @@ class CTxOut;
 class CValidationState;
 class CZerocoinMint;
 class uint256;
+
+
+namespace libzerocoin {
+    class PublicCoin;
+    class CoinSpend;
+}
 
 bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom, std::vector<CBigNum>& vValues);
 bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins);

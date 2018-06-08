@@ -5,9 +5,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TXDB_H
-#define BITCOIN_TXDB_H
+#pragma once
 
+#include "disktxpos.h"
 #include "blockfileinfo.h"
 #include "leveldbwrapper.h"
 #include "main.h"
@@ -20,6 +20,9 @@
 
 class CCoins;
 class uint256;
+namespace libzerocoin {
+    class PublicCoin;
+}
 
 //! -dbcache default (MiB)
 static const int64_t nDefaultDbCache = 100;
@@ -92,4 +95,3 @@ class CZerocoinDB : public CLevelDBWrapper {
   bool EraseAccumulatorValue(const uint32_t& nChecksum);
 };
 
-#endif  // BITCOIN_TXDB_H
