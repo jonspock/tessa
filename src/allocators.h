@@ -6,13 +6,12 @@
 #ifndef BITCOIN_ALLOCATORS_H
 #define BITCOIN_ALLOCATORS_H
 
+#include <boost/thread/mutex.hpp>
 #include <map>
+#include <mutex>
 #include <string.h>
 #include <string>
 #include <vector>
-
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/once.hpp>
 
 #include <openssl/crypto.h>  // for OPENSSL_cleanse()
 
@@ -123,7 +122,7 @@ class MemoryPageLocker {
 class LockedPageManager : public LockedPageManagerBase<MemoryPageLocker> {
  public:
   static LockedPageManager& Instance() {
-    boost::call_once(LockedPageManager::CreateInstance, LockedPageManager::init_flag);
+    std::call_once(LockedPageManager::init_flag, LockedPageManager::CreateInstance);
     return *LockedPageManager::_instance;
   }
 
@@ -141,7 +140,7 @@ class LockedPageManager : public LockedPageManagerBase<MemoryPageLocker> {
   }
 
   static LockedPageManager* _instance;
-  static boost::once_flag init_flag;
+  static std::once_flag init_flag;
 };
 
 //
