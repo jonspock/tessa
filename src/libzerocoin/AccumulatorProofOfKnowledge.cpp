@@ -30,7 +30,7 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
   const IntegerMod<ACCUMULATOR_MODULUS> g_n(params->accumulatorQRNCommitmentGroup.g);
   const IntegerMod<ACCUMULATOR_MODULUS> h_n(params->accumulatorQRNCommitmentGroup.h);
 
-  const CBigNum& e = commitmentToCoin.getContents();
+  const CBigNum& e = commitmentToCoin.getSerial();
   const CBigNum& r = commitmentToCoin.getRandomness();
 
   const CBigNum aM_4 = params->accumulatorModulus / CBigNum((long)4);

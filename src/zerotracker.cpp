@@ -120,9 +120,9 @@ CAmount CZeroTracker::GetBalance(bool fConfirmedOnly, bool fUnconfirmedOnly) con
     }
   }
   for (auto& denom : libzerocoin::zerocoinDenomList) {
-    LogPrint("zero", "%s My coins for denomination %d pubcoin %s\n", __func__, denom, myZerocoinSupply.at(denom));
+    LogPrint(ClubLog::ZERO, "%s My coins for denomination %d pubcoin %s\n", __func__, denom, myZerocoinSupply.at(denom));
   }
-  LogPrint("zero", "Total value of coins %d\n", nTotal);
+  LogPrint(ClubLog::ZERO, "Total value of coins %d\n", nTotal);
 
   if (nTotal < 0) nTotal = 0;  // Sanity never hurts
 
@@ -373,11 +373,11 @@ std::set<CMintMeta> CZeroTracker::ListMints(bool fUnusedOnly, bool fMatureOnly, 
   if (fUpdateStatus) {
     std::list<CZerocoinMint> listMintsDB = walletdb.ListMintedCoins();
     for (auto& mint : listMintsDB) Add(mint);
-    LogPrint("zero", "%s: added %d zerocoinmints from DB\n", __func__, listMintsDB.size());
+    LogPrint(ClubLog::ZERO, "%s: added %d zerocoinmints from DB\n", __func__, listMintsDB.size());
 
     std::list<CDeterministicMint> listDeterministicDB = walletdb.ListDeterministicMints();
     for (auto& dMint : listDeterministicDB) Add(dMint);
-    LogPrint("zero", "%s: added %d dzkp from DB\n", __func__, listDeterministicDB.size());
+    LogPrint(ClubLog::ZERO, "%s: added %d dzkp from DB\n", __func__, listDeterministicDB.size());
   }
 
   std::vector<CMintMeta> vOverWrite;

@@ -19,31 +19,31 @@
 namespace libzerocoin {
 
 /**
- * A commitment, complete with contents and opening randomness.
+ * A commitment, complete with serial and opening randomness.
  * These should remain secret. Publish only the commitment value.
  */
 class Commitment {
  public:
   Commitment(const CBigNum& r, const CBigNum& v, const CBigNum c) {
     randomness = r;
-    contents = v;
+    serial = v;
     commitmentValue = c;
   }
   const CBigNum& getCommitmentValue() const { return this->commitmentValue; }
   const CBigNum& getRandomness() const { return this->randomness; }
-  const CBigNum& getContents() const { return this->contents; }
+  const CBigNum& getSerial() const { return this->serial; }
 
  private:
   CBigNum commitmentValue;
   CBigNum randomness;
-  CBigNum contents;
+  CBigNum serial;
 
   ADD_SERIALIZE_METHODS;
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
     READWRITE(commitmentValue);
     READWRITE(randomness);
-    READWRITE(contents);
+    READWRITE(serial);
   }
 
  public:

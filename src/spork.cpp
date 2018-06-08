@@ -75,11 +75,12 @@ void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStr
     uint256 hash = spork.GetHash();
     if (mapSporksActive.count(spork.nSporkID)) {
       if (mapSporksActive[spork.nSporkID].nTimeSigned >= spork.nTimeSigned) {
-        if (fDebug) LogPrintf("%s : seen %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
+        if (gArgs.IsArgSet("-debug"))
+            LogPrintf("%s : seen %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
         return;
       } else {
-        if (fDebug)
-          LogPrintf("%s : got updated spork %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
+        if (gArgs.IsArgSet("-debug"))
+            LogPrintf("%s : got updated spork %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
       }
     }
 
@@ -155,7 +156,7 @@ bool CSporkManager::VerifyMessage(CPubKey pubkey, vector<unsigned char>& vchSig,
   CPubKey pubkey2;
   if (!pubkey2.RecoverCompact(ss.GetHash(), vchSig)) return false;
 
-  if (fDebug && pubkey2.GetID() != pubkey.GetID())
+  if (gArgs.IsArgSet("-debug") && pubkey2.GetID() != pubkey.GetID())
     LogPrintf("VerifyMessage -- keys don't match: %s %s\n", pubkey2.GetID().ToString(), pubkey.GetID().ToString());
 
   return (pubkey2.GetID() == pubkey.GetID());

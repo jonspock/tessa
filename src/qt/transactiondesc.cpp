@@ -283,7 +283,7 @@ QString TransactionDesc::toHTML(CWallet* wallet, CWalletTx& wtx, TransactionReco
   //
   // Debug view
   //
-  if (fDebug) {
+  if (gArgs.IsArgSet("-debug")) {
     strHTML += "<hr><br>" + tr("Debug information") + "<br><br>";
     for (const CTxIn& txin : wtx.vin)
       if (wallet->IsMine(txin))

@@ -28,9 +28,9 @@ CommitmentProofOfKnowledge::CommitmentProofOfKnowledge(const SerialNumberGroupPa
     : ap(aParams), bp(bParams) {
   // First: make sure that the two commitments have the
   // same contents.
-  if (a.getContents() != b.getContents()) {
-    std::cout << "a = " << a.getContents().ToString(16) << "\n";
-    std::cout << "b = " << b.getContents().ToString(16) << "\n";
+  if (a.getSerial() != b.getSerial()) {
+    std::cout << "a = " << a.getSerial().ToString(16) << "\n";
+    std::cout << "b = " << b.getSerial().ToString(16) << "\n";
     throw std::runtime_error("Both commitments must contain the same value");
   }
 
@@ -76,7 +76,7 @@ CommitmentProofOfKnowledge::CommitmentProofOfKnowledge(const SerialNumberGroupPa
   //  S1 = r1 + (m * challenge)   -- note, not modular arithmetic
   //  S2 = r2 + (x * challenge)   -- note, not modular arithmetic
   //  S3 = r3 + (y * challenge)   -- note, not modular arithmetic
-  this->S1 = r1 + (a.getContents() * this->challenge);
+  this->S1 = r1 + (a.getSerial() * this->challenge);
   this->S2 = r2 + (a.getRandomness() * this->challenge);
   this->S3 = r3 + (b.getRandomness() * this->challenge);
 

@@ -127,6 +127,8 @@ SET(COMMON_A
 	./src/base58.cpp
 	./src/amount.cpp
 	./src/allocators.cpp
+  ./src/logging.cpp
+  ./src/fs.cpp
 	./src/eccryptoverify.cpp
 	)
 

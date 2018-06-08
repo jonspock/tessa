@@ -299,7 +299,7 @@ bool static Bind(const CService& addr, unsigned int flags) {
 
 void OnRPCStopped() {
   cvBlockChange.notify_all();
-  LogPrint("rpc", "RPC stopped.\n");
+  LogPrint(ClubLog::RPC, "RPC stopped.\n");
 }
 
 void OnRPCPreCommand(const CRPCCommand& cmd) {
@@ -779,6 +779,21 @@ bool AppInitServers(boost::thread_group& threadGroup) {
   return true;
 }
 
+void InitLogging() {
+    ClubLog::Logger &logger = GetLogger();
+    logger.fPrintToConsole = gArgs.GetBoolArg("-printtoconsole", false);
+    logger.fLogTimestamps =
+        gArgs.GetBoolArg("-logtimestamps", DEFAULT_LOGTIMESTAMPS);
+    logger.fLogTimeMicros =
+        gArgs.GetBoolArg("-logtimemicros", DEFAULT_LOGTIMEMICROS);
+
+    fLogIPs = gArgs.GetBoolArg("-logips", DEFAULT_LOGIPS);
+
+    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    LogPrintf("%s version %s\n", CLIENT_NAME, FormatFullVersion());
+}
+
+
 /** Initialize club.
  *  @pre Parameters should be parsed and config file should be read.
  */
@@ -841,7 +856,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // ********************************************************* Step 2: parameter interactions
   // Set this early so that parameter interactions go to console
-  fPrintToConsole = GetBoolArg("-printtoconsole", false);
   fLogTimestamps = GetBoolArg("-logtimestamps", true);
   fLogIPs = GetBoolArg("-logips", false);
 
@@ -916,13 +930,26 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (nFD - MIN_CORE_FILEDESCRIPTORS < nMaxConnections) nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
 
   // ********************************************************* Step 3: parameter-to-internal-flags
+  if (gArgs.IsArgSet("-debug")) {
+      // Special-case: if -debug=0/-nodebug is set, turn off debugging
+      // messages
+      const std::vector<std::string> &categories = gArgs.GetArgs("-debug");
+      if (find(categories.begin(), categories.end(), std::string("0")) ==
+          categories.end()) {
+          for (const auto &cat : categories) {
+              ClubLog::LogFlags flag;
+              if (!GetLogCategory(flag, cat)) {
+                  InitWarning(
+                              strprintf(_("Unsupported logging category %s=%s."),
+                                        "-debug", cat));
+              }
+              GetLogger().EnableCategory(flag);
+          }
+      }
+  }
 
-  fDebug = gArgs.IsArgSet("-debug");
-  // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-  const vector<string>& categories = gArgs.GetArgs("-debug");
-  if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
-    fDebug = false;
 
+  
   // Check for -debugnet
   if (GetBoolArg("-debugnet", false))
     InitWarning(_("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
@@ -1058,7 +1085,26 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 #ifndef WIN32
   CreatePidFile(GetPidFile(), getpid());
 #endif
-  if (GetBoolArg("-shrinkdebugfile", !fDebug)) ShrinkDebugFile();
+
+  ClubLog::Logger &logger = GetLogger();
+
+  bool default_shrinkdebugfile = logger.DefaultShrinkDebugFile();
+  if (gArgs.GetBoolArg("-shrinkdebugfile", default_shrinkdebugfile)) {
+      // Do this first since it both loads a bunch of debug.log into memory,
+      // and because this needs to happen before any other debug.log printing.
+      logger.ShrinkDebugFile();
+  }
+
+  if (logger.fPrintToDebugLog) {
+      logger.OpenDebugLog();
+  }
+
+  if (!logger.fLogTimestamps) {
+      LogPrintf("Startup time: %s\n",
+                DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
+  }
+
+  
   LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   LogPrintf("Club version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
   LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
@@ -1500,7 +1546,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
           break;
         }
       } catch (std::exception& e) {
-        if (fDebug) LogPrintf("%s\n", e.what());
+        if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
         strLoadError = _("Error opening block database");
         fVerifyingBlocks = false;
         break;

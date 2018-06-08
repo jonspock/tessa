@@ -89,7 +89,7 @@ void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample) {
         }
       }
     }
-    if (fDebug) {
+    if (gArgs.IsArgSet("-debug")) {
       for (int64_t n : vSorted) LogPrintf("%+d  ", n);
       LogPrintf("|  ");
     }

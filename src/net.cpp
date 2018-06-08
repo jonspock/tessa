@@ -177,12 +177,12 @@ bool RecvLine(SOCKET hSocket, string& strLine) {
       if (!strLine.empty()) return true;
       if (nBytes == 0) {
         // socket closed
-        LogPrint("net", "socket closed\n");
+        LogPrint(ClubLog::NET, "socket closed\n");
         return false;
       } else {
         // socket error
         int nErr = WSAGetLastError();
-        LogPrint("net", "recv failed: %s\n", NetworkErrorString(nErr));
+        LogPrint(ClubLog::NET, "recv failed: %s\n", NetworkErrorString(nErr));
         return false;
       }
     }
@@ -349,7 +349,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool obfuScationMa
   }
 
   /// debug print
-  LogPrint("net", "trying connection %s lastseen=%.1fhrs\n", pszDest ? pszDest : addrConnect.ToString(),
+  LogPrint(ClubLog::NET, "trying connection %s lastseen=%.1fhrs\n", pszDest ? pszDest : addrConnect.ToString(),
            pszDest ? 0.0 : (double)(GetAdjustedTime() - addrConnect.nTime) / 3600.0);
 
   // Connect
@@ -389,7 +389,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool obfuScationMa
 void CNode::CloseSocketDisconnect() {
   fDisconnect = true;
   if (hSocket != INVALID_SOCKET) {
-    LogPrint("net", "disconnecting peer=%d\n", id);
+    LogPrint(ClubLog::NET, "disconnecting peer=%d\n", id);
     CloseSocket(hSocket);
   }
 
@@ -419,10 +419,10 @@ void CNode::PushVersion() {
   CAddress addrMe = GetLocalAddress(&addr);
   GetRandBytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
   if (fLogIPs)
-    LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%d\n", PROTOCOL_VERSION,
+    LogPrint(ClubLog::NET, "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%d\n", PROTOCOL_VERSION,
              nBestHeight, addrMe.ToString(), addrYou.ToString(), id);
   else
-    LogPrint("net", "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION, nBestHeight,
+    LogPrint(ClubLog::NET, "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION, nBestHeight,
              addrMe.ToString(), id);
   PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe, nLocalHostNonce,
               FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight, true);
@@ -542,7 +542,7 @@ void CNode::SweepBanned() {
         setBanned.erase(it++);
         setBannedIsDirty = true;
         notifyUI = true;
-        LogPrint("net", "%s: Removed banned node ip/subnet from banlist.dat: %s\n", __func__, subNet.ToString());
+        LogPrint(ClubLog::NET, "%s: Removed banned node ip/subnet from banlist.dat: %s\n", __func__, subNet.ToString());
       } else
         ++it;
     }
@@ -632,7 +632,7 @@ bool CNode::ReceiveMsgBytes(const char* pch, unsigned int nBytes) {
     if (handled < 0) return false;
 
     if (msg.in_data && msg.hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
-      LogPrint("net", "Oversized message from peer=%i, disconnecting", GetId());
+      LogPrint(ClubLog::NET, "Oversized message from peer=%i, disconnecting", GetId());
       return false;
     }
 
@@ -898,7 +898,7 @@ void ThreadSocketHandler() {
           LogPrintf("connection from %s dropped: non-selectable socket\n", addr.ToString());
           CloseSocket(hSocket);
         } else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS) {
-          LogPrint("net", "connection from %s dropped (full)\n", addr.ToString());
+          LogPrint(ClubLog::NET, "connection from %s dropped (full)\n", addr.ToString());
           CloseSocket(hSocket);
         } else if (CNode::IsBanned(addr) && !whitelisted) {
           LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
@@ -946,7 +946,7 @@ void ThreadSocketHandler() {
               pnode->RecordBytesRecv(nBytes);
             } else if (nBytes == 0) {
               // socket closed gracefully
-              if (!pnode->fDisconnect) LogPrint("net", "socket closed\n");
+              if (!pnode->fDisconnect) LogPrint(ClubLog::NET, "socket closed\n");
               pnode->CloseSocketDisconnect();
             } else if (nBytes < 0) {
               // error
@@ -975,7 +975,7 @@ void ThreadSocketHandler() {
       int64_t nTime = GetTime();
       if (nTime - pnode->nTimeConnected > 60) {
         if (pnode->nLastRecv == 0 || pnode->nLastSend == 0) {
-          LogPrint("net", "socket no message in first 60 seconds, %d %d from %d\n", pnode->nLastRecv != 0,
+          LogPrint(ClubLog::NET, "socket no message in first 60 seconds, %d %d from %d\n", pnode->nLastRecv != 0,
                    pnode->nLastSend != 0, pnode->id);
           pnode->fDisconnect = true;
         } else if (nTime - pnode->nLastSend > TIMEOUT_INTERVAL) {
@@ -1145,7 +1145,7 @@ void DumpAddresses() {
   CAddrDB adb;
   adb.Write(addrman);
 
-  LogPrint("net", "Flushed %d addresses to peers.dat  %dms\n", addrman.size(), GetTimeMillis() - nStart);
+  LogPrint(ClubLog::NET, "Flushed %d addresses to peers.dat  %dms\n", addrman.size(), GetTimeMillis() - nStart);
 }
 
 void DumpData() {
@@ -1886,9 +1886,9 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
   }
 
   if (fLogIPs)
-    LogPrint("net", "Added connection to %s peer=%d\n", addrName, id);
+    LogPrint(ClubLog::NET, "Added connection to %s peer=%d\n", addrName, id);
   else
-    LogPrint("net", "Added connection peer=%d\n", id);
+    LogPrint(ClubLog::NET, "Added connection peer=%d\n", id);
 
   // Be shy and don't send version until we hear
   if (hSocket != INVALID_SOCKET && !fInbound) PushVersion();
@@ -1914,7 +1914,7 @@ void CNode::AskFor(const CInv& inv) {
     nRequestTime = it->second;
   else
     nRequestTime = 0;
-  LogPrint("net", "askfor %s  %d (%s) peer=%d\n", inv.ToString(), nRequestTime,
+  LogPrint(ClubLog::NET, "askfor %s  %d (%s) peer=%d\n", inv.ToString(), nRequestTime,
            DateTimeStrFormat("%H:%M:%S", nRequestTime / 1000000), id);
 
   // Make sure not to reuse time indexes to keep things in the same order
@@ -1937,7 +1937,7 @@ void CNode::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSen
   ENTER_CRITICAL_SECTION(cs_vSend);
   assert(ssSend.size() == 0);
   ssSend << CMessageHeader(pszCommand, 0);
-  LogPrint("net", "sending: %s ", SanitizeString(pszCommand));
+  LogPrint(ClubLog::NET, "sending: %s ", SanitizeString(pszCommand));
 }
 
 void CNode::AbortMessage() UNLOCK_FUNCTION(cs_vSend) {
@@ -1945,7 +1945,7 @@ void CNode::AbortMessage() UNLOCK_FUNCTION(cs_vSend) {
 
   LEAVE_CRITICAL_SECTION(cs_vSend);
 
-  LogPrint("net", "(aborted)\n");
+  LogPrint(ClubLog::NET, "(aborted)\n");
 }
 
 void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend) {
@@ -1953,7 +1953,7 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend) {
   // since they are only used during development to debug the networking code and are
   // not intended for end-users.
     if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "2").c_str()) == 0)) {
-    LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
+    LogPrint(ClubLog::NET, "dropmessages DROPPING SEND MESSAGE\n");
     AbortMessage();
     return;
   }
@@ -1975,7 +1975,7 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend) {
   assert(ssSend.size() >= CMessageHeader::CHECKSUM_OFFSET + sizeof(nChecksum));
   memcpy((char*)&ssSend[CMessageHeader::CHECKSUM_OFFSET], &nChecksum, sizeof(nChecksum));
 
-  LogPrint("net", "(%d bytes) peer=%d\n", nSize, id);
+  LogPrint(ClubLog::NET, "(%d bytes) peer=%d\n", nSize, id);
 
   std::deque<CSerializeData>::iterator it = vSendMsg.insert(vSendMsg.end(), CSerializeData());
   ssSend.GetAndClear(*it);
@@ -2081,5 +2081,5 @@ void DumpBanlist() {
   CNode::GetBanned(banmap);
   if (bandb.Write(banmap)) { CNode::SetBannedSetDirty(false); }
 
-  LogPrint("net", "Flushed %d banned node ips/subnets to banlist.dat  %dms\n", banmap.size(), GetTimeMillis() - nStart);
+  LogPrint(ClubLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n", banmap.size(), GetTimeMillis() - nStart);
 }

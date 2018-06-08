@@ -56,7 +56,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
   }
   if (hashBlock != uint256(0)) BatchWriteHashBestChain(batch, hashBlock);
 
-  LogPrint("coindb", "Committing %u changed transactions (out of %u) to coin database...\n", (unsigned int)changed,
+  LogPrint(ClubLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n", (unsigned int)changed,
            (unsigned int)count);
   return db.WriteBatch(batch);
 }
@@ -331,7 +331,7 @@ bool CZerocoinDB::WipeCoins(std::string strType) {
 }
 
 bool CZerocoinDB::WriteAccumulatorValue(const uint32_t& nChecksum, const CBigNum& bnValue) {
-  LogPrint("zero", "%s : checksum:%d val:%s\n", __func__, nChecksum, bnValue.GetHex());
+  LogPrint(ClubLog::ZERO, "%s : checksum:%d val:%s\n", __func__, nChecksum, bnValue.GetHex());
   return Write(make_pair('2', nChecksum), bnValue);
 }
 
@@ -340,6 +340,6 @@ bool CZerocoinDB::ReadAccumulatorValue(const uint32_t& nChecksum, CBigNum& bnVal
 }
 
 bool CZerocoinDB::EraseAccumulatorValue(const uint32_t& nChecksum) {
-  LogPrint("zero", "%s : checksum:%d\n", __func__, nChecksum);
+  LogPrint(ClubLog::ZERO, "%s : checksum:%d\n", __func__, nChecksum);
   return Erase(make_pair('2', nChecksum));
 }

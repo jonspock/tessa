@@ -114,7 +114,7 @@ class CBlockAverage {
     else
       throw runtime_error("Corrupt priority value in estimates file.");
     if (feeSamples.size() + prioritySamples.size() > 0)
-      LogPrint("estimatefee", "Read %d fee samples and %d priority samples\n", feeSamples.size(),
+      LogPrint(ClubLog::ESTIMATEFEE, "Read %d fee samples and %d priority samples\n", feeSamples.size(),
                prioritySamples.size());
   }
 };
@@ -155,7 +155,7 @@ class CMinerPolicyEstimator {
       // Neither or both fee and priority sufficient to get confirmed:
       // don't know why they got confirmed.
     }
-    LogPrint("estimatefee", "Seen TX confirm: %s : %s fee/%g priority, took %d blocks\n", assignedTo,
+    LogPrint(ClubLog::ESTIMATEFEE, "Seen TX confirm: %s : %s fee/%g priority, took %d blocks\n", assignedTo,
              feeRate.ToString(), dPriority, nBlocksAgo);
   }
 
@@ -211,7 +211,7 @@ class CMinerPolicyEstimator {
 
     for (size_t i = 0; i < history.size(); i++) {
       if (history[i].FeeSamples() + history[i].PrioritySamples() > 0)
-        LogPrint("estimatefee", "estimates: for confirming within %d blocks based on %d/%d samples, fee=%s, prio=%g\n",
+        LogPrint(ClubLog::ESTIMATEFEE, "estimates: for confirming within %d blocks based on %d/%d samples, fee=%s, prio=%g\n",
                  i, history[i].FeeSamples(), history[i].PrioritySamples(), estimateFee(i + 1).ToString(),
                  estimatePriority(i + 1));
     }
@@ -464,7 +464,7 @@ void CTxMemPool::clear() {
 void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
   if (!fSanityCheck) return;
 
-  LogPrint("mempool", "Checking mempool with %u transactions and %u inputs\n", (unsigned int)mapTx.size(),
+  LogPrint(ClubLog::MEMPOOL, "Checking mempool with %u transactions and %u inputs\n", (unsigned int)mapTx.size(),
            (unsigned int)mapNextTx.size());
 
   uint64_t checkTotal = 0;

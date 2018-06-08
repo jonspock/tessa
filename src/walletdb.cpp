@@ -784,7 +784,7 @@ void ThreadFlushWalletDB(const string& strFile) {
           boost::this_thread::interruption_point();
           map<string, int>::iterator mi = bitdb.mapFileUseCount.find(strFile);
           if (mi != bitdb.mapFileUseCount.end()) {
-            LogPrint("db", "Flushing wallet.dat\n");
+            LogPrint(ClubLog::DB, "Flushing wallet.dat\n");
             nLastFlushed = nWalletDBUpdated;
             int64_t nStart = GetTimeMillis();
 
@@ -793,7 +793,7 @@ void ThreadFlushWalletDB(const string& strFile) {
             bitdb.CheckpointLSN(strFile);
 
             bitdb.mapFileUseCount.erase(mi++);
-            LogPrint("db", "Flushed wallet.dat %dms\n", GetTimeMillis() - nStart);
+            LogPrint(ClubLog::DB, "Flushed wallet.dat %dms\n", GetTimeMillis() - nStart);
           }
         }
       }
@@ -802,7 +802,7 @@ void ThreadFlushWalletDB(const string& strFile) {
 }
 
 void NotifyBacked(const CWallet& wallet, bool fSuccess, string strMessage) {
-  LogPrint(nullptr, strMessage.data());
+  LogPrint(ClubLog::NONE, strMessage.data());
   wallet.NotifyWalletBacked(fSuccess, strMessage);
 }
 
@@ -889,7 +889,7 @@ bool BackupWallet(const CWallet& wallet, const filesystem::path& strDest, bool f
                 }
               } catch (filesystem::filesystem_error& error) {
                 string strMessage = strprintf("Failed to delete backup %s\n", error.what());
-                LogPrint(nullptr, strMessage.data());
+                LogPrint(ClubLog::NONE, strMessage.data());
                 NotifyBacked(wallet, false, strMessage);
               }
             }
@@ -911,12 +911,12 @@ bool AttemptBackupWallet(const CWallet& wallet, const filesystem::path& pathSrc,
   try {
     filesystem::copy_file(pathSrc.c_str(), pathDest, filesystem::copy_option::overwrite_if_exists);
     strMessage = strprintf("copied wallet.dat to %s\n", pathDest.string());
-    LogPrint(nullptr, strMessage.data());
+    LogPrint(ClubLog::NONE, strMessage.data());
     retStatus = true;
   } catch (const filesystem::filesystem_error& e) {
     retStatus = false;
     strMessage = strprintf("%s\n", e.what());
-    LogPrint(nullptr, strMessage.data());
+    LogPrint(ClubLog::NONE, strMessage.data());
   }
   NotifyBacked(wallet, retStatus, strMessage);
   return retStatus;
@@ -954,7 +954,7 @@ bool CWalletDB::Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys) {
 
   bool fSuccess = allOK;
   std::unique_ptr<Db> pdbCopy(new Db(&dbenv.dbenv, 0));
-  int ret = pdbCopy->open(nullptr,              // Txn pointer
+  int ret = pdbCopy->open(nullptr,           // Txn pointer
                           filename.c_str(),  // Filename
                           "main",            // Logical db name
                           DB_BTREE,          // Database type

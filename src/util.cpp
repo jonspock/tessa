@@ -95,14 +95,10 @@ ArgsManager gArgs;
 // Club only features
 /** Spork enforcement enabled time */
 bool fSucessfullyLoaded = false;
-bool fDebug = false;
-bool fPrintToConsole = false;
-bool fPrintToDebugLog = true;
 bool fDaemon = false;
 bool fServer = false;
 string strMiscWarning;
 bool fLogTimestamps = false;
-bool fLogIPs = false;
 volatile bool fReopenDebugLog = false;
 
 /** Init OpenSSL library multithreading support */
@@ -150,18 +146,6 @@ class CInit {
 } instance_of_cinit;
 
 /**
- * LogPrintf() has been broken a couple of times now
- * by well-meaning people adding mutexes in the most straightforward way.
- * It breaks because it may be called by global destructors during shutdown.
- * Since the order of destruction of static/global objects is undefined,
- * defining a mutex as a global object doesn't work (the mutex gets
- * destroyed, and then some later destructor calls OutputDebugStringF,
- * maybe indirectly, and you get a core dump at shutdown trying to lock
- * the mutex).
- */
-
-static std::once_flag debugPrintInitFlag;
-/**
  * We use std::call_once() to make sure these are initialized
  * in a thread-safe manner the first time called:
  */
@@ -177,65 +161,6 @@ static void DebugPrintInit() {
   if (fileout) setbuf(fileout, nullptr);  // unbuffered
 
   mutexDebugLog = new std::mutex();
-}
-
-bool LogAcceptCategory(const char* category) {
-  if (category != nullptr) {
-    if (!fDebug) return false;
-
-    // Give each thread quick access to -debug settings.
-    // This helps prevent issues debugging global destructors,
-    // where mapMultiArgs might be deleted before another
-    // global destructor calls LogPrint()
-    static boost::thread_specific_ptr<set<string> > ptrCategory;
-    if (ptrCategory.get() == nullptr) {
-      const vector<string>& categories = gArgs.GetArgs("-debug");
-      ptrCategory.reset(new set<string>(categories.begin(), categories.end()));
-      // thread_specific_ptr automatically deletes the set when the thread ends.
-      // "club" is a composite category enabling all Club-related debug output
-      if (ptrCategory->count(string("club"))) { ptrCategory->insert(string("zero")); }
-    }
-    const set<string>& setCategories = *ptrCategory.get();
-
-    // if not debugging everything and not debugging specific category, LogPrint does nothing.
-    if (setCategories.count(string("")) == 0 && setCategories.count(string(category)) == 0) return false;
-  }
-  return true;
-}
-
-int LogPrintStr(const std::string& str) {
-  int ret = 0;  // Returns total number of characters written
-  if (fPrintToConsole) {
-    // print to console
-    ret = fwrite(str.data(), 1, str.size(), stdout);
-    fflush(stdout);
-  } else if (fPrintToDebugLog && AreBaseParamsConfigured()) {
-    static bool fStartedNewLine = true;
-    std::call_once(debugPrintInitFlag, &DebugPrintInit);
-
-    if (fileout == nullptr) return ret;
-
-    std::lock_guard<std::mutex> scoped_lock(*mutexDebugLog);
-
-    // reopen the log file, if requested
-    if (fReopenDebugLog) {
-      fReopenDebugLog = false;
-      boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
-      if (freopen(pathDebug.string().c_str(), "a", fileout) != nullptr) setbuf(fileout, nullptr);  // unbuffered
-    }
-
-    // Debug print useful for profiling
-    if (fLogTimestamps && fStartedNewLine)
-      ret += fprintf(fileout, "%s ", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
-    if (!str.empty() && str[str.size() - 1] == '\n')
-      fStartedNewLine = true;
-    else
-      fStartedNewLine = false;
-
-    ret = fwrite(str.data(), 1, str.size(), fileout);
-  }
-
-  return ret;
 }
 
 /** Interpret string as boolean, for argument parsing */

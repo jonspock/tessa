@@ -397,7 +397,7 @@ class CAddrMan {
       }
     }
     if (nLost + nLostUnk > 0) {
-      LogPrint("addrman", "addrman lost %i new and %i tried addresses due to collisions\n", nLostUnk, nLost);
+      LogPrint(ClubLog::ADDRMAN, "addrman lost %i new and %i tried addresses due to collisions\n", nLostUnk, nLost);
     }
 
     Check();
@@ -450,7 +450,7 @@ class CAddrMan {
       Check();
     }
     if (fRet)
-      LogPrint("addrman", "Added %s from %s: %i tried, %i new\n", addr.ToStringIPPort(), source.ToString(), nTried,
+      LogPrint(ClubLog::ADDRMAN, "Added %s from %s: %i tried, %i new\n", addr.ToStringIPPort(), source.ToString(), nTried,
                nNew);
     return fRet;
   }
@@ -466,7 +466,7 @@ class CAddrMan {
       Check();
     }
     if (nAdd)
-      LogPrint("addrman", "Added %i addresses from %s: %i tried, %i new\n", nAdd, source.ToString(), nTried, nNew);
+      LogPrint(ClubLog::ADDRMAN, "Added %i addresses from %s: %i tried, %i new\n", nAdd, source.ToString(), nTried, nNew);
     return nAdd > 0;
   }
 

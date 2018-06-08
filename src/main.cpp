@@ -459,7 +459,7 @@ bool AddOrphanTx(const CTransaction& tx, NodeId peer) {
   // at most 500 megabytes of orphans:
   unsigned int sz = tx.GetSerializeSize(SER_NETWORK, CTransaction::CURRENT_VERSION);
   if (sz > 5000) {
-    LogPrint("mempool", "ignoring large orphan tx (size: %u, hash: %s)\n", sz, hash.ToString());
+    LogPrint(ClubLog::MEMPOOL, "ignoring large orphan tx (size: %u, hash: %s)\n", sz, hash.ToString());
     return false;
   }
 
@@ -467,7 +467,7 @@ bool AddOrphanTx(const CTransaction& tx, NodeId peer) {
   mapOrphanTransactions[hash].fromPeer = peer;
   for (const CTxIn& txin : tx.vin) mapOrphanTransactionsByPrev[txin.prevout.hash].insert(hash);
 
-  LogPrint("mempool", "stored orphan tx %s (mapsz %u prevsz %u)\n", hash.ToString(), mapOrphanTransactions.size(),
+  LogPrint(ClubLog::MEMPOOL, "stored orphan tx %s (mapsz %u prevsz %u)\n", hash.ToString(), mapOrphanTransactions.size(),
            mapOrphanTransactionsByPrev.size());
   return true;
 }
@@ -494,7 +494,7 @@ void EraseOrphansFor(NodeId peer) {
       ++nErased;
     }
   }
-  if (nErased > 0) LogPrint("mempool", "Erased %d orphan tx from peer %d\n", nErased, peer);
+  if (nErased > 0) LogPrint(ClubLog::MEMPOOL, "Erased %d orphan tx from peer %d\n", nErased, peer);
 }
 
 unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans) {
@@ -1005,7 +1005,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         if (dFreeCount >= GetArg("-limitfreerelay", 30) * 10 * 1000)
           return state.DoS(0, error("AcceptToMemoryPool : free transaction rejected by rate limiter"),
                            REJECT_INSUFFICIENTFEE, "rate limited free transaction");
-        LogPrint("mempool", "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
+        LogPrint(ClubLog::MEMPOOL, "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
         dFreeCount += nSize;
       }
     }
@@ -1180,7 +1180,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
         if (dFreeCount >= GetArg("-limitfreerelay", 30) * 10 * 1000)
           return state.DoS(0, error("AcceptableInputs : free transaction rejected by rate limiter"),
                            REJECT_INSUFFICIENTFEE, "rate limited free transaction");
-        LogPrint("mempool", "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
+        LogPrint(ClubLog::MEMPOOL, "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
         dFreeCount += nSize;
       }
     }
@@ -1786,7 +1786,7 @@ bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
   }
 
   for (auto& denom : zerocoinDenomList)
-    LogPrint("zero", "%s coins for denomination %d pubcoin %s\n", __func__, denom, pindex->mapZerocoinSupply.at(denom));
+    LogPrint(ClubLog::ZERO, "%s coins for denomination %d pubcoin %s\n", __func__, denom, pindex->mapZerocoinSupply.at(denom));
 
   return true;
 }
@@ -1978,7 +1978,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime1 = GetTimeMicros();
   nTimeConnect += nTime1 - nTimeStart;
-  LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n",
+  LogPrint(ClubLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n",
            (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(),
            nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
@@ -2006,7 +2006,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   if (!control.Wait()) return state.DoS(100, false);
   int64_t nTime2 = GetTimeMicros();
   nTimeVerify += nTime2 - nTimeStart;
-  LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime2 - nTimeStart),
+  LogPrint(ClubLog::BENCH, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime2 - nTimeStart),
            nInputs <= 1 ? 0 : 0.001 * (nTime2 - nTimeStart) / (nInputs - 1), nTimeVerify * 0.000001);
 
   // IMPORTANT NOTE: Nothing before this point should actually store to disk (or even memory)
@@ -2078,7 +2078,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime3 = GetTimeMicros();
   nTimeIndex += nTime3 - nTime2;
-  LogPrint("bench", "    - Index writing: %.2fms [%.2fs]\n", 0.001 * (nTime3 - nTime2), nTimeIndex * 0.000001);
+  LogPrint(ClubLog::BENCH, "    - Index writing: %.2fms [%.2fs]\n", 0.001 * (nTime3 - nTime2), nTimeIndex * 0.000001);
 
   // Watch for changes to the previous coinbase transaction.
   static uint256 hashPrevBestCoinBase;
@@ -2087,7 +2087,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime4 = GetTimeMicros();
   nTimeCallbacks += nTime4 - nTime3;
-  LogPrint("bench", "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
+  LogPrint(ClubLog::BENCH, "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
 
   // Remove zerocoinspends from the pending map
   for (const uint256& txid : vSpendsInBlock) {
@@ -2201,7 +2201,7 @@ bool static DisconnectTip(CValidationState& state) {
       return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
     assert(view.Flush());
   }
-  LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
+  LogPrint(ClubLog::BENCH, "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
   // Write the chain state to disk, if necessary.
   if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS)) return false;
   // Resurrect mempool transactions from the disconnected block.
@@ -2250,7 +2250,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   int64_t nTime2 = GetTimeMicros();
   nTimeReadFromDisk += nTime2 - nTime1;
   int64_t nTime3;
-  LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001,
+  LogPrint(ClubLog::BENCH, "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001,
            nTimeReadFromDisk * 0.000001);
   {
     CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
@@ -2263,12 +2263,12 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     mapBlockSource.erase(inv.hash);
     nTime3 = GetTimeMicros();
     nTimeConnectTotal += nTime3 - nTime2;
-    LogPrint("bench", "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001, nTimeConnectTotal * 0.000001);
+    LogPrint(ClubLog::BENCH, "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001, nTimeConnectTotal * 0.000001);
     assert(view.Flush());
   }
   int64_t nTime4 = GetTimeMicros();
   nTimeFlush += nTime4 - nTime3;
-  LogPrint("bench", "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
+  LogPrint(ClubLog::BENCH, "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
 
   // Write the chain state to disk, if necessary. Always write to disk if this is the first of a new file.
   FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
@@ -2277,7 +2277,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   if (!FlushStateToDisk(state, flushMode)) return false;
   int64_t nTime5 = GetTimeMicros();
   nTimeChainState += nTime5 - nTime4;
-  LogPrint("bench", "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001, nTimeChainState * 0.000001);
+  LogPrint(ClubLog::BENCH, "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001, nTimeChainState * 0.000001);
 
   // Remove conflicting transactions from the mempool.
   list<CTransaction> txConflicted;
@@ -2294,9 +2294,9 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   int64_t nTime6 = GetTimeMicros();
   nTimePostConnect += nTime6 - nTime5;
   nTimeTotal += nTime6 - nTime1;
-  LogPrint("bench", "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001,
+  LogPrint(ClubLog::BENCH, "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001,
            nTimePostConnect * 0.000001);
-  LogPrint("bench", "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
+  LogPrint(ClubLog::BENCH, "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
   return true;
 }
 
@@ -2864,7 +2864,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     return state.DoS(100, error("CheckBlock() : CheckBlockHeader failed"), REJECT_INVALID, "bad-header", true);
 
   // Check timestamp
-  LogPrint("debug", "%s: block=%s  is proof of stake=%d\n", __func__, block.GetHash().ToString().c_str(),
+  LogPrint(ClubLog::NONE, "%s: block=%s  is proof of stake=%d\n", __func__, block.GetHash().ToString().c_str(),
            block.IsProofOfStake());
   if (block.GetBlockTime() >
       GetAdjustedTime() + (block.IsProofOfStake() ? 180 : 7200))  // 3 minute future drift for PoS
@@ -3526,7 +3526,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp) {
         // detect out of order blocks, and store them for later
         uint256 hash = block.GetHash();
         if (hash != Params().HashGenesisBlock() && mapBlockIndex.find(block.hashPrevBlock) == mapBlockIndex.end()) {
-          LogPrint("reindex", "%s: Out of order block %s, parent %s not known\n", __func__, hash.ToString(),
+          LogPrint(ClubLog::REINDEX, "%s: Out of order block %s, parent %s not known\n", __func__, hash.ToString(),
                    block.hashPrevBlock.ToString());
           if (dbp) mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
           continue;
@@ -3930,7 +3930,7 @@ void static ProcessGetData(CNode* pfrom) {
 bool fRequestedSporksIDB = false;
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived) {
   RandAddSeedPerfmon();
-  LogPrint("net", "received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
+  LogPrint(ClubLog::NET, "received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
   if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "0").c_str()) == 0)) {
     LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
     return true;
@@ -4122,7 +4122,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       pfrom->AddInventoryKnown(inv);
 
       bool fAlreadyHave = AlreadyHave(inv);
-      LogPrint("net", "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom->id);
+      LogPrint(ClubLog::NET, "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom->id);
 
       if (!fAlreadyHave && !fImporting && !fReindex && inv.type != MSG_BLOCK) pfrom->AskFor(inv);
 
@@ -4131,7 +4131,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (!fAlreadyHave && !fImporting && !fReindex && !mapBlocksInFlight.count(inv.hash)) {
           // Add this to the list of blocks to request
           vToFetch.push_back(inv);
-          LogPrint("net", "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash.ToString(), pfrom->id);
+          LogPrint(ClubLog::NET, "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash.ToString(), pfrom->id);
         }
       }
 
@@ -4156,10 +4156,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       return error("message getdata size() = %u", vInv.size());
     }
 
-    if (fDebug || (vInv.size() != 1)) LogPrint("net", "received getdata (%u invsz) peer=%d\n", vInv.size(), pfrom->id);
+    if (vInv.size() != 1) LogPrint(ClubLog::NET, "received getdata (%u invsz) peer=%d\n", vInv.size(), pfrom->id);
 
-    if ((fDebug && vInv.size() > 0) || (vInv.size() == 1))
-      LogPrint("net", "received getdata for: %s peer=%d\n", vInv[0].ToString(), pfrom->id);
+    if ((vInv.size() > 0) || (vInv.size() == 1))
+      LogPrint(ClubLog::NET, "received getdata for: %s peer=%d\n", vInv[0].ToString(), pfrom->id);
 
     pfrom->vRecvGetData.insert(pfrom->vRecvGetData.end(), vInv.begin(), vInv.end());
     ProcessGetData(pfrom);
@@ -4178,18 +4178,18 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     // Send the rest of the chain
     if (pindex) pindex = chainActive.Next(pindex);
     int nLimit = 500;
-    LogPrint("net", "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1),
+    LogPrint(ClubLog::NET, "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1),
              hashStop == uint256(0) ? "end" : hashStop.ToString(), nLimit, pfrom->id);
     for (; pindex; pindex = chainActive.Next(pindex)) {
       if (pindex->GetBlockHash() == hashStop) {
-        LogPrint("net", "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
+        LogPrint(ClubLog::NET, "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
         break;
       }
       pfrom->PushInventory(CInv(MSG_BLOCK, pindex->GetBlockHash()));
       if (--nLimit <= 0) {
         // When this block is requested, we'll send an inv that'll make them
         // getblocks the next batch of inventory.
-        LogPrint("net", "  getblocks stopping at limit %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
+        LogPrint(ClubLog::NET, "  getblocks stopping at limit %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
         pfrom->hashContinue = pindex->GetBlockHash();
         break;
       }
@@ -4220,8 +4220,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     // we must use CBlocks, as CBlockHeaders won't include the 0x00 nTx count at the end
     vector<CBlock> vHeaders;
     int nLimit = MAX_HEADERS_RESULTS;
-    if (fDebug)
-      LogPrintf("getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString(), pfrom->id);
+    LogPrintf("getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString(), pfrom->id);
     for (; pindex; pindex = chainActive.Next(pindex)) {
       vHeaders.push_back(pindex->GetBlockHeader());
       if (--nLimit <= 0 || pindex->GetBlockHash() == hashStop) break;
@@ -4257,7 +4256,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       RelayTransaction(tx);
       vWorkQueue.push_back(inv.hash);
 
-      LogPrint("mempool", "AcceptToMemoryPool: peer=%d %s : accepted %s (poolsz %u)\n", pfrom->id, pfrom->cleanSubVer,
+      LogPrint(ClubLog::MEMPOOL, "AcceptToMemoryPool: peer=%d %s : accepted %s (poolsz %u)\n", pfrom->id, pfrom->cleanSubVer,
                tx.GetHash().ToString(), mempool.mapTx.size());
 
       // Recursively process any orphan transactions that depended on this one
@@ -4277,7 +4276,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
           if (setMisbehaving.count(fromPeer)) continue;
           if (AcceptToMemoryPool(mempool, stateDummy, orphanTx, true, &fMissingInputs2)) {
-            LogPrint("mempool", "   accepted orphan tx %s\n", orphanHash.ToString());
+            LogPrint(ClubLog::MEMPOOL, "   accepted orphan tx %s\n", orphanHash.ToString());
             RelayTransaction(orphanTx);
             vWorkQueue.push_back(orphanHash);
             vEraseQueue.push_back(orphanHash);
@@ -4287,11 +4286,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
               // Punish peer that gave us an invalid orphan tx
               Misbehaving(fromPeer, nDos);
               setMisbehaving.insert(fromPeer);
-              LogPrint("mempool", "   invalid orphan tx %s\n", orphanHash.ToString());
+              LogPrint(ClubLog::MEMPOOL, "   invalid orphan tx %s\n", orphanHash.ToString());
             }
             // Has inputs but not accepted to mempool
             // Probably non-standard or insufficient fee/priority
-            LogPrint("mempool", "   removed orphan tx %s\n", orphanHash.ToString());
+            LogPrint(ClubLog::MEMPOOL, "   removed orphan tx %s\n", orphanHash.ToString());
             vEraseQueue.push_back(orphanHash);
           }
           mempool.check(pcoinsTip);
@@ -4304,7 +4303,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       // Presstab: ZCoin has a bunch of code commented out here. Is this something that should have more going on?
       // Also there is nothing that handles fMissingZerocoinInputs. Does there need to be?
       RelayTransaction(tx);
-      LogPrint("mempool", "AcceptToMemoryPool: Zerocoinspend peer=%d %s : accepted %s (poolsz %u)\n", pfrom->id,
+      LogPrint(ClubLog::MEMPOOL, "AcceptToMemoryPool: Zerocoinspend peer=%d %s : accepted %s (poolsz %u)\n", pfrom->id,
                pfrom->cleanSubVer, tx.GetHash().ToString(), mempool.mapTx.size());
     } else if (fMissingInputs) {
       AddOrphanTx(tx, pfrom->GetId());
@@ -4313,7 +4312,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       unsigned int nMaxOrphanTx =
           (unsigned int)std::max((int64_t)0, GetArg("-maxorphantx", DEFAULT_MAX_ORPHAN_TRANSACTIONS));
       unsigned int nEvicted = LimitOrphanTxSize(nMaxOrphanTx);
-      if (nEvicted > 0) LogPrint("mempool", "mapOrphan overflow, removed %u tx\n", nEvicted);
+      if (nEvicted > 0) LogPrint(ClubLog::MEMPOOL, "mapOrphan overflow, removed %u tx\n", nEvicted);
     } else if (pfrom->fWhitelisted) {
       // Always relay transactions received from whitelisted peers, even
       // if they are already in the mempool (allowing the node to function
@@ -4329,7 +4328,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     int nDoS = 0;
     if (state.IsInvalid(nDoS)) {
-      LogPrint("mempool", "%s from peer=%d %s was not accepted into the memory pool: %s\n", tx.GetHash().ToString(),
+      LogPrint(ClubLog::MEMPOOL, "%s from peer=%d %s was not accepted into the memory pool: %s\n", tx.GetHash().ToString(),
                pfrom->id, pfrom->cleanSubVer, state.GetRejectReason());
       pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
                          state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.hash);
@@ -4402,7 +4401,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     vRecv >> block;
     uint256 hashBlock = block.GetHash();
     CInv inv(MSG_BLOCK, hashBlock);
-    LogPrint("net", "received block %s peer=%d\n", inv.hash.ToString(), pfrom->id);
+    LogPrint(ClubLog::NET, "received block %s peer=%d\n", inv.hash.ToString(), pfrom->id);
 
     // sometimes we will be sent their most recent block and its not the one we want, in that case tell where we are
     if (!mapBlockIndex.count(block.hashPrevBlock)) {
@@ -4434,7 +4433,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         // disconnect this node if its old protocol version
         pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand);
       } else {
-        LogPrint("net", "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__,
+        LogPrint(ClubLog::NET, "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__,
                  block.GetHash().GetHex());
       }
     }
@@ -4530,7 +4529,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
     if (!(sProblem.empty())) {
-      LogPrint("net", "pong peer=%d %s: %s, %x expected, %x received, %u bytes\n", pfrom->id, pfrom->cleanSubVer,
+      LogPrint(ClubLog::NET, "pong peer=%d %s: %s, %x expected, %x received, %u bytes\n", pfrom->id, pfrom->cleanSubVer,
                sProblem, pfrom->nPingNonceSent, nonce, nAvail);
     }
     if (bPingFinished) { pfrom->nPingNonceSent = 0; }
@@ -4588,7 +4587,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
   }
 
   else if (strCommand == "reject") {
-    if (fDebug) {
+    if (gArgs.IsArgSet("-debug")) {
       try {
         string strMsg;
         unsigned char ccode;
@@ -4604,10 +4603,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
           vRecv >> hash;
           ss << ": hash " << hash.ToString();
         }
-        LogPrint("net", "Reject %s\n", SanitizeString(ss.str()));
+        LogPrint(ClubLog::NET, "Reject %s\n", SanitizeString(ss.str()));
       } catch (std::ios_base::failure& e) {
         // Avoid feedback loops by preventing reject messages from triggering a new reject message.
-        LogPrint("net", "Unparseable reject message received\n");
+        LogPrint(ClubLog::NET, "Unparseable reject message received\n");
       }
     }
   } else {
@@ -4826,7 +4825,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
         state.fSyncStarted = true;
         nSyncStarted++;
         // CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
-        // LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id,
+        // LogPrint(ClubLog::NET, "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id,
         // pto->nStartingHeight); pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
         pto->PushMessage("getblocks", chainActive.GetLocator(chainActive.Tip()), uint256(0));
       }
@@ -4916,7 +4915,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
       if (state.nBlocksInFlight == 0 && staller != -1) {
         if (State(staller)->nStallingSince == 0) {
           State(staller)->nStallingSince = nNow;
-          LogPrint("net", "Stall started peer=%d\n", staller);
+          LogPrint(ClubLog::NET, "Stall started peer=%d\n", staller);
         }
       }
     }
@@ -4927,7 +4926,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
     while (!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow) {
       const CInv& inv = (*pto->mapAskFor.begin()).second;
       if (!AlreadyHave(inv)) {
-        if (fDebug) LogPrint("net", "Requesting %s peer=%d\n", inv.ToString(), pto->id);
+        LogPrint(ClubLog::NET, "Requesting %s peer=%d\n", inv.ToString(), pto->id);
         vGetData.push_back(inv);
         if (vGetData.size() >= 1000) {
           pto->PushMessage("getdata", vGetData);
