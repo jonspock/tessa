@@ -527,7 +527,7 @@ std::string HelpMessage(HelpMessageMode mode) {
   }
   string debugCategories =
       "addrman, alert, bench, coindb, db, lock, rand, rpc, selectcoins, tor, mempool, net, proxy, http, libevent, "
-      "club, (zero)";  // Don't translate these and qt below
+      "club, zero, spork)";  // Don't translate these and qt below
   if (mode == HMM_BITCOIN_QT) debugCategories += ", qt";
   strUsage +=
       HelpMessageOpt("-debug=<category>",

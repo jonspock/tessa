@@ -107,7 +107,7 @@ CAmount COutput::Value() const { return tx->vout[i].nValue; }
 
 const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const {
   LOCK(cs_wallet);
-  std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(hash);
+  const auto it = mapWallet.find(hash);
   if (it == mapWallet.end()) return nullptr;
   return &(it->second);
 }
@@ -354,7 +354,7 @@ set<uint256> CWallet::GetConflicts(const uint256& txid) const {
   set<uint256> result;
   AssertLockHeld(cs_wallet);
 
-  std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(txid);
+  const auto it = mapWallet.find(txid);
   if (it == mapWallet.end()) return result;
   const CWalletTx& wtx = it->second;
 
@@ -410,7 +410,7 @@ bool CWallet::IsSpent(const uint256& hash, unsigned int n) const {
   range = mapTxSpends.equal_range(outpoint);
   for (TxSpends::const_iterator it = range.first; it != range.second; ++it) {
     const uint256& wtxid = it->second;
-    std::map<uint256, CWalletTx>::const_iterator mit = mapWallet.find(wtxid);
+   const auto mit = mapWallet.find(wtxid);
     if (mit != mapWallet.end() && mit->second.GetDepthInMainChain() >= 0) return true;  // Spent
   }
   return false;
@@ -650,7 +650,7 @@ void CWallet::EraseFromWallet(const uint256& hash) {
 isminetype CWallet::IsMine(const CTxIn& txin) const {
   {
     LOCK(cs_wallet);
-    map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(txin.prevout.hash);
+    const auto mi = mapWallet.find(txin.prevout.hash);
     if (mi != mapWallet.end()) {
       const CWalletTx& prev = (*mi).second;
       if (txin.prevout.n < prev.vout.size()) return IsMine(prev.vout[txin.prevout.n]);
@@ -664,7 +664,7 @@ bool CWallet::IsMyZerocoinSpend(const CBigNum& bnSerial) const { return zkpTrack
 CAmount CWallet::GetDebit(const CTxIn& txin, const isminefilter& filter) const {
   {
     LOCK(cs_wallet);
-    map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(txin.prevout.hash);
+    const auto mi = mapWallet.find(txin.prevout.hash);
     if (mi != mapWallet.end()) {
       const CWalletTx& prev = (*mi).second;
       if (txin.prevout.n < prev.vout.size())
@@ -1428,7 +1428,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
           if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange)) {
             scriptChange = GetScriptForDestination(coinControl->destChange);
 
-            vector<CTxOut>::iterator it = txNew.vout.begin();
+            auto it = txNew.vout.begin();
             while (it != txNew.vout.end()) {
               if (scriptChange == it->scriptPubKey) {
                 it->nValue += nChange;
@@ -1470,7 +1470,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
               reservekey.ReturnKey();
             } else {
               // Insert change txn at random position:
-              vector<CTxOut>::iterator position = txNew.vout.begin() + GetRandInt(txNew.vout.size() + 1);
+              auto position = txNew.vout.begin() + GetRandInt(txNew.vout.size() + 1);
               txNew.vout.insert(position, newTxOut);
             }
           }
@@ -1816,7 +1816,7 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const string& strNam
   bool fUpdated = false;
   {
     LOCK(cs_wallet);  // mapAddressBook
-    std::map<CTxDestination, CAddressBookData>::iterator mi = mapAddressBook.find(address);
+    auto mi = mapAddressBook.find(address);
     fUpdated = mi != mapAddressBook.end();
     mapAddressBook[address].name = strName;
     if (!strPurpose.empty()) /* update purpose only if requested */
@@ -2145,7 +2145,7 @@ bool CWallet::UpdatedTransaction(const uint256& hashTx) {
   {
     LOCK(cs_wallet);
     // Only notify UI if this transaction is in this wallet
-    map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(hashTx);
+    const auto mi = mapWallet.find(hashTx);
     if (mi != mapWallet.end()) {
       NotifyTransactionChanged(this, hashTx, CT_UPDATED);
       return true;
@@ -2243,7 +2243,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const {
   for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); it++) {
     // iterate over all wallet transactions...
     const CWalletTx& wtx = (*it).second;
-    BlockMap::const_iterator blit = mapBlockIndex.find(wtx.hashBlock);
+    const auto blit = mapBlockIndex.find(wtx.hashBlock);
     if (blit != mapBlockIndex.end() && chainActive.Contains(blit->second)) {
       // ... which are already in a block
       int nHeight = blit->second->nHeight;
@@ -2252,7 +2252,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const {
         CAffectedKeysVisitor(*this, vAffected).Process(txout.scriptPubKey);
         for (const CKeyID& keyid : vAffected) {
           // ... and all their affected keys
-          std::map<CKeyID, CBlockIndex*>::iterator rit = mapKeyFirstBlock.find(keyid);
+          auto rit = mapKeyFirstBlock.find(keyid);
           if (rit != mapKeyFirstBlock.end() && nHeight < rit->second->nHeight) rit->second = blit->second;
         }
         vAffected.clear();
@@ -2324,7 +2324,7 @@ bool CWallet::LoadDestData(const CTxDestination& dest, const std::string& key, c
 bool CWallet::GetDestData(const CTxDestination& dest, const std::string& key, std::string* value) const {
   std::map<CTxDestination, CAddressBookData>::const_iterator i = mapAddressBook.find(dest);
   if (i != mapAddressBook.end()) {
-    CAddressBookData::StringMap::const_iterator j = i->second.destdata.find(key);
+    const auto j = i->second.destdata.find(key);
     if (j != i->second.destdata.end()) {
       if (value) *value = j->second;
       return true;
@@ -2558,7 +2558,7 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block) {
   vMerkleBranch = block.GetMerkleBranch(nIndex);
 
   // Is the tx in a block that's in the main chain
-  BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
+  auto mi = mapBlockIndex.find(hashBlock);
   if (mi == mapBlockIndex.end()) return 0;
   const CBlockIndex* pindex = (*mi).second;
   if (!pindex || !chainActive.Contains(pindex)) return 0;
@@ -2571,7 +2571,7 @@ int CMerkleTx::GetDepthInMainChainINTERNAL(const CBlockIndex*& pindexRet) const 
   AssertLockHeld(cs_main);
 
   // Find the block it claims to be in
-  BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
+  auto mi = mapBlockIndex.find(hashBlock);
   if (mi == mapBlockIndex.end()) return 0;
   CBlockIndex* pindex = (*mi).second;
   if (!pindex || !chainActive.Contains(pindex)) return 0;

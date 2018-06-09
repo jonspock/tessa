@@ -77,11 +77,11 @@ CCoinsViewCache::CCoinsViewCache(CCoinsView* baseIn) : CCoinsViewBacked(baseIn),
 CCoinsViewCache::~CCoinsViewCache() { assert(!hasModifier); }
 
 CCoinsMap::const_iterator CCoinsViewCache::FetchCoins(const uint256& txid) const {
-  CCoinsMap::iterator it = cacheCoins.find(txid);
+  auto it = cacheCoins.find(txid);
   if (it != cacheCoins.end()) return it;
   CCoins tmp;
   if (!base->GetCoins(txid, tmp)) return cacheCoins.end();
-  CCoinsMap::iterator ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry())).first;
+  auto ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry())).first;
   tmp.swap(ret->second.coins);
   if (ret->second.coins.IsPruned()) {
     // The parent only has an empty entry for this txid; we can consider our
@@ -92,7 +92,7 @@ CCoinsMap::const_iterator CCoinsViewCache::FetchCoins(const uint256& txid) const
 }
 
 bool CCoinsViewCache::GetCoins(const uint256& txid, CCoins& coins) const {
-  CCoinsMap::const_iterator it = FetchCoins(txid);
+  auto it = FetchCoins(txid);
   if (it != cacheCoins.end()) {
     coins = it->second.coins;
     return true;
@@ -119,7 +119,7 @@ CCoinsModifier CCoinsViewCache::ModifyCoins(const uint256& txid) {
 }
 
 const CCoins* CCoinsViewCache::AccessCoins(const uint256& txid) const {
-  CCoinsMap::const_iterator it = FetchCoins(txid);
+  auto it = FetchCoins(txid);
   if (it == cacheCoins.end()) {
     return nullptr;
   } else {
@@ -128,7 +128,7 @@ const CCoins* CCoinsViewCache::AccessCoins(const uint256& txid) const {
 }
 
 bool CCoinsViewCache::HaveCoins(const uint256& txid) const {
-  CCoinsMap::const_iterator it = FetchCoins(txid);
+  auto it = FetchCoins(txid);
   // We're using vtx.empty() instead of IsPruned here for performance reasons,
   // as we only care about the case where a transaction was replaced entirely
   // in a reorganization (which wipes vout entirely, as opposed to spending
@@ -172,7 +172,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlockIn
         }
       }
     }
-    CCoinsMap::iterator itOld = it++;
+    auto itOld = it++;
     mapCoins.erase(itOld);
   }
   hashBlock = hashBlockIn;

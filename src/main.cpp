@@ -185,7 +185,7 @@ map<NodeId, CNodeState> mapNodeState;
 
 // Requires cs_main.
 CNodeState* State(NodeId pnode) {
-  map<NodeId, CNodeState>::iterator it = mapNodeState.find(pnode);
+  auto it = mapNodeState.find(pnode);
   if (it == mapNodeState.end()) return nullptr;
   return &it->second;
 }
@@ -266,7 +266,7 @@ void ProcessBlockAvailability(NodeId nodeid) {
   assert(state != nullptr);
 
   if (state->hashLastUnknownBlock != 0) {
-    BlockMap::iterator itOld = mapBlockIndex.find(state->hashLastUnknownBlock);
+    auto itOld = mapBlockIndex.find(state->hashLastUnknownBlock);
     if (itOld != mapBlockIndex.end() && itOld->second->nChainWork > 0) {
       if (state->pindexBestKnownBlock == nullptr ||
           itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
@@ -283,7 +283,7 @@ void UpdateBlockAvailability(NodeId nodeid, const uint256& hash) {
 
   ProcessBlockAvailability(nodeid);
 
-  BlockMap::iterator it = mapBlockIndex.find(hash);
+  auto it = mapBlockIndex.find(hash);
   if (it != mapBlockIndex.end() && it->second->nChainWork > 0) {
     // An actually better block was announced.
     if (state->pindexBestKnownBlock == nullptr || it->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
@@ -425,7 +425,7 @@ void UnregisterNodeSignals(CNodeSignals& nodeSignals) {
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator) {
   // Find the first block the caller has in the main chain
   for (const uint256& hash : locator.vHave) {
-    BlockMap::iterator mi = mapBlockIndex.find(hash);
+    auto mi = mapBlockIndex.find(hash);
     if (mi != mapBlockIndex.end()) {
       CBlockIndex* pindex = (*mi).second;
       if (chain.Contains(pindex)) return pindex;
@@ -471,10 +471,10 @@ bool AddOrphanTx(const CTransaction& tx, NodeId peer) {
 }
 
 void EraseOrphanTx(uint256 hash) {
-  map<uint256, COrphanTx>::iterator it = mapOrphanTransactions.find(hash);
+  auto it = mapOrphanTransactions.find(hash);
   if (it == mapOrphanTransactions.end()) return;
   for (const CTxIn& txin : it->second.tx.vin) {
-    map<uint256, set<uint256> >::iterator itPrev = mapOrphanTransactionsByPrev.find(txin.prevout.hash);
+    auto itPrev = mapOrphanTransactionsByPrev.find(txin.prevout.hash);
     if (itPrev == mapOrphanTransactionsByPrev.end()) continue;
     itPrev->second.erase(hash);
     if (itPrev->second.empty()) mapOrphanTransactionsByPrev.erase(itPrev);
@@ -484,9 +484,9 @@ void EraseOrphanTx(uint256 hash) {
 
 void EraseOrphansFor(NodeId peer) {
   int nErased = 0;
-  map<uint256, COrphanTx>::iterator iter = mapOrphanTransactions.begin();
+  auto iter = mapOrphanTransactions.begin();
   while (iter != mapOrphanTransactions.end()) {
-    map<uint256, COrphanTx>::iterator maybeErase = iter++;  // increment to avoid iterator becoming invalid
+    auto maybeErase = iter++;  // increment to avoid iterator becoming invalid
     if (maybeErase->second.fromPeer == peer) {
       EraseOrphanTx(maybeErase->second.tx.GetHash());
       ++nErased;
@@ -500,7 +500,7 @@ unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans) {
   while (mapOrphanTransactions.size() > nMaxOrphans) {
     // Evict a random orphan:
     uint256 randomhash = GetRandHash();
-    map<uint256, COrphanTx>::iterator it = mapOrphanTransactions.lower_bound(randomhash);
+    auto it = mapOrphanTransactions.lower_bound(randomhash);
     if (it == mapOrphanTransactions.end()) it = mapOrphanTransactions.begin();
     EraseOrphanTx(it->first);
     ++nEvicted;
@@ -1296,7 +1296,7 @@ void Misbehaving(NodeId pnode, int howmuch) {
 void static InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state) {
   int nDoS = 0;
   if (state.IsInvalid(nDoS)) {
-    std::map<uint256, NodeId>::iterator it = mapBlockSource.find(pindex->GetBlockHash());
+    auto it = mapBlockSource.find(pindex->GetBlockHash());
     if (it != mapBlockSource.end() && State(it->second)) {
       CBlockReject reject = {state.GetRejectCode(), state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH),
                              pindex->GetBlockHash()};
@@ -2361,7 +2361,7 @@ static CBlockIndex* FindMostWorkChain() {
 static void PruneBlockIndexCandidates() {
   // Note that we can't delete the current block itself, as we may need to return to it later in case a
   // reorganization to a better block fails.
-  std::set<CBlockIndex*, CBlockIndexWorkComparator>::iterator it = setBlockIndexCandidates.begin();
+  auto it = setBlockIndexCandidates.begin();
   while (it != setBlockIndexCandidates.end() && setBlockIndexCandidates.value_comp()(*it, chainActive.Tip())) {
     setBlockIndexCandidates.erase(it++);
   }
@@ -2524,7 +2524,7 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex) {
 
   // The resulting new best tip may not be in setBlockIndexCandidates anymore, so
   // add them again.
-  BlockMap::iterator it = mapBlockIndex.begin();
+  auto it = mapBlockIndex.begin();
   while (it != mapBlockIndex.end()) {
     if (it->second->IsValid(BLOCK_VALID_TRANSACTIONS) && it->second->nChainTx &&
         !setBlockIndexCandidates.value_comp()(it->second, chainActive.Tip())) {
@@ -2543,7 +2543,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex) {
   int nHeight = pindex->nHeight;
 
   // Remove the invalidity flag from this block and all its descendants.
-  BlockMap::iterator it = mapBlockIndex.begin();
+  auto it = mapBlockIndex.begin();
   while (it != mapBlockIndex.end()) {
     if (!it->second->IsValid() && it->second->GetAncestor(nHeight) == pindex) {
       it->second->nStatus &= ~BLOCK_FAILED_MASK;
@@ -2574,7 +2574,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex) {
 CBlockIndex* AddToBlockIndex(const CBlock& block) {
   // Check for duplicate
   uint256 hash = block.GetHash();
-  BlockMap::iterator it = mapBlockIndex.find(hash);
+  auto it = mapBlockIndex.find(hash);
   if (it != mapBlockIndex.end()) return it->second;
 
   // Construct new block index object
@@ -2584,13 +2584,13 @@ CBlockIndex* AddToBlockIndex(const CBlock& block) {
   // to avoid miners withholding blocks but broadcasting headers, to get a
   // competitive advantage.
   pindexNew->nSequenceId = 0;
-  BlockMap::iterator mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
+  auto mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
 
   // mark as PoS seen
   if (pindexNew->IsProofOfStake()) gStaker.setSeen(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
   pindexNew->phashBlock = &((*mi).first);
-  BlockMap::iterator miPrev = mapBlockIndex.find(block.hashPrevBlock);
+  auto miPrev = mapBlockIndex.find(block.hashPrevBlock);
   if (miPrev != mapBlockIndex.end()) {
     pindexNew->pprev = (*miPrev).second;
     pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
@@ -2669,7 +2669,7 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
                 std::multimap<CBlockIndex*, CBlockIndex*>::iterator>
           range = mapBlocksUnlinked.equal_range(pindex);
       while (range.first != range.second) {
-        std::multimap<CBlockIndex*, CBlockIndex*>::iterator it = range.first;
+        auto it = range.first;
         queue.push_back(it->second);
         range.first++;
         mapBlocksUnlinked.erase(it);
@@ -2984,7 +2984,7 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
   AssertLockHeld(cs_main);
   // Check for duplicate
   uint256 hash = block.GetHash();
-  BlockMap::iterator miSelf = mapBlockIndex.find(hash);
+  auto miSelf = mapBlockIndex.find(hash);
   CBlockIndex* pindex = nullptr;
 
   // TODO : ENABLE BLOCK CACHE IN SPECIFIC CASES
@@ -3005,7 +3005,7 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
   // Get prev block index
   CBlockIndex* pindexPrev = nullptr;
   if (hash != Params().HashGenesisBlock()) {
-    BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+    auto mi = mapBlockIndex.find(block.hashPrevBlock);
     if (mi == mapBlockIndex.end())
       return state.DoS(0, error("%s : prev block %s not found", __func__, block.hashPrevBlock.ToString().c_str()), 0,
                        "bad-prevblk");
@@ -3048,7 +3048,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
   // Get prev block index
   CBlockIndex* pindexPrev = nullptr;
   if (block.GetHash() != Params().HashGenesisBlock()) {
-    BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+    auto mi = mapBlockIndex.find(block.hashPrevBlock);
     if (mi == mapBlockIndex.end())
       return state.DoS(0, error("%s : prev block %s not found", __func__, block.hashPrevBlock.ToString().c_str()), 0,
                        "bad-prevblk");
@@ -3199,7 +3199,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
   if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != nullptr) {
     // if we get this far, check if the prev block is our prev block, if not then request sync and return false
-    BlockMap::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
+    auto mi = mapBlockIndex.find(pblock->hashPrevBlock);
     if (mi == mapBlockIndex.end()) {
       pfrom->PushMessage("getblocks", chainActive.GetLocator(), uint256(0));
       return false;
@@ -3340,7 +3340,7 @@ bool static LoadBlockIndexDB(string& strError) {
   pblocktree->WriteFlag("shutdown", false);
 
   // Load pointer to end of best chain
-  BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
+  auto it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
   if (it == mapBlockIndex.end()) return true;
   chainActive.SetTip(it->second);
 
@@ -3470,7 +3470,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp) {
           std::pair<std::multimap<uint256, CDiskBlockPos>::iterator, std::multimap<uint256, CDiskBlockPos>::iterator>
               range = mapBlocksUnknownParent.equal_range(head);
           while (range.first != range.second) {
-            std::multimap<uint256, CDiskBlockPos>::iterator it = range.first;
+            auto it = range.first;
             if (ReadBlockFromDisk(block, it->second)) {
               LogPrintf("%s: Processing out of order child %s of %s\n", __func__, block.GetHash().ToString(),
                         head.ToString());
@@ -3700,7 +3700,7 @@ void static ProcessGetData(CNode* pfrom) {
 
       if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK) {
         bool send = false;
-        BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
+        auto mi = mapBlockIndex.find(inv.hash);
         if (mi != mapBlockIndex.end()) {
           if (chainActive.Contains(mi->second)) {
             send = true;
@@ -3760,7 +3760,7 @@ void static ProcessGetData(CNode* pfrom) {
         bool pushed = false;
         {
           LOCK(cs_mapRelay);
-          map<CInv, CDataStream>::iterator mi = mapRelay.find(inv);
+          auto mi = mapRelay.find(inv);
           if (mi != mapRelay.end()) {
             pfrom->PushMessage(inv.GetCommand(), (*mi).second);
             pushed = true;
@@ -4094,7 +4094,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     CBlockIndex* pindex = nullptr;
     if (locator.IsNull()) {
       // If locator is null, return the hashStop block
-      BlockMap::iterator mi = mapBlockIndex.find(hashStop);
+      auto mi = mapBlockIndex.find(hashStop);
       if (mi == mapBlockIndex.end()) return true;
       pindex = (*mi).second;
     } else {
