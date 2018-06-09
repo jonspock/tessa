@@ -409,7 +409,7 @@ bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nC
       continue;  // previous transaction not in main chain
     }
 
-    BlockMap::iterator it = mapBlockIndex.find(hashBlockPrev);
+    auto it = mapBlockIndex.find(hashBlockPrev);
     if (it != mapBlockIndex.end())
       pindex = it->second;
     else {
