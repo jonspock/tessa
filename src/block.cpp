@@ -9,10 +9,6 @@
 #include "blockdisk.h"
 
 #include "main.h"
-#ifdef HAVE_BUILD_INFO
-#include "build.h"
-#endif
-
 #include "addrman.h"
 #include "blocksignature.h"
 #include "checkqueue.h"

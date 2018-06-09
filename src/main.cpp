@@ -10,10 +10,6 @@
 #include "warnings.h"
 #include "nodestate.h"
 
-#ifdef HAVE_BUILD_INFO
-#include "build.h"
-#endif
-
 #include "blockdisk.h"
 #include "blockfileinfo.h"
 #include "blockundo.h"
