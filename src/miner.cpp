@@ -192,7 +192,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
           double nTimePriority = std::pow(GetAdjustedTime() - nTimeSeen, 6);
 
-          // zZZZ spends can have very large priority, use non-overflowing safe functions
+          // ZKP spends can have very large priority, use non-overflowing safe functions
           dPriority = double_safe_addition(dPriority, (nTimePriority * nConfs));
           dPriority = double_safe_multiplication(dPriority, nTotalIn);
 
@@ -232,7 +232,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
         int nConf = nHeight - coins->nHeight;
 
-        // zZZZ spends can have very large priority, use non-overflowing safe functions
+        // ZKP spends can have very large priority, use non-overflowing safe functions
         dPriority = double_safe_addition(dPriority, ((double)nValueIn * nConf));
       }
       if (fMissingInputs) continue;
@@ -301,7 +301,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
       if (!view.HaveInputs(tx)) continue;
 
-      // double check that there are no double spent zZZZ spends in this block or tx
+      // double check that there are no double spent ZKP spends in this block or tx
       if (tx.IsZerocoinSpend()) {
         int nHeightTx = 0;
         if (IsTransactionInChain(tx.GetHash(), nHeightTx)) continue;
@@ -317,7 +317,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             vTxSerials.emplace_back(spend.getCoinSerialNumber());
           }
         }
-        // This zZZZ serial has already been included in the block, do not add this tx.
+        // This ZKP serial has already been included in the block, do not add this tx.
         if (fDoubleSerial) continue;
       }
 
@@ -401,7 +401,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (nHeight > ACC_BLOCK_INTERVAL) {
       uint256 hashBlockLastAccumulated = chainActive[nHeight - (nHeight % ACC_BLOCK_INTERVAL) - ACC_BLOCK_INTERVAL]->GetBlockHash();
       if (nHeight >= pCheckpointCache.first || pCheckpointCache.second.first != hashBlockLastAccumulated) {
-        // For the period before v2 activation, zZZZ will be disabled and previous block's checkpoint is all that will
+        // For the period before v2 activation, ZKP will be disabled and previous block's checkpoint is all that will
         // be needed
         pCheckpointCache.second.second = pindexPrev->nAccumulatorCheckpoint;
         if (pindexPrev->nHeight + 1 >= Params().Zerocoin_StartHeight()) {

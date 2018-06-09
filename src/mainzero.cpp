@@ -47,15 +47,15 @@ bool ContextualCheckZerocoinMint(const CTransaction& tx, const PublicCoin& coin,
 
 bool ContextualCheckZerocoinSpend(const CTransaction& tx, const CoinSpend& spend, CBlockIndex* pindex,
                                   const uint256& hashBlock) {
-  // Check to see if the zZZZ is properly signed
+  // Check to see if the ZKP is properly signed
   if (pindex->nHeight >= Params().Zerocoin_StartHeight()) {
-    if (!spend.HasValidSignature()) return error("%s: V2 zZZZ spend does not have a valid signature", __func__);
+    if (!spend.HasValidSignature()) return error("%s: V2 ZKP spend does not have a valid signature", __func__);
   }
 
   // Reject serial's that are already in the blockchain
   int nHeightTx = 0;
   if (IsSerialInBlockchain(spend.getCoinSerialNumber(), nHeightTx))
-    return error("%s : zZZZ spend with serial %s is already in block %d\n", __func__,
+    return error("%s : ZKP spend with serial %s is already in block %d\n", __func__,
                  spend.getCoinSerialNumber().GetHex(), nHeightTx);
   return true;
 }
@@ -165,7 +165,7 @@ void RecalculateZKPSpent() {
   while (true) {
     if (pindex->nHeight % 1000 == 0) LogPrintf("%s : block %d...\n", __func__, pindex->nHeight);
 
-    // Rewrite zZZZ supply
+    // Rewrite ZKP supply
     CBlock block;
     assert(ReadBlockFromDisk(block, pindex));
 
@@ -174,14 +174,14 @@ void RecalculateZKPSpent() {
     // Reset the supply to previous block
     pindex->mapZerocoinSupply = pindex->pprev->mapZerocoinSupply;
 
-    // Add mints to zZZZ supply
+    // Add mints to ZKP supply
     for (auto denom : libzerocoin::zerocoinDenomList) {
       long nDenomAdded =
           count(pindex->vMintDenominationsInBlock.begin(), pindex->vMintDenominationsInBlock.end(), denom);
       pindex->mapZerocoinSupply.at(denom) += nDenomAdded;
     }
 
-    // Remove spends from zZZZ supply
+    // Remove spends from ZKP supply
     for (auto denom : listDenomsSpent) pindex->mapZerocoinSupply.at(denom)--;
 
     // Rewrite money supply

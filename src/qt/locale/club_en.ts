@@ -2304,12 +2304,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</source>
     </message>
     <message>
         <location line="+6"/>
-        <source>Enable zZZZ Automint</source>
+        <source>Enable ZKP Automint</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+9"/>
-        <source>Percentage of incoming Club which get automatically converted to zZZZ via Zerocoin Protocol (min: 10%)</source>
+        <source>Percentage of incoming Club which get automatically converted to ZKP via Zerocoin Protocol (min: 10%)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2325,7 +2325,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</source>
     </message>
     <message>
         <location line="-13"/>
-        <source>Preferred Automint zZZZ Denomination</source>
+        <source>Preferred Automint ZKP Denomination</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2578,7 +2578,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</source>
         <location line="+53"/>
         <location line="+17"/>
         <source>Mature: more than 20 confirmation and more than 1 mint of the same denomination after it was minted.
-These zZZZ are spendable.</source>
+These ZKP are spendable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2651,7 +2651,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
     <message>
         <location line="+191"/>
         <location line="+19"/>
-        <source>Locked Club collaterals. These are excluded from zZZZ minting.</source>
+        <source>Locked Club collaterals. These are excluded from ZKP minting.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2667,7 +2667,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
     <message>
         <location line="+58"/>
         <location line="+19"/>
-        <source>Your current zZZZ balance, unconfirmed and immature zZZZ included.</source>
+        <source>Your current ZKP balance, unconfirmed and immature ZKP included.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2978,7 +2978,7 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
     </message>
     <message>
         <location line="+7"/>
-        <source>Available (mature and spendable) zZZZ for spending</source>
+        <source>Available (mature and spendable) ZKP for spending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2988,7 +2988,7 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
     </message>
     <message>
         <location line="+16"/>
-        <source>Available (mature and spendable) zZZZ for spending
+        <source>Available (mature and spendable) ZKP for spending
 
 zClub are mature when they have more than 20 confirmations AND more than 2 mints of the same denomination after them were minted</source>
         <translation type="unfinished"></translation>
@@ -3129,7 +3129,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
     </message>
     <message>
         <location line="+40"/>
-        <source>Show the current status of automatic zZZZ minting.
+        <source>Show the current status of automatic ZKP minting.
 
 To change the status (restart required):
 - enable: add &apos;enablezeromint=1&apos; to pivx.conf
@@ -3513,7 +3513,7 @@ To change the percentage (no restart required):
     </message>
     <message>
         <location line="+0"/>
-        <source> zZZZ in </source>
+        <source> ZKP in </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3603,7 +3603,7 @@ Please be patient...</source>
     <message>
         <location line="+13"/>
         <location line="+32"/>
-        <source>Version 1 zZZZ require a security level of 100 to successfully spend.</source>
+        <source>Version 1 ZKP require a security level of 100 to successfully spend.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4069,7 +4069,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+29"/>
-        <source>Custom zZZZ Backup Path:</source>
+        <source>Custom ZKP Backup Path:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5687,12 +5687,12 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+2"/>
-        <source>Minted Change as zZZZ from zZZZ Spend</source>
+        <source>Minted Change as ZKP from ZKP Spend</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Converted zZZZ to Club</source>
+        <source>Converted ZKP to Club</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6054,7 +6054,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     <name>ZPivControlDialog</name>
     <message>
         <location filename="../forms/zpivcontroldialog.ui" line="+20"/>
-        <source>Select zZZZ to Spend</source>
+        <source>Select ZKP to Spend</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6153,7 +6153,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+5"/>
-        <source>Enable automatic wallet backups triggered after each zZZZ minting (0-1, default: %u)</source>
+        <source>Enable automatic wallet backups triggered after each ZKP minting (0-1, default: %u)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6163,7 +6163,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+2"/>
-        <source>Enable or disable staking functionality for zZZZ inputs (0-1, default: %u)</source>
+        <source>Enable or disable staking functionality for ZKP inputs (0-1, default: %u)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6908,7 +6908,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+9"/>
-        <source>Reindex the Club and zZZZ money supply statistics</source>
+        <source>Reindex the Club and ZKP money supply statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7000,7 +7000,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+24"/>
-        <source>Specify custom backup path to add a copy of any automatic zZZZ backup. If set as dir, every backup generates a timestamped file. If set as file, will rewrite to that file every backup. If backuppath is set as well, 4 backups will happen</source>
+        <source>Specify custom backup path to add a copy of any automatic ZKP backup. If set as dir, every backup generates a timestamped file. If set as file, will rewrite to that file every backup. If backuppath is set as well, 4 backups will happen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7625,7 +7625,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+1"/>
-        <source>Syncing zZZZ wallet...</source>
+        <source>Syncing ZKP wallet...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7830,7 +7830,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+1"/>
-        <source>Version 1 zZZZ require a security level of 100 to successfully spend.</source>
+        <source>Version 1 ZKP require a security level of 100 to successfully spend.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

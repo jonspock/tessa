@@ -309,15 +309,15 @@ QString TransactionTableModel::formatTxType(const TransactionRecord* wtx) const 
     case TransactionRecord::Generated:
       return tr("Mined");
     case TransactionRecord::ZerocoinMint:
-      return tr("Converted GGG to ZKP");
+      return tr("Converted Club to ZKP");
     case TransactionRecord::ZerocoinSpend:
       return tr("Spent ZKP");
     case TransactionRecord::RecvFromZerocoinSpend:
-      return tr("Received GGG from ZKP");
+      return tr("Received Club from ZKP");
     case TransactionRecord::ZerocoinSpend_Change_zPiv:
-      return tr("Minted Change as zZZZ from zZZZ Spend");
+      return tr("Minted Change as ZKP from ZKP Spend");
     case TransactionRecord::ZerocoinSpend_FromMe:
-      return tr("Converted zZZZ to Club");
+      return tr("Converted ZKP to Club");
 
     default:
       return QString();

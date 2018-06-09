@@ -29,7 +29,7 @@ CZeroWallet::CZeroWallet(std::string strWalletFile) {
       hashSeed = Hash(seed.begin(), seed.end());
       if (pwalletMain->AddDeterministicSeed(seed)) {
         if (walletdb.EraseZKPSeed_deprecated()) {
-          LogPrintf("%s: Updated zZZZ seed databasing\n", __func__);
+          LogPrintf("%s: Updated ZKP seed databasing\n", __func__);
           fFirstRun = false;
         } else {
           LogPrintf("%s: failed to remove old zkp seed\n", __func__);

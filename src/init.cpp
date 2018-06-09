@@ -582,7 +582,7 @@ std::string HelpMessage(HelpMessageMode mode) {
   strUsage += HelpMessageGroup(_("Staking options:"));
   strUsage += HelpMessageOpt("-staking=<n>", strprintf(_("Enable staking functionality (0-1, default: %u)"), 1));
   strUsage += HelpMessageOpt(
-      "-pivstake=<n>", strprintf(_("Enable or disable staking functionality for GGG inputs (0-1, default: %u)"), 1));
+      "-stake=<n>", strprintf(_("Enable or disable staking functionality for Club inputs (0-1, default: %u)"), 1));
   strUsage += HelpMessageOpt("-reservebalance=<amt>",
                              _("Keep the specified amount available for spending at all times (default: 0)"));
   if (GetBoolArg("-help-debug", false)) {
@@ -596,9 +596,9 @@ std::string HelpMessage(HelpMessageMode mode) {
 #ifdef ENABLE_WALLET
   strUsage += HelpMessageOpt(
       "-backupzkp=<n>",
-      strprintf(_("Enable automatic wallet backups triggered after each zZZZ minting (0-1, default: %u)"), 1));
+      strprintf(_("Enable automatic wallet backups triggered after each ZKP minting (0-1, default: %u)"), 1));
   strUsage += HelpMessageOpt("-zkpbackuppath=<dir|file>",
-                             _("Specify custom backup path to add a copy of any automatic zZZZ backup. If set as dir, "
+                             _("Specify custom backup path to add a copy of any automatic ZKP backup. If set as dir, "
                                "every backup generates a timestamped file. If set as file, will rewrite to that file "
                                "every backup. If backuppath is set as well, 4 backups will happen"));
 #endif  // ENABLE_WALLET
@@ -1717,10 +1717,10 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     fVerifyingBlocks = false;
 
     // Inititalize ZkpWallet
-    uiInterface.InitMessage(_("Syncing zZZZ wallet..."));
+    uiInterface.InitMessage(_("Syncing ZKP wallet..."));
 
-    bool fEnableZPivBackups = GetBoolArg("-backupzkp", true);
-    pwalletMain->setZPivAutoBackups(fEnableZPivBackups);
+    bool fEnableZkpBackups = GetBoolArg("-backupzkp", true);
+    pwalletMain->setZkpAutoBackups(fEnableZkpBackups);
 
     // Load zerocoin mint hashes to memory
     pwalletMain->zkpTracker->Init();

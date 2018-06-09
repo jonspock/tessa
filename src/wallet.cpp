@@ -80,7 +80,7 @@ bool fPayAtLeastCustomFee = true;
 int64_t nStartupTime = GetTime();  //!< Client startup time for use with automint
 
 /**
- * Fees smaller than this (in upiv) are considered zero fee (for transaction creation)
+ * Fees smaller than this (in u) are considered zero fee (for transaction creation)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minTxFee 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
  * Override with -mintxfee
@@ -1120,7 +1120,7 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
   vector<COutput> vCoins;
   AvailableCoins(vCoins, true, nullptr, false, STAKABLE_COINS);
   CAmount nAmountSelected = 0;
-  if (GetBoolArg("-pivstake", true)) {
+  if (GetBoolArg("-stake", true)) {
     for (const COutput& out : vCoins) {
       // make sure not to outrun target amount
       if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount) continue;
@@ -1141,7 +1141,7 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
       // add to our stake set
       nAmountSelected += out.tx->vout[out.i].nValue;
 
-      std::unique_ptr<CPivStake> input(new CPivStake());
+      std::unique_ptr<CStake> input(new CStake());
       input->SetInput((CTransaction)*out.tx, out.i);
       listInputs.emplace_back(std::move(input));
     }
@@ -1152,7 +1152,7 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
 
 bool CWallet::MintableCoins() {
   CAmount nBalance = GetBalance();
-  CAmount nZpivBalance = GetZerocoinBalance(false);
+  CAmount nZkpBalance = GetZerocoinBalance(false);
 
   // Regular Club
   if (nBalance > 0) {
@@ -1174,8 +1174,8 @@ bool CWallet::MintableCoins() {
     }
   }
 
-  // zZZZ
-  if (nZpivBalance > 0) return true;
+  // ZKP
+  if (nZkpBalance > 0) return true;
   return false;
 }
 
@@ -2726,7 +2726,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
   }
 
   // any change that is less than 0.0100000 will be ignored and given as an extra fee
-  // also assume that a zerocoinspend that is minting the change will not have any change that goes to Piv
+  // also assume that a zerocoinspend that is minting the change will not have any change that goes to Club
   CAmount nChange = nValueIn - nTotalValue;  // Fee already accounted for in nTotalValue
   if (nChange > 1 * CENT && !isZCSpendChange) {
     // Fill a vout to ourself using the largest contributing address
@@ -2739,7 +2739,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
     if (reservekey) reservekey->ReturnKey();
   }
 
-  // Sign if these are club outputs - NOTE that zZZZ outputs are signed later in SoK
+  // Sign if these are club outputs - NOTE that ZKP outputs are signed later in SoK
   if (!isZCSpendChange) {
     int nIn = 0;
     for (const std::pair<const CWalletTx*, unsigned int>& coin : setCoins) {
@@ -2795,7 +2795,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
   LogPrintf("%s: privatecoin version=%d\n", __func__, privateCoin.getVersion());
   CKey key;
   if (!zerocoinSelected.GetKeyPair(key))
-    return error("%s: failed to set zZZZ privkey mint version=%d", __func__, nVersion);
+    return error("%s: failed to set ZKP privkey mint version=%d", __func__, nVersion);
 
   privateCoin.setPrivKey(key.GetPrivKey());
 
@@ -2851,7 +2851,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
     }
 
     if (IsSerialKnown(spend.getCoinSerialNumber())) {
-      // Tried to spend an already spent zZZZ
+      // Tried to spend an already spent ZKP
       receipt.SetStatus(_("The coin spend has been used"), ZKP_SPENT_USED_ZKP);
 
       uint256 hashSerial = GetSerialHash(spend.getCoinSerialNumber());
@@ -2894,7 +2894,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
   }
 
   if (nValue < 1) {
-    receipt.SetStatus(_("Value is below the smallest available denomination (= 1) of zZZZ"), nStatus);
+    receipt.SetStatus(_("Value is below the smallest available denomination (= 1) of ZKP"), nStatus);
     return false;
   }
 
@@ -2908,7 +2908,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
   int nCoinsReturned = 0;  // Number of coins returned in change from function below (for debug)
   int nNeededSpends = 0;   // Number of spends which would be needed if selection failed
   const int nMaxSpends =
-      Params().Zerocoin_MaxSpendsPerTransaction();  // Maximum possible spends for one zZZZ transaction
+      Params().Zerocoin_MaxSpendsPerTransaction();  // Maximum possible spends for one ZKP transaction
   vector<CMintMeta> vMintsToFetch;
   if (vSelectedMints.empty()) {
     setMints = zkpTracker->ListMints(true, true, true);  // need to find mints to spend
@@ -2923,7 +2923,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
     CAmount nValueToSelect = nValue;
     if (!fWholeNumber) nValueToSelect = static_cast<CAmount>(ceil(dValue) * COIN);
 
-    // Select the zZZZ mints to use in this spend
+    // Select the ZKP mints to use in this spend
     std::map<libzerocoin::CoinDenomination, CAmount> DenomMap = GetMyZerocoinDistribution();
     list<CMintMeta> listMints(setMints.begin(), setMints.end());
     vMintsToFetch = SelectMintsFromList(nValueToSelect, nValueSelected, nMaxSpends, fMinimizeChange, nCoinsReturned,
@@ -3234,7 +3234,7 @@ string CWallet::GetUniqueWalletBackupName(bool fzkpAuto) const {
   return strprintf("wallet%s.dat%s", fzkpAuto ? "-autozkpbackup" : "", DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime()));
 }
 
-void CWallet::ZPivBackupWallet() {
+void CWallet::ZkpBackupWallet() {
   boost::filesystem::path backupDir = GetDataDir() / "backups";
   boost::filesystem::path backupPath;
   string strNewBackupName;
@@ -3348,7 +3348,7 @@ string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, vector<CDetermin
   }
 
   // Create a backup of the wallet
-  if (fBackupMints) ZPivBackupWallet();
+  if (fBackupMints) ZkpBackupWallet();
 
   return "";
 }
@@ -3371,7 +3371,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, int nSecurityLevel, CWalletTx& wtxN
     return false;
   }
 
-  if (fMintChange && fBackupMints) ZPivBackupWallet();
+  if (fMintChange && fBackupMints) ZkpBackupWallet();
 
   CWalletDB walletdb(pwalletMain->strWalletFile);
   if (!CommitTransaction(wtxNew, reserveKey)) {
@@ -3429,7 +3429,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, int nSecurityLevel, CWalletTx& wtxN
     zkpTracker->Add(dMint, true);
   }
 
-  receipt.SetStatus("Spend Successful", ZKP_SPEND_OKAY);  // When we reach this point spending zZZZ was successful
+  receipt.SetStatus("Spend Successful", ZKP_SPEND_OKAY);  // When we reach this point spending ZKP was successful
 
   return true;
 }

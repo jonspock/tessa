@@ -56,7 +56,7 @@ class BitcoinUnits : public QAbstractListModel {
   /** Club units.
     @note Source: https://en.bitcoin.it/wiki/Units . Please add only sensible ones
    */
-  enum Unit { GGG, mGGG, uGGG };
+  enum Unit { Club, mClub, uClub };
 
   enum SeparatorStyle { separatorNever, separatorStandard, separatorAlways };
 

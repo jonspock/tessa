@@ -143,7 +143,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   std::string ResetSpentZerocoin();
   void ReconsiderZerocoins(std::list<CZerocoinMint>& listMintsRestored,
                            std::list<CDeterministicMint>& listDMintsRestored);
-  void ZPivBackupWallet();
+  void ZkpBackupWallet();
   bool GetZerocoinKey(const CBigNum& bnSerial, CKey& key);
   bool CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint);
   bool GetMint(const uint256& hashSerial, CZerocoinMint& mint);
@@ -253,7 +253,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   CZeroWallet* getZWallet() { return zwalletMain; }
 
-  void setZPivAutoBackups(bool fEnabled) { fBackupMints = fEnabled; }
+  void setZkpAutoBackups(bool fEnabled) { fBackupMints = fEnabled; }
 
   bool isMultiSendEnabled() { return fMultiSendMasternodeReward || fMultiSendStake; }
 
@@ -529,7 +529,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   /** MultiSig address added */
   boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
 
-  /** zZZZ reset */
+  /** ZKP reset */
   boost::signals2::signal<void()> NotifyZkpReset;
 
   /** notify wallet file backed up */

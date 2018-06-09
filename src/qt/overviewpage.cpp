@@ -34,7 +34,7 @@ extern CWallet* pwalletMain;
 class TxViewDelegate : public QAbstractItemDelegate {
   Q_OBJECT
  public:
-  TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::GGG) {}
+  TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::Club) {}
 
   inline void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
     painter->save();
@@ -193,12 +193,12 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     nLockedBalance = pwalletMain->GetLockedCoins();
     nWatchOnlyLockedBalance = pwalletMain->GetLockedWatchOnlyBalance();
   }
-  // GGG Balance
+  // Club Balance
   CAmount nTotalBalance = balance + unconfirmedBalance;
   CAmount pivAvailableBalance = balance - immatureBalance - nLockedBalance;
   CAmount nTotalWatchBalance = watchOnlyBalance + watchUnconfBalance + watchImmatureBalance;
   CAmount nUnlockedBalance = nTotalBalance - nLockedBalance;
-  // zZZZ Balance
+  // ZKP Balance
   CAmount matureZerocoinBalance = zerocoinBalance - unconfirmedZerocoinBalance - immatureZerocoinBalance;
   // Percentages
   QString szPercentage = "";
@@ -208,7 +208,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   CAmount availableTotalBalance = pivAvailableBalance + matureZerocoinBalance;
   CAmount sumTotalBalance = nTotalBalance + zerocoinBalance;
 
-  // GGG labels
+  // Club labels
   ui->labelBalance->setText(
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, pivAvailableBalance, false, BitcoinUnits::separatorAlways));
   ui->labelUnconfirmed->setText(
@@ -232,7 +232,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   ui->labelWatchTotal->setText(
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, nTotalWatchBalance, false, BitcoinUnits::separatorAlways));
 
-  // zZZZ labels
+  // ZKP labels
   ui->labelzBalance->setText(
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, zerocoinBalance, false, BitcoinUnits::separatorAlways));
   ui->labelzBalanceUnconfirmed->setText(

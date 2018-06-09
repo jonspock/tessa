@@ -331,7 +331,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::uniqu
                       TransactionSignatureChecker(&tx, 0)))
       return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.GetHash().ToString().c_str());
 
-    CPivStake* pivInput = new CPivStake();
+    CStake* pivInput = new CStake();
     pivInput->SetInput(txPrev, txin.prevout.n);
     stake = std::unique_ptr<CStakeInput>(pivInput);
   }

@@ -70,14 +70,14 @@ static const char UNUSED *club_strings[] = {
                       "COPYING or <http://www.opensource.org/licenses/mit-license.php>."),
     QT_TRANSLATE_NOOP("club-core",
                       ""
-                      "Enable automatic wallet backups triggered after each zZZZ minting (0-1, "
+                      "Enable automatic wallet backups triggered after each ZKP minting (0-1, "
                       "default: %u)"),
     QT_TRANSLATE_NOOP("club-core",
                       ""
-                      "Enable or disable staking functionality for GGG inputs (0-1, default: %u)"),
+                      "Enable or disable staking functionality for Club inputs (0-1, default: %u)"),
     QT_TRANSLATE_NOOP("club-core",
                       ""
-                      "Enable or disable staking functionality for zZZZ inputs (0-1, default: %u)"),
+                      "Enable or disable staking functionality for ZKP inputs (0-1, default: %u)"),
     QT_TRANSLATE_NOOP("club-core",
                       ""
                       "Enable spork administration functionality with the appropriate private key."),
@@ -225,7 +225,7 @@ static const char UNUSED *club_strings[] = {
                       "%u)"),
     QT_TRANSLATE_NOOP("club-core",
                       ""
-                      "Specify custom backup path to add a copy of any automatic zZZZ backup. If "
+                      "Specify custom backup path to add a copy of any automatic ZKP backup. If "
                       "set as dir, every backup generates a timestamped file. If set as file, will "
                       "rewrite to that file every backup. If backuppath is set as well, 4 backups "
                       "will happen"),
@@ -457,7 +457,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("club-core", "Randomly fuzz 1 of every <n> network messages"),
     QT_TRANSLATE_NOOP("club-core", "Rebuild block chain index from current blk000??.dat files"),
     QT_TRANSLATE_NOOP("club-core", "Receive and display P2P network alerts (default: %u)"),
-    QT_TRANSLATE_NOOP("club-core", "Reindex the GGG and zZZZ money supply statistics"),
+    QT_TRANSLATE_NOOP("club-core", "Reindex the Club and ZKP money supply statistics"),
     QT_TRANSLATE_NOOP("club-core", "Reindex the accumulator database"),
     QT_TRANSLATE_NOOP("club-core", "Reindexing zerocoin database..."),
     QT_TRANSLATE_NOOP("club-core", "Reindexing zerocoin failed"),
@@ -500,7 +500,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("club-core", "Synchronization pending..."),
     QT_TRANSLATE_NOOP("club-core", "Synchronizing budgets..."),
     QT_TRANSLATE_NOOP("club-core", "Synchronizing sporks..."),
-    QT_TRANSLATE_NOOP("club-core", "Syncing zZZZ wallet..."),
+    QT_TRANSLATE_NOOP("club-core", "Syncing ZKP wallet..."),
     QT_TRANSLATE_NOOP("club-core", "The coin spend has been used"),
     QT_TRANSLATE_NOOP("club-core", "The new spend coin transaction did not verify"),
     QT_TRANSLATE_NOOP("club-core", "The selected mint coin is an invalid coin"),
@@ -540,7 +540,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("club-core", "Value more than Obfuscation pool maximum allows."),
     QT_TRANSLATE_NOOP("club-core", "Verifying blocks..."),
     QT_TRANSLATE_NOOP("club-core", "Verifying wallet..."),
-    QT_TRANSLATE_NOOP("club-core", "Version 1 zZZZ require a security level of 100 to successfully spend."),
+    QT_TRANSLATE_NOOP("club-core", "Version 1 ZKP require a security level of 100 to successfully spend."),
     QT_TRANSLATE_NOOP("club-core", "Wallet %s resides outside data directory %s"),
     QT_TRANSLATE_NOOP("club-core", "Wallet is locked."),
     QT_TRANSLATE_NOOP("club-core", "Wallet needed to be rewritten: restart Club Core to complete"),

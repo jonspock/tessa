@@ -12,25 +12,25 @@
 #include "wallet.h"
 
 //! Club Stake
-bool CPivStake::SetInput(CTransaction txPrev, unsigned int n) {
+bool CStake::SetInput(CTransaction txPrev, unsigned int n) {
   this->txFrom = txPrev;
   this->nPosition = n;
   return true;
 }
 
-bool CPivStake::GetTxFrom(CTransaction& tx) {
+bool CStake::GetTxFrom(CTransaction& tx) {
   tx = txFrom;
   return true;
 }
 
-bool CPivStake::CreateTxIn(CWallet* pwallet, CTxIn& txIn, uint256 hashTxOut) {
+bool CStake::CreateTxIn(CWallet* pwallet, CTxIn& txIn, uint256 hashTxOut) {
   txIn = CTxIn(txFrom.GetHash(), nPosition);
   return true;
 }
 
-CAmount CPivStake::GetValue() { return txFrom.vout[nPosition].nValue; }
+CAmount CStake::GetValue() { return txFrom.vout[nPosition].nValue; }
 
-bool CPivStake::CreateTxOuts(CWallet* pwallet, vector<CTxOut>& vout, CAmount nTotal) {
+bool CStake::CreateTxOuts(CWallet* pwallet, vector<CTxOut>& vout, CAmount nTotal) {
   vector<valtype> vSolutions;
   txnouttype whichType;
   CScript scriptPubKeyKernel = txFrom.vout[nPosition].scriptPubKey;
@@ -61,7 +61,7 @@ bool CPivStake::CreateTxOuts(CWallet* pwallet, vector<CTxOut>& vout, CAmount nTo
   return true;
 }
 
-bool CPivStake::GetModifier(uint64_t& nStakeModifier) {
+bool CStake::GetModifier(uint64_t& nStakeModifier) {
   int nStakeModifierHeight = 0;
   int64_t nStakeModifierTime = 0;
   GetIndexFrom();
@@ -74,15 +74,15 @@ bool CPivStake::GetModifier(uint64_t& nStakeModifier) {
   return true;
 }
 
-CDataStream CPivStake::GetUniqueness() {
-  // The unique identifier for a GGG stake is the outpoint
+CDataStream CStake::GetUniqueness() {
+  // The unique identifier for a Club stake is the outpoint
   CDataStream ss(SER_NETWORK, 0);
   ss << nPosition << txFrom.GetHash();
   return ss;
 }
 
 // The block that the UTXO was added to the chain
-CBlockIndex* CPivStake::GetIndexFrom() {
+CBlockIndex* CStake::GetIndexFrom() {
   uint256 hashBlock = 0;
   CTransaction tx;
   if (GetTransaction(txFrom.GetHash(), tx, hashBlock, true)) {

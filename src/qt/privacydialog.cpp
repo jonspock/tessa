@@ -33,7 +33,7 @@ PrivacyDialog::PrivacyDialog(QWidget* parent)
   nDisplayUnit = 0;  // just make sure it's not unitialized
   ui->setupUi(this);
 
-  // "Spending 999999 zZZZ ought to be enough for anybody." - Bill Gates, 2017
+  // "Spending 999999 ZKP ought to be enough for anybody." - Bill Gates, 2017
   ui->ZKPpayAmount->setValidator(new QDoubleValidator(0.0, 21000000.0, 20, this));
   ui->labelMintAmountValue->setValidator(new QIntValidator(0, 999999, this));
 
@@ -192,7 +192,7 @@ void PrivacyDialog::on_pushButtonMintZKP_clicked() {
   double fDuration = (double)(GetTimeMillis() - nTime) / 1000.0;
 
   // Minting successfully finished. Show some stats for entertainment.
-  QString strStatsHeader = tr("Successfully minted ") + ui->labelMintAmountValue->text() + tr(" zZZZ in ") +
+  QString strStatsHeader = tr("Successfully minted ") + ui->labelMintAmountValue->text() + tr(" ZKP in ") +
                            QString::number(fDuration) + tr(" sec. Used denominations:\n");
 
   // Clear amount to avoid double spending when accidentally clicking twice
@@ -328,7 +328,7 @@ void PrivacyDialog::sendZKP() {
   fMinimizeChange = ui->checkBoxMinimizeChange->isChecked();
   settings.setValue("fMinimizeChange", fMinimizeChange);
 
-  // Warn for additional fees if amount is not an integer and change as zZZZ is requested
+  // Warn for additional fees if amount is not an integer and change as ZKP is requested
   bool fWholeNumber = floor(dAmount) == dAmount;
   double dzFee = 0.0;
 
@@ -338,7 +338,7 @@ void PrivacyDialog::sendZKP() {
     QString strFeeWarning =
         "You've entered an amount with fractional digits and want the change to be converted to Zerocoin.<br /><br "
         "/><b>";
-    strFeeWarning += QString::number(dzFee, 'f', 8) + " GGG </b>will be added to the standard transaction fees!<br />";
+    strFeeWarning += QString::number(dzFee, 'f', 8) + " Club </b>will be added to the standard transaction fees!<br />";
     QMessageBox::StandardButton retval =
         QMessageBox::question(this, tr("Confirm additional Fees"), strFeeWarning,
                               QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
@@ -390,7 +390,7 @@ void PrivacyDialog::sendZKP() {
          "Level and your hardware. \nPlease be patient..."));
   ui->TEMintStatus->repaint();
 
-  // use mints from zZZZ selector if applicable
+  // use mints from ZKP selector if applicable
   vector<CMintMeta> vMintsToFetch;
   vector<CZerocoinMint> vMintsSelected;
   if (!ZPivControlDialog::setSelectedMints.empty()) {
@@ -425,7 +425,7 @@ void PrivacyDialog::sendZKP() {
   if (!fSuccess) {
     int nNeededSpends = receipt.GetNeededSpends();  // Number of spends we would need for this transaction
     const int nMaxSpends =
-        Params().Zerocoin_MaxSpendsPerTransaction();  // Maximum possible spends for one zZZZ transaction
+        Params().Zerocoin_MaxSpendsPerTransaction();  // Maximum possible spends for one ZKP transaction
     if (nNeededSpends > nMaxSpends) {
       QString strStatusMessage = tr("Too much inputs (") + QString::number(nNeededSpends, 10) +
                                  tr(") needed. \nMaximum allowed: ") + QString::number(nMaxSpends, 10);
@@ -451,7 +451,7 @@ void PrivacyDialog::sendZKP() {
   }
 
   if (walletModel && walletModel->getAddressTableModel()) {
-    // If zZZZ was spent successfully update the addressbook with the label
+    // If ZKP was spent successfully update the addressbook with the label
     std::string labelText = ui->addAsLabel->text().toStdString();
     if (!labelText.empty())
       walletModel->updateAddressBookLabels(address.Get(), labelText, "send");
@@ -618,7 +618,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
     if (nImmature || nUnconfirmed) { strUnconfirmed = QString("( ") + strUnconfirmed + QString(") "); }
 
     strDenomStats = strUnconfirmed + QString::number(mapDenomBalances.at(denom)) + " x " + QString::number(nCoins) +
-                    " = <b>" + QString::number(nSumPerCoin) + " zZZZ </b>";
+                    " = <b>" + QString::number(nSumPerCoin) + " ZKP </b>";
 
     switch (nCoins) {
       case libzerocoin::CoinDenomination::ZQ_ONE:
@@ -654,8 +654,8 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
   CAmount nLockedBalance = 0;
   if (walletModel) { nLockedBalance = walletModel->getLockedBalance(); }
 
-  ui->labelzAvailableAmount->setText(QString::number(zerocoinBalance / COIN) + QString(" zZZZ "));
-  ui->labelzAvailableAmount_2->setText(QString::number(matureZerocoinBalance / COIN) + QString(" zZZZ "));
+  ui->labelzAvailableAmount->setText(QString::number(zerocoinBalance / COIN) + QString(" ZKP "));
+  ui->labelzAvailableAmount_2->setText(QString::number(matureZerocoinBalance / COIN) + QString(" ZKP "));
   ui->labelZKPAmountValue->setText(BitcoinUnits::floorHtmlWithUnit(
       nDisplayUnit, balance - immatureBalance - nLockedBalance, false, BitcoinUnits::separatorAlways));
 
@@ -668,7 +668,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
   for (auto denom : libzerocoin::zerocoinDenomList) {
     int64_t nSupply = chainActive.Tip()->mapZerocoinSupply.at(denom);
     QString strSupply = QString::number(nSupply) + " x " + QString::number(denom) + " = <b>" +
-                        QString::number(nSupply * denom) + " zZZZ </b> ";
+                        QString::number(nSupply * denom) + " ZKP </b> ";
     switch (denom) {
       case libzerocoin::CoinDenomination::ZQ_ONE:
         ui->labelZsupplyAmount1->setText(strSupply);
@@ -735,7 +735,7 @@ void PrivacyDialog::updateZeroSPORKStatus() {
   } else {
     // Mint ZKP
     ui->pushButtonMintZKP->setEnabled(true);
-    ui->pushButtonMintZKP->setToolTip(tr("PrivacyDialog", "Enter an amount of GGG to convert to ZKP", 0));
+    ui->pushButtonMintZKP->setToolTip(tr("PrivacyDialog", "Enter an amount of Club to convert to ZKP", 0));
 
     // Spend ZKP
     ui->pushButtonSpendZKP->setEnabled(true);

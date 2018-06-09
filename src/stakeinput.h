@@ -29,13 +29,13 @@ class CStakeInput {
   virtual CDataStream GetUniqueness() = 0;
 };
 
-class CPivStake : public CStakeInput {
+class CStake : public CStakeInput {
  private:
   CTransaction txFrom;
   unsigned int nPosition;
 
  public:
-  CPivStake() { this->pindexFrom = nullptr; }
+  CStake() { this->pindexFrom = nullptr; }
 
   bool SetInput(CTransaction txPrev, unsigned int n);
 

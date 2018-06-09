@@ -881,7 +881,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       int nHeightTx = 0;
       if (IsTransactionInChain(tx.GetHash(), nHeightTx))
         return state.Invalid(
-            error("AcceptToMemoryPool : zZZZ spend tx %s already in block %d", tx.GetHash().GetHex(), nHeightTx),
+            error("AcceptToMemoryPool : ZKP spend tx %s already in block %d", tx.GetHash().GetHex(), nHeightTx),
             REJECT_DUPLICATE, "bad-txns-inputs-spent");
 
       // Check for double spending of serial #'s
@@ -911,7 +911,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         }
       }
 
-      // Check that zZZZ mints are not already known
+      // Check that ZKP mints are not already known
       if (tx.IsZerocoinMint()) {
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
@@ -1817,7 +1817,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
               REJECT_INVALID);
       }
 
-      // Check that zZZZ mints are not already known
+      // Check that ZKP mints are not already known
       if (tx.IsZerocoinMint()) {
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
@@ -1838,7 +1838,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return state.DoS(100, error("ConnectBlock() : inputs missing/spent"), REJECT_INVALID,
                          "bad-txns-inputs-missingorspent");
 
-      // Check that zZZZ mints are not already known
+      // Check that ZKP mints are not already known
       if (tx.IsZerocoinMint()) {
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
@@ -1881,10 +1881,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
   }
 
-  // Track zZZZ money supply in the block index
+  // Track ZKP money supply in the block index
   if (!UpdateZKPSupply(block, pindex))
     return state.DoS(100,
-                     error("%s: Failed to calculate new zZZZ supply for block=%s height=%d", __func__,
+                     error("%s: Failed to calculate new ZKP supply for block=%s height=%d", __func__,
                            block.GetHash().GetHex(), pindex->nHeight),
                      REJECT_INVALID);
 
@@ -1946,7 +1946,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     setDirtyBlockIndex.insert(pindex);
   }
 
-  // Record zZZZ serials
+  // Record ZKP serials
   set<uint256> setAddedTx;
   for (pair<CoinSpend, uint256> pSpend : vSpends) {
     // record spend to database
@@ -2840,13 +2840,13 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
           return error("CheckBlock() : CheckTransaction failed");
       }
 
-    // double check that there are no double spent zZZZ spends in this block
+    // double check that there are no double spent ZKP spends in this block
     if (tx.IsZerocoinSpend()) {
       for (const CTxIn txIn : tx.vin) {
         if (txIn.scriptSig.IsZerocoinSpend()) {
           libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
           if (count(vBlockSerials.begin(), vBlockSerials.end(), spend.getCoinSerialNumber()))
-            return state.DoS(100, error("%s : Double spending of zZZZ serial %s in block\n Block: %s", __func__,
+            return state.DoS(100, error("%s : Double spending of ZKP serial %s in block\n Block: %s", __func__,
                                         spend.getCoinSerialNumber().GetHex(), block.ToString()));
           vBlockSerials.emplace_back(spend.getCoinSerialNumber());
         }
@@ -3190,7 +3190,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
       }
     }
   }
-  if (nMints || nSpends) LogPrintf("%s : block contains %d zZZZ mints and %d zZZZ spends\n", __func__, nMints, nSpends);
+  if (nMints || nSpends) LogPrintf("%s : block contains %d ZKP mints and %d ZKP spends\n", __func__, nMints, nSpends);
 
   if (!CheckBlockSignature(*pblock)) return error("ProcessNewBlock() : bad proof-of-stake block signature");
 

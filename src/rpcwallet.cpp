@@ -341,7 +341,7 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp) {
 
         "\nArguments:\n"
         "1. \"clubaddress\"  (string, required) The club address to send to.\n"
-        "2. \"amount\"      (numeric, required) The amount in GGG to send. eg 0.1\n"
+        "2. \"amount\"      (numeric, required) The amount in Club to send. eg 0.1\n"
         "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
         "                             This is not part of the transaction, just kept in your wallet.\n"
         "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
@@ -389,7 +389,7 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp) {
 
         "\nArguments:\n"
         "1. \"clubaddress\"  (string, required) The club address to send to.\n"
-        "2. \"amount\"      (numeric, required) The amount in GGG to send. eg 0.1\n"
+        "2. \"amount\"      (numeric, required) The amount in Club to send. eg 0.1\n"
         "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
         "                             This is not part of the transaction, just kept in your wallet.\n"
         "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
@@ -534,7 +534,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
         "times.\n"
 
         "\nResult:\n"
-        "amount   (numeric) The total amount in GGG received at this address.\n"
+        "amount   (numeric) The total amount in Club received at this address.\n"
 
         "\nExamples:\n"
         "\nThe amount from transactions with at least 1 confirmation\n" +
@@ -585,7 +585,7 @@ UniValue getreceivedbyaccount(const UniValue& params, bool fHelp) {
         "times.\n"
 
         "\nResult:\n"
-        "amount              (numeric) The total amount in GGG received for this account.\n"
+        "amount              (numeric) The total amount in Club received for this account.\n"
 
         "\nExamples:\n"
         "\nAmount received by the default account with at least 1 confirmation\n" +
@@ -668,7 +668,7 @@ UniValue getbalance(const UniValue& params, bool fHelp) {
         "'importaddress')\n"
 
         "\nResult:\n"
-        "amount              (numeric) The total amount in GGG received for this account.\n"
+        "amount              (numeric) The total amount in Club received for this account.\n"
 
         "\nExamples:\n"
         "\nThe total amount in the server across all accounts\n" +
@@ -751,9 +751,9 @@ UniValue movecmd(const UniValue& params, bool fHelp) {
         "true|false           (boolean) true if successfull.\n"
 
         "\nExamples:\n"
-        "\nMove 0.01 GGG from the default account to the account named tabby\n" +
+        "\nMove 0.01 Club from the default account to the account named tabby\n" +
         HelpExampleCli("move", "\"\" \"tabby\" 0.01") +
-        "\nMove 0.01 GGG from timotei to akiko with a comment and funds have 6 confirmations\n" +
+        "\nMove 0.01 Club from timotei to akiko with a comment and funds have 6 confirmations\n" +
         HelpExampleCli("move", "\"timotei\" \"akiko\" 0.01 6 \"happy birthday!\"") + "\nAs a json rpc call\n" +
         HelpExampleRpc("move", "\"timotei\", \"akiko\", 0.01, 6, \"happy birthday!\""));
 
@@ -826,7 +826,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp) {
         "\"transactionid\"        (string) The transaction id.\n"
 
         "\nExamples:\n"
-        "\nSend 0.01 GGG from the default account to the address, must have at least 1 confirmation\n" +
+        "\nSend 0.01 Club from the default account to the address, must have at least 1 confirmation\n" +
         HelpExampleCli("sendfrom", "\"\" \"DMJRSsuU9zfyrvxVaAEFQqK4MxZg6vgeS6\" 0.01") +
         "\nSend 0.01 from the tabby account to the given address, funds must have at least 6 confirmations\n" +
         HelpExampleCli("sendfrom",
@@ -875,7 +875,7 @@ UniValue sendmany(const UniValue& params, bool fHelp) {
         "account\n"
         "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
         "    {\n"
-        "      \"address\":amount   (numeric) The club address is the key, the numeric amount in GGG is the value\n"
+        "      \"address\":amount   (numeric) The club address is the key, the numeric amount in Club is the value\n"
         "      ,...\n"
         "    }\n"
         "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many "
@@ -1139,7 +1139,7 @@ UniValue listreceivedbyaddress(const UniValue& params, bool fHelp) {
         "    \"address\" : \"receivingaddress\",  (string) The receiving address\n"
         "    \"account\" : \"accountname\",       (string) The account of the receiving address. The default account "
         "is \"\".\n"
-        "    \"amount\" : x.xxx,                  (numeric) The total amount in GGG received by the address\n"
+        "    \"amount\" : x.xxx,                  (numeric) The total amount in Club received by the address\n"
         "    \"confirmations\" : n                (numeric) The number of confirmations of the most recent transaction "
         "included\n"
         "    \"bcconfirmations\" : n              (numeric) The number of blockchain confirmations of the most recent "
@@ -2054,7 +2054,7 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp) {
         "\nResult:\n"
         "{\n"
         "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
-        "  \"balance\": xxxxxxx,         (numeric) the total GGG balance of the wallet\n"
+        "  \"balance\": xxxxxxx,         (numeric) the total Club balance of the wallet\n"
         "  \"txcount\": xxxxxxx,         (numeric) the total number of transactions in the wallet\n"
         "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated "
         "key in the key pool\n"
@@ -2390,7 +2390,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
   // if the user is entering a new MultiSend item
   string strAddress = params[0].get_str();
   CBitcoinAddress address(strAddress);
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid GGG address");
+  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
   if (std::stoi(params[1].get_str()) < 0)
     throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid percentage");
   if (pwalletMain->IsLocked())
@@ -2433,12 +2433,12 @@ UniValue getzerocoinbalance(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(
         "getzerocoinbalance\n"
-        "\nReturn the wallet's total zZZZ balance.\n" +
+        "\nReturn the wallet's total ZKP balance.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nResult:\n"
-        "amount         (numeric) Total zZZZ balance.\n"
+        "amount         (numeric) Total ZKP balance.\n"
 
         "\nExamples:\n" +
         HelpExampleCli("getzerocoinbalance", "") + HelpExampleRpc("getzerocoinbalance", ""));
@@ -2459,7 +2459,7 @@ UniValue listmintedzerocoins(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(
         "listmintedzerocoins\n"
-        "\nList all zZZZ mints in the wallet.\n" +
+        "\nList all ZKP mints in the wallet.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
@@ -2531,7 +2531,7 @@ UniValue listspentzerocoins(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(
         "listspentzerocoins\n"
-        "\nList all the spent zZZZ mints in the wallet.\n" +
+        "\nList all the spent ZKP mints in the wallet.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
@@ -2561,12 +2561,12 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() < 1 || params.size() > 2)
     throw runtime_error(
         "mintzerocoin amount ( utxos )\n"
-        "\nMint the specified zZZZ amount\n" +
+        "\nMint the specified ZKP amount\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nArguments:\n"
-        "1. amount      (numeric, required) Enter an amount of Piv to convert to zZZZ\n"
+        "1. amount      (numeric, required) Enter an amount of Club to convert to zkp\n"
         "2. utxos       (string, optional) A json array of objects.\n"
         "                   Each object needs the txid (string) and vout (numeric)\n"
         "  [\n"
@@ -2667,7 +2667,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 5 || params.size() < 4)
     throw runtime_error(
         "spendzerocoin amount mintchange minimizechange securitylevel ( \"address\" )\n"
-        "\nSpend zZZZ to a GGG address.\n" +
+        "\nSpend ZKP to a Club address.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
@@ -2700,7 +2700,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
         "  \"outputs\": [                 (array) JSON array of output objects.\n"
         "    {\n"
         "      \"value\": amount,         (numeric) Value in Club.\n"
-        "      \"address\": \"xxx\"         (string) GGG address or \"zerocoinmint\" for reminted change.\n"
+        "      \"address\": \"xxx\"         (string) Club address or \"zerocoinmint\" for reminted change.\n"
         "    }\n"
         "    ,...\n"
         "  ]\n"
@@ -2716,7 +2716,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
 
   int64_t nTimeStart = GetTimeMillis();
   CAmount nAmount = AmountFromValue(params[0]);  // Spending amount
-  bool fMintChange = params[1].get_bool();       // Mint change to zZZZ
+  bool fMintChange = params[1].get_bool();       // Mint change to ZKP
   bool fMinimizeChange = params[2].get_bool();   // Minimize change
   int nSecurityLevel = params[3].get_int();      // Security level
 
@@ -2971,7 +2971,7 @@ UniValue exportzerocoins(const UniValue& params, bool fHelp) {
 
         "\nArguments:\n"
         "1. \"include_spent\"        (bool, required) Include mints that have already been spent\n"
-        "2. \"denomination\"         (integer, optional) Export a specific denomination of zZZZ\n"
+        "2. \"denomination\"         (integer, optional) Export a specific denomination of ZKP\n"
 
         "\nResult:\n"
         "[                   (array of json object)\n"
@@ -2983,8 +2983,8 @@ UniValue exportzerocoins(const UniValue& params, bool fHelp) {
         "    \"t\": \"txid\",    (string) The txid that the coin was minted in\n"
         "    \"h\": n,         (numeric) The height the tx was added to the blockchain\n"
         "    \"u\": used,      (boolean) Whether the mint has been spent\n"
-        "    \"v\": version,   (numeric) The version of the zZZZ\n"
-        "    \"k\": \"privkey\"  (string) The zZZZ private key (V2+ zZZZ only)\n"
+        "    \"v\": version,   (numeric) The version of the ZKP\n"
+        "    \"k\": \"privkey\"  (string) The ZKP private key (V2+ ZKP only)\n"
         "  }\n"
         "  ,...\n"
         "]\n"
@@ -3046,7 +3046,7 @@ UniValue importzerocoins(const UniValue& params, bool fHelp) {
         "\nResult:\n"
         "{\n"
         "  \"added\": n,        (numeric) The quantity of zerocoin mints that were added\n"
-        "  \"value\": amount    (numeric) The total zZZZ value of zerocoin mints that were added\n"
+        "  \"value\": amount    (numeric) The total ZKP value of zerocoin mints that were added\n"
         "}\n"
 
         "\nExamples\n" +
@@ -3122,7 +3122,7 @@ UniValue reconsiderzerocoins(const UniValue& params, bool fHelp) {
   if (fHelp || !params.empty())
     throw runtime_error(
         "reconsiderzerocoins\n"
-        "\nCheck archived zZZZ list to see if any mints were added to the blockchain.\n" +
+        "\nCheck archived ZKP list to see if any mints were added to the blockchain.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
@@ -3207,12 +3207,12 @@ UniValue getzkpseed(const UniValue& params, bool fHelp) {
   if (fHelp || !params.empty())
     throw runtime_error(
         "getzkpseed\n"
-        "\nCheck archived zZZZ list to see if any mints were added to the blockchain.\n" +
+        "\nCheck archived ZKP list to see if any mints were added to the blockchain.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nResult\n"
-        "\"seed\" : s,  (string) The deterministic zZZZ seed.\n"
+        "\"seed\" : s,  (string) The deterministic ZKP seed.\n"
 
         "\nExamples\n" +
         HelpExampleCli("getzkpseed", "") + HelpExampleRpc("getzkpseed", ""));
@@ -3232,13 +3232,13 @@ UniValue generatemintlist(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 2)
     throw runtime_error(
         "generatemintlist\n"
-        "\nShow mints that are derived from the deterministic zZZZ seed.\n" +
+        "\nShow mints that are derived from the deterministic ZKP seed.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nArguments\n"
-        "1. \"count\"  : n,  (numeric) Which sequential zZZZ to start with.\n"
-        "2. \"range\"  : n,  (numeric) How many zZZZ to generate.\n"
+        "1. \"count\"  : n,  (numeric) Which sequential ZKP to start with.\n"
+        "2. \"range\"  : n,  (numeric) How many ZKP to generate.\n"
 
         "\nResult:\n"
         "[\n"
@@ -3281,7 +3281,7 @@ UniValue dzkpstate(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(
         "dzkpstate\n"
-        "\nThe current state of the mintpool of the deterministic zZZZ wallet.\n" +
+        "\nThe current state of the mintpool of the deterministic ZKP wallet.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
@@ -3326,14 +3326,14 @@ UniValue searchdzkp(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 3)
     throw runtime_error(
         "searchdzkp\n"
-        "\nMake an extended search for deterministically generated zZZZ that have not yet been recognized by the "
+        "\nMake an extended search for deterministically generated ZKP that have not yet been recognized by the "
         "wallet.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nArguments\n"
-        "1. \"count\"       (numeric) Which sequential zZZZ to start with.\n"
-        "2. \"range\"       (numeric) How many zZZZ to generate.\n"
+        "1. \"count\"       (numeric) Which sequential ZKP to start with.\n"
+        "2. \"range\"       (numeric) How many ZKP to generate.\n"
         "3. \"threads\"     (numeric) How many threads should this operation consume.\n"
 
         "\nExamples\n" +

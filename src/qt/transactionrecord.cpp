@@ -52,7 +52,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
     if (wtx.IsZerocoinSpend() && (fZSpendFromMe || wallet->zkpTracker->HasMintTx(hash))) {
       // ZKP stake reward - not valid
     } else if (isminetype mine = wallet->IsMine(wtx.vout[1])) {
-      // GGG stake reward
+      // Club stake reward
       sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
       sub.type = TransactionRecord::StakeMint;
       sub.address = CBitcoinAddress(address).ToString();

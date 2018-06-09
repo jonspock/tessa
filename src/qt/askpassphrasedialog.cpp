@@ -79,7 +79,7 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget* parent, WalletModel
     ui->anonymizationCheckBox->setChecked(false);
   }
 
-  // It doesn't make sense to show the checkbox for sending GGG because you wouldn't check it anyway.
+  // It doesn't make sense to show the checkbox for sending Club because you wouldn't check it anyway.
   if (context == Context::Send_Club || context == Context::Send_ZKP) { ui->anonymizationCheckBox->hide(); }
 
   textChanged();

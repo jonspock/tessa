@@ -150,7 +150,7 @@ bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out) {
       fShouldReturnFalse = false;
     } else if (i->first == "amount") {
       if (!i->second.isEmpty()) {
-        if (!BitcoinUnits::parse(BitcoinUnits::GGG, i->second, &rv.amount)) { return false; }
+        if (!BitcoinUnits::parse(BitcoinUnits::Club, i->second, &rv.amount)) { return false; }
       }
       fShouldReturnFalse = false;
     }
@@ -179,7 +179,7 @@ QString formatBitcoinURI(const SendCoinsRecipient& info) {
 
   if (info.amount) {
     ret += QString("?amount=%1")
-               .arg(BitcoinUnits::format(BitcoinUnits::GGG, info.amount, false, BitcoinUnits::separatorNever));
+               .arg(BitcoinUnits::format(BitcoinUnits::Club, info.amount, false, BitcoinUnits::separatorNever));
     paramCount++;
   }
 

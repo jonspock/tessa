@@ -689,7 +689,7 @@
                         <item>
                          <widget class="QLabel" name="labelZKPBalanceText">
                           <property name="toolTip">
-                           <string>Available (mature and spendable) zZZZ for spending</string>
+                           <string>Available (mature and spendable) ZKP for spending</string>
                           </property>
                           <property name="text">
                            <string>Available Balance:</string>
@@ -708,7 +708,7 @@
                            </font>
                           </property>
                           <property name="toolTip">
-                           <string>Available (mature and spendable) zZZZ for spending
+                           <string>Available (mature and spendable) ZKP for spending
 
 ZKP are mature when they have more than 20 confirmations AND more than 2 mints of the same denomination after them were minted</string>
                           </property>

@@ -37,9 +37,9 @@ class AskPassphraseDialog : public QDialog {
     Encrypt,     /** Encrypt unencrypted wallet */
     ToggleLock,  /** Toggle wallet lock state */
     ChangePass,  /** Change passphrase */
-    Send_Club,   /** Send GGG */
-    Send_ZKP,    /** Send zZZZ */
-    Mint_ZKP,    /** Mint zZZZ */
+    Send_Club,   /** Send Club */
+    Send_ZKP,    /** Send ZKP */
+    Mint_ZKP,    /** Mint ZKP */
     BIP_38,      /** BIP38 menu */
     Multi_Sig,   /** Multi-Signature dialog */
     Sign_Message /** Sign/verify message dialog */

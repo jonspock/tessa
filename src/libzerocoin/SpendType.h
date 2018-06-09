@@ -9,7 +9,7 @@
 
 namespace libzerocoin {
 enum SpendType : uint8_t {
-  SPEND,        // Used for a typical spend transaction, zZZZ should be unusable after
+  SPEND,        // Used for a typical spend transaction, ZKP should be unusable after
   SIGN_MESSAGE  // Used to sign messages that do not belong above (future)
 };
 }

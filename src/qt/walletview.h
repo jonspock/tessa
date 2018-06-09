@@ -128,7 +128,7 @@ class WalletView : public QStackedWidget {
   /** Show progress dialog e.g. for rescan */
   void showProgress(const QString& title, int nProgress);
 
-  /** Update selected GGG amount from transactionview */
+  /** Update selected Club amount from transactionview */
   void trxAmount(QString amount);
 
  signals:

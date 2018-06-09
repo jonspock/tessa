@@ -38,7 +38,7 @@ static CAmount getTxIn(const CTransaction& tx) {
 static std::string ValueToString(CAmount nValue, bool AllowNegative = false) {
   if (nValue < 0 && !AllowNegative) return "<span>" + _("unknown") + "</span>";
 
-  QString Str = BitcoinUnits::formatWithUnit(BitcoinUnits::GGG, nValue);
+  QString Str = BitcoinUnits::formatWithUnit(BitcoinUnits::Club, nValue);
   if (AllowNegative && nValue > 0) Str = '+' + Str;
   return std::string("<span>") + Str.toUtf8().data() + "</span>";
 }
