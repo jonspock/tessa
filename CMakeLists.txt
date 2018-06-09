@@ -211,7 +211,6 @@ SET(CONSENSUS
 )	
 
 SET(CONSENSUS_CRYPTO
-	./src/crypter.cpp
 	./src/crypto/scrypt.cpp
 	./src/crypto/hmac_sha512.cpp
 	./src/crypto/hmac_sha256.cpp
@@ -222,14 +221,24 @@ SET(CONSENSUS_CRYPTO
 	./src/crypto/sha512.cpp
 )
 
+SET(WALLET
+  	./src/wallet/wallet_hdr.cpp
+  	./src/wallet/wallet.cpp
+	  ./src/wallet/wallettx.cpp
+	  ./src/wallet/wallet_ismine.cpp
+	  ./src/wallet/walletdb.cpp
+	  ./src/wallet/wallet_functions.cpp
+	  ./src/wallet/db.cpp
+	  ./src/wallet/crypter.cpp
+    )
+  
+
 SET(SOURCES
   # temp
-  	./src/wallet_hdr.cpp
   	./src/main_hdr.cpp
     # end
     
 	./src/compat/strnlen.cpp
-	./src/db.cpp
 	./src/compat/glibcxx_compat.cpp
 	./src/compat/glibc_sanity.cpp
 	./src/kernel.cpp
@@ -251,11 +260,6 @@ SET(SOURCES
 	./src/txdb.cpp
 	./src/torcontrol.cpp
 	./src/txmempool.cpp
-	./src/wallet.cpp
-	./src/wallettx.cpp
-	./src/wallet_ismine.cpp
-	./src/walletdb.cpp
-	./src/wallet_functions.cpp
 	./src/denomination_functions.cpp
 # NEW
 	./src/zerotracker.cpp
@@ -322,9 +326,9 @@ file(GLOB PRIMITIVE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/primitives/*.h)
 source_group("PrimHeaders" FILES ${PRIMITIVE_HEADERS})
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ELSE()
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ENDIF()
 
 set_property(TARGET coin PROPERTY CXX_STANDARD 11)

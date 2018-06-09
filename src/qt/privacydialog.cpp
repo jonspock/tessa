@@ -11,7 +11,7 @@
 #include "addresstablemodel.h"
 #include "askpassphrasedialog.h"
 #include "bitcoinunits.h"
-#include "coincontrol.h"
+#include "wallet/coincontrol.h"
 #include "coincontroldialog.h"
 #include "libzerocoin/Denominations.h"
 #include "optionsmodel.h"

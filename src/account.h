@@ -8,7 +8,7 @@
 
 #pragma once
 #include "streams.h"
-#include "wallet_functions.h"
+#include "wallet/wallet_functions.h"
 
 /**
  * Account information.

@@ -9,7 +9,7 @@
 #include "kernel.h"
 #include "main.h"
 #include "primitives/deterministicmint.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 //! Club Stake
 bool CStake::SetInput(CTransaction txPrev, unsigned int n) {

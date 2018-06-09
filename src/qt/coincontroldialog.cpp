@@ -15,10 +15,10 @@
 #include "optionsmodel.h"
 #include "walletmodel.h"
 
-#include "coincontrol.h"
+#include "wallet/coincontrol.h"
 #include "main.h"
 #include "multisigdialog.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #include <QApplication>
 #include <QCheckBox>

@@ -9,7 +9,7 @@
 #include "sync.h"
 #include "txdb.h"
 #include "util.h"
-#include "walletdb.h"
+#include "wallet/walletdb.h"
 #include <primitives/deterministicmint.h>
 
 using namespace std;

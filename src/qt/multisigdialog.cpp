@@ -23,7 +23,7 @@
 #include "script/sign.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #include <QArgument>
 #include <QClipboard>

@@ -13,7 +13,7 @@
 #include "walletmodeltransaction.h"
 
 #include "allocators.h" /* for SecureString */
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #include <map>
 #include <vector>

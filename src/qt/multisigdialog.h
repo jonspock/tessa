@@ -6,7 +6,7 @@
 #ifndef BITCOIN_QT_MULTISIGDIALOG_H
 #define BITCOIN_QT_MULTISIGDIALOG_H
 
-#include "coincontrol.h"
+#include "wallet/coincontrol.h"
 #include "coincontroldialog.h"
 #include "coins.h"
 #include "primitives/transaction.h"

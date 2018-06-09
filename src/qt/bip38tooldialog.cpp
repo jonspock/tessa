@@ -15,7 +15,7 @@
 #include "bip38.h"
 #include "init.h"
 #include "main_externs.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #include <string>
 #include <vector>

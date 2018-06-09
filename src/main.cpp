@@ -14,7 +14,7 @@
 #include "blockfileinfo.h"
 #include "blockundo.h"
 
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #include "accumulatormap.h"
 #include "accumulators.h"

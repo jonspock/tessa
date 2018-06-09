@@ -9,8 +9,8 @@
 #include "main.h"
 #include "primitives/deterministicmint.h"
 #include "txdb.h"
-#include "wallet.h"
-#include "walletdb.h"
+#include "wallet/wallet.h"
+#include "wallet/walletdb.h"
 #include "zerochain.h"
 
 CZeroWallet::CZeroWallet(std::string strWalletFile) {
