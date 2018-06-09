@@ -102,7 +102,7 @@ bool CCoinsViewCache::GetCoins(const uint256& txid, CCoins& coins) const {
 
 CCoinsModifier CCoinsViewCache::ModifyCoins(const uint256& txid) {
   assert(!hasModifier);
-  std::pair<CCoinsMap::iterator, bool> ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry()));
+  auto ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry()));
   if (ret.second) {
     if (!base->GetCoins(txid, ret.first->second.coins)) {
       // The parent view does not have this entry; mark it as fresh.
@@ -147,7 +147,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlockIn
   assert(!hasModifier);
   for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
     if (it->second.flags & CCoinsCacheEntry::DIRTY) {  // Ignore non-dirty entries (optimization).
-      CCoinsMap::iterator itUs = cacheCoins.find(it->first);
+      auto itUs = cacheCoins.find(it->first);
       if (itUs == cacheCoins.end()) {
         if (!it->second.coins.IsPruned()) {
           // The parent cache does not have an entry, while the child
