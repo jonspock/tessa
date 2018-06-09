@@ -10,6 +10,7 @@
 
 #include "amount.h"
 #include "db.h"
+#include "fs.h"
 #include "key.h"
 #include "keystore.h"
 #include "libzerocoin/Accumulator.h"
@@ -179,8 +180,8 @@ class CWalletDB : public CDB {
 };
 
 void NotifyBacked(const CWallet& wallet, bool fSuccess, string strMessage);
-bool BackupWallet(const CWallet& wallet, const boost::filesystem::path& strDest, bool fEnableCustom = true);
-bool AttemptBackupWallet(const CWallet& wallet, const boost::filesystem::path& pathSrc,
-                         const boost::filesystem::path& pathDest);
+bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCustom = true);
+bool AttemptBackupWallet(const CWallet& wallet, const fs::path& pathSrc,
+                         const fs::path& pathDest);
 
 #endif  // BITCOIN_WALLETDB_H

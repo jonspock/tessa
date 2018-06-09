@@ -10,6 +10,7 @@
 // for "_" and AbortNode
 #include "ui_interface.h"
 
+#include "fs.h"
 // for StartShutdown()
 #include "init.h"
 #include "staker.h"
@@ -17,13 +18,9 @@
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
 
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-
-using namespace boost;
 using namespace std;
 
-boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix) {
+fs::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix) {
   return GetDataDir() / "blocks" / strprintf("%s%05u.dat", prefix, pos.nFile);
 }
 
@@ -38,7 +35,7 @@ bool AbortNode(const std::string& strMessage, const std::string& userMessage) {
 }
 
 bool CheckDiskSpace(uint64_t nAdditionalBytes) {
-  uint64_t nFreeBytesAvailable = filesystem::space(GetDataDir()).available;
+  uint64_t nFreeBytesAvailable = fs::space(GetDataDir()).available;
 
   // Check for nMinDiskSpace bytes (currently 50MB)
   if (nFreeBytesAvailable < nMinDiskSpace + nAdditionalBytes)
@@ -49,8 +46,8 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes) {
 
 FILE* OpenDiskFile(const CDiskBlockPos& pos, const char* prefix, bool fReadOnly) {
   if (pos.IsNull()) return nullptr;
-  boost::filesystem::path path = GetBlockPosFilename(pos, prefix);
-  boost::filesystem::create_directories(path.parent_path());
+  fs::path path = GetBlockPosFilename(pos, prefix);
+  fs::create_directories(path.parent_path());
   FILE* file = fopen(path.string().c_str(), "rb+");
   if (!file && !fReadOnly) file = fopen(path.string().c_str(), "wb+");
   if (!file) {

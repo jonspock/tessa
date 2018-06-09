@@ -2,7 +2,7 @@
 
 #include "chain.h"
 #include "uint256.h"
-#include <boost/filesystem.hpp>
+#include "fs.h"
 
 bool AbortNode(const std::string& strMessage, const std::string& userMessage = "");
 
@@ -18,7 +18,7 @@ FILE* OpenBlockFile(const CDiskBlockPos& pos, bool fReadOnly = 0);
 FILE* OpenUndoFile(const CDiskBlockPos& pos, bool fReadOnly = 0);
 
 /** Translation to a filesystem path */
-boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix);
+fs::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix);
 
 /** Create a new block index entry for a given block hash */
 CBlockIndex* InsertBlockIndex(uint256 hash);

@@ -24,7 +24,7 @@
 
 #include <stdarg.h>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
 #include <openssl/crypto.h>  // for OPENSSL_cleanse()
@@ -79,10 +79,9 @@
 #include <sys/prctl.h>
 #endif
 
-#include <boost/algorithm/string/case_conv.hpp>  // for to_lower()
-#include <boost/algorithm/string/join.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
+// Wraps boost::filesystem inside fs namespace (future c++17)
+#include "fs.h"
+
 #include <boost/thread.hpp>
 
 #include <openssl/conf.h>
@@ -144,24 +143,6 @@ class CInit {
     OPENSSL_free(ppmutexOpenSSL);
   }
 } instance_of_cinit;
-
-/**
- * We use std::call_once() to make sure these are initialized
- * in a thread-safe manner the first time called:
- */
-static FILE* fileout = nullptr;
-static std::mutex* mutexDebugLog = nullptr;
-
-static void DebugPrintInit() {
-  assert(fileout == nullptr);
-  assert(mutexDebugLog == nullptr);
-
-  boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
-  fileout = fopen(pathDebug.string().c_str(), "a");
-  if (fileout) setbuf(fileout, nullptr);  // unbuffered
-
-  mutexDebugLog = new std::mutex();
-}
 
 /** Interpret string as boolean, for argument parsing */
 static bool InterpretBool(const std::string& strValue) {
@@ -251,8 +232,7 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread) {
   strMiscWarning = message;
 }
 
-boost::filesystem::path GetDefaultDataDir() {
-  namespace fs = boost::filesystem;
+fs::path GetDefaultDataDir() {
 // Windows < Vista: C:\Documents and Settings\Username\Application Data\Club
 // Windows >= Vista: C:\Users\Username\AppData\Roaming\Club
 // Mac: ~/Library/Application Support/Club
@@ -279,12 +259,11 @@ boost::filesystem::path GetDefaultDataDir() {
 #endif
 }
 
-static boost::filesystem::path pathCached;
-static boost::filesystem::path pathCachedNetSpecific;
+static fs::path pathCached;
+static fs::path pathCachedNetSpecific;
 static CCriticalSection csPathCached;
 
-const boost::filesystem::path& GetDataDir(bool fNetSpecific) {
-  namespace fs = boost::filesystem;
+const fs::path& GetDataDir(bool fNetSpecific) {
 
   LOCK(csPathCached);
 
@@ -311,12 +290,12 @@ const boost::filesystem::path& GetDataDir(bool fNetSpecific) {
 }
 
 void ClearDatadirCache() {
-  pathCached = boost::filesystem::path();
-  pathCachedNetSpecific = boost::filesystem::path();
+  pathCached = fs::path();
+  pathCachedNetSpecific = fs::path();
 }
 
-boost::filesystem::path GetConfigFile() {
-  boost::filesystem::path pathConfigFile(GetArg("-conf", "club.conf"));
+fs::path GetConfigFile() {
+  fs::path pathConfigFile(GetArg("-conf", "club.conf"));
   if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
 
   return pathConfigFile;
@@ -325,13 +304,13 @@ boost::filesystem::path GetConfigFile() {
 void ReadConfigFile() { gArgs.ReadConfigFile(); }
 
 #ifndef WIN32
-boost::filesystem::path GetPidFile() {
-  boost::filesystem::path pathPidFile(GetArg("-pid", "clubd.pid"));
+fs::path GetPidFile() {
+  fs::path pathPidFile(GetArg("-pid", "clubd.pid"));
   if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
   return pathPidFile;
 }
 
-void CreatePidFile(const boost::filesystem::path& path, pid_t pid) {
+void CreatePidFile(const fs::path& path, pid_t pid) {
   FILE* file = fopen(path.string().c_str(), "w");
   if (file) {
     fprintf(file, "%d\n", pid);
@@ -340,7 +319,7 @@ void CreatePidFile(const boost::filesystem::path& path, pid_t pid) {
 }
 #endif
 
-bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest) {
+bool RenameOver(fs::path src, fs::path dest) {
 #ifdef WIN32
   return MoveFileExA(src.string().c_str(), dest.string().c_str(), MOVEFILE_REPLACE_EXISTING) != 0;
 #else
@@ -354,11 +333,11 @@ bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest) {
  * Specifically handles case where path p exists, but it wasn't possible for the user to
  * write to the parent directory.
  */
-bool TryCreateDirectory(const boost::filesystem::path& p) {
+bool TryCreateDirectory(const fs::path& p) {
   try {
-    return boost::filesystem::create_directory(p);
-  } catch (boost::filesystem::filesystem_error) {
-    if (!boost::filesystem::exists(p) || !boost::filesystem::is_directory(p)) throw;
+    return fs::create_directory(p);
+  } catch (fs::filesystem_error) {
+    if (!fs::exists(p) || !fs::is_directory(p)) throw;
   }
 
   // create_directory didn't create the directory, it had to have existed already
@@ -458,9 +437,9 @@ void AllocateFileRange(FILE* file, unsigned int offset, unsigned int length) {
 
 void ShrinkDebugFile() {
   // Scroll debug.log if it's getting too big
-  boost::filesystem::path pathLog = GetDataDir() / "debug.log";
+  fs::path pathLog = GetDataDir() / "debug.log";
   FILE* file = fopen(pathLog.string().c_str(), "r");
-  if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000) {
+  if (file && fs::file_size(pathLog) > 10 * 1000000) {
     // Restart the file with some of the end
     std::vector<char> vch(200000, 0);
     fseek(file, -((long)vch.size()), SEEK_END);
@@ -477,8 +456,7 @@ void ShrinkDebugFile() {
 }
 
 #ifdef WIN32
-boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate) {
-  namespace fs = boost::filesystem;
+fs::path GetSpecialFolderPath(int nFolder, bool fCreate) {
 
   char pszPath[MAX_PATH] = "";
 
@@ -489,7 +467,7 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate) {
 }
 #endif
 
-boost::filesystem::path GetTempPath() { return boost::filesystem::temp_directory_path(); }
+fs::path GetTempPath() { return fs::temp_directory_path(); }
 
 double double_safe_addition(double fValue, double fIncrement) {
   double fLimit = std::numeric_limits<double>::max() - fValue;
@@ -548,9 +526,9 @@ void SetupEnvironment() {
   // The path locale is lazy initialized and to avoid deinitialization errors
   // in multithreading environments, it is set explicitly by the main thread.
   // A dummy locale is used to extract the internal default locale, used by
-  // boost::filesystem::path, which is then used to explicitly imbue the path.
-  std::locale loc = boost::filesystem::path::imbue(std::locale::classic());
-  boost::filesystem::path::imbue(loc);
+  // fs::path, which is then used to explicitly imbue the path.
+  std::locale loc = fs::path::imbue(std::locale::classic());
+  fs::path::imbue(loc);
 }
 
 bool SetupNetworking() {
@@ -578,7 +556,6 @@ void SetThreadPriority(int nPriority) {
 inline bool not_space(int c) { return !std::isspace(c); }
 
 void ArgsManager::ReadConfigFile() {
-  namespace fs = boost::filesystem;
   fs::ifstream config_file(GetConfigFile());
   if (!config_file.good()) return;  // No bitcoin.conf file is OK
 

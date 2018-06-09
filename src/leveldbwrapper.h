@@ -10,8 +10,7 @@
 #include "streams.h"
 #include "util.h"
 #include "version.h"
-
-#include <boost/filesystem/path.hpp>
+#include "fs.h"
 
 #include <leveldb/db.h>
 #include <leveldb/write_batch.h>
@@ -79,7 +78,7 @@ class CLevelDBWrapper {
   leveldb::DB* pdb;
 
  public:
-  CLevelDBWrapper(const boost::filesystem::path& path, size_t nCacheSize, bool fMemory = false, bool fWipe = false);
+  CLevelDBWrapper(const fs::path& path, size_t nCacheSize, bool fMemory = false, bool fWipe = false);
   ~CLevelDBWrapper();
 
   template <typename K, typename V> bool Read(const K& key, V& value) const throw(leveldb_error) {

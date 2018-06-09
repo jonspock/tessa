@@ -4,33 +4,27 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "accumulatorcheckpoints.h"
-#include "zerochain.h"
-#include <iostream>
 
 namespace AccumulatorCheckpoints {
-std::map<int, Checkpoint> mapCheckpoints;
 
-UniValue read_json(const std::string& jsondata) {
-  UniValue v;
-
-  if (!v.read(jsondata) || !v.isArray()) { return UniValue(UniValue::VARR); }
-  return v.get_array();
-}
+// Only used here
+std::map<int, Checkpoint> mapAccCheckpoints;
 
 bool LoadCheckpoints(const std::string& strNetwork) {
   // Just start with Checkpoints all 0s initially
   Checkpoint checkpoint;
   CBigNum bn(0);
-#warning "Check checkpoints"
-  int StartHeight = 100;
+  int StartHeight = 0;
   for (auto denom : libzerocoin::zerocoinDenomList) checkpoint.insert(std::make_pair(denom, bn));
-  mapCheckpoints.insert(make_pair(StartHeight, checkpoint));
+  mapAccCheckpoints.insert(make_pair(StartHeight, checkpoint));
   return true;
 }
 
+// For now just get initial 0 checkpoints
+//
 Checkpoint GetClosestCheckpoint(const int& nHeight, int& nHeightCheckpoint) {
   nHeightCheckpoint = -1;
-  for (auto it : mapCheckpoints) {
+  for (auto it : mapAccCheckpoints) {
     // only checkpoints that are less than the height requested (unless height is less than the first checkpoint)
     if (it.first < nHeight) {
       if (nHeightCheckpoint == -1) nHeightCheckpoint = it.first;
@@ -38,7 +32,7 @@ Checkpoint GetClosestCheckpoint(const int& nHeight, int& nHeightCheckpoint) {
     }
   }
 
-  if (nHeightCheckpoint != -1) return mapCheckpoints.at(nHeightCheckpoint);
+  if (nHeightCheckpoint != -1) return mapAccCheckpoints.at(nHeightCheckpoint);
 
   return Checkpoint();
 }

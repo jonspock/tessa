@@ -13,7 +13,7 @@
 #include "util.h"
 #include "utilstrencodings.h"
 
-#include <boost/filesystem/operations.hpp>
+#include "fs.h"
 #include <stdio.h>
 
 #include <event2/buffer.h>
@@ -85,7 +85,7 @@ static bool AppInitRPC(int argc, char* argv[]) {
     fprintf(stdout, "%s", strUsage.c_str());
     return false;
   }
-  if (!boost::filesystem::is_directory(GetDataDir(false))) {
+  if (!fs::is_directory(GetDataDir(false))) {
     fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", gArgs.GetArg("-datadir", "").c_str());
     return false;
   }
