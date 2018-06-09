@@ -29,8 +29,6 @@
 #include <fcntl.h>
 #endif
 
-#include <boost/algorithm/string/case_conv.hpp>  // for to_lower()
-#include <boost/algorithm/string/predicate.hpp>  // for startswith() and endswith()
 #include <boost/thread.hpp>
 
 #if !defined(HAVE_MSG_NOSIGNAL) && !defined(MSG_NOSIGNAL)
@@ -52,7 +50,7 @@ static const unsigned char pchIPv4[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0x
 static const int SOCKS5_RECV_TIMEOUT = 20 * 1000;
 
 enum Network ParseNetwork(std::string net) {
-  boost::to_lower(net);
+  std::transform(net.begin(), net.end(), net.begin(), ::tolower);
   if (net == "ipv4") return NET_IPV4;
   if (net == "ipv6") return NET_IPV6;
   if (net == "tor" || net == "onion") return NET_TOR;
@@ -188,8 +186,8 @@ bool static LookupIntern(const char* pszName, std::vector<CNetAddr>& vIP, unsign
 bool LookupHost(const char* pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup) {
   std::string strHost(pszName);
   if (strHost.empty()) return false;
-  if (boost::algorithm::starts_with(strHost, "[") && boost::algorithm::ends_with(strHost, "]")) {
-    strHost = strHost.substr(1, strHost.size() - 2);
+  if ((strHost[0]=='[') && (strHost[strHost.size()-1]==']')) {
+      strHost = strHost.substr(1, strHost.size() - 2);
   }
 
   return LookupIntern(strHost.c_str(), vIP, nMaxSolutions, fAllowLookup);
