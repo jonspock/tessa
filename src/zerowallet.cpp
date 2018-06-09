@@ -5,13 +5,13 @@
 
 #include "zerowallet.h"
 #include "init.h"
+#include "libzerocoin/PrivateCoin.h"
 #include "main.h"
 #include "primitives/deterministicmint.h"
 #include "txdb.h"
 #include "wallet.h"
 #include "walletdb.h"
 #include "zerochain.h"
-#include "libzerocoin/PrivateCoin.h"
 
 CZeroWallet::CZeroWallet(std::string strWalletFile) {
   this->strWalletFile = strWalletFile;
@@ -130,7 +130,7 @@ void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
     uint512 seedZerocoin = GetZerocoinSeed(i);
     libzerocoin::PrivateCoin MintedCoin(libzerocoin::gpZerocoinParams);
     CBigNum bnValue = MintedCoin.CoinFromSeed(seedZerocoin);
-      
+
     mintPool.Add(bnValue, i);
     CWalletDB(strWalletFile).WriteMintPoolPair(hashSeed, GetPubCoinHash(bnValue), i);
     LogPrintf("%s : %s count=%d\n", __func__, bnValue.GetHex().substr(0, 6), i);
@@ -254,7 +254,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
 }
 
 bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const uint256& txid,
-                             const libzerocoin::CoinDenomination& denom) {
+                              const libzerocoin::CoinDenomination& denom) {
   if (!mintPool.Has(bnValue)) return error("%s: value not in pool", __func__);
   pair<uint256, uint32_t> pMint = mintPool.Get(bnValue);
 
@@ -262,7 +262,7 @@ bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const 
   uint512 seedZerocoin = GetZerocoinSeed(pMint.second);
   libzerocoin::PrivateCoin MintedCoin(libzerocoin::gpZerocoinParams);
   CBigNum bnValueGen = MintedCoin.CoinFromSeed(seedZerocoin);
-    
+
   // Sanity check
   if (bnValueGen != bnValue) return error("%s: generated pubcoin and expected value do not match!", __func__);
 
@@ -272,8 +272,8 @@ bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const 
   uint256 hashPubcoin = GetPubCoinHash(bnValue);
   uint256 nSerial = MintedCoin.getSerialNumber().getuint256();
   uint256 hashStake = Hash(nSerial.begin(), nSerial.end());
-  CDeterministicMint dMint(libzerocoin::PrivateCoin::PRIVATECOIN_VERSION, pMint.second, hashSeed, hashSerial, hashPubcoin,
-                           hashStake);
+  CDeterministicMint dMint(libzerocoin::PrivateCoin::PRIVATECOIN_VERSION, pMint.second, hashSeed, hashSerial,
+                           hashPubcoin, hashStake);
   dMint.SetDenomination(denom);
   dMint.SetHeight(nHeight);
   dMint.SetTxHash(txid);
@@ -323,8 +323,8 @@ void CZeroWallet::UpdateCount() {
   walletdb.WriteZKPCount(nCountLastUsed);
 }
 
-void CZeroWallet::GenerateDeterministicZKP(libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin, CDeterministicMint& dMint,
-                                          bool fGenerateOnly) {
+void CZeroWallet::GenerateDeterministicZKP(libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin,
+                                           CDeterministicMint& dMint, bool fGenerateOnly) {
   GenerateMint(nCountLastUsed + 1, denom, coin, dMint);
   if (fGenerateOnly) return;
 
@@ -333,8 +333,8 @@ void CZeroWallet::GenerateDeterministicZKP(libzerocoin::CoinDenomination denom, 
   // coin.getPublicCoin().getValue().GetHex().substr(0,6), seedZerocoin.GetHex().substr(0, 4));
 }
 
-void CZeroWallet::GenerateMint(const uint32_t& nCount, const libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin,
-                              CDeterministicMint& dMint) {
+void CZeroWallet::GenerateMint(const uint32_t& nCount, const libzerocoin::CoinDenomination denom,
+                               libzerocoin::PrivateCoin& coin, CDeterministicMint& dMint) {
   uint512 seedZerocoin = GetZerocoinSeed(nCount);
   CBigNum bnValue = coin.CoinFromSeed(seedZerocoin);
   coin.setVersion(libzerocoin::PrivateCoin::PRIVATECOIN_VERSION);

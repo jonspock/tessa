@@ -160,4 +160,3 @@ template <typename K, int Size, CChainParams::Base58Type Type> class CBitcoinExt
 
 typedef CBitcoinExtKeyBase<CExtKey, 74, CChainParams::EXT_SECRET_KEY> CBitcoinExtKey;
 typedef CBitcoinExtKeyBase<CExtPubKey, 74, CChainParams::EXT_PUBLIC_KEY> CBitcoinExtPubKey;
-

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
-#include "validationstate.h"
 #include "chain.h"
+#include "validationstate.h"
+#include <string>
 
 std::string GetWarnings(std::string strFor);
 void CheckForkWarningConditions();

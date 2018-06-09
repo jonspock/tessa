@@ -9,7 +9,6 @@
 #include "stakeinput.h"
 #include "staker.h"
 
-
 bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nCoinAge);
 
 // Compute the hash modifier for proof-of-stake
@@ -32,5 +31,3 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex);
 
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum);
-
-

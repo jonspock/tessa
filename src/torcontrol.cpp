@@ -550,7 +550,8 @@ void TorController::authchallenge_cb(TorControlConnection &_conn, const TorContr
       }
       std::vector<uint8_t> serverHash = ParseHex(m["SERVERHASH"]);
       std::vector<uint8_t> serverNonce = ParseHex(m["SERVERNONCE"]);
-      LogPrint(ClubLog::TOR, "tor: AUTHCHALLENGE ServerHash %s ServerNonce %s\n", HexStr(serverHash), HexStr(serverNonce));
+      LogPrint(ClubLog::TOR, "tor: AUTHCHALLENGE ServerHash %s ServerNonce %s\n", HexStr(serverHash),
+               HexStr(serverNonce));
       if (serverNonce.size() != 32) {
         LogPrintf("tor: ServerNonce is not 32 bytes, as required by spec\n");
         return;
@@ -615,7 +616,8 @@ void TorController::protocolinfo_cb(TorControlConnection &_conn, const TorContro
       _conn.Command("AUTHENTICATE", boost::bind(&TorController::auth_cb, this, _1, _2));
     } else if (methods.count("SAFECOOKIE")) {
       // Cookie: hexdump -e '32/1 "%02x""\n"'  ~/.tor/control_auth_cookie
-      LogPrint(ClubLog::TOR, "tor: Using SAFECOOKIE authentication, reading cookie authentication from %s\n", cookiefile);
+      LogPrint(ClubLog::TOR, "tor: Using SAFECOOKIE authentication, reading cookie authentication from %s\n",
+               cookiefile);
       std::pair<bool, std::string> status_cookie = ReadBinaryFile(cookiefile, TOR_COOKIE_SIZE);
       if (status_cookie.first && status_cookie.second.size() == TOR_COOKIE_SIZE) {
         // _conn.Command("AUTHENTICATE " + HexStr(status_cookie.second), boost::bind(&TorController::auth_cb, this, _1,

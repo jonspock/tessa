@@ -10,8 +10,8 @@
 #include "timedata.h"
 #include "wallet.h"
 // TxInToZerocoinSpend
-#include "main.h"
 #include "libzerocoin/CoinSpend.h"
+#include "main.h"
 
 #include <stdint.h>
 

@@ -31,4 +31,3 @@ enum HelpMessageMode { HMM_BITCOIND, HMM_BITCOIN_QT };
 std::string HelpMessage(HelpMessageMode mode);
 /** Returns licensing information (for -version) */
 std::string LicenseInfo();
-

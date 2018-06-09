@@ -9,8 +9,8 @@
 #include "chain.h"
 #include "libzerocoin/Accumulator.h"
 #include "libzerocoin/AccumulatorWitness.h"
-#include "libzerocoin/PublicCoin.h"
 #include "libzerocoin/Denominations.h"
+#include "libzerocoin/PublicCoin.h"
 #include "primitives/zerocoin.h"
 #include "uint256.h"
 

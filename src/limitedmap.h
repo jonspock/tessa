@@ -81,4 +81,3 @@ template <typename K, typename V> class limitedmap {
     return nMaxSize;
   }
 };
-

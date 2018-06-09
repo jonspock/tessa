@@ -450,8 +450,8 @@ class CAddrMan {
       Check();
     }
     if (fRet)
-      LogPrint(ClubLog::ADDRMAN, "Added %s from %s: %i tried, %i new\n", addr.ToStringIPPort(), source.ToString(), nTried,
-               nNew);
+      LogPrint(ClubLog::ADDRMAN, "Added %s from %s: %i tried, %i new\n", addr.ToStringIPPort(), source.ToString(),
+               nTried, nNew);
     return fRet;
   }
 
@@ -466,7 +466,8 @@ class CAddrMan {
       Check();
     }
     if (nAdd)
-      LogPrint(ClubLog::ADDRMAN, "Added %i addresses from %s: %i tried, %i new\n", nAdd, source.ToString(), nTried, nNew);
+      LogPrint(ClubLog::ADDRMAN, "Added %i addresses from %s: %i tried, %i new\n", nAdd, source.ToString(), nTried,
+               nNew);
     return nAdd > 0;
   }
 
@@ -527,4 +528,3 @@ class CAddrMan {
     }
   }
 };
-

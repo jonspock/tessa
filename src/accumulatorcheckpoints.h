@@ -17,4 +17,3 @@ UniValue read_json(const std::string& jsondata);
 bool LoadCheckpoints(const std::string& strNetwork);
 Checkpoint GetClosestCheckpoint(const int& nHeight, int& nHeightCheckpoint);
 }  // namespace AccumulatorCheckpoints
-

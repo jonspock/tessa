@@ -203,26 +203,28 @@ UniValue spork(const UniValue& params, bool fHelp) {
     UniValue ret(UniValue::VOBJ);
     for (unsigned int nSporkID = 0; nSporkID < sporkList.size(); nSporkID++) {
       if (gSporkManager.GetSporkNameByID(sporkList[nSporkID]) != "Unknown")
-        ret.push_back(Pair(gSporkManager.GetSporkNameByID(sporkList[nSporkID]), gSporkManager.GetSporkValue(sporkList[nSporkID])));
+        ret.push_back(Pair(gSporkManager.GetSporkNameByID(sporkList[nSporkID]),
+                           gSporkManager.GetSporkValue(sporkList[nSporkID])));
     }
     return ret;
   } else if (params.size() == 1 && params[0].get_str() == "active") {
     UniValue ret(UniValue::VOBJ);
     for (unsigned int nSporkID = 0; nSporkID < sporkList.size(); nSporkID++) {
       if (gSporkManager.GetSporkNameByID(sporkList[nSporkID]) != "Unknown")
-        ret.push_back(Pair(gSporkManager.GetSporkNameByID(sporkList[nSporkID]), gSporkManager.IsSporkActive(sporkList[nSporkID])));
+        ret.push_back(Pair(gSporkManager.GetSporkNameByID(sporkList[nSporkID]),
+                           gSporkManager.IsSporkActive(sporkList[nSporkID])));
     }
     return ret;
   } else if (params.size() == 2) {
-      SporkID nSporkID = gSporkManager.GetSporkIDByName(params[0].get_str());
-      // SPORK VALUE
-      int64_t nValue = params[1].get_int64();
-      // broadcast new spork
-      if (gSporkManager.UpdateSpork(nSporkID, nValue)) {
-          return "success";
-      } else {
-          return "failure";
-      }
+    SporkID nSporkID = gSporkManager.GetSporkIDByName(params[0].get_str());
+    // SPORK VALUE
+    int64_t nValue = params[1].get_int64();
+    // broadcast new spork
+    if (gSporkManager.UpdateSpork(nSporkID, nValue)) {
+      return "success";
+    } else {
+      return "failure";
+    }
   }
 
   throw runtime_error(

@@ -30,9 +30,9 @@
 
 #include "denomination_functions.h"
 #include "libzerocoin/CoinSpend.h"
-#include "libzerocoin/PublicCoin.h"
-#include "libzerocoin/PrivateCoin.h"
 #include "libzerocoin/Denominations.h"
+#include "libzerocoin/PrivateCoin.h"
+#include "libzerocoin/PublicCoin.h"
 #include "primitives/deterministicmint.h"
 #include "zerowallet.h"
 #include <cassert>

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "disktxpos.h"
 #include "blockfileinfo.h"
+#include "disktxpos.h"
 #include "leveldbwrapper.h"
 #include "main.h"
 #include "primitives/zerocoin.h"
@@ -21,7 +21,7 @@
 class CCoins;
 class uint256;
 namespace libzerocoin {
-    class PublicCoin;
+class PublicCoin;
 }
 
 //! -dbcache default (MiB)
@@ -94,4 +94,3 @@ class CZerocoinDB : public CLevelDBWrapper {
   bool ReadAccumulatorValue(const uint32_t& nChecksum, CBigNum& bnValue);
   bool EraseAccumulatorValue(const uint32_t& nChecksum);
 };
-

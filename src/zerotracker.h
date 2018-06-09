@@ -46,4 +46,3 @@ class CZeroTracker {
   bool UpdateState(const CMintMeta& meta);
   void Clear();
 };
-

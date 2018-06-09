@@ -285,9 +285,9 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
         Input = -Params().MaxMoneyOut();
       else
         Input += PrevOut.nValue;
-      std::string InputsContentCells[] = {std::to_string(i),
-                                          "<span>" + makeHRef(Out.hash.GetHex()) + ":" + std::to_string(Out.n) + "</span>",
-                                          ScriptToString(PrevOut.scriptPubKey, true), ValueToString(PrevOut.nValue)};
+      std::string InputsContentCells[] = {
+          std::to_string(i), "<span>" + makeHRef(Out.hash.GetHex()) + ":" + std::to_string(Out.n) + "</span>",
+          ScriptToString(PrevOut.scriptPubKey, true), ValueToString(PrevOut.nValue)};
       InputsContent += makeHTMLTableRow(InputsContentCells, sizeof(InputsContentCells) / sizeof(std::string));
     }
 
@@ -298,11 +298,11 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
     unsigned int nNext = 0;
     bool fAddrIndex = false;
     getNextIn(COutPoint(TxHash, i), HashNext, nNext);
-    std::string OutputsContentCells[] = {std::to_string(i),
-                                         (HashNext == uint256S("0"))
-                                             ? (fAddrIndex ? _("no") : _("unknown"))
-                                             : "<span>" + makeHRef(HashNext.GetHex()) + ":" + std::to_string(nNext) + "</span>",
-                                         ScriptToString(Out.scriptPubKey, true), ValueToString(Out.nValue)};
+    std::string OutputsContentCells[] = {
+        std::to_string(i),
+        (HashNext == uint256S("0")) ? (fAddrIndex ? _("no") : _("unknown"))
+                                    : "<span>" + makeHRef(HashNext.GetHex()) + ":" + std::to_string(nNext) + "</span>",
+        ScriptToString(Out.scriptPubKey, true), ValueToString(Out.nValue)};
     OutputsContent += makeHTMLTableRow(OutputsContentCells, sizeof(OutputsContentCells) / sizeof(std::string));
   }
 
@@ -373,8 +373,8 @@ std::string AddressToString(const CBitcoinAddress& Address) {
           CBlockIndex* pindex = (*mi).second;
           if (!pindex || !chainActive.Contains(pindex))
               continue;
-          std::string Prepend = "<a href=\"" + std::to_string(pindex->nHeight) + "\">" + TimeToString(pindex->nTime) + "</a>";
-          TxContent += TxToRow(tx, AddressScript, Prepend, &Sum);
+          std::string Prepend = "<a href=\"" + std::to_string(pindex->nHeight) + "\">" + TimeToString(pindex->nTime) +
+  "</a>"; TxContent += TxToRow(tx, AddressScript, Prepend, &Sum);
       }
   }
   */

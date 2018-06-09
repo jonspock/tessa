@@ -7,7 +7,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "miner.h"
-#include "staker.h"
 #include "amount.h"
 #include "hash.h"
 #include "init.h"
@@ -17,6 +16,7 @@
 #include "pow.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
+#include "staker.h"
 #include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
@@ -28,8 +28,8 @@
 #include "spork.h"
 #include "validationinterface.h"
 
-#include <boost/thread.hpp>
 #include "libzerocoin/CoinSpend.h"
+#include <boost/thread.hpp>
 
 using namespace std;
 
@@ -100,8 +100,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
   // Check if zerocoin is enabled
   // XXXX warning "Check zerocoin start here too""
-  bool fZerocoinActive = true; // FOR NOW XXXX
-  //bool fZerocoinActive = GetAdjustedTime() >= Params().Zerocoin_StartTime();
+  bool fZerocoinActive = true;  // FOR NOW XXXX
+  // bool fZerocoinActive = GetAdjustedTime() >= Params().Zerocoin_StartTime();
   /*
     if (fZerocoinActive)
     pblock->nVersion = 4;
@@ -365,41 +365,40 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     }
 
     if (fProofOfStake) {
-        pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
-        // Fill in header
-        pblock->hashPrevBlock = pindexPrev->GetBlockHash();
+      pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
+      // Fill in header
+      pblock->hashPrevBlock = pindexPrev->GetBlockHash();
     } else {
-        
-        // Make payee
-        if (txNew.vout.size() > 1) {
-            pblock->payee = txNew.vout[1].scriptPubKey;
-        } else {
-            // XXX Check later but seems needed
-            CAmount blockValue = GetBlockValue(pindexPrev->nHeight);
-            txNew.vout[0].nValue = blockValue;
-        }
-    
-        pblock->vtx[0] = txNew;
-        pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
-        // Compute final coinbase transaction.
-        pblocktemplate->vTxFees[0] = -nFees;
-        // Fill in header
-        pblock->hashPrevBlock = pindexPrev->GetBlockHash();
-        UpdateTime(pblock, pindexPrev);
+      // Make payee
+      if (txNew.vout.size() > 1) {
+        pblock->payee = txNew.vout[1].scriptPubKey;
+      } else {
+        // XXX Check later but seems needed
+        CAmount blockValue = GetBlockValue(pindexPrev->nHeight);
+        txNew.vout[0].nValue = blockValue;
+      }
+
+      pblock->vtx[0] = txNew;
+      pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
+      // Compute final coinbase transaction.
+      pblocktemplate->vTxFees[0] = -nFees;
+      // Fill in header
+      pblock->hashPrevBlock = pindexPrev->GetBlockHash();
+      UpdateTime(pblock, pindexPrev);
     }
-    
+
     pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
     pblock->nNonce = 0;
 
     nLastBlockTx = nBlockTx;
     nLastBlockSize = nBlockSize;
     LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
-    
 
     // Calculate the accumulator checkpoint only if the previous cached checkpoint need to be updated
     uint256 nCheckpoint;
     if (nHeight > ACC_BLOCK_INTERVAL) {
-      uint256 hashBlockLastAccumulated = chainActive[nHeight - (nHeight % ACC_BLOCK_INTERVAL) - ACC_BLOCK_INTERVAL]->GetBlockHash();
+      uint256 hashBlockLastAccumulated =
+          chainActive[nHeight - (nHeight % ACC_BLOCK_INTERVAL) - ACC_BLOCK_INTERVAL]->GetBlockHash();
       if (nHeight >= pCheckpointCache.first || pCheckpointCache.second.first != hashBlockLastAccumulated) {
         // For the period before v2 activation, ZKP will be disabled and previous block's checkpoint is all that will
         // be needed
@@ -409,7 +408,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
           if (fZerocoinActive && !CalculateAccumulatorCheckpoint(nHeight, nCheckpoint, mapAccumulators)) {
             LogPrintf("%s: failed to get accumulator checkpoint\n", __func__);
           } else {
-            // the next time the accumulator checkpoint should be recalculated ( the next height that is multiple of ACC_BLOCK_INTERVAL)
+            // the next time the accumulator checkpoint should be recalculated ( the next height that is multiple of
+            // ACC_BLOCK_INTERVAL)
             pCheckpointCache.first = nHeight + (ACC_BLOCK_INTERVAL - (nHeight % ACC_BLOCK_INTERVAL));
 
             // the block hash of the last block used in the accumulator checkpoint calc. This will handle reorg
@@ -542,7 +542,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
 
       while (pwallet->IsLocked() || !fMintableCoins ||
              (pwallet->GetBalance() > 0 && nReserveBalance >= pwallet->GetBalance())) {
-          gStaker.setLastCoinStakeSearchInterval(0);
+        gStaker.setLastCoinStakeSearchInterval(0);
         // Do a separate 1 minute check here to ensure fMintableCoins is updated
         if (!fMintableCoins) {
           if (GetTime() - nMintableLastCheck > 1 * 60)  // 1 minute check time

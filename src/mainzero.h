@@ -11,9 +11,9 @@
 
 // Forward Declarations
 namespace libzerocoin {
-    class PublicCoin;
-    class CoinSpend;
-}
+class PublicCoin;
+class CoinSpend;
+}  // namespace libzerocoin
 
 bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationState& state, bool fCheckOnly);
 bool ContextualCheckZerocoinMint(const CTransaction& tx, const libzerocoin::PublicCoin& coin,

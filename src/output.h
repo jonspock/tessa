@@ -7,8 +7,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-#include <string>
 #include "amount.h"
+#include <string>
 class CWalletTx;
 
 class COutput {

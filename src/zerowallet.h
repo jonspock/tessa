@@ -13,7 +13,7 @@
 class CDeterministicMint;
 
 namespace libzerocoin {
-    class PrivateCoin;
+class PrivateCoin;
 }
 
 class CZeroWallet {
@@ -44,8 +44,7 @@ class CZeroWallet {
   bool IsInMintPool(const CBigNum& bnValue) { return mintPool.Has(bnValue); }
   void UpdateCount();
   void Lock();
- 
+
  private:
   uint512 GetZerocoinSeed(uint32_t n);
 };
-

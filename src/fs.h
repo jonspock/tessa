@@ -22,4 +22,3 @@ FILE *fopen(const fs::path &p, const char *mode);
 FILE *freopen(const fs::path &p, const char *mode, FILE *stream);
 };
 // clang-format on
-

@@ -540,8 +540,8 @@ bool SetStartOnSystemStartup(bool fAutoStart) {
 
     // Get a pointer to the IShellLink interface.
     IShellLink* psl = nullptr;
-    HRESULT hres =
-        CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<void**>(&psl));
+    HRESULT hres = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink,
+                                    reinterpret_cast<void**>(&psl));
 
     if (SUCCEEDED(hres)) {
       // Get the current executable path
@@ -686,7 +686,8 @@ bool SetStartOnSystemStartup(bool fAutoStart) {
 
   if (fAutoStart && !foundItem) {
     // add club app to startup item list
-    LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, nullptr, nullptr, bitcoinAppUrl, nullptr, nullptr);
+    LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, nullptr, nullptr, bitcoinAppUrl,
+                                  nullptr, nullptr);
   } else if (!fAutoStart && foundItem) {
     // remove item
     LSSharedFileListItemRemove(loginItems, foundItem);

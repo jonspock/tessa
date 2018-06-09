@@ -166,7 +166,7 @@ class CMainParams : public CChainParams {
     fHeadersFirstSyncingActive = false;
 
     nPoolMaxTransactions = 3;
-    nStakeMinAge = 60 * 60; // 60 minutes
+    nStakeMinAge = 60 * 60;  // 60 minutes
 
     /** Zerocoin */
     nMaxZerocoinSpendsPerTransaction = 7;  // Assume about 20kb each
@@ -239,10 +239,10 @@ class CTestNetParams : public CMainParams {
     fMiningRequiresPeers = false;
     bnProofOfWorkLimit = ~uint256(0) >> 1;
 
-    nStakeMinAge = 1 * 60; // 1 minute for Testnet
-    nModifierInterval = 60; // ? why this value
+    nStakeMinAge = 1 * 60;   // 1 minute for Testnet
+    nModifierInterval = 60;  // ? why this value
     nStakeTargetSpacing = 60;
-    
+
     nPoolMaxTransactions = 2;
   }
   const Checkpoints::CCheckpointData& Checkpoints() const { return dataTestnet; }

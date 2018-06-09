@@ -24,13 +24,12 @@ struct QueuedBlock {
   bool fValidatedHeaders;      //! Whether this block has validated headers at the time of request.
 };
 
-    
 struct CBlockReject {
   unsigned char chRejectCode;
   string strRejectReason;
   uint256 hashBlock;
 };
-    
+
 /**
  * Maintain validation-specific state about nodes, protected by cs_main, instead
  * by CNode's own locks. This simplifies asynchronous operation, where

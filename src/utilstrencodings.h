@@ -102,4 +102,3 @@ template <typename T> bool TimingResistantEqual(const T& a, const T& b) {
   for (size_t i = 0; i < a.size(); i++) accumulator |= a[i] ^ b[i % b.size()];
   return accumulator == 0;
 }
-

@@ -35,4 +35,3 @@ std::string BIP38_Encrypt(std::string strAddress, std::string strPassphrase, uin
 bool BIP38_Decrypt(std::string strPassphrase, std::string strEncryptedKey, uint256& privKey, bool& fCompressed);
 
 std::string AddressToBip38Hash(std::string address);
-

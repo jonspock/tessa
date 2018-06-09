@@ -211,8 +211,9 @@ class CMinerPolicyEstimator {
 
     for (size_t i = 0; i < history.size(); i++) {
       if (history[i].FeeSamples() + history[i].PrioritySamples() > 0)
-        LogPrint(ClubLog::ESTIMATEFEE, "estimates: for confirming within %d blocks based on %d/%d samples, fee=%s, prio=%g\n",
-                 i, history[i].FeeSamples(), history[i].PrioritySamples(), estimateFee(i + 1).ToString(),
+        LogPrint(ClubLog::ESTIMATEFEE,
+                 "estimates: for confirming within %d blocks based on %d/%d samples, fee=%s, prio=%g\n", i,
+                 history[i].FeeSamples(), history[i].PrioritySamples(), estimateFee(i + 1).ToString(),
                  estimatePriority(i + 1));
     }
   }

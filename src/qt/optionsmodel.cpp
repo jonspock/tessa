@@ -33,7 +33,8 @@
 OptionsModel::OptionsModel(QObject* parent) : QAbstractListModel(parent) { Init(); }
 
 void OptionsModel::addOverriddenOption(const std::string& option) {
-    strOverriddenByCommandLine += QString::fromStdString(option) + "=" + QString::fromStdString(gArgs.GetArg(option,"")) + " ";
+  strOverriddenByCommandLine +=
+      QString::fromStdString(option) + "=" + QString::fromStdString(gArgs.GetArg(option, "")) + " ";
 }
 
 // Writes all missing QSettings with their default values

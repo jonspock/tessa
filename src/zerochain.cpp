@@ -4,11 +4,11 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "zerochain.h"
+#include "libzerocoin/CoinSpend.h"
+#include "libzerocoin/PublicCoin.h"
 #include "main.h"
 #include "txdb.h"
 #include "ui_interface.h"
-#include "libzerocoin/PublicCoin.h"
-#include "libzerocoin/CoinSpend.h"
 
 // 6 comes from OPCODE (1) + vch.size() (1) + BIGNUM size (4)
 #define SCRIPT_OFFSET 6
@@ -35,11 +35,9 @@ bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomina
   return true;
 }
 
-bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins)
-{
-    for (const CTransaction tx : block.vtx) {
-        if(!tx.IsZerocoinMint())
-            continue;
+bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins) {
+  for (const CTransaction tx : block.vtx) {
+    if (!tx.IsZerocoinMint()) continue;
 
     uint256 txHash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {

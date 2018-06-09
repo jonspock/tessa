@@ -10,8 +10,8 @@
 #include "accumulators.h"
 #include "main.h"
 #include "pow.h"
-#include "uint256.h"
 #include "staker.h"
+#include "uint256.h"
 
 #include <stdint.h>
 
@@ -56,8 +56,8 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
   }
   if (hashBlock != uint256(0)) BatchWriteHashBestChain(batch, hashBlock);
 
-  LogPrint(ClubLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n", (unsigned int)changed,
-           (unsigned int)count);
+  LogPrint(ClubLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n",
+           (unsigned int)changed, (unsigned int)count);
   return db.WriteBatch(batch);
 }
 

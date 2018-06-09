@@ -422,8 +422,8 @@ void CNode::PushVersion() {
     LogPrint(ClubLog::NET, "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%d\n", PROTOCOL_VERSION,
              nBestHeight, addrMe.ToString(), addrYou.ToString(), id);
   else
-    LogPrint(ClubLog::NET, "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION, nBestHeight,
-             addrMe.ToString(), id);
+    LogPrint(ClubLog::NET, "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION,
+             nBestHeight, addrMe.ToString(), id);
   PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe, nLocalHostNonce,
               FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight, true);
 }
@@ -1952,7 +1952,7 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend) {
   // The -*messagestest options are intentionally not documented in the help message,
   // since they are only used during development to debug the networking code and are
   // not intended for end-users.
-    if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "2").c_str()) == 0)) {
+  if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "2").c_str()) == 0)) {
     LogPrint(ClubLog::NET, "dropmessages DROPPING SEND MESSAGE\n");
     AbortMessage();
     return;
@@ -2081,5 +2081,6 @@ void DumpBanlist() {
   CNode::GetBanned(banmap);
   if (bandb.Write(banmap)) { CNode::SetBannedSetDirty(false); }
 
-  LogPrint(ClubLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n", banmap.size(), GetTimeMillis() - nStart);
+  LogPrint(ClubLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n", banmap.size(),
+           GetTimeMillis() - nStart);
 }

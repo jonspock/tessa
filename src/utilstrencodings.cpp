@@ -486,4 +486,3 @@ std::string FormatParagraph(const std::string in, size_t width, size_t indent) {
   }
   return out.str();
 }
-

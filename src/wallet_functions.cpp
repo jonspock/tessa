@@ -16,7 +16,7 @@ void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue) {
     nOrderPos = -1;  // TODO: calculate elsewhere
     return;
   }
-    nOrderPos = std::atoi(mapValue["n"].c_str());
+  nOrderPos = std::atoi(mapValue["n"].c_str());
 }
 
 void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue) {

@@ -8,11 +8,10 @@
  */
 #pragma once
 
+#include "amount.h"
 #include <cstdint>
 #include <string>
-#include "amount.h"
 
 std::string FormatMoney(const CAmount& n, bool fPlus = false);
 bool ParseMoney(const std::string& str, CAmount& nRet);
 bool ParseMoney(const char* pszIn, CAmount& nRet);
-

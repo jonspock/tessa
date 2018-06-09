@@ -52,7 +52,8 @@ void CSporkManager::LoadSporksFromDB() {
       LogPrintf("%s : loaded spork %s with value %d : %s", __func__, gSporkManager.GetSporkNameByID(sporkID),
                 spork.nValue, std::ctime(&result));
     } else {
-      LogPrintf("%s : loaded spork %s with value %d\n", __func__, gSporkManager.GetSporkNameByID(sporkID), spork.nValue);
+      LogPrintf("%s : loaded spork %s with value %d\n", __func__, gSporkManager.GetSporkNameByID(sporkID),
+                spork.nValue);
     }
   }
 }
@@ -76,11 +77,11 @@ void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStr
     if (mapSporksActive.count(spork.nSporkID)) {
       if (mapSporksActive[spork.nSporkID].nTimeSigned >= spork.nTimeSigned) {
         if (gArgs.IsArgSet("-debug"))
-            LogPrintf("%s : seen %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
+          LogPrintf("%s : seen %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
         return;
       } else {
         if (gArgs.IsArgSet("-debug"))
-            LogPrintf("%s : got updated spork %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
+          LogPrintf("%s : got updated spork %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
       }
     }
 
@@ -255,13 +256,17 @@ bool CSporkManager::SetPrivKey(std::string strPrivKey) {
 }
 
 SporkID CSporkManager::GetSporkIDByName(std::string strName) {
-  if (strName == "SPORK_PROTOCOL_ENFORCEMENT")    return SporkID::SPORK_PROTOCOL_ENFORCEMENT;
-  else    return SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE;
+  if (strName == "SPORK_PROTOCOL_ENFORCEMENT")
+    return SporkID::SPORK_PROTOCOL_ENFORCEMENT;
+  else
+    return SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE;
 }
 
 SporkID CSporkManager::GetSporkIDByInt(int i) {
-  if (i == 10001)    return SporkID::SPORK_PROTOCOL_ENFORCEMENT;
-  else    return SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE;
+  if (i == 10001)
+    return SporkID::SPORK_PROTOCOL_ENFORCEMENT;
+  else
+    return SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE;
 }
 
 std::string CSporkManager::GetSporkNameByID(SporkID id) {

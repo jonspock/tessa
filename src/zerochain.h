@@ -19,13 +19,13 @@ class CValidationState;
 class CZerocoinMint;
 class uint256;
 
-
 namespace libzerocoin {
-    class PublicCoin;
-    class CoinSpend;
-}
+class PublicCoin;
+class CoinSpend;
+}  // namespace libzerocoin
 
-bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom, std::vector<CBigNum>& vValues);
+bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom,
+                            std::vector<CBigNum>& vValues);
 bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins);
 bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints);
 void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMintsToUpdate,

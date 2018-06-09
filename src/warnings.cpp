@@ -1,6 +1,6 @@
 #include "warnings.h"
-#include "ui_interface.h"
 #include "main_externs.h"
+#include "ui_interface.h"
 
 // Need?
 #include "main.h"
@@ -24,9 +24,7 @@ string GetWarnings(string strFor) {
   if (GetBoolArg("-testsafemode", false)) strStatusBar = strRPC = "testsafemode enabled";
 
   // Misc warnings like out of disk space and clock is wrong
-  if (strMiscWarning != "") {
-    strStatusBar = strMiscWarning;
-  }
+  if (strMiscWarning != "") { strStatusBar = strMiscWarning; }
 
   if (fLargeWorkForkFound) {
     strStatusBar = strRPC =
@@ -44,8 +42,6 @@ string GetWarnings(string strFor) {
   assert(!"GetWarnings() : invalid parameter");
   return "error";
 }
-
-
 
 bool fLargeWorkForkFound = false;
 bool fLargeWorkInvalidChainFound = false;

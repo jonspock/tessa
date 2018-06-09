@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "spork.h"
 #include "leveldbwrapper.h"
+#include "spork.h"
 
 class CSporkDB : public CLevelDBWrapper {
  public:

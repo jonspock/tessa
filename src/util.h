@@ -49,9 +49,9 @@ extern volatile bool fReopenDebugLog;
 void SetupEnvironment();
 bool SetupNetworking();
 
-template <typename... Args> bool error(const char *fmt, const Args &... args) {
-    LogPrintf("ERROR: " + tfm::format(fmt, args...) + "\n");
-    return false;
+template <typename... Args> bool error(const char* fmt, const Args&... args) {
+  LogPrintf("ERROR: " + tfm::format(fmt, args...) + "\n");
+  return false;
 }
 
 double double_safe_addition(double fValue, double fIncrement);
@@ -265,4 +265,3 @@ class ArgsManager {
 };
 
 extern ArgsManager gArgs;
-

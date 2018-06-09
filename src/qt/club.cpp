@@ -144,18 +144,18 @@ static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTrans
 #if QT_VERSION < 0x050000
 void DebugMessageHandler(QtMsgType type, const char* msg) {
   if (type == QtDebugMsg) {
-      LogPrint(ClubLog::QT, "GUI: %s\n", msg.toStdString());
+    LogPrint(ClubLog::QT, "GUI: %s\n", msg.toStdString());
   } else {
-      LogPrintf("GUI: %s\n", msg.toStdString());
+    LogPrintf("GUI: %s\n", msg.toStdString());
   }
 }
 #else
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg) {
-    Q_UNUSED(context);
-    if (type == QtDebugMsg) {
-        LogPrint(ClubLog::QT, "GUI: %s\n", msg.toStdString());
-    } else {
-        LogPrintf("GUI: %s\n", msg.toStdString());
+  Q_UNUSED(context);
+  if (type == QtDebugMsg) {
+    LogPrint(ClubLog::QT, "GUI: %s\n", msg.toStdString());
+  } else {
+    LogPrintf("GUI: %s\n", msg.toStdString());
   }
 }
 #endif
@@ -546,7 +546,7 @@ int main(int argc, char* argv[]) {
   if (!boost::filesystem::is_directory(GetDataDir(false))) {
     QMessageBox::critical(0, QObject::tr("Club Core"),
                           QObject::tr("Error: Specified data directory \"%1\" does not exist.")
-                          .arg(QString::fromStdString(gArgs.GetArg("-datadir",""))));
+                              .arg(QString::fromStdString(gArgs.GetArg("-datadir", ""))));
     return 1;
   }
   try {
@@ -616,7 +616,7 @@ int main(int argc, char* argv[]) {
   app.createOptionsModel();
 
   InitLogging();
-  
+
   // Subscribe to global signals from core
   uiInterface.InitMessage.connect(InitMessage);
 

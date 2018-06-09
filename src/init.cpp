@@ -780,19 +780,16 @@ bool AppInitServers(boost::thread_group& threadGroup) {
 }
 
 void InitLogging() {
-    ClubLog::Logger &logger = GetLogger();
-    logger.fPrintToConsole = gArgs.GetBoolArg("-printtoconsole", false);
-    logger.fLogTimestamps =
-        gArgs.GetBoolArg("-logtimestamps", DEFAULT_LOGTIMESTAMPS);
-    logger.fLogTimeMicros =
-        gArgs.GetBoolArg("-logtimemicros", DEFAULT_LOGTIMEMICROS);
+  ClubLog::Logger& logger = GetLogger();
+  logger.fPrintToConsole = gArgs.GetBoolArg("-printtoconsole", false);
+  logger.fLogTimestamps = gArgs.GetBoolArg("-logtimestamps", DEFAULT_LOGTIMESTAMPS);
+  logger.fLogTimeMicros = gArgs.GetBoolArg("-logtimemicros", DEFAULT_LOGTIMEMICROS);
 
-    fLogIPs = gArgs.GetBoolArg("-logips", DEFAULT_LOGIPS);
+  fLogIPs = gArgs.GetBoolArg("-logips", DEFAULT_LOGIPS);
 
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("%s version %s\n", CLIENT_NAME, FormatFullVersion());
+  LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+  LogPrintf("%s version %s\n", CLIENT_NAME, FormatFullVersion());
 }
-
 
 /** Initialize club.
  *  @pre Parameters should be parsed and config file should be read.
@@ -931,25 +928,20 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // ********************************************************* Step 3: parameter-to-internal-flags
   if (gArgs.IsArgSet("-debug")) {
-      // Special-case: if -debug=0/-nodebug is set, turn off debugging
-      // messages
-      const std::vector<std::string> &categories = gArgs.GetArgs("-debug");
-      if (find(categories.begin(), categories.end(), std::string("0")) ==
-          categories.end()) {
-          for (const auto &cat : categories) {
-              ClubLog::LogFlags flag;
-              if (!GetLogCategory(flag, cat)) {
-                  InitWarning(
-                              strprintf(_("Unsupported logging category %s=%s."),
-                                        "-debug", cat));
-              }
-              GetLogger().EnableCategory(flag);
-          }
+    // Special-case: if -debug=0/-nodebug is set, turn off debugging
+    // messages
+    const std::vector<std::string>& categories = gArgs.GetArgs("-debug");
+    if (find(categories.begin(), categories.end(), std::string("0")) == categories.end()) {
+      for (const auto& cat : categories) {
+        ClubLog::LogFlags flag;
+        if (!GetLogCategory(flag, cat)) {
+          InitWarning(strprintf(_("Unsupported logging category %s=%s."), "-debug", cat));
+        }
+        GetLogger().EnableCategory(flag);
       }
+    }
   }
 
-
-  
   // Check for -debugnet
   if (GetBoolArg("-debugnet", false))
     InitWarning(_("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
@@ -1086,25 +1078,19 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   CreatePidFile(GetPidFile(), getpid());
 #endif
 
-  ClubLog::Logger &logger = GetLogger();
+  ClubLog::Logger& logger = GetLogger();
 
   bool default_shrinkdebugfile = logger.DefaultShrinkDebugFile();
   if (gArgs.GetBoolArg("-shrinkdebugfile", default_shrinkdebugfile)) {
-      // Do this first since it both loads a bunch of debug.log into memory,
-      // and because this needs to happen before any other debug.log printing.
-      logger.ShrinkDebugFile();
+    // Do this first since it both loads a bunch of debug.log into memory,
+    // and because this needs to happen before any other debug.log printing.
+    logger.ShrinkDebugFile();
   }
 
-  if (logger.fPrintToDebugLog) {
-      logger.OpenDebugLog();
-  }
+  if (logger.fPrintToDebugLog) { logger.OpenDebugLog(); }
 
-  if (!logger.fLogTimestamps) {
-      LogPrintf("Startup time: %s\n",
-                DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
-  }
+  if (!logger.fLogTimestamps) { LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime())); }
 
-  
   LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   LogPrintf("Club version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
   LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));

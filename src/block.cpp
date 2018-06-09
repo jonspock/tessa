@@ -8,12 +8,12 @@
 
 #include "blockdisk.h"
 
-#include "main.h"
 #include "addrman.h"
 #include "blocksignature.h"
 #include "checkqueue.h"
 #include "init.h"
 #include "kernel.h"
+#include "main.h"
 #include "merkleblock.h"
 #include "net.h"
 #include "txdb.h"

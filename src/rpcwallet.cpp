@@ -314,8 +314,8 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
   // Create and send the transaction
   CReserveKey reservekey(pwalletMain);
   CAmount nFeeRequired;
-  if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError, nullptr, ALL_COINS,
-                                      fUseIX, (CAmount)0)) {
+  if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError, nullptr,
+                                      ALL_COINS, fUseIX, (CAmount)0)) {
     if (nValue + nFeeRequired > pwalletMain->GetBalance())
       strError = strprintf(
           "Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use "
@@ -3309,10 +3309,10 @@ void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
       CDataStream ss(SER_GETHASH, 0);
       ss << seedMaster << i;
       uint512 zerocoinSeed = Hash512(ss.begin(), ss.end());
-        
+
       libzerocoin::PrivateCoin MintedCoin(libzerocoin::gpZerocoinParams);
       CBigNum bnValue = MintedCoin.CoinFromSeed(zerocoinSeed);
- 
+
       uint256 hashPubcoin = GetPubCoinHash(bnValue);
       zwallet->AddToMintPool(make_pair(hashPubcoin, i), true);
       walletDB.WriteMintPoolPair(hashSeed, hashPubcoin, i);

@@ -18,8 +18,8 @@
 #include "optionsdialog.h"
 #include "optionsmodel.h"
 #include "rpcconsole.h"
-#include "utilitydialog.h"
 #include "staker.h"
+#include "utilitydialog.h"
 
 #ifdef ENABLE_WALLET
 #include "blockexplorer.h"

@@ -9,11 +9,11 @@
 #include "mainzero.h"
 #include "accumulatormap.h"
 #include "accumulators.h"
+#include "libzerocoin/CoinSpend.h"
+#include "libzerocoin/PublicCoin.h"
 #include "primitives/zerocoin.h"
 #include "utilmoneystr.h"
 #include "zerochain.h"
-#include "libzerocoin/PublicCoin.h"
-#include "libzerocoin/CoinSpend.h"
 
 #include <sstream>
 
@@ -25,9 +25,7 @@ bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationSt
   if (!TxOutToPublicCoin(txout, pubCoin, state))
     return state.DoS(100, error("CheckZerocoinMint(): TxOutToPublicCoin() failed"));
 
-    if (!pubCoin.validate()) {
-        return state.DoS(100, error("CheckZerocoinMint() : PubCoin does not validate"));
-    }
+  if (!pubCoin.validate()) { return state.DoS(100, error("CheckZerocoinMint() : PubCoin does not validate")); }
 
   return true;
 }

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "serialize.h"
 #include "chain.h"
+#include "serialize.h"
 
 struct CDiskTxPos : public CDiskBlockPos {
   unsigned int nTxOffset;  // after header

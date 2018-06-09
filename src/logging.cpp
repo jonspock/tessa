@@ -218,4 +218,3 @@ bool ClubLog::Logger::DefaultShrinkDebugFile() const {
     return logCategories != ClubLog::NONE;
 }
 // clang-format on
-
