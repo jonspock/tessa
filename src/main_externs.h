@@ -86,3 +86,6 @@ extern CZerocoinDB* zerocoinDB;
 
 /** Global variable that points to the spork database (protected by cs_main) */
 extern CSporkDB* pSporkDB;
+
+// used in main and warnings
+extern CBlockIndex* pindexBestInvalid;

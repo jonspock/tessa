@@ -173,6 +173,7 @@ SET(SERVER_A
 	./src/mainzero.cpp
 	./src/mainfile.cpp
 	./src/main_functions.cpp
+	./src/warnings.cpp
   ./src/verifydb.cpp
 	./src/block.cpp
 	./src/blockundo.cpp
