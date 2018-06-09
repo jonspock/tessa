@@ -151,7 +151,7 @@ void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMin
     meta.txid = txHash;
     meta.nHeight = mapBlockIndex[hashBlock]->nHeight;
     meta.isUsed = fSpent;
-    LogPrintf("%s: found updates for pubcoinhash = %s\n", __func__, meta.hashPubcoin.GetHex());
+    LogPrint(ClubLog::ZERO,"%s: found updates for pubcoinhash = %s\n", __func__, meta.hashPubcoin.GetHex());
 
     vMintsToUpdate.push_back(meta);
   }
@@ -200,7 +200,7 @@ std::string ReindexZerocoinDB() {
 
   CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
   while (pindex) {
-    if (pindex->nHeight % 1000 == 0) LogPrintf("Reindexing zerocoin : block %d...\n", pindex->nHeight);
+    if (pindex->nHeight % 1000 == 0) LogPrint(ClubLog::ZERO,"Reindexing zerocoin : block %d...\n", pindex->nHeight);
 
     CBlock block;
     if (!ReadBlockFromDisk(block, pindex)) { return _("Reindexing zerocoin failed"); }

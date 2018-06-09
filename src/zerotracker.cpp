@@ -50,7 +50,7 @@ bool CZeroTracker::Archive(CMintMeta& meta) {
       return error("%s: failed to archive deterministic ophaned mint", __func__);
   }
 
-  LogPrintf("%s: archived pubcoinhash %s\n", __func__, meta.hashPubcoin.GetHex());
+  LogPrint(ClubLog::ZERO,"%s: archived pubcoinhash %s\n", __func__, meta.hashPubcoin.GetHex());
   return true;
 }
 
@@ -68,7 +68,7 @@ bool CZeroTracker::UnArchive(const uint256& hashPubcoin, bool isDeterministic) {
     Add(mint, false);
   }
 
-  LogPrintf("%s: unarchived %s\n", __func__, hashPubcoin.GetHex());
+  LogPrint(ClubLog::ZERO,"%s: unarchived %s\n", __func__, hashPubcoin.GetHex());
   return true;
 }
 
@@ -314,7 +314,7 @@ bool CZeroTracker::UpdateStatusInternal(const std::set<uint256>& setMempool, CMi
     if (!setMempool.count(txidPendingSpend) || isConfirmedSpend) {
       RemovePending(txidPendingSpend);
       isPendingSpend = false;
-      LogPrintf("%s : Pending txid %s removed because not in mempool\n", __func__, txidPendingSpend.GetHex());
+      LogPrint(ClubLog::ZERO,"%s : Pending txid %s removed because not in mempool\n", __func__, txidPendingSpend.GetHex());
     }
   }
 
@@ -360,7 +360,7 @@ bool CZeroTracker::UpdateStatusInternal(const std::set<uint256>& setMempool, CMi
 
     // Check that the mint has correct used status
     if (mint.isUsed != isUsed) {
-      LogPrintf("%s : Set mint %s isUsed to %d\n", __func__, mint.hashPubcoin.GetHex(), isUsed);
+      LogPrint(ClubLog::ZERO,"%s : Set mint %s isUsed to %d\n", __func__, mint.hashPubcoin.GetHex(), isUsed);
       mint.isUsed = isUsed;
       return true;
     }
