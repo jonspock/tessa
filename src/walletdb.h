@@ -181,7 +181,6 @@ class CWalletDB : public CDB {
 
 void NotifyBacked(const CWallet& wallet, bool fSuccess, string strMessage);
 bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCustom = true);
-bool AttemptBackupWallet(const CWallet& wallet, const fs::path& pathSrc,
-                         const fs::path& pathDest);
+bool AttemptBackupWallet(const CWallet& wallet, const fs::path& pathSrc, const fs::path& pathDest);
 
 #endif  // BITCOIN_WALLETDB_H

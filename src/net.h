@@ -10,6 +10,7 @@
 
 #include "bloom.h"
 #include "compat.h"
+#include "fs.h"
 #include "hash.h"
 #include "limitedmap.h"
 #include "mruset.h"
@@ -20,7 +21,6 @@
 #include "sync.h"
 #include "uint256.h"
 #include "utilstrencodings.h"
-#include "fs.h"
 
 #include <deque>
 #include <stdint.h>

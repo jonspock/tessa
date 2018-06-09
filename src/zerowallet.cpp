@@ -29,7 +29,7 @@ CZeroWallet::CZeroWallet(std::string strWalletFile) {
       hashSeed = Hash(seed.begin(), seed.end());
       if (pwalletMain->AddDeterministicSeed(seed)) {
         if (walletdb.EraseZKPSeed_deprecated()) {
-          LogPrint(ClubLog::ZERO,"%s: Updated ZKP seed databasing\n", __func__);
+          LogPrint(ClubLog::ZERO, "%s: Updated ZKP seed databasing\n", __func__);
           fFirstRun = false;
         } else {
           LogPrintf("%s: failed to remove old zkp seed\n", __func__);
@@ -54,8 +54,8 @@ CZeroWallet::CZeroWallet(std::string strWalletFile) {
     key.MakeNewKey(true);
     seed = key.GetPrivKey_256();
     seedMaster = seed;
-    LogPrint(ClubLog::ZERO,"%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,
-              Hash(seed.begin(), seed.end()).GetHex());
+    LogPrint(ClubLog::ZERO, "%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,
+             Hash(seed.begin(), seed.end()).GetHex());
   } else if (!pwalletMain->GetDeterministicSeed(hashSeed, seed)) {
     LogPrintf("%s: failed to get deterministic seed for hashseed %s\n", __func__, hashSeed.GetHex());
     return;
@@ -111,7 +111,7 @@ void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
   bool fFound;
 
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
-  LogPrint(ClubLog::ZERO,"%s : n=%d nStop=%d\n", __func__, n, nStop - 1);
+  LogPrint(ClubLog::ZERO, "%s : n=%d nStop=%d\n", __func__, n, nStop - 1);
   for (uint32_t i = n; i < nStop; ++i) {
     if (ShutdownRequested()) return;
 
@@ -133,7 +133,7 @@ void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
 
     mintPool.Add(bnValue, i);
     CWalletDB(strWalletFile).WriteMintPoolPair(hashSeed, GetPubCoinHash(bnValue), i);
-    LogPrint(ClubLog::ZERO,"%s : %s count=%d\n", __func__, bnValue.GetHex().substr(0, 6), i);
+    LogPrint(ClubLog::ZERO, "%s : %s count=%d\n", __func__, bnValue.GetHex().substr(0, 6), i);
   }
 }
 
@@ -167,7 +167,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
   while (found) {
     found = false;
     if (fGenerateMintPool) GenerateMintPool();
-    LogPrint(ClubLog::ZERO,"%s: Mintpool size=%d\n", __func__, mintPool.size());
+    LogPrint(ClubLog::ZERO, "%s: Mintpool size=%d\n", __func__, mintPool.size());
 
     std::set<uint256> setChecked;
     list<pair<uint256, uint32_t> > listMints = mintPool.List();
@@ -187,8 +187,8 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
       CZerocoinMint mint;
       if (zerocoinDB->ReadCoinMint(pMint.first, txHash)) {
         // this mint has already occurred on the chain, increment counter's state to reflect this
-        LogPrint(ClubLog::ZERO,"%s : Found wallet coin mint=%s count=%d tx=%s\n", __func__, pMint.first.GetHex(), pMint.second,
-                  txHash.GetHex());
+        LogPrint(ClubLog::ZERO, "%s : Found wallet coin mint=%s count=%d tx=%s\n", __func__, pMint.first.GetHex(),
+                 pMint.second, txHash.GetHex());
         found = true;
 
         uint256 hashBlock;

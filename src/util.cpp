@@ -264,7 +264,6 @@ static fs::path pathCachedNetSpecific;
 static CCriticalSection csPathCached;
 
 const fs::path& GetDataDir(bool fNetSpecific) {
-
   LOCK(csPathCached);
 
   fs::path& path = fNetSpecific ? pathCachedNetSpecific : pathCached;
@@ -457,7 +456,6 @@ void ShrinkDebugFile() {
 
 #ifdef WIN32
 fs::path GetSpecialFolderPath(int nFolder, bool fCreate) {
-
   char pszPath[MAX_PATH] = "";
 
   if (SHGetSpecialFolderPathA(nullptr, pszPath, nFolder, fCreate)) { return fs::path(pszPath); }

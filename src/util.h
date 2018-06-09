@@ -17,10 +17,10 @@
 #endif
 
 #include "compat.h"
+#include "fs.h"
 #include "logging.h"
 #include "tinyformat.h"
 #include "utiltime.h"
-#include "fs.h"
 
 #include <exception>
 #include <map>

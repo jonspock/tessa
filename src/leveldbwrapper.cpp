@@ -4,8 +4,8 @@
 
 #include "leveldbwrapper.h"
 
-#include "util.h"
 #include "fs.h"
+#include "util.h"
 
 #include <leveldb/cache.h>
 #include <leveldb/env.h>

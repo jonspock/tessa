@@ -74,7 +74,7 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 //    timestamp before)
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints = {
-  {259201, uint256("1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd")}};
+    {259201, uint256("1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd")}};
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
     1525106065,  // * UNIX timestamp of last checkpoint block

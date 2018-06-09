@@ -6,11 +6,11 @@
 #define BITCOIN_LEVELDBWRAPPER_H
 
 #include "clientversion.h"
+#include "fs.h"
 #include "serialize.h"
 #include "streams.h"
 #include "util.h"
 #include "version.h"
-#include "fs.h"
 
 #include <leveldb/db.h>
 #include <leveldb/write_batch.h>

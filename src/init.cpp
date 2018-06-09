@@ -240,9 +240,7 @@ void PrepareShutdown() {
 #ifndef WIN32
   try {
     fs::remove(GetPidFile());
-  } catch (const fs::filesystem_error& e) {
-    LogPrintf("%s: Unable to remove pidfile: %s\n", __func__, e.what());
-  }
+  } catch (const fs::filesystem_error& e) { LogPrintf("%s: Unable to remove pidfile: %s\n", __func__, e.what()); }
 #endif
   UnregisterAllValidationInterfaces();
 }
@@ -1157,9 +1155,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
           try {
             fs::copy_file(sourceFile, backupFile);
             LogPrintf("Creating backup of %s -> %s\n", sourceFile, backupFile);
-          } catch (fs::filesystem_error& error) {
-            LogPrintf("Failed to create backup %s\n", error.what());
-          }
+          } catch (fs::filesystem_error& error) { LogPrintf("Failed to create backup %s\n", error.what()); }
         }
         // Keep only the last 10 backups, including the new one of course
         typedef std::multimap<std::time_t, fs::path> folder_set_t;
@@ -1175,8 +1171,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
             currentFile = dir_iter->path().filename();
             // Only add the backups for the current wallet, e.g. wallet.dat.*
             if (dir_iter->path().stem().string() == strWalletFile) {
-              folder_set.insert(
-                  folder_set_t::value_type(fs::last_write_time(dir_iter->path()), *dir_iter));
+              folder_set.insert(folder_set_t::value_type(fs::last_write_time(dir_iter->path()), *dir_iter));
             }
           }
         }
@@ -1189,9 +1184,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
             try {
               fs::remove(file.second);
               LogPrintf("Old backup deleted: %s\n", file.second);
-            } catch (fs::filesystem_error& error) {
-              LogPrintf("Failed to delete backup %s\n", error.what());
-            }
+            } catch (fs::filesystem_error& error) { LogPrintf("Failed to delete backup %s\n", error.what()); }
           }
         }
       }
@@ -1227,9 +1220,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
           fs::remove_all(zerocoinDir);
           LogPrintf("-resync: folder deleted: %s\n", zerocoinDir.string().c_str());
         }
-      } catch (fs::filesystem_error& error) {
-        LogPrintf("Failed to delete blockchain folders %s\n", error.what());
-      }
+      } catch (fs::filesystem_error& error) { LogPrintf("Failed to delete blockchain folders %s\n", error.what()); }
     }
 
     LogPrintf("Using wallet %s\n", strWalletFile);

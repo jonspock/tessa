@@ -1,8 +1,8 @@
 #pragma once
 
 #include "chain.h"
-#include "uint256.h"
 #include "fs.h"
+#include "uint256.h"
 
 bool AbortNode(const std::string& strMessage, const std::string& userMessage = "");
 
