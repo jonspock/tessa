@@ -561,3 +561,17 @@ int main(int argc, char* argv[]) {
   }
   return ret;
 }
+
+
+class Secp256k1Init
+{
+    ECCVerifyHandle globalVerifyHandle;
+
+public:
+    Secp256k1Init() {
+        ECC_Start();
+    }
+    ~Secp256k1Init() {
+        ECC_Stop();
+    }
+};

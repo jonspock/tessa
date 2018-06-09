@@ -47,7 +47,8 @@ bool CStake::CreateTxOuts(CWallet* pwallet, vector<CTxOut>& vout, CAmount nTotal
   {
     // convert to pay to public key type
     CKey key;
-    if (!pwallet->GetKey(uint160(vSolutions[0]), key)) return false;
+    CKeyID keyID = CKeyID(uint160(vSolutions[0]));
+    if (!pwallet->GetKey(keyID, key)) return false;
 
     scriptPubKey << key.GetPubKey() << OP_CHECKSIG;
   } else

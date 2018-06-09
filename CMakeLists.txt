@@ -98,7 +98,7 @@ else()
 		)
 else()
 	  execute_process(
-		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure  --with-incompatible-bdb
+		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure  --with-incompatible-bdb --enable-module-recovery
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	endif()
@@ -117,7 +117,6 @@ SET(COMMON_A
 	./src/netbase.cpp
 	./src/keystore.cpp
 	./src/key.cpp
-	./src/ecwrapper.cpp
 	./src/hash.cpp
 	./src/core_write.cpp
 	./src/core_read.cpp
@@ -129,7 +128,6 @@ SET(COMMON_A
 	./src/allocators.cpp
   ./src/logging.cpp
   ./src/fs.cpp
-	./src/eccryptoverify.cpp
 	)
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h.in")
@@ -151,7 +149,6 @@ SET(UTIL_A
 	./src/util.cpp
 	./src/sync.cpp
 	./src/uint256.cpp
-#	./src/arith_uint256.cpp
 	./src/bip38.cpp
 	./src/random.cpp
 	./src/clientversion.cpp
@@ -204,10 +201,7 @@ SET(CONSENSUS
 	./src/utilstrencodings.cpp
 	./src/pubkey.cpp
 	./src/uint256.cpp
-#	./src/arith_uint256.cpp
 	./src/hash.cpp
-	./src/ecwrapper.cpp
-	./src/eccryptoverify.cpp
 )	
 
 SET(CONSENSUS_CRYPTO
@@ -339,7 +333,8 @@ add_subdirectory(src)
 
 set(SECP256
 	./src/secp256k1/src/secp256k1.c
-	./src/secp256k1/src/field_5x52_asm.asm
+	./src/secp256k1/src/gen_context.c
+#	./src/secp256k1/src/field_5x52_asm.asm
 	)
 add_library(secp256k1 ${SECP256})
 
