@@ -5,7 +5,7 @@
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
+// clang-format off
 #pragma once
 
 #include "chainparamsbase.h"
@@ -190,3 +190,4 @@ void SelectParams(CBaseChainParams::Network network);
  */
 bool SelectParamsFromCommandLine();
 
+// clang-format on

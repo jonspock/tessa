@@ -4,7 +4,7 @@
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
+// clang-format off
 #ifndef BITCOIN_BIGNUM_H
 #define BITCOIN_BIGNUM_H
 
@@ -783,3 +783,4 @@ inline std::ostream& operator<<(std::ostream &strm, const CBigNum &b) { return s
 typedef CBigNum Bignum;
 
 #endif
+// clang-format on

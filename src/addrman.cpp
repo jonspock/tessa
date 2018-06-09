@@ -341,7 +341,7 @@ int CAddrMan::Check_() {
 
   if (vRandom.size() != nTried + nNew) return -7;
 
-  for (auto it :  mapInfo) {
+  for (auto it : mapInfo) {
     int n = (*it).first;
     CAddrInfo& info = (*it).second;
     if (info.fInTried) {

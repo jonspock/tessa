@@ -410,7 +410,7 @@ bool CWallet::IsSpent(const uint256& hash, unsigned int n) const {
   range = mapTxSpends.equal_range(outpoint);
   for (TxSpends::const_iterator it = range.first; it != range.second; ++it) {
     const uint256& wtxid = it->second;
-   const auto mit = mapWallet.find(wtxid);
+    const auto mit = mapWallet.find(wtxid);
     if (mit != mapWallet.end() && mit->second.GetDepthInMainChain() >= 0) return true;  // Spent
   }
   return false;
