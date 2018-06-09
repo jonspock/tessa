@@ -153,7 +153,6 @@ SET(UTIL_A
 	./src/uint256.cpp
 #	./src/arith_uint256.cpp
 	./src/bip38.cpp
-	./src/rpcprotocol.cpp
 	./src/random.cpp
 	./src/clientversion.cpp
 	./src/chainparamsbase.cpp
@@ -185,15 +184,19 @@ SET(SERVER_A
 	./src/noui.cpp
 	./src/pow.cpp
 	./src/rest.cpp
-	./src/rpcblockchain.cpp
-	./src/rpcclient.cpp
-	./src/rpcdump.cpp
-	./src/rpcmining.cpp
-	./src/rpcmisc.cpp
-	./src/rpcnet.cpp
-	./src/rpcrawtransaction.cpp
-	./src/rpcserver.cpp
-	./src/rpcwallet.cpp
+  )
+
+SET(RPC
+	./src/rpc/rpcprotocol.cpp
+	./src/rpc/rpcblockchain.cpp
+	./src/rpc/rpcclient.cpp
+	./src/rpc/rpcdump.cpp
+	./src/rpc/rpcmining.cpp
+	./src/rpc/rpcmisc.cpp
+	./src/rpc/rpcnet.cpp
+	./src/rpc/rpcrawtransaction.cpp
+	./src/rpc/rpcserver.cpp
+	./src/rpc/rpcwallet.cpp
 	)
 
 
@@ -319,9 +322,9 @@ file(GLOB PRIMITIVE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/primitives/*.h)
 source_group("PrimHeaders" FILES ${PRIMITIVE_HEADERS})
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ELSE()
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ENDIF()
 
 set_property(TARGET coin PROPERTY CXX_STANDARD 11)

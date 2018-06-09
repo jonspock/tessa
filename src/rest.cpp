@@ -10,7 +10,7 @@
 #include "main.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
-#include "rpcserver.h"
+#include "rpc/rpcserver.h"
 #include "streams.h"
 #include "sync.h"
 #include "txmempool.h"

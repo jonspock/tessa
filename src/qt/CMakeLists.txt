@@ -134,7 +134,7 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS paymentrequest.proto)
 
 SET(QT_FILES
 	../script/standard.cpp
-	../rpcclient.cpp
+	../rpc/rpcclient.cpp
 	multisenddialog.cpp
 	multisigdialog.cpp
 	bantablemodel.cpp

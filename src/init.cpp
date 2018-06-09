@@ -26,7 +26,7 @@
 #include "miner.h"
 #include "net.h"
 #include "reverse_iterate.h"
-#include "rpcserver.h"
+#include "rpc/rpcserver.h"
 #include "scheduler.h"
 #include "script/standard.h"
 #include "spork.h"

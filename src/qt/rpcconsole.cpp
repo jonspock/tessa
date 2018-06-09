@@ -7,17 +7,16 @@
 
 #include "rpcconsole.h"
 #include "ui_rpcconsole.h"
-
 #include "bantablemodel.h"
 #include "clientmodel.h"
 #include "guiutil.h"
 #include "peertablemodel.h"
-
 #include "chainparams.h"
 #include "main.h"
-#include "rpcclient.h"
-#include "rpcserver.h"
+#include "rpc/rpcclient.h"
+#include "rpc/rpcserver.h"
 #include "util.h"
+
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif  // ENABLE_WALLET
