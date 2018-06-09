@@ -230,6 +230,7 @@ SET(WALLET
 	  ./src/wallet/wallet_functions.cpp
 	  ./src/wallet/db.cpp
 	  ./src/wallet/crypter.cpp
+	  ./src/wallet/zerowallet.cpp
     )
   
 
@@ -263,7 +264,6 @@ SET(SOURCES
 	./src/denomination_functions.cpp
 # NEW
 	./src/zerotracker.cpp
-	./src/zerowallet.cpp
   ./src/httprpc.cpp
   ./src/httpserver.cpp
   ./src/blocksignature.cpp
