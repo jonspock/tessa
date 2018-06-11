@@ -15,9 +15,7 @@
 #include "utilstrencodings.h"
 
 uint256 CBlockHeader::GetHash() const {
-  if (nVersion < ZEROBLOCK_VERSION) return Hash(BEGIN(nVersion), END(nNonce));
-
-  return Hash(BEGIN(nVersion), END(nAccumulatorCheckpoint));
+  return Hash(BEGIN(nHeaderVersion), END(nAccumulatorCheckpoint));
 }
 
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const {
@@ -107,7 +105,7 @@ std::string CBlock::ToString() const {
   std::stringstream s;
   s << strprintf(
       "CBlock(hash=%s, ver=%d, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u)\n",
-      GetHash().ToString(), nVersion, hashPrevBlock.ToString(), hashMerkleRoot.ToString(), nTime, nBits, nNonce,
+      GetHash().ToString(), nHeaderVersion, hashPrevBlock.ToString(), hashMerkleRoot.ToString(), nTime, nBits, nNonce,
       vtx.size());
   for (unsigned int i = 0; i < vtx.size(); i++) { s << "  " << vtx[i].ToString() << "\n"; }
   s << "  vMerkleTree: ";

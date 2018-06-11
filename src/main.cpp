@@ -510,7 +510,7 @@ unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans) {
 
 bool IsStandardTx(const CTransaction& tx, string& reason) {
   AssertLockHeld(cs_main);
-  if (tx.nVersion > CTransaction::CURRENT_VERSION || tx.nVersion < 1) {
+  if (tx.nTransactionVersion > CTransaction::CURRENT_VERSION || tx.nTransactionVersion < 1) {
     reason = "version";
     return false;
   }
@@ -1515,7 +1515,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
       // The CCoins serialization does not serialize negative numbers.
       // No network rules currently depend on the version here, so an inconsistency is harmless
       // but it must be corrected before txout nversion ever influences a network rule.
-      if (outsBlock.nVersion < 0) outs->nVersion = outsBlock.nVersion;
+      if (outsBlock.nTransactionVersion < 0) outs->nTransactionVersion = outsBlock.nTransactionVersion;
       if (*outs != outsBlock)
         fClean = fClean && error("DisconnectBlock() : added transaction mismatch? database corrupted");
 
@@ -1542,7 +1542,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
           coins->Clear();
           coins->fCoinBase = undo.fCoinBase;
           coins->nHeight = undo.nHeight;
-          coins->nVersion = undo.nVersion;
+          coins->nTransactionVersion = undo.nTransactionVersion;
         } else {
           if (coins->IsPruned())
             fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
@@ -1655,7 +1655,7 @@ bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
   std::list<libzerocoin::CoinDenomination> listSpends = ZerocoinSpendListFromBlock(block);
 
   // Initialize zerocoin supply to the supply from previous block
-  if (pindex->pprev && pindex->pprev->GetBlockHeader().nVersion > STARTBLOCK_VERSION) {
+  if (pindex->pprev && pindex->pprev->GetBlockHeader().nHeaderVersion > (int32_t)BlockVersion::GENESIS_BLOCK_VERSION) {
     for (auto& denom : zerocoinDenomList) {
       pindex->mapZerocoinSupply.at(denom) = pindex->pprev->mapZerocoinSupply.at(denom);
     }
@@ -2097,7 +2097,7 @@ void static UpdateTip(CBlockIndex* pindexNew) {
     int nUpgraded = 0;
     const CBlockIndex* pindex = chainActive.Tip();
     for (int i = 0; i < 100 && pindex != nullptr; i++) {
-      if (pindex->nVersion > CBlock::CURRENT_VERSION) ++nUpgraded;
+      if (pindex->nHeaderVersion > CBlock::CURRENT_VERSION) ++nUpgraded;
       pindex = pindex->pprev;
     }
     if (nUpgraded > 0)
@@ -2968,8 +2968,8 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
 
   // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height
   // if 750 of the last 1,000 blocks are version 2 or greater (51/100 if testnet):
-  if (block.nVersion >= ZEROBLOCK_VERSION &&
-      CBlockIndex::IsSuperMajority(ZEROBLOCK_VERSION, pindexPrev, Params().EnforceBlockUpgradeMajority())) {
+  if (block.nHeaderVersion >= (int32_t)BlockVersion::GENESIS_BLOCK_VERSION &&
+      CBlockIndex::IsSuperMajority((int32_t)BlockVersion::GENESIS_BLOCK_VERSION, pindexPrev, Params().EnforceBlockUpgradeMajority())) {
     CScript expect = CScript() << nHeight;
     if (block.vtx[0].vin[0].scriptSig.size() < expect.size() ||
         !std::equal(expect.begin(), expect.end(), block.vtx[0].vin[0].scriptSig.begin())) {
@@ -3128,7 +3128,7 @@ bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, uns
   unsigned int nToCheck = Params().ToCheckBlockUpgradeMajority();
   unsigned int nFound = 0;
   for (unsigned int i = 0; i < nToCheck && nFound < nRequired && pstart != nullptr; i++) {
-    if (pstart->nVersion >= minVersion) ++nFound;
+    if (pstart->nHeaderVersion >= minVersion) ++nFound;
     pstart = pstart->pprev;
   }
   return (nFound >= nRequired);
@@ -3822,7 +3822,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
   if (strCommand == "version") {
     // Each connection can only send one version message
-    if (pfrom->nVersion != 0) {
+    if (pfrom->nNodeVersion != 0) {
       pfrom->PushMessage("reject", strCommand, REJECT_DUPLICATE, string("Duplicate version message"));
       LOCK(cs_main);
       Misbehaving(pfrom->GetId(), 1);
@@ -3842,10 +3842,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     CAddress addrMe;
     CAddress addrFrom;
     uint64_t nNonce = 1;
-    vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
+    vRecv >> pfrom->nNodeVersion >> pfrom->nServices >> nTime >> addrMe;
     if (pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand)) return false;
 
-    if (pfrom->nVersion == 10300) pfrom->nVersion = 300;
+    // XXXX 
+    if (pfrom->nNodeVersion == 10300) pfrom->nNodeVersion = 300;
     if (!vRecv.empty()) vRecv >> addrFrom >> nNonce;
     if (!vRecv.empty()) {
       vRecv >> LIMITED_STRING(pfrom->strSubVer, 256);
@@ -3877,7 +3878,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     // Change version
     pfrom->PushMessage("verack");
-    pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+    pfrom->ssSend.SetVersion(min(pfrom->nNodeVersion, PROTOCOL_VERSION));
 
     if (!pfrom->fInbound) {
       // Advertise our address
@@ -3910,14 +3911,14 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     if (fLogIPs) remoteAddr = ", peeraddr=" + pfrom->addr.ToString();
 
     LogPrintf("receive version message: %s: version %d, blocks=%d, us=%s, peer=%d%s\n", pfrom->cleanSubVer,
-              pfrom->nVersion, pfrom->nStartingHeight, addrMe.ToString(), pfrom->id, remoteAddr);
+              pfrom->nNodeVersion, pfrom->nStartingHeight, addrMe.ToString(), pfrom->id, remoteAddr);
 
     int64_t nTimeOffset = nTime - GetTime();
     pfrom->nTimeOffset = nTimeOffset;
     AddTimeData(pfrom->addr, nTimeOffset);
   }
 
-  else if (pfrom->nVersion == 0) {
+  else if (pfrom->nNodeVersion == 0) {
     // Must have a version message before anything else
     LOCK(cs_main);
     Misbehaving(pfrom->GetId(), 1);
@@ -3925,7 +3926,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
   }
 
   else if (strCommand == "verack") {
-    pfrom->SetRecvVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+    pfrom->SetRecvVersion(min(pfrom->nNodeVersion, PROTOCOL_VERSION));
 
     // Mark this node as currently connected, so we update its timestamp later.
     if (pfrom->fNetworkNode) {
@@ -4619,7 +4620,7 @@ bool ProcessMessages(CNode* pfrom) {
 bool SendMessages(CNode* pto, bool fSendTrickle) {
   {
     // Don't send anything until we get their version message
-    if (pto->nVersion == 0) return true;
+    if (pto->nNodeVersion == 0) return true;
 
     //
     // Message: ping

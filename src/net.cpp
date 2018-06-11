@@ -400,8 +400,8 @@ void CNode::CloseSocketDisconnect() {
 
 bool CNode::DisconnectOldProtocol(int nVersionRequired, string strLastCommand) {
   fDisconnect = false;
-  if (nVersion < nVersionRequired) {
-    LogPrintf("%s : peer=%d using obsolete version %i; disconnecting\n", __func__, id, nVersion);
+  if (nNodeVersion < nVersionRequired) {
+    LogPrintf("%s : peer=%d using obsolete version %i; disconnecting\n", __func__, id, nNodeVersion);
     PushMessage("reject", strLastCommand, REJECT_OBSOLETE,
                 strprintf("Version must be %d or greater", ActiveProtocol()));
     fDisconnect = true;
@@ -587,7 +587,7 @@ void CNode::copyStats(CNodeStats& stats) {
   X(nTimeConnected);
   X(nTimeOffset);
   X(addrName);
-  X(nVersion);
+  X(nNodeVersion);
   X(cleanSubVer);
   X(fInbound);
   X(nStartingHeight);
@@ -1705,7 +1705,7 @@ void RelayTransactionLockReq(const CTransaction& tx, bool relayToAll) {
 void RelayInv(CInv& inv) {
   LOCK(cs_vNodes);
   for (CNode* pnode : vNodes) {
-    if (pnode->nVersion >= ActiveProtocol()) pnode->PushInventory(inv);
+    if (pnode->nNodeVersion >= ActiveProtocol()) pnode->PushInventory(inv);
   }
 }
 
@@ -1857,7 +1857,7 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
   nTimeOffset = 0;
   addr = addrIn;
   addrName = addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn;
-  nVersion = 0;
+  nNodeVersion = 0;
   strSubVer = "";
   fWhitelisted = false;
   fOneShot = false;

@@ -5,8 +5,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_PRIMITIVES_BLOCK_H
-#define BITCOIN_PRIMITIVES_BLOCK_H
+#pragma once
 
 #include "keystore.h"
 #include "primitives/transaction.h"
@@ -14,9 +13,9 @@
 #include "uint256.h"
 
 // For Now
-#define STARTBLOCK_VERSION 1
-#define ZEROBLOCK_VERSION 2
-// enum BlockVersions = { STARTBLOCK_VERSION, ZEROBLOCK_VERSION };
+enum class BlockVersion : std::int32_t {
+  GENESIS_BLOCK_VERSION=1
+};
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE_CURRENT = 2000000;
@@ -32,8 +31,8 @@ static const unsigned int MAX_BLOCK_SIZE_LEGACY = 1000000;
 class CBlockHeader {
  public:
   // header
-  static const int32_t CURRENT_VERSION = ZEROBLOCK_VERSION;
-  int32_t nVersion;
+  static const int32_t CURRENT_VERSION = (int32_t)BlockVersion::GENESIS_BLOCK_VERSION;
+  int32_t nHeaderVersion;
   uint256 hashPrevBlock;
   uint256 hashMerkleRoot;
   uint32_t nTime;
@@ -47,20 +46,18 @@ class CBlockHeader {
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-    READWRITE(this->nVersion);
-    nVersion = this->nVersion;
+    READWRITE(nHeaderVersion);
+    nVersion = nHeaderVersion;
     READWRITE(hashPrevBlock);
     READWRITE(hashMerkleRoot);
     READWRITE(nTime);
     READWRITE(nBits);
     READWRITE(nNonce);
-
-    // zerocoin active, header changes to include accumulator checksum
-    if (nVersion > STARTBLOCK_VERSION) READWRITE(nAccumulatorCheckpoint);
+    READWRITE(nAccumulatorCheckpoint);
   }
 
   void SetNull() {
-    nVersion = CBlockHeader::CURRENT_VERSION;
+    nHeaderVersion = CBlockHeader::CURRENT_VERSION;
     hashPrevBlock.SetNull();
     hashMerkleRoot.SetNull();
     nTime = 0;
@@ -114,7 +111,7 @@ class CBlock : public CBlockHeader {
 
   CBlockHeader GetBlockHeader() const {
     CBlockHeader block;
-    block.nVersion = nVersion;
+    block.nHeaderVersion = nHeaderVersion;
     block.hashPrevBlock = hashPrevBlock;
     block.hashMerkleRoot = hashMerkleRoot;
     block.nTime = nTime;
@@ -172,4 +169,3 @@ struct CBlockLocator {
   bool IsNull() { return vHave.empty(); }
 };
 
-#endif  // BITCOIN_PRIMITIVES_BLOCK_H

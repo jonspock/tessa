@@ -43,7 +43,7 @@ bool CCoins::Spend(const COutPoint& out, CTxInUndo& undo) {
     undo.nHeight = nHeight;
     undo.fCoinBase = fCoinBase;
     undo.fCoinStake = fCoinStake;
-    undo.nVersion = this->nVersion;
+    undo.nTransactionVersion = this->nTransactionVersion;
   }
   return true;
 }

@@ -154,7 +154,7 @@ class CBlockIndex {
   int64_t nMoneySupply;
 
   //! block header
-  int nVersion;
+  int nHeaderVersion;
   uint256 hashMerkleRoot;
   unsigned int nTime;
   unsigned int nBits;
@@ -190,7 +190,7 @@ class CBlockIndex {
     prevoutStake.SetNull();
     nStakeTime = 0;
 
-    nVersion = 0;
+    nHeaderVersion = 0;
     hashMerkleRoot = uint256();
     nTime = 0;
     nBits = 0;
@@ -206,12 +206,12 @@ class CBlockIndex {
   CBlockIndex(const CBlock& block) {
     SetNull();
 
-    nVersion = block.nVersion;
+    nHeaderVersion = block.nHeaderVersion;
     hashMerkleRoot = block.hashMerkleRoot;
     nTime = block.nTime;
     nBits = block.nBits;
     nNonce = block.nNonce;
-    if (block.nVersion > STARTBLOCK_VERSION) nAccumulatorCheckpoint = block.nAccumulatorCheckpoint;
+    nAccumulatorCheckpoint = block.nAccumulatorCheckpoint;
 
     // Proof of Stake
     bnChainTrust = uint256();
@@ -252,7 +252,7 @@ class CBlockIndex {
 
   CBlockHeader GetBlockHeader() const {
     CBlockHeader block;
-    block.nVersion = nVersion;
+    block.nHeaderVersion = nHeaderVersion;
     if (pprev) block.hashPrevBlock = pprev->GetBlockHash();
     block.hashMerkleRoot = hashMerkleRoot;
     block.nTime = nTime;
@@ -402,23 +402,21 @@ class CDiskBlockIndex : public CBlockIndex {
     }
 
     // block header
-    READWRITE(this->nVersion);
+    READWRITE(this->nHeaderVersion);
     READWRITE(hashPrev);
     READWRITE(hashNext);
     READWRITE(hashMerkleRoot);
     READWRITE(nTime);
     READWRITE(nBits);
     READWRITE(nNonce);
-    if (this->nVersion > STARTBLOCK_VERSION) {
-      READWRITE(nAccumulatorCheckpoint);
-      READWRITE(mapZerocoinSupply);
-      READWRITE(vMintDenominationsInBlock);
-    }
+    READWRITE(nAccumulatorCheckpoint);
+    READWRITE(mapZerocoinSupply);
+    READWRITE(vMintDenominationsInBlock);
   }
 
   uint256 GetBlockHash() const {
     CBlockHeader block;
-    block.nVersion = nVersion;
+    block.nHeaderVersion = nHeaderVersion;
     block.hashPrevBlock = hashPrev;
     block.hashMerkleRoot = hashMerkleRoot;
     block.nTime = nTime;

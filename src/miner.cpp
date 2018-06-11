@@ -96,18 +96,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
   // -regtest only: allow overriding block.nVersion with
   // -blockversion=N to test forking scenarios
-  if (Params().MineBlocksOnDemand()) pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
+  if (Params().MineBlocksOnDemand()) pblock->nHeaderVersion = GetArg("-blockversion", pblock->nHeaderVersion);
 
   // Check if zerocoin is enabled
   // XXXX warning "Check zerocoin start here too""
   bool fZerocoinActive = true;  // FOR NOW XXXX
   // bool fZerocoinActive = GetAdjustedTime() >= Params().Zerocoin_StartTime();
-  /*
-    if (fZerocoinActive)
-    pblock->nVersion = 4;
-    else
-    pblock->nVersion = 3;
-  */
 
   // Create coinbase tx
   CMutableTransaction txNew;

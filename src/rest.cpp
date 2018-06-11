@@ -463,7 +463,7 @@ static bool rest_getutxos(HTTPRequest* req, const std::string& strURIPart) {
           // Safe to index into vout here because IsAvailable checked if it's off the end of the array, or if
           // n is valid but points to an already spent output (IsNull).
           CCoin coin;
-          coin.nTxVer = coins.nVersion;
+          coin.nTxVer = coins.nTransactionVersion;
           coin.nHeight = coins.nHeight;
           coin.out = coins.vout.at(vOutPoints[i].n);
           assert(!coin.out.IsNull());

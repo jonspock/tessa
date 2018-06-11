@@ -116,7 +116,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
         uint256 txhash;
         ssKey >> txhash;
         ss << txhash;
-        ss << VARINT(coins.nVersion);
+        ss << VARINT(coins.nTransactionVersion);
         ss << (coins.fCoinBase ? 'c' : 'n');
         ss << VARINT(coins.nHeight);
         stats.nTransactions++;
@@ -195,7 +195,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
         pindexNew->nFile = diskindex.nFile;
         pindexNew->nDataPos = diskindex.nDataPos;
         pindexNew->nUndoPos = diskindex.nUndoPos;
-        pindexNew->nVersion = diskindex.nVersion;
+        pindexNew->nHeaderVersion = diskindex.nHeaderVersion;
         pindexNew->hashMerkleRoot = diskindex.hashMerkleRoot;
         pindexNew->nTime = diskindex.nTime;
         pindexNew->nBits = diskindex.nBits;

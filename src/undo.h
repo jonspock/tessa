@@ -24,22 +24,22 @@ class CTxInUndo {
   bool fCoinBase;  // if the outpoint was the last unspent: whether it belonged to a coinbase
   bool fCoinStake;
   unsigned int nHeight;  // if the outpoint was the last unspent: its height
-  int nVersion;          // if the outpoint was the last unspent: its version
+  int nTransactionVersion;          // if the outpoint was the last unspent: its version
 
-  CTxInUndo() : txout(), fCoinBase(false), fCoinStake(false), nHeight(0), nVersion(0) {}
+  CTxInUndo() : txout(), fCoinBase(false), fCoinStake(false), nHeight(0), nTransactionVersion(0) {}
   CTxInUndo(const CTxOut& txoutIn, bool fCoinBaseIn = false, bool fCoinStakeIn = false, unsigned int nHeightIn = 0,
             int nVersionIn = 0)
-      : txout(txoutIn), fCoinBase(fCoinBaseIn), fCoinStake(fCoinStakeIn), nHeight(nHeightIn), nVersion(nVersionIn) {}
+      : txout(txoutIn), fCoinBase(fCoinBaseIn), fCoinStake(fCoinStakeIn), nHeight(nHeightIn), nTransactionVersion(nVersionIn) {}
 
   unsigned int GetSerializeSize(int nType, int nVersion) const {
     return ::GetSerializeSize(VARINT(nHeight * 4 + (fCoinBase ? 2 : 0) + (fCoinStake ? 1 : 0)), nType, nVersion) +
-           (nHeight > 0 ? ::GetSerializeSize(VARINT(this->nVersion), nType, nVersion) : 0) +
+           (nHeight > 0 ? ::GetSerializeSize(VARINT(nTransactionVersion), nType, nVersion) : 0) +
            ::GetSerializeSize(CTxOutCompressor(REF(txout)), nType, nVersion);
   }
 
   template <typename Stream> void Serialize(Stream& s, int nType, int nVersion) const {
     ::Serialize(s, VARINT(nHeight * 4 + (fCoinBase ? 2 : 0) + (fCoinStake ? 1 : 0)), nType, nVersion);
-    if (nHeight > 0) ::Serialize(s, VARINT(this->nVersion), nType, nVersion);
+    if (nHeight > 0) ::Serialize(s, VARINT(nTransactionVersion), nType, nVersion);
     ::Serialize(s, CTxOutCompressor(REF(txout)), nType, nVersion);
   }
 
@@ -49,7 +49,7 @@ class CTxInUndo {
     nHeight = nCode >> 2;
     fCoinBase = nCode & 2;
     fCoinStake = nCode & 1;
-    if (nHeight > 0) ::Unserialize(s, VARINT(this->nVersion), nType, nVersion);
+    if (nHeight > 0) ::Unserialize(s, VARINT(nTransactionVersion), nType, nVersion);
     ::Unserialize(s, REF(CTxOutCompressor(REF(txout))), nType, nVersion);
   }
 };

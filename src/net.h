@@ -156,7 +156,7 @@ class CNodeStats {
   int64_t nTimeConnected;
   int64_t nTimeOffset;
   std::string addrName;
-  int nVersion;
+  int nNodeVersion;
   std::string cleanSubVer;
   bool fInbound;
   int nStartingHeight;
@@ -208,7 +208,7 @@ typedef enum BanReason { BanReasonUnknown = 0, BanReasonNodeMisbehaving = 1, Ban
 class CBanEntry {
  public:
   static const int CURRENT_VERSION = 1;
-  int nVersion;
+  int nBanVersion;
   int64_t nCreateTime;
   int64_t nBanUntil;
   uint8_t banReason;
@@ -224,15 +224,15 @@ class CBanEntry {
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-    READWRITE(this->nVersion);
-    nVersion = this->nVersion;
+    READWRITE(nBanVersion);
+    nVersion = nBanVersion;
     READWRITE(nCreateTime);
     READWRITE(nBanUntil);
     READWRITE(banReason);
   }
 
   void SetNull() {
-    nVersion = CBanEntry::CURRENT_VERSION;
+    nBanVersion = CBanEntry::CURRENT_VERSION;
     nCreateTime = 0;
     nBanUntil = 0;
     banReason = BanReasonUnknown;
@@ -278,7 +278,7 @@ class CNode {
   CAddress addr;
   std::string addrName;
   CService addrLocal;
-  int nVersion;
+  int nNodeVersion;
   // strSubVer is whatever byte array we read from the wire. However, this field is intended
   // to be printed out, displayed to humans in various forms and so on. So we sanitize it and
   // store the sanitized version in cleanSubVer. The original should be used when dealing with

@@ -827,7 +827,7 @@ void RPCConsole::updateNodeDetail(const CNodeCombinedStats* stats) {
   ui->peerPingTime->setText(GUIUtil::formatPingTime(stats->nodeStats.dPingTime));
   ui->peerPingWait->setText(GUIUtil::formatPingTime(stats->nodeStats.dPingWait));
   ui->timeoffset->setText(GUIUtil::formatTimeOffset(stats->nodeStats.nTimeOffset));
-  ui->peerVersion->setText(QString("%1").arg(QString::number(stats->nodeStats.nVersion)));
+  ui->peerVersion->setText(QString("%1").arg(QString::number(stats->nodeStats.nNodeVersion)));
   ui->peerSubversion->setText(QString::fromStdString(stats->nodeStats.cleanSubVer));
   ui->peerDirection->setText(stats->nodeStats.fInbound ? tr("Inbound") : tr("Outbound"));
   ui->peerHeight->setText(QString("%1").arg(QString::number(stats->nodeStats.nStartingHeight)));

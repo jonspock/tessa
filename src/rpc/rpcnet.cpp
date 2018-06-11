@@ -134,7 +134,7 @@ UniValue getpeerinfo(const UniValue& params, bool fHelp) {
     obj.push_back(Pair("timeoffset", stats.nTimeOffset));
     obj.push_back(Pair("pingtime", stats.dPingTime));
     if (stats.dPingWait > 0.0) obj.push_back(Pair("pingwait", stats.dPingWait));
-    obj.push_back(Pair("version", stats.nVersion));
+    obj.push_back(Pair("version", stats.nNodeVersion));
     // Use the sanitized form of subver here, to avoid tricksy remote peers from
     // corrupting or modifiying the JSON output by putting special characters in
     // their ver message.

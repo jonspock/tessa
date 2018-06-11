@@ -45,7 +45,7 @@ class CMerkleTx : public CTransaction {
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
     READWRITE(*(CTransaction*)this);
-    nVersion = this->nVersion;
+    nVersion = this->nTransactionVersion;
     READWRITE(hashBlock);
     READWRITE(vMerkleBranch);
     READWRITE(nIndex);

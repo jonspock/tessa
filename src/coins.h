@@ -88,14 +88,14 @@ class CCoins {
 
   //! version of the CTransaction; accesses to this value should probably check for nHeight as well,
   //! as new tx version will probably only be introduced at certain heights
-  int nVersion;
+  int nTransactionVersion;
 
   void FromTx(const CTransaction& tx, int nHeightIn) {
     fCoinBase = tx.IsCoinBase();
     fCoinStake = tx.IsCoinStake();
     vout = tx.vout;
     nHeight = nHeightIn;
-    nVersion = tx.nVersion;
+    nTransactionVersion = tx.nTransactionVersion;
     ClearUnspendable();
   }
 
@@ -107,11 +107,11 @@ class CCoins {
     fCoinStake = false;
     std::vector<CTxOut>().swap(vout);
     nHeight = 0;
-    nVersion = 0;
+    nTransactionVersion = 0;
   }
 
   //! empty constructor
-  CCoins() : fCoinBase(false), fCoinStake(false), vout(0), nHeight(0), nVersion(0) {}
+  CCoins() : fCoinBase(false), fCoinStake(false), vout(0), nHeight(0), nTransactionVersion(0) {}
 
   //! remove spent outputs at the end of vout
   void Cleanup() {
@@ -131,7 +131,7 @@ class CCoins {
     std::swap(to.fCoinStake, fCoinStake);
     to.vout.swap(vout);
     std::swap(to.nHeight, nHeight);
-    std::swap(to.nVersion, nVersion);
+    std::swap(to.nTransactionVersion, nTransactionVersion);
   }
 
   //! equality test
@@ -139,7 +139,7 @@ class CCoins {
     // Empty CCoins objects are always equal.
     if (a.IsPruned() && b.IsPruned()) return true;
     return a.fCoinBase == b.fCoinBase && a.fCoinStake == b.fCoinStake && a.nHeight == b.nHeight &&
-           a.nVersion == b.nVersion && a.vout == b.vout;
+           a.nTransactionVersion == b.nTransactionVersion && a.vout == b.vout;
   }
   friend bool operator!=(const CCoins& a, const CCoins& b) { return !(a == b); }
 
@@ -159,7 +159,7 @@ class CCoins {
     unsigned int nCode = 8 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
                          (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
     // version
-    nSize += ::GetSerializeSize(VARINT(this->nVersion), nType, nVersion);
+    nSize += ::GetSerializeSize(VARINT(nTransactionVersion), nType, nVersion);
     // size of header code
     nSize += ::GetSerializeSize(VARINT(nCode), nType, nVersion);
     // spentness bitmask
@@ -181,7 +181,7 @@ class CCoins {
     unsigned int nCode = 16 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
                          (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
     // version
-    ::Serialize(s, VARINT(this->nVersion), nType, nVersion);
+    ::Serialize(s, VARINT(nTransactionVersion), nType, nVersion);
     // header code
     ::Serialize(s, VARINT(nCode), nType, nVersion);
     // spentness bitmask
@@ -202,7 +202,7 @@ class CCoins {
   template <typename Stream> void Unserialize(Stream& s, int nType, int nVersion) {
     unsigned int nCode = 0;
     // version
-    ::Unserialize(s, VARINT(this->nVersion), nType, nVersion);
+    ::Unserialize(s, VARINT(nTransactionVersion), nType, nVersion);
     // header code
     ::Unserialize(s, VARINT(nCode), nType, nVersion);
     fCoinBase = nCode & 1;          // 0001 - means coinbase

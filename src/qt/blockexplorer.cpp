@@ -217,7 +217,7 @@ std::string BlockToString(CBlockIndex* pBlock) {
       _("Nonce"),
       utostr(block.nNonce),
       _("Version"),
-      std::to_string(block.nVersion),
+      std::to_string(block.nHeaderVersion),
       _("Hash"),
       "<pre>" + block.GetHash().GetHex() + "</pre>",
       _("Merkle Root"),
