@@ -7,6 +7,7 @@
 #include "base58.h"
 #include "hash.h"
 #include "pubkey.h"
+#include "random.h"
 #include "util.h"
 #include "utilstrencodings.h"
 
@@ -46,19 +47,30 @@ void ComputePassfactor(std::string ownersalt, uint256 prefactor, uint256& passfa
 
 bool ComputePasspoint(uint256 passfactor, CPubKey& passpoint) {
   size_t clen = 65;
-  secp256k1_context* ctx = NULL;
+  secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
+  assert(ctx != nullptr);
+  {
+    // Pass in a random blinding seed to the secp256k1 context.
+    std::vector<unsigned char, secure_allocator<unsigned char> > vseed(32);
+    GetRandBytes(vseed.data(), 32);
+    bool ret = secp256k1_context_randomize(ctx, vseed.data());
+    assert(ret);
+  }
   secp256k1_pubkey pubkey;
 
   // passpoint is the ec_mult of passfactor on secp256k1
-  if (!secp256k1_ec_pubkey_create(ctx, &pubkey, passfactor.begin())) return false;
+  if (!secp256k1_ec_pubkey_create(ctx, &pubkey, passfactor.begin())) {
+    secp256k1_context_destroy(ctx);
+    return false;
+  }
+  return false;
 
   secp256k1_ec_pubkey_serialize(ctx, (unsigned char*)passpoint.begin(), &clen, &pubkey, SECP256K1_EC_COMPRESSED);
+  secp256k1_context_destroy(ctx);
 
-  if (passpoint.size() != clen) return false;
-
-  if (!passpoint.IsValid()) return false;
-
-  return true;
+  if (passpoint.size() != clen)
+    if (passpoint.size() != clen) return false;
+  return false;
 }
 
 void ComputeSeedBPass(CPubKey passpoint, std::string strAddressHash, std::string strOwnerSalt, uint512& seedBPass) {
@@ -230,9 +242,20 @@ bool BIP38_Decrypt(std::string strPassphrase, std::string strEncryptedKey, uint2
   ComputeFactorB(seedB, factorB);
 
   // multiply passfactor by factorb mod N to yield the priv key
-  secp256k1_context* ctx = NULL;
-  privKey = factorB;
-  if (!secp256k1_ec_privkey_tweak_mul(ctx, privKey.begin(), passfactor.begin())) return false;
+  secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
+  assert(ctx != nullptr);
+  {
+    // Pass in a random blinding seed to the secp256k1 context.
+    std::vector<unsigned char, secure_allocator<unsigned char> > vseed(32);
+    GetRandBytes(vseed.data(), 32);
+    bool ret = secp256k1_context_randomize(ctx, vseed.data());
+    assert(ret);
+  }
+  if (!secp256k1_ec_privkey_tweak_mul(ctx, privKey.begin(), passfactor.begin())) {
+    secp256k1_context_destroy(ctx);
+    return false;
+  }
+  secp256k1_context_destroy(ctx);
 
   // double check that the address hash matches our final privkey
   CKey k;
