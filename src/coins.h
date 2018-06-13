@@ -149,7 +149,7 @@ class CCoins {
 
   bool IsCoinStake() const { return fCoinStake; }
 
-  unsigned int GetSerializeSize(int nType, int nVersion) const {
+  unsigned int GetSerializeSize() const {
     unsigned int nSize = 0;
     unsigned int nMaskSize = 0, nMaskCode = 0;
     CalcMaskSize(nMaskSize, nMaskCode);
@@ -159,20 +159,20 @@ class CCoins {
     unsigned int nCode = 8 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
                          (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
     // version
-    nSize += ::GetSerializeSize(VARINT(nTransactionVersion), nType, nVersion);
+    nSize += ::GetSerializeSize(VARINT(nTransactionVersion));
     // size of header code
-    nSize += ::GetSerializeSize(VARINT(nCode), nType, nVersion);
+    nSize += ::GetSerializeSize(VARINT(nCode));
     // spentness bitmask
     nSize += nMaskSize;
     // txouts themself
     for (unsigned int i = 0; i < vout.size(); i++)
-      if (!vout[i].IsNull()) nSize += ::GetSerializeSize(CTxOutCompressor(REF(vout[i])), nType, nVersion);
+      if (!vout[i].IsNull()) nSize += ::GetSerializeSize(CTxOutCompressor(REF(vout[i])));
     // height
-    nSize += ::GetSerializeSize(VARINT(nHeight), nType, nVersion);
+    nSize += ::GetSerializeSize(VARINT(nHeight));
     return nSize;
   }
 
-  template <typename Stream> void Serialize(Stream& s, int nType, int nVersion) const {
+  template <typename Stream> void Serialize(Stream& s) const {
     unsigned int nMaskSize = 0, nMaskCode = 0;
     CalcMaskSize(nMaskSize, nMaskCode);
     bool fFirst = vout.size() > 0 && !vout[0].IsNull();
@@ -181,30 +181,30 @@ class CCoins {
     unsigned int nCode = 16 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
                          (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
     // version
-    ::Serialize(s, VARINT(nTransactionVersion), nType, nVersion);
+    ::Serialize(s, VARINT(nTransactionVersion));
     // header code
-    ::Serialize(s, VARINT(nCode), nType, nVersion);
+    ::Serialize(s, VARINT(nCode));
     // spentness bitmask
     for (unsigned int b = 0; b < nMaskSize; b++) {
       unsigned char chAvail = 0;
       for (unsigned int i = 0; i < 8 && 2 + b * 8 + i < vout.size(); i++)
         if (!vout[2 + b * 8 + i].IsNull()) chAvail |= (1 << i);
-      ::Serialize(s, chAvail, nType, nVersion);
+      ::Serialize(s, chAvail);
     }
     // txouts themself
     for (unsigned int i = 0; i < vout.size(); i++) {
-      if (!vout[i].IsNull()) ::Serialize(s, CTxOutCompressor(REF(vout[i])), nType, nVersion);
+      if (!vout[i].IsNull()) ::Serialize(s, CTxOutCompressor(REF(vout[i])));
     }
     // coinbase height
-    ::Serialize(s, VARINT(nHeight), nType, nVersion);
+    ::Serialize(s, VARINT(nHeight));
   }
 
-  template <typename Stream> void Unserialize(Stream& s, int nType, int nVersion) {
+  template <typename Stream> void Unserialize(Stream& s) {
     unsigned int nCode = 0;
     // version
-    ::Unserialize(s, VARINT(nTransactionVersion), nType, nVersion);
+    ::Unserialize(s, VARINT(nTransactionVersion));
     // header code
-    ::Unserialize(s, VARINT(nCode), nType, nVersion);
+    ::Unserialize(s, VARINT(nCode));
     fCoinBase = nCode & 1;          // 0001 - means coinbase
     fCoinStake = (nCode & 2) != 0;  // 0010 coinstake
     std::vector<bool> vAvail(2, false);
@@ -214,7 +214,7 @@ class CCoins {
     // spentness bitmask
     while (nMaskCode > 0) {
       unsigned char chAvail = 0;
-      ::Unserialize(s, chAvail, nType, nVersion);
+      ::Unserialize(s, chAvail);
       for (unsigned int p = 0; p < 8; p++) {
         bool f = (chAvail & (1 << p)) != 0;
         vAvail.push_back(f);
@@ -224,10 +224,10 @@ class CCoins {
     // txouts themself
     vout.assign(vAvail.size(), CTxOut());
     for (unsigned int i = 0; i < vAvail.size(); i++) {
-      if (vAvail[i]) ::Unserialize(s, REF(CTxOutCompressor(vout[i])), nType, nVersion);
+      if (vAvail[i]) ::Unserialize(s, REF(CTxOutCompressor(vout[i])));
     }
     // coinbase height
-    ::Unserialize(s, VARINT(nHeight), nType, nVersion);
+    ::Unserialize(s, VARINT(nHeight));
     Cleanup();
   }
 

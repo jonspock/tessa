@@ -1029,7 +1029,7 @@ bool CWalletDB::EraseDeterministicMint(const uint256& hashPubcoin) {
 }
 
 bool CWalletDB::WriteZerocoinMint(const CZerocoinMint& zerocoinMint) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << zerocoinMint.GetValue();
   uint256 hash = Hash(ss.begin(), ss.end());
 
@@ -1038,7 +1038,7 @@ bool CWalletDB::WriteZerocoinMint(const CZerocoinMint& zerocoinMint) {
 }
 
 bool CWalletDB::ReadZerocoinMint(const CBigNum& bnPubCoinValue, CZerocoinMint& zerocoinMint) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << bnPubCoinValue;
   uint256 hash = Hash(ss.begin(), ss.end());
 
@@ -1050,7 +1050,7 @@ bool CWalletDB::ReadZerocoinMint(const uint256& hashPubcoin, CZerocoinMint& mint
 }
 
 bool CWalletDB::EraseZerocoinMint(const CZerocoinMint& zerocoinMint) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << zerocoinMint.GetValue();
   uint256 hash = Hash(ss.begin(), ss.end());
 
@@ -1058,7 +1058,7 @@ bool CWalletDB::EraseZerocoinMint(const CZerocoinMint& zerocoinMint) {
 }
 
 bool CWalletDB::ArchiveMintOrphan(const CZerocoinMint& zerocoinMint) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << zerocoinMint.GetValue();
   uint256 hash = Hash(ss.begin(), ss.end());
   ;

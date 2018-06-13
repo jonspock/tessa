@@ -159,7 +159,6 @@ class CCoinsViewErrorCatcher : public CCoinsViewBacked {
 static CCoinsViewDB* pcoinsdbview = nullptr;
 static CCoinsViewErrorCatcher* pcoinscatcher = nullptr;
 static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
- 
 
 void Interrupt(boost::thread_group& threadGroup) {
   InterruptHTTPServer();
@@ -1055,7 +1054,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // ********************************************************* Step 4: application initialization: dir lock, daemonize,
   // pidfile, debug log
-
 
   // Initialize elliptic curve code
   ECC_Start();

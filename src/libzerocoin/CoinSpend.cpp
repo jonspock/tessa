@@ -100,9 +100,9 @@ bool CoinSpend::Verify(const Accumulator& a) const {
 }
 
 const uint256 CoinSpend::signatureHash() const {
-  CHashWriter h(0, 0);
+  CHashWriter h;
   h << serialCommitmentToCoinValue << accCommitmentToCoinValue << commitmentPoK << accumulatorPoK << ptxHash
-    << coinSerialNumber << accChecksum << denomination << spendType; // spendType for compatibility
+    << coinSerialNumber << accChecksum << denomination << spendType;  // spendType for compatibility
   return h.GetHash();
 }
 

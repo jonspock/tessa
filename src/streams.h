@@ -49,6 +49,10 @@ class CDataStream {
   typedef vector_type::reverse_iterator reverse_iterator;
 
   explicit CDataStream(int nTypeIn, int nVersionIn) { Init(nTypeIn, nVersionIn); }
+  explicit CDataStream(int nTypeIn) {
+    assert(nTypeIn == SER_GETHASH);
+    Init(SER_GETHASH, 0);
+  }
 
   CDataStream(const_iterator pbegin, const_iterator pend, int nTypeIn, int nVersionIn) : vch(pbegin, pend) {
     Init(nTypeIn, nVersionIn);
@@ -221,25 +225,25 @@ class CDataStream {
     return (*this);
   }
 
-  template <typename Stream> void Serialize(Stream& s, int nType, int nVersion) const {
+  template <typename Stream> void Serialize(Stream& s) const {
     // Special case: stream << stream concatenates like stream += stream
     if (!vch.empty()) s.write((char*)&vch[0], vch.size() * sizeof(vch[0]));
   }
 
   template <typename T> unsigned int GetSerializeSize(const T& obj) {
     // Tells the size of the object if serialized to this stream
-    return ::GetSerializeSize(obj, nType, nVersion);
+    return ::GetSerializeSize(obj);
   }
 
   template <typename T> CDataStream& operator<<(const T& obj) {
     // Serialize to this stream
-    ::Serialize(*this, obj, nType, nVersion);
+    ::Serialize(*this, obj);
     return (*this);
   }
 
   template <typename T> CDataStream& operator>>(T& obj) {
     // Unserialize from this stream
-    ::Unserialize(*this, obj, nType, nVersion);
+    ::Unserialize(*this, obj);
     return (*this);
   }
 
@@ -327,20 +331,20 @@ class CAutoFile {
 
   template <typename T> unsigned int GetSerializeSize(const T& obj) {
     // Tells the size of the object if serialized to this stream
-    return ::GetSerializeSize(obj, nType, nVersion);
+    return ::GetSerializeSize(obj);
   }
 
   template <typename T> CAutoFile& operator<<(const T& obj) {
     // Serialize to this stream
     if (!file) throw std::ios_base::failure("CAutoFile::operator<< : file handle is nullptr");
-    ::Serialize(*this, obj, nType, nVersion);
+    ::Serialize(*this, obj);
     return (*this);
   }
 
   template <typename T> CAutoFile& operator>>(T& obj) {
     // Unserialize from this stream
     if (!file) throw std::ios_base::failure("CAutoFile::operator>> : file handle is nullptr");
-    ::Unserialize(*this, obj, nType, nVersion);
+    ::Unserialize(*this, obj);
     return (*this);
   }
 };
@@ -460,7 +464,7 @@ class CBufferedFile {
 
   template <typename T> CBufferedFile& operator>>(T& obj) {
     // Unserialize from this stream
-    ::Unserialize(*this, obj, nType, nVersion);
+    ::Unserialize(*this, obj);
     return (*this);
   }
 

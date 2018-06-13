@@ -84,8 +84,7 @@ class CPartialMerkleTree {
   /** serialization implementation */
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(nTransactions);
     READWRITE(vHash);
     std::vector<unsigned char> vBytes;
@@ -137,8 +136,7 @@ class CMerkleBlock {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(header);
     READWRITE(txn);
   }

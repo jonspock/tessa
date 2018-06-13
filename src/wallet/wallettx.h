@@ -43,9 +43,9 @@ class CMerkleTx : public CTransaction {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(*(CTransaction*)this);
-    nVersion = this->nTransactionVersion;
+    //nVersion = this->nTransactionVersion;
     READWRITE(hashBlock);
     READWRITE(vMerkleBranch);
     READWRITE(nIndex);
@@ -161,7 +161,7 @@ class CWalletTx : public CMerkleTx {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     if (ser_action.ForRead()) Init(nullptr);
     char fSpent = false;
 

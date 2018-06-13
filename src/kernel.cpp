@@ -71,7 +71,7 @@ static bool SelectBlockFromCandidates(vector<pair<int64_t, uint256> >& vSortedBy
     // compute the selection hash by hashing an input that is unique to that block
     uint256 hashProof = pindex->GetBlockHash();
 
-    CDataStream ss(SER_GETHASH, 0);
+    CDataStream ss(SER_GETHASH);
     ss << hashProof << nStakeModifierPrev;
     uint256 hashSelection = Hash(ss.begin(), ss.end());
 
@@ -252,7 +252,7 @@ bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTarget
 
 bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t nStakeModifier, const uint256& bnTarget,
                 unsigned int nTimeBlockFrom, unsigned int& nTimeTx, uint256& hashProofOfStake) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << nStakeModifier << nTimeBlockFrom << ssUniqueID << nTimeTx;
   hashProofOfStake = Hash(ss.begin(), ss.end());
   // LogPrintf("%s: modifier:%d nTimeBlockFrom:%d nTimeTx:%d hash:%s\n", __func__, nStakeModifier, nTimeBlockFrom,
@@ -371,7 +371,7 @@ bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx) {
 unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex) {
   assert(pindex->pprev || pindex->GetBlockHash() == Params().HashGenesisBlock());
   // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   if (pindex->pprev) ss << pindex->pprev->nStakeModifierChecksum;
   ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
   uint256 hashChecksum = Hash(ss.begin(), ss.end());

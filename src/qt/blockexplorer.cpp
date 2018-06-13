@@ -199,7 +199,7 @@ std::string BlockToString(CBlockIndex* pBlock) {
       _("Height"),
       std::to_string(pBlock->nHeight),
       _("Size"),
-      std::to_string(GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)),
+      std::to_string(GetSerializeSize(block)),
       _("Number of Transactions"),
       std::to_string(block.vtx.size()),
       _("Value Out"),
@@ -313,7 +313,7 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
 
   std::string Labels[] = {
       _("In Block"),  "",
-      _("Size"),      std::to_string(GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION)),
+      _("Size"),      std::to_string(GetSerializeSize(tx)),
       _("Input"),     tx.IsCoinBase() ? "-" : ValueToString(Input),
       _("Output"),    ValueToString(Output),
       _("Fees"),      tx.IsCoinBase() ? "-" : ValueToString(Input - Output),

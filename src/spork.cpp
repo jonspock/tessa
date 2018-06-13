@@ -151,7 +151,7 @@ void CSporkManager::ReprocessBlocks(int nBlocks) {
 }
 
 bool CSporkManager::VerifyMessage(CPubKey pubkey, vector<unsigned char>& vchSig, std::string strMessage) {
-  CHashWriter ss(SER_GETHASH, 0);
+  CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
 
@@ -189,7 +189,7 @@ bool CSporkManager::SetKey(std::string strSecret, CKey& key, CPubKey& pubkey) {
 }
 
 bool CSporkManager::SignMessage(std::string strMessage, vector<unsigned char>& vchSig, CKey key) {
-  CHashWriter ss(SER_GETHASH, 0);
+  CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
 

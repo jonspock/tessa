@@ -24,8 +24,9 @@ class CAccount {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
+    int nType = s.GetType();
+    int nVersion = s.GetVersion();
     if (!(nType & SER_GETHASH)) READWRITE(nVersion);
     READWRITE(vchPubKey);
   }
@@ -60,8 +61,9 @@ class CAccountingEntry {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
+    int nType = s.GetType();
+    int nVersion = s.GetVersion();
     if (!(nType & SER_GETHASH)) READWRITE(nVersion);
     //! Note: strAccount is serialized as part of the key, not here.
     READWRITE(nCreditDebit);

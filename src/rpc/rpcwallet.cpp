@@ -511,7 +511,7 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
   CKey key;
   if (!pwalletMain->GetKey(keyID, key)) throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
 
-  CHashWriter ss(SER_GETHASH, 0);
+  CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
 
@@ -2774,7 +2774,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
   // construct JSON to return
   UniValue ret(UniValue::VOBJ);
   ret.push_back(Pair("txid", wtx.GetHash().ToString()));
-  ret.push_back(Pair("bytes", (int64_t)wtx.GetSerializeSize(SER_NETWORK, CTransaction::CURRENT_VERSION)));
+  ret.push_back(Pair("bytes", (int64_t)wtx.GetSerializeSize()));
   ret.push_back(Pair("fee", ValueFromAmount(nValueIn - nValueOut)));
   ret.push_back(Pair("duration_millis", (GetTimeMillis() - nTimeStart)));
   ret.push_back(Pair("spends", arrSpends));
@@ -3306,7 +3306,7 @@ void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
     uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
     for (int i = nCountStart; i < nCountEnd; i++) {
       boost::this_thread::interruption_point();
-      CDataStream ss(SER_GETHASH, 0);
+      CDataStream ss(SER_GETHASH);
       ss << seedMaster << i;
       uint512 zerocoinSeed = Hash512(ss.begin(), ss.end());
 

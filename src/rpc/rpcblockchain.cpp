@@ -81,7 +81,7 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
   // Only report confirmations if the block is on the main chain
   if (chainActive.Contains(blockindex)) confirmations = chainActive.Height() - blockindex->nHeight + 1;
   result.push_back(Pair("confirmations", confirmations));
-  result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
+  result.push_back(Pair("size", (int)::GetSerializeSize(block)));
   result.push_back(Pair("height", blockindex->nHeight));
   result.push_back(Pair("version", block.nHeaderVersion));
   result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
@@ -730,7 +730,7 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp) {
       for (unsigned int j = 0; j < tx.vout.size(); j++) { nValueOut += tx.vout[j].nValue; }
 
       nFees += nValueIn - nValueOut;
-      nBytes += tx.GetSerializeSize(SER_NETWORK, CLIENT_VERSION);
+      nBytes += tx.GetSerializeSize();
       nTotal++;
     }
 

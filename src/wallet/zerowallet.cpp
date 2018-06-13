@@ -311,7 +311,7 @@ bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const 
 }
 
 uint512 CZeroWallet::GetZerocoinSeed(uint32_t n) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << seedMaster << n;
   uint512 zerocoinSeed = Hash512(ss.begin(), ss.end());
   return zerocoinSeed;

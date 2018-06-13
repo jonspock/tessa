@@ -31,7 +31,7 @@ bool CBlockUndo::WriteToDisk(CDiskBlockPos& pos, const uint256& hashBlock) {
   fileout << *this;
 
   // calculate & write checksum
-  CHashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
+  CHashWriter hasher;
   hasher << hashBlock;
   hasher << *this;
   fileout << hasher.GetHash();
@@ -52,7 +52,7 @@ bool CBlockUndo::ReadFromDisk(const CDiskBlockPos& pos, const uint256& hashBlock
   } catch (std::exception& e) { return error("%s : Deserialize or I/O error - %s", __func__, e.what()); }
 
   // Verify checksum
-  CHashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
+  CHashWriter hasher;
   hasher << hashBlock;
   hasher << *this;
   if (hashChecksum != hasher.GetHash()) return error("CBlockUndo::ReadFromDisk : Checksum mismatch");

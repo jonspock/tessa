@@ -32,7 +32,7 @@ class COutPoint {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(FLATDATA(*this));
   }
 
@@ -78,7 +78,7 @@ class CTxIn {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(prevout);
     READWRITE(scriptSig);
     READWRITE(nSequence);
@@ -111,7 +111,7 @@ class CTxOut {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(nValue);
     READWRITE(scriptPubKey);
   }
@@ -141,7 +141,7 @@ class CTxOut {
     // and that means that fee per txout is 182 * 10000 / 1000 = 1820 upiv.
     // So dust is a txout less than 1820 *3 = 5460 upiv
     // with default -minrelaytxfee = minRelayTxFee = 10000 upiv per kB.
-    size_t nSize = GetSerializeSize(SER_DISK, 0) + 148u;
+    size_t nSize = 148u;
     return (nValue < 3 * minRelayTxFee.GetFee(nSize));
   }
 
@@ -192,9 +192,9 @@ class CTransaction {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(*const_cast<int32_t*>(&this->nTransactionVersion));
-    nVersion = nTransactionVersion;
+    // Modify code below if changes needed for nTransactionVersion
     READWRITE(*const_cast<std::vector<CTxIn>*>(&vin));
     READWRITE(*const_cast<std::vector<CTxOut>*>(&vout));
     READWRITE(*const_cast<uint32_t*>(&nLockTime));
@@ -265,9 +265,9 @@ struct CMutableTransaction {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(nTransactionVersion);
-    nVersion = nTransactionVersion;
+    //nVersion = nTransactionVersion;
     READWRITE(vin);
     READWRITE(vout);
     READWRITE(nLockTime);

@@ -24,7 +24,7 @@ CWalletTx* WalletModelTransaction::getTransaction() { return walletTransaction; 
 
 unsigned int WalletModelTransaction::getTransactionSize() {
   return (!walletTransaction ? 0
-                             : (::GetSerializeSize(*(CTransaction*)walletTransaction, SER_NETWORK, PROTOCOL_VERSION)));
+                             : (::GetSerializeSize(*(CTransaction*)walletTransaction)));
 }
 
 CAmount WalletModelTransaction::getTransactionFee() { return fee; }

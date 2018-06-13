@@ -25,7 +25,7 @@ CTxMemPoolEntry::CTxMemPoolEntry() : nFee(0), nTxSize(0), nModSize(0), nTime(0),
 CTxMemPoolEntry::CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, int64_t _nTime, double _dPriority,
                                  unsigned int _nHeight)
     : tx(_tx), nFee(_nFee), nTime(_nTime), dPriority(_dPriority), nHeight(_nHeight) {
-  nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+  nTxSize = ::GetSerializeSize(tx);
 
   nModSize = tx.CalculateModifiedSize(nTxSize);
 }

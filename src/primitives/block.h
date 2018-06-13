@@ -45,9 +45,9 @@ class CBlockHeader {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(nHeaderVersion);
-    nVersion = nHeaderVersion;
+    // Modify code below if changes needed for nHeaderVersion
     READWRITE(hashPrevBlock);
     READWRITE(hashMerkleRoot);
     READWRITE(nTime);
@@ -95,7 +95,7 @@ class CBlock : public CBlockHeader {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(*(CBlockHeader*)this);
     READWRITE(vtx);
     if (vtx.size() > 1 && vtx[1].IsCoinStake()) READWRITE(vchBlockSig);
@@ -159,8 +159,7 @@ struct CBlockLocator {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-    if (!(nType & SER_GETHASH)) READWRITE(nVersion);
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(vHave);
   }
 

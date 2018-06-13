@@ -99,7 +99,7 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
   /// \f$ t_4 = C_r^{r_&alpha;} * (1/h)^{r_&delta;} * (1/g)^{r_&beta;} \f$
   this->t_4 = ((C_r ^ r_alpha) * (h_n.inverse() ^ r_delta) * (g_n.inverse() ^ r_beta));
 
-  CHashWriter hasher(0, 0);
+  CHashWriter hasher;
   hasher << *params << sg.getValue() << sh.getValue() << g_n.getValue() << h_n.getValue()
          << commitmentToCoin.getCommitmentValue() << C_e << C_u << C_r << st_1 << st_2 << st_3 << t_1 << t_2 << t_3
          << t_4;
@@ -153,7 +153,7 @@ bool AccumulatorProofOfKnowledge::Verify(const Accumulator& a, const CBigNum& va
   const IntegerMod<ACCUMULATOR_POK_COMMITMENT_MODULUS> sh(params->accumulatorPoKCommitmentGroup.h);
   const IntegerMod<ACCUMULATOR_POK_COMMITMENT_MODULUS> commitment(valueOfCommitmentToCoin);
 
-  CHashWriter hasher(0, 0);
+  CHashWriter hasher;
   hasher << *params << sg.getValue() << sh.getValue() << g_n.getValue() << h_n.getValue() << valueOfCommitmentToCoin
          << C_e.getValue() << C_u << C_r << st_1 << st_2 << st_3 << t_1 << t_2 << t_3 << t_4;
 

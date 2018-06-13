@@ -129,7 +129,7 @@ bool CommitmentProofOfKnowledge::Verify(const CBigNum& A, const CBigNum& B) cons
 
 const CBigNum CommitmentProofOfKnowledge::calculateChallenge(const CBigNum& a, const CBigNum& b,
                                                              const CBigNum& commitOne, const CBigNum& commitTwo) const {
-  CHashWriter hasher(0, 0);
+  CHashWriter hasher;
 
   // Hash together the following elements:
   // * A string identifying the proof

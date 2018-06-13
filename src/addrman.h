@@ -50,8 +50,7 @@ class CAddrInfo : public CAddress {
  public:
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(*(CAddress*)this);
     READWRITE(source);
     READWRITE(nLastSuccess);
@@ -261,7 +260,7 @@ class CAddrMan {
    * We don't use ADD_SERIALIZE_METHODS since the serialization and deserialization code has
    * very little in common.
    */
-  template <typename Stream> void Serialize(Stream& s, int nType, int nVersionDummy) const {
+  template <typename Stream> void Serialize(Stream& s) const {
     LOCK(cs);
 
     unsigned char nVersion = 1;
@@ -308,7 +307,7 @@ class CAddrMan {
     }
   }
 
-  template <typename Stream> void Unserialize(Stream& s, int nType, int nVersionDummy) {
+  template <typename Stream> void Unserialize(Stream& s) {
     LOCK(cs);
 
     Clear();
@@ -403,9 +402,7 @@ class CAddrMan {
     Check();
   }
 
-  unsigned int GetSerializeSize(int nType, int nVersion) const {
-    return (CSizeComputer(nType, nVersion) << *this).size();
-  }
+  unsigned int GetSerializeSize() const { return (CSizeComputer() << *this).size(); }
 
   void Clear() {
     std::vector<int>().swap(vRandom);

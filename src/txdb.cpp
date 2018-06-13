@@ -97,7 +97,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
   std::unique_ptr<leveldb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
   pcursor->SeekToFirst();
 
-  CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+  CHashWriter ss;
   stats.hashBlock = GetBestBlock();
   ss << stats.hashBlock;
   CAmount nTotalAmount = 0;
@@ -265,7 +265,7 @@ bool CZerocoinDB::EraseCoinMint(const CBigNum& bnPubcoin) {
 }
 
 bool CZerocoinDB::WriteCoinSpend(const CBigNum& bnSerial, const uint256& txHash) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << bnSerial;
   uint256 hash = Hash(ss.begin(), ss.end());
 
@@ -273,7 +273,7 @@ bool CZerocoinDB::WriteCoinSpend(const CBigNum& bnSerial, const uint256& txHash)
 }
 
 bool CZerocoinDB::ReadCoinSpend(const CBigNum& bnSerial, uint256& txHash) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << bnSerial;
   uint256 hash = Hash(ss.begin(), ss.end());
 
@@ -285,7 +285,7 @@ bool CZerocoinDB::ReadCoinSpend(const uint256& hashSerial, uint256& txHash) {
 }
 
 bool CZerocoinDB::EraseCoinSpend(const CBigNum& bnSerial) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << bnSerial;
   uint256 hash = Hash(ss.begin(), ss.end());
 

@@ -455,7 +455,7 @@ bool AddOrphanTx(const CTransaction& tx, NodeId peer) {
   // have been mined or received.
   // 10,000 orphans, each of which is at most 5,000 bytes big is
   // at most 500 megabytes of orphans:
-  unsigned int sz = tx.GetSerializeSize(SER_NETWORK, CTransaction::CURRENT_VERSION);
+  unsigned int sz = tx.GetSerializeSize();
   if (sz > 5000) {
     LogPrint(ClubLog::MEMPOOL, "ignoring large orphan tx (size: %u, hash: %s)\n", sz, hash.ToString());
     return false;
@@ -541,7 +541,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason) {
   // almost as much to process as they cost the sender in fees, because
   // computing signature hashes is O(ninputs*txsize). Limiting transactions
   // to MAX_STANDARD_TX_SIZE mitigates CPU exhaustion attacks.
-  unsigned int sz = tx.GetSerializeSize(SER_NETWORK, CTransaction::CURRENT_VERSION);
+  unsigned int sz = tx.GetSerializeSize();
   unsigned int nMaxSize = tx.ContainsZerocoins() ? MAX_ZEROCOIN_TX_SIZE : MAX_STANDARD_TX_SIZE;
   if (sz >= nMaxSize) {
     reason = "tx-size";
@@ -698,7 +698,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
   // Size limits
   unsigned int nMaxSize = MAX_ZEROCOIN_TX_SIZE;
 
-  if (::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION) > nMaxSize)
+  if (::GetSerializeSize(tx) > nMaxSize)
     return state.DoS(100, error("CheckTransaction() : size limits failed"), REJECT_INVALID, "bad-txns-oversize");
 
   // Check for negative or overflow output values
@@ -1880,7 +1880,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     UpdateCoins(tx, state, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
 
     vPos.push_back(std::make_pair(tx.GetHash(), pos));
-    pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
+    pos.nTxOffset += ::GetSerializeSize(tx);
   }
 
   // Track ZKP money supply in the block index
@@ -1936,7 +1936,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   if (pindex->GetUndoPos().IsNull() || !pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
     if (pindex->GetUndoPos().IsNull()) {
       CDiskBlockPos pos;
-      if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
+      if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo) + 40))
         return error("ConnectBlock() : FindUndoPos failed");
       if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash())) return state.Abort("Failed to write undo data");
 
@@ -2489,7 +2489,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
       GetMainSignals().UpdatedBlockTip(pindexNewTip);
 
       unsigned size = 0;
-      if (pblock) size = GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION);
+      if (pblock) size = GetSerializeSize(*pblock);
       // If the size is over 1 MB notify external listeners, and it is within the last 5 minutes
       if (size > MAX_BLOCK_SIZE_LEGACY && pblock->GetBlockTime() > GetAdjustedTime() - 300) {
         uiInterface.NotifyBlockSize(static_cast<int>(size), hashNewTip);
@@ -2812,8 +2812,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
   // Size limits
   unsigned int nMaxBlockSize = MAX_BLOCK_SIZE_CURRENT;
-  if (block.vtx.empty() || block.vtx.size() > nMaxBlockSize ||
-      ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > nMaxBlockSize)
+  if (block.vtx.empty() || block.vtx.size() > nMaxBlockSize || ::GetSerializeSize(block) > nMaxBlockSize)
     return state.DoS(100, error("CheckBlock() : size limits failed"), REJECT_INVALID, "bad-blk-length");
 
   // First transaction must be coinbase, the rest must not be
@@ -2969,7 +2968,8 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
   // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height
   // if 750 of the last 1,000 blocks are version 2 or greater (51/100 if testnet):
   if (block.nHeaderVersion >= (int32_t)BlockVersion::GENESIS_BLOCK_VERSION &&
-      CBlockIndex::IsSuperMajority((int32_t)BlockVersion::GENESIS_BLOCK_VERSION, pindexPrev, Params().EnforceBlockUpgradeMajority())) {
+      CBlockIndex::IsSuperMajority((int32_t)BlockVersion::GENESIS_BLOCK_VERSION, pindexPrev,
+                                   Params().EnforceBlockUpgradeMajority())) {
     CScript expect = CScript() << nHeight;
     if (block.vtx[0].vin[0].scriptSig.size() < expect.size() ||
         !std::equal(expect.begin(), expect.end(), block.vtx[0].vin[0].scriptSig.begin())) {
@@ -3110,7 +3110,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
   // Write block to history file
   try {
-    unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
+    unsigned int nBlockSize = ::GetSerializeSize(block);
     CDiskBlockPos blockPos;
     if (dbp != nullptr) blockPos = *dbp;
     if (!FindBlockPos(state, blockPos, nBlockSize + 8, nHeight, block.GetBlockTime(), dbp != nullptr))
@@ -3382,7 +3382,7 @@ bool InitBlockIndex() {
     try {
       CBlock& block = const_cast<CBlock&>(Params().GenesisBlock());
       // Start new block file
-      unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
+      unsigned int nBlockSize = ::GetSerializeSize(block);
       CDiskBlockPos blockPos;
       CValidationState state;
       if (!FindBlockPos(state, blockPos, nBlockSize + 8, 0, block.GetBlockTime()))
@@ -3845,7 +3845,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     vRecv >> pfrom->nNodeVersion >> pfrom->nServices >> nTime >> addrMe;
     if (pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand)) return false;
 
-    // XXXX 
+    // XXXX
     if (pfrom->nNodeVersion == 10300) pfrom->nNodeVersion = 300;
     if (!vRecv.empty()) vRecv >> addrFrom >> nNonce;
     if (!vRecv.empty()) {

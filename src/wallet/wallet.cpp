@@ -1492,7 +1492,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
         *static_cast<CTransaction*>(&wtxNew) = CTransaction(txNew);
 
         // Limit size
-        unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
+        unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew);
         if (nBytes >= MAX_STANDARD_TX_SIZE) {
           strFailReason = _("Transaction too large");
           return false;
@@ -1625,7 +1625,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
       }
 
       // Limit size
-      unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
+      unsigned int nBytes = ::GetSerializeSize(txNew);
       if (nBytes >= DEFAULT_BLOCK_MAX_SIZE / 5) return error("CreateCoinStake : exceeded coinstake size limit");
 
       uint256 hashTxOut = txNew.GetHash();
@@ -3067,7 +3067,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
       }
 
       // Limit size
-      unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
+      unsigned int nBytes = ::GetSerializeSize(txNew);
       if (nBytes >= MAX_ZEROCOIN_TX_SIZE) {
         receipt.SetStatus(_("In rare cases, a spend with 7 coins exceeds our maximum allowable transaction size, "
                             "please retry spend using 6 or less coins"),
@@ -3327,7 +3327,7 @@ string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, vector<CDetermin
   wtxNew.fTimeReceivedIsTxTime = true;
 
   // Limit size
-  unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
+  unsigned int nBytes = ::GetSerializeSize(txNew);
   if (nBytes >= MAX_ZEROCOIN_TX_SIZE) {
     return _("Error: The transaction is larger than the maximum allowed transaction size!");
   }

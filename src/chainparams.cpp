@@ -17,7 +17,8 @@
 using namespace std;
 
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime,
-                                 uint32_t nNonce, uint32_t nBits, int32_t nHeaderVersion, const CAmount& genesisReward) {
+                                 uint32_t nNonce, uint32_t nBits, int32_t nHeaderVersion,
+                                 const CAmount& genesisReward) {
   CMutableTransaction txNew;
   txNew.nTransactionVersion = 1;
   txNew.vin.resize(1);
@@ -137,7 +138,7 @@ class CMainParams : public CChainParams {
     hashGenesisBlock = genesis.GetHash();
     std::cout << "main Genesis block = " << hashGenesisBlock.ToString() << "\n";
     std::cout << "Genesis MerkleRoot = " << genesis.hashMerkleRoot.ToString() << "\n";
-    //assert(hashGenesisBlock == uint256("0x00000c7c73d8ce604178dae13f0fc6ec0be3275614366d44b1b4b5c6e238c60c"));
+    // assert(hashGenesisBlock == uint256("0x00000c7c73d8ce604178dae13f0fc6ec0be3275614366d44b1b4b5c6e238c60c"));
     assert(genesis.hashMerkleRoot == uint256("0x62d496378e5834989dd9594cfc168dbb76f84a39bbda18286cddc7d1d1589f4f"));
 
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "club.seed.fuzzbawls.pw"));     // Primary DNS Seeder from
@@ -270,7 +271,7 @@ class CRegTestParams : public CTestNetParams {
     hashGenesisBlock = genesis.GetHash();
     nDefaultPort = 44448;
     std::cout << hashGenesisBlock.ToString() << "\n";
-    //assert(hashGenesisBlock == uint256("0x57939ce0a96bf42965fee5956528a456d0edfb879b8bd699bcbb4786d27b979d"));
+    // assert(hashGenesisBlock == uint256("0x57939ce0a96bf42965fee5956528a456d0edfb879b8bd699bcbb4786d27b979d"));
 
     vFixedSeeds.clear();  //! Testnet mode doesn't have any fixed seeds.
     vSeeds.clear();       //! Testnet mode doesn't have any DNS seeds.

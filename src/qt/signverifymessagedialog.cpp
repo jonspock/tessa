@@ -115,7 +115,7 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
     return;
   }
 
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << strMessageMagic;
   ss << ui->messageIn_SM->document()->toPlainText().toStdString();
 
@@ -181,7 +181,7 @@ void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
     return;
   }
 
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << strMessageMagic;
   ss << ui->messageIn_VM->document()->toPlainText().toStdString();
 

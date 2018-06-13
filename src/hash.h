@@ -248,10 +248,7 @@ class CHashWriter {
   CHash256 ctx;
 
  public:
-  int nType;
-  int nVersion;
-
-  CHashWriter(int nTypeIn, int nVersionIn) : nType(nTypeIn), nVersion(nVersionIn) {}
+  CHashWriter() {}
 
   CHashWriter& write(const char* pch, size_t size) {
     ctx.Write((const unsigned char*)pch, size);
@@ -267,14 +264,15 @@ class CHashWriter {
 
   template <typename T> CHashWriter& operator<<(const T& obj) {
     // Serialize to this stream
-    ::Serialize(*this, obj, nType, nVersion);
+    ::Serialize(*this, obj);
     return (*this);
   }
 };
 
 /** Compute the 256-bit hash of an object's serialization. */
-template <typename T> uint256 SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = PROTOCOL_VERSION) {
-  CHashWriter ss(nType, nVersion);
+template <typename T>
+uint256 SerializeHash(const T& obj) {  //, int nType = SER_GETHASH, int nVersion = PROTOCOL_VERSION) {
+  CHashWriter ss;
   ss << obj;
   return ss.GetHash();
 }
@@ -284,10 +282,5 @@ unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char
 void BIP32Hash(const ChainCode chainCode, unsigned int nChild, unsigned char header, const unsigned char data[32],
                unsigned char output[64]);
 
-// int HMAC_SHA512_Init(HMAC_SHA512_CTX *pctx, const void *pkey, size_t len);
-// int HMAC_SHA512_Update(HMAC_SHA512_CTX *pctx, const void *pdata, size_t len);
-// int HMAC_SHA512_Final(unsigned char *pmd, HMAC_SHA512_CTX *pctx);
-
 void scrypt_hash(const char* pass, unsigned int pLen, const char* salt, unsigned int sLen, char* output, unsigned int N,
                  unsigned int r, unsigned int p, unsigned int dkLen);
-

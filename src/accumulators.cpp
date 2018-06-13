@@ -26,7 +26,7 @@ uint32_t ParseChecksum(uint256 nChecksum, CoinDenomination denomination) {
 }
 
 uint32_t GetChecksum(const CBigNum& bnValue) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << bnValue;
   uint256 hash = Hash(ss.begin(), ss.end());
 
@@ -209,9 +209,9 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
   // height - 11)
   int nTotalMintsFound = 0;
   CBlockIndex* pindex = chainActive[nHeightCheckpoint - 2 * ACC_BLOCK_INTERVAL];
-    
+
 #warning "Check this"
-    if (!pindex) return true;
+  if (!pindex) return true;
 
   while (pindex->nHeight < nHeight - ACC_BLOCK_INTERVAL) {
     // checking whether we should stop this process due to a shutdown request

@@ -14,7 +14,7 @@
 // (serial, randomness, private key)
 class CDeterministicMint {
  private:
-  uint8_t nVersion;
+  uint8_t nMintVersion;
   uint32_t nCount;
   uint256 hashSeed;
   uint256 hashSerial;
@@ -27,7 +27,7 @@ class CDeterministicMint {
 
  public:
   CDeterministicMint();
-  CDeterministicMint(uint8_t nVersion, const uint32_t& nCount, const uint256& hashSeed, const uint256& hashSerial,
+  CDeterministicMint(uint8_t nMintVersion, const uint32_t& nCount, const uint256& hashSeed, const uint256& hashSerial,
                      const uint256& hashPubcoin, const uint256& hashStake);
 
   libzerocoin::CoinDenomination GetDenomination() const { return denom; }
@@ -38,7 +38,7 @@ class CDeterministicMint {
   uint256 GetStakeHash() const { return hashStake; }
   uint256 GetPubcoinHash() const { return hashPubcoin; }
   uint256 GetTxHash() const { return txid; }
-  uint8_t GetVersion() const { return nVersion; }
+  uint8_t GetMintVersion() const { return nMintVersion; }
   bool IsUsed() const { return isUsed; }
   void SetDenomination(const libzerocoin::CoinDenomination denom) { this->denom = denom; }
   void SetHeight(const int& nHeight) { this->nHeight = nHeight; }
@@ -51,8 +51,9 @@ class CDeterministicMint {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-    READWRITE(this->nVersion);
+  inline void SerializationOp(Stream& s, Operation ser_action) {
+    READWRITE(nMintVersion);
+    // Modify code below if changes needed for nMintVersion
     READWRITE(nCount);
     READWRITE(hashSeed);
     READWRITE(hashSerial);

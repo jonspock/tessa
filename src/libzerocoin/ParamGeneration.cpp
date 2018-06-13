@@ -123,7 +123,7 @@ void CalculateParams(ZerocoinParams &params, CBigNum N, string aux, uint32_t sec
 
 uint256 calculateGeneratorSeed(uint256 seed, uint256 pSeed, uint256 qSeed, string label, uint32_t index,
                                uint32_t count) {
-  CHashWriter hasher(0, 0);
+    CHashWriter hasher;
   uint256 hash;
 
   // Compute the hash of:
@@ -153,7 +153,7 @@ uint256 calculateGeneratorSeed(uint256 seed, uint256 pSeed, uint256 qSeed, strin
 /// Returns the hash of the value.
 
 uint256 calculateSeed(CBigNum modulus, string auxString, uint32_t securityLevel, string groupName) {
-  CHashWriter hasher(0, 0);
+    CHashWriter hasher;
   uint256 hash;
 
   // Compute the hash of:
@@ -170,7 +170,7 @@ uint256 calculateSeed(CBigNum modulus, string auxString, uint32_t securityLevel,
 }
 
 uint256 calculateHash(uint256 input) {
-  CHashWriter hasher(0, 0);
+    CHashWriter hasher;
 
   // Compute the hash of "input"
   hasher << input;

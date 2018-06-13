@@ -23,8 +23,7 @@ struct CDiskBlockPos {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(VARINT(nFile));
     READWRITE(VARINT(nPos));
   }
@@ -377,8 +376,9 @@ class CDiskBlockIndex : public CBlockIndex {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
+    int nType = s.GetType();
+    int nVersion = s.GetVersion();
     if (!(nType & SER_GETHASH)) READWRITE(VARINT(nVersion));
 
     READWRITE(VARINT(nHeight));

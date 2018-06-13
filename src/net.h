@@ -222,10 +222,9 @@ class CBanEntry {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(nBanVersion);
-    nVersion = nBanVersion;
+    // nVersion = nBanVersion;
     READWRITE(nCreateTime);
     READWRITE(nBanUntil);
     READWRITE(banReason);

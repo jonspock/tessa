@@ -8,6 +8,7 @@
 
 #include "bitcoingui.h"
 #include "walletview.h"
+#include "utiltime.h"
 
 #include <cstdio>
 
@@ -39,6 +40,8 @@ bool WalletFrame::addWallet(const QString& name, WalletModel* walletModel) {
   walletView->setClientModel(clientModel);
   walletView->setWalletModel(walletModel);
   walletView->showOutOfSyncWarning(bOutOfSync);
+
+  //MilliSleep(5000);
 
   /* TODO we should goto the currently selected page once dynamically adding wallets is supported */
   walletView->gotoOverviewPage();

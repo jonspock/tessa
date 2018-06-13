@@ -95,13 +95,13 @@ class CPubKey {
   }
 
   //! Implement serialization, as if this was a byte vector.
-  unsigned int GetSerializeSize(int nType, int nVersion) const { return size() + 1; }
-  template <typename Stream> void Serialize(Stream& s, int nType, int nVersion) const {
+  unsigned int GetSerializeSize() const { return size() + 1; }
+  template <typename Stream> void Serialize(Stream& s) const {
     unsigned int len = size();
     ::WriteCompactSize(s, len);
     s.write((char*)vch, len);
   }
-  template <typename Stream> void Unserialize(Stream& s, int nType, int nVersion) {
+  template <typename Stream> void Unserialize(Stream& s) {
     unsigned int len = ::ReadCompactSize(s);
     if (len <= PUBLIC_KEY_SIZE) {
       s.read((char*)vch, len);

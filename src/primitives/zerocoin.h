@@ -19,7 +19,7 @@ struct CMintMeta {
   int nHeight;
   uint256 hashSerial;
   uint256 hashPubcoin;
-  uint8_t nVersion;
+  uint8_t nMetaVersion;
   libzerocoin::CoinDenomination denom;
   uint256 txid;
   bool isUsed;
@@ -41,7 +41,7 @@ class CZerocoinMint {
   CBigNum serialNumber;
   uint256 txid;
   CPrivKey privkey;
-  uint8_t version;
+  uint8_t nMintVersion;
   bool isUsed;
 
  public:
@@ -57,7 +57,7 @@ class CZerocoinMint {
     this->randomness = randomness;
     this->serialNumber = serialNumber;
     this->isUsed = isUsed;
-    this->version = nVersion;
+    this->nMintVersion = nVersion;
     if (privkey) this->privkey = *privkey;
   }
 
@@ -68,7 +68,7 @@ class CZerocoinMint {
     denomination = libzerocoin::ZQ_ERROR;
     nHeight = 0;
     txid = 0;
-    version = 1;
+    nMintVersion = 1;
     privkey.clear();
   }
 
@@ -89,8 +89,8 @@ class CZerocoinMint {
   void SetSerialNumber(CBigNum serial) { this->serialNumber = serial; }
   uint256 GetTxHash() const { return this->txid; }
   void SetTxHash(uint256 txid) { this->txid = txid; }
-  uint8_t GetVersion() const { return this->version; }
-  void SetVersion(const uint8_t nVersion) { this->version = nVersion; }
+  uint8_t GetVersion() const { return this->nMintVersion; }
+  void SetVersion(const uint8_t ver) { this->nMintVersion = ver; }
   CPrivKey GetPrivKey() const { return this->privkey; }
   void SetPrivKey(const CPrivKey& privkey) { this->privkey = privkey; }
   bool GetKeyPair(CKey& key) const;
@@ -105,7 +105,7 @@ class CZerocoinMint {
     serialNumber = other.GetSerialNumber();
     txid = other.GetTxHash();
     isUsed = other.IsUsed();
-    version = other.GetVersion();
+    nMintVersion = other.GetVersion();
     privkey = other.privkey;
   }
 
@@ -122,7 +122,7 @@ class CZerocoinMint {
     serialNumber = other.GetSerialNumber();
     txid = other.GetTxHash();
     isUsed = other.IsUsed();
-    version = other.GetVersion();
+    nMintVersion = other.GetVersion();
     privkey = other.GetPrivKey();
     return *this;
   }
@@ -140,7 +140,10 @@ class CZerocoinMint {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
+    READWRITE(nMintVersion);
+    // Modify code below if changes needed for nMintVersion
+    READWRITE(privkey);
     READWRITE(isUsed);
     READWRITE(randomness);
     READWRITE(serialNumber);
@@ -148,9 +151,6 @@ class CZerocoinMint {
     READWRITE(denomination);
     READWRITE(nHeight);
     READWRITE(txid);
-    // These weren't in original code but now not-optional
-    READWRITE(version);
-    READWRITE(privkey);
   };
 };
 
@@ -195,7 +195,7 @@ class CZerocoinSpend {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(coinSerial);
     READWRITE(hashTx);
     READWRITE(pubCoin);

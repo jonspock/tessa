@@ -22,7 +22,7 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const Zerocoi
 
 // Use one 256 bit seed and concatenate 4 unique 256 bit hashes to make a 1024 bit hash
 CBigNum SeedTo1024(uint256 hashSeed) {
-  CHashWriter hasher(0, 0);
+  CHashWriter hasher;
   hasher << hashSeed;
 
   vector<unsigned char> vResult;
@@ -49,7 +49,7 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const Zerocoi
 
   const IntegerMod<SERIAL_NUMBER_SOK_COMMITMENT_GROUP> b(params->coinCommitmentGroup.h);
 
-  CHashWriter hasher(0, 0);
+  CHashWriter hasher;
   hasher << *params << commitmentToCoin.getCommitmentValue() << coin.getSerialNumber() << msghash;
 
   vector<CBigNum> r(params->zkp_iterations);
@@ -119,7 +119,7 @@ bool SerialNumberSignatureOfKnowledge::Verify(const CBigNum& coinSerialNumber, c
   const IntegerMod<SERIAL_NUMBER_SOK_COMMITMENT_MODULUS> h(params->serialNumberSoKCommitmentGroup.h);
   const IntegerMod<SERIAL_NUMBER_SOK_COMMITMENT_MODULUS> valueOfCoinCommitment(valueOfCommitmentToCoin);
 
-  CHashWriter hasher(0, 0);
+  CHashWriter hasher;
   hasher << *params << valueOfCommitmentToCoin << coinSerialNumber << msghash;
 
   unsigned char* hashbytes = (unsigned char*)&this->hash;

@@ -12,13 +12,13 @@
 bool CMintMeta::operator<(const CMintMeta& a) const { return this->hashPubcoin < a.hashPubcoin; }
 
 uint256 GetSerialHash(const CBigNum& bnSerial) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << bnSerial;
   return Hash(ss.begin(), ss.end());
 }
 
 uint256 GetPubCoinHash(const CBigNum& bnValue) {
-  CDataStream ss(SER_GETHASH, 0);
+  CDataStream ss(SER_GETHASH);
   ss << bnValue;
   return Hash(ss.begin(), ss.end());
 }
@@ -32,7 +32,7 @@ std::string CZerocoinMint::ToString() const {
   std::string str = strprintf(
       "\n  ZerocoinMint:\n   version=%d   \ntxfrom=%s   \nheight=%d \n   randomness: %s   \n serial %s   \n privkey "
       "%s\n",
-      version, txid.GetHex(), nHeight, randomness.GetHex(), serialNumber.GetHex(), HexStr(privkey));
+      nMintVersion, txid.GetHex(), nHeight, randomness.GetHex(), serialNumber.GetHex(), HexStr(privkey));
   return str;
 }
 

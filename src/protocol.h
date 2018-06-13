@@ -39,8 +39,7 @@ class CMessageHeader {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(FLATDATA(pchMessageStart));
     READWRITE(FLATDATA(pchCommand));
     READWRITE(nMessageSize);
@@ -98,11 +97,12 @@ class CAddress : public CService {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     if (ser_action.ForRead()) Init();
-    if (nType & SER_DISK) READWRITE(nVersion);
-    if ((nType & SER_DISK) || (!(nType & SER_GETHASH))) READWRITE(nTime);
+    int nVersion = s.GetVersion();
+    int nTyp = s.GetType();
+    if (nTyp & SER_DISK) READWRITE(nVersion);
+    if ((nTyp & SER_DISK) || (!(nTyp & SER_GETHASH))) READWRITE(nTime);
     READWRITE(nServices);
     READWRITE(*(CService*)this);
   }
@@ -127,8 +127,7 @@ class CInv {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(type);
     READWRITE(hash);
   }
