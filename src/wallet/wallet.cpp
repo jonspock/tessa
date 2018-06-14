@@ -1585,7 +1585,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     // Read block header
     CBlockHeader block = pindex->GetBlockHeader();
-    uint256 hashProofOfStake(uint256S("0"));
+    uint256 hashProofOfStake;
     nTxNewTime = GetAdjustedTime();
 
     // iterates each utxo inside of CheckStakeKernelHash()
@@ -2867,7 +2867,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
     }
 
     uint32_t nAccumulatorChecksum = GetChecksum(accumulator.getValue());
-    CZerocoinSpend zcSpend(spend.getCoinSerialNumber(), uint256S("0"), zerocoinSelected.GetValue(),
+    CZerocoinSpend zcSpend(spend.getCoinSerialNumber(), uint256(), zerocoinSelected.GetValue(),
                            zerocoinSelected.GetDenomination(), nAccumulatorChecksum);
     zcSpend.SetMintCount(nMintsAdded);
     receipt.AddSpend(zcSpend);
@@ -3140,7 +3140,7 @@ string CWallet::ResetSpentZerocoin() {
 
   for (CZerocoinSpend spend : listSpends) {
     CTransaction tx;
-    uint256 hashBlock(uint256S("0"));
+    uint256 hashBlock;
     if (!GetTransaction(spend.GetTxHash(), tx, hashBlock)) {
       listUnconfirmedSpends.push_back(spend);
       continue;

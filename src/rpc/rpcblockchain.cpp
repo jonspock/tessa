@@ -90,7 +90,7 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
   for (const CTransaction& tx : block.vtx) {
     if (txDetails) {
       UniValue objTx(UniValue::VOBJ);
-      TxToJSON(tx, uint256S("0"), objTx);
+      TxToJSON(tx, uint256(), objTx);
       txs.push_back(objTx);
     } else
       txs.push_back(tx.GetHash().GetHex());
@@ -862,7 +862,7 @@ UniValue findserial(const UniValue& params, bool fHelp) {
   bnSerial.SetHex(strSerial);
   if (!bnSerial) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid serial");
 
-  uint256 txid(uint256S("0"));
+  uint256 txid;
   bool fSuccess = zerocoinDB->ReadCoinSpend(bnSerial, txid);
 
   UniValue ret(UniValue::VOBJ);

@@ -294,14 +294,14 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
   uint256 TxHash = tx.GetHash();
   for (unsigned int i = 0; i < tx.vout.size(); i++) {
     const CTxOut& Out = tx.vout[i];
-    uint256 HashNext = uint256S("0");
+    uint256 HashNext;
     unsigned int nNext = 0;
     bool fAddrIndex = false;
     getNextIn(COutPoint(TxHash, i), HashNext, nNext);
     std::string OutputsContentCells[] = {
         std::to_string(i),
-        (HashNext == uint256S("0")) ? (fAddrIndex ? _("no") : _("unknown"))
-                                    : "<span>" + makeHRef(HashNext.GetHex()) + ":" + std::to_string(nNext) + "</span>",
+        (HashNext.IsNull()) ? (fAddrIndex ? _("no") : _("unknown"))
+                            : "<span>" + makeHRef(HashNext.GetHex()) + ":" + std::to_string(nNext) + "</span>",
         ScriptToString(Out.scriptPubKey, true), ValueToString(Out.nValue)};
     OutputsContent += makeHTMLTableRow(OutputsContentCells, sizeof(OutputsContentCells) / sizeof(std::string));
   }
@@ -459,8 +459,8 @@ bool BlockExplorer::switchTo(const QString& query) {
 
   // If the query is neither an integer nor a block hash, assume a transaction hash
   CTransaction tx;
-    uint256 hashBlock;
-    hashBlock.SetNull();
+  uint256 hashBlock;
+  hashBlock.SetNull();
   if (GetTransaction(hash, tx, hashBlock, true)) {
     setContent(TxToString(hashBlock, tx));
     return true;

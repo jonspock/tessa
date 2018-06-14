@@ -23,8 +23,7 @@ QList<SendCoinsRecipient> WalletModelTransaction::getRecipients() { return recip
 CWalletTx* WalletModelTransaction::getTransaction() { return walletTransaction; }
 
 unsigned int WalletModelTransaction::getTransactionSize() {
-  return (!walletTransaction ? 0
-                             : (::GetSerializeSize(*(CTransaction*)walletTransaction)));
+  return (!walletTransaction ? 0 : (::GetSerializeSize(*(CTransaction*)walletTransaction)));
 }
 
 CAmount WalletModelTransaction::getTransactionFee() { return fee; }

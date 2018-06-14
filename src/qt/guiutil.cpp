@@ -323,24 +323,21 @@ void openDebugLogfile() {
   fs::path pathDebug = GetDataDir() / "debug.log";
 
   /* Open debug.log with the associated application */
-  if (fs::exists(pathDebug))
-    QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
+  if (fs::exists(pathDebug)) QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
 }
 
 void openConfigfile() {
   fs::path pathConfig = GetConfigFile();
 
   /* Open club.conf with the associated application */
-  if (fs::exists(pathConfig))
-    QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
+  if (fs::exists(pathConfig)) QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
 }
 
 void showBackups() {
   fs::path pathBackups = GetDataDir() / "backups";
 
   /* Open folder with default browser */
-  if (fs::exists(pathBackups))
-    QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathBackups)));
+  if (fs::exists(pathBackups)) QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathBackups)));
 }
 
 void SubstituteFonts(const QString& language) {
@@ -756,9 +753,7 @@ void setClipboard(const QString& str) {
   QApplication::clipboard()->setText(str, QClipboard::Selection);
 }
 
-fs::path qstringToBoostPath(const QString& path) {
-  return fs::path(path.toStdString(), utf8);
-}
+fs::path qstringToBoostPath(const QString& path) { return fs::path(path.toStdString(), utf8); }
 
 QString boostPathToQString(const fs::path& path) { return QString::fromStdString(path.string(utf8)); }
 

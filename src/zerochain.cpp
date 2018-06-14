@@ -39,7 +39,7 @@ bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>&
   for (const CTransaction tx : block.vtx) {
     if (!tx.IsZerocoinMint()) continue;
 
-    uint256 txHash = tx.GetHash();
+    //uint256 txHash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
       const CTxOut txOut = tx.vout[i];
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
@@ -60,7 +60,7 @@ bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMin
   for (const CTransaction& tx : block.vtx) {
     if (!tx.IsZerocoinMint()) continue;
 
-    uint256 txHash = tx.GetHash();
+    //uint256 txHash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
       const CTxOut txOut = tx.vout[i];
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
@@ -107,7 +107,7 @@ void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMin
     }
 
     // see if this mint is spent
-    uint256 hashTxSpend(uint256S("0"));
+    uint256 hashTxSpend;
     bool fSpent = zerocoinDB->ReadCoinSpend(meta.hashSerial, hashTxSpend);
 
     // if marked as spent, check that it actually made it into the chain
@@ -170,12 +170,12 @@ bool IsPubcoinInBlockchain(const uint256& hashPubcoin, uint256& txid) {
 }
 
 bool IsSerialKnown(const CBigNum& bnSerial) {
-  uint256 txHash(uint256S("0"));
+  uint256 txHash;
   return zerocoinDB->ReadCoinSpend(bnSerial, txHash);
 }
 
 bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx) {
-  uint256 txHash(uint256S("0"));
+  uint256 txHash;
   // if not in zerocoinDB then its not in the blockchain
   if (!zerocoinDB->ReadCoinSpend(bnSerial, txHash)) return false;
 

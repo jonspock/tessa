@@ -15,9 +15,9 @@
 #include "optionsmodel.h"
 #include "walletmodel.h"
 
-#include "wallet/coincontrol.h"
 #include "main.h"
 #include "multisigdialog.h"
+#include "wallet/coincontrol.h"
 #include "wallet/wallet.h"
 
 #include <QApplication>

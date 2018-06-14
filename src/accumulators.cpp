@@ -258,7 +258,7 @@ bool ValidateAccumulatorCheckpoint(const CBlock& block, CBlockIndex* pindex, Acc
   if (pindex->nHeight < Params().Zerocoin_StartHeight() || fVerifyingBlocks) return true;
 
   if (pindex->nHeight % ACC_BLOCK_INTERVAL == 0) {
-    uint256 nCheckpointCalculated(uint256S("0"));
+    uint256 nCheckpointCalculated;
 
     if (!CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators))
       return error("%s : failed to calculate accumulator checkpoint", __func__);

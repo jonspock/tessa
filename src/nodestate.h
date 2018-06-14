@@ -69,7 +69,7 @@ struct CNodeState {
     nMisbehavior = 0;
     fShouldBan = false;
     pindexBestKnownBlock = nullptr;
-    hashLastUnknownBlock = uint256S("0");
+    hashLastUnknownBlock.SetNull();
     pindexLastCommonBlock = nullptr;
     fSyncStarted = false;
     nStallingSince = 0;

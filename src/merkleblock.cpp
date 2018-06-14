@@ -74,7 +74,7 @@ uint256 CPartialMerkleTree::TraverseAndExtract(int height, unsigned int pos, uns
   if (nBitsUsed >= vBits.size()) {
     // overflowed the bits array - failure
     fBad = true;
-    return uint256S("0");
+    return uint256();
   }
   bool fParentOfMatch = vBits[nBitsUsed++];
   if (height == 0 || !fParentOfMatch) {
@@ -82,7 +82,7 @@ uint256 CPartialMerkleTree::TraverseAndExtract(int height, unsigned int pos, uns
     if (nHashUsed >= vHash.size()) {
       // overflowed the hash array - failure
       fBad = true;
-      return uint256S("0");
+      return uint256();
     }
     const uint256& hash = vHash[nHashUsed++];
     if (height == 0 && fParentOfMatch)  // in case of height 0, we have a matched txid
@@ -119,14 +119,14 @@ CPartialMerkleTree::CPartialMerkleTree() : nTransactions(0), fBad(true) {}
 uint256 CPartialMerkleTree::ExtractMatches(std::vector<uint256>& vMatch) {
   vMatch.clear();
   // An empty set will not work
-  if (nTransactions == 0) return uint256S("0");
+  if (nTransactions == 0) return uint256();
   // check for excessively high numbers of transactions
   if (nTransactions > MAX_BLOCK_SIZE_CURRENT / 60)  // 60 is the lower bound for the size of a serialized CTransaction
-    return uint256S("0");
+    return uint256();
   // there can never be more hashes provided than one for every txid
-  if (vHash.size() > nTransactions) return uint256S("0");
+  if (vHash.size() > nTransactions) return uint256();
   // there must be at least one bit per node in the partial tree, and at least one node per hash
-  if (vBits.size() < vHash.size()) return uint256S("0");
+  if (vBits.size() < vHash.size()) return uint256();
   // calculate height of tree
   int nHeight = 0;
   while (CalcTreeWidth(nHeight) > 1) nHeight++;
@@ -134,10 +134,10 @@ uint256 CPartialMerkleTree::ExtractMatches(std::vector<uint256>& vMatch) {
   unsigned int nBitsUsed = 0, nHashUsed = 0;
   uint256 hashMerkleRoot = TraverseAndExtract(nHeight, 0, nBitsUsed, nHashUsed, vMatch);
   // verify that no problems occured during the tree traversal
-  if (fBad) return uint256S("0");
+  if (fBad) return uint256();
   // verify that all bits were consumed (except for the padding caused by serializing it as a byte sequence)
-  if ((nBitsUsed + 7) / 8 != (vBits.size() + 7) / 8) return uint256S("0");
+  if ((nBitsUsed + 7) / 8 != (vBits.size() + 7) / 8) return uint256();
   // verify that all hashes were consumed
-  if (nHashUsed != vHash.size()) return uint256S("0");
+  if (nHashUsed != vHash.size()) return uint256();
   return hashMerkleRoot;
 }

@@ -271,7 +271,7 @@ void ProcessBlockAvailability(NodeId nodeid) {
       if (state->pindexBestKnownBlock == nullptr ||
           itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
         state->pindexBestKnownBlock = itOld->second;
-      state->hashLastUnknownBlock = uint256S("0");
+      state->hashLastUnknownBlock = uint256();
     }
   }
 }
@@ -888,7 +888,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       for (const CTxIn& txIn : tx.vin) {
         if (!txIn.scriptSig.IsZerocoinSpend()) continue;
         CoinSpend spend = TxInToZerocoinSpend(txIn);
-        if (!ContextualCheckZerocoinSpend(tx, spend, chainActive.Tip(), uint256S("0")))
+        if (!ContextualCheckZerocoinSpend(tx, spend, chainActive.Tip(), uint256()))
           return state.Invalid(
               error("%s: ContextualCheckZerocoinSpend failed for tx %s", __func__, tx.GetHash().GetHex()),
               REJECT_INVALID, "bad-txns-invalid-zkp");
@@ -1621,7 +1621,7 @@ bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError
       if (pindex->nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {
         if (find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint) !=
             listMissingCheckpoints.end()) {
-          uint256 nCheckpointCalculated(uint256S("0"));
+          uint256 nCheckpointCalculated;
           AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
           if (!CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators)) {
             // GetCheckpoint could have terminated due to a shutdown request. Check this here.
@@ -1722,7 +1722,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck, !fJustCheck)) return false;
 
   // verify that the view's current state corresponds to the previous block
-  uint256 hashPrevBlock = pindex->pprev == nullptr ? uint256S("0") : pindex->pprev->GetBlockHash();
+  uint256 hashPrevBlock = pindex->pprev == nullptr ? uint256() : pindex->pprev->GetBlockHash();
   if (hashPrevBlock != view.GetBestBlock())
     LogPrintf("%s: hashPrev=%s view=%s\n", __func__, hashPrevBlock.ToString().c_str(),
               view.GetBestBlock().ToString().c_str());
@@ -3075,7 +3075,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
   if (block.GetHash() != Params().HashGenesisBlock() && !CheckWork(block, pindexPrev)) return false;
 
   if (block.IsProofOfStake()) {
-    uint256 hashProofOfStake(uint256S("0"));
+    uint256 hashProofOfStake;
     unique_ptr<CStakeInput> stake;
 
     if (!CheckProofOfStake(block, hashProofOfStake, stake))
@@ -3201,7 +3201,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     // if we get this far, check if the prev block is our prev block, if not then request sync and return false
     auto mi = mapBlockIndex.find(pblock->hashPrevBlock);
     if (mi == mapBlockIndex.end()) {
-      pfrom->PushMessage("getblocks", chainActive.GetLocator(), uint256S("0"));
+      pfrom->PushMessage("getblocks", chainActive.GetLocator(), uint256());
       return false;
     }
   }
@@ -4064,7 +4064,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     if (pindex) pindex = chainActive.Next(pindex);
     int nLimit = 500;
     LogPrint(ClubLog::NET, "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1),
-             hashStop == uint256S("0") ? "end" : hashStop.ToString(), nLimit, pfrom->id);
+             hashStop == uint256() ? "end" : hashStop.ToString(), nLimit, pfrom->id);
     for (; pindex; pindex = chainActive.Next(pindex)) {
       if (pindex->GetBlockHash() == hashStop) {
         LogPrint(ClubLog::NET, "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
@@ -4275,7 +4275,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       // from there instead.
       LogPrintf("more getheaders (%d) to end to peer=%d (startheight:%d)\n", pindexLast->nHeight, pfrom->id,
                 pfrom->nStartingHeight);
-      pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256S("0"));
+      pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256());
     }
 
     CheckBlockIndex();
@@ -4714,7 +4714,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
         // LogPrint(ClubLog::NET, "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight,
         // pto->id, pto->nStartingHeight); pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart),
         // uint256(0));
-        pto->PushMessage("getblocks", chainActive.GetLocator(chainActive.Tip()), uint256S("0"));
+        pto->PushMessage("getblocks", chainActive.GetLocator(chainActive.Tip()), uint256());
       }
     }
 

@@ -28,7 +28,7 @@ class RecentRequestEntry {
   ADD_SERIALIZE_METHODS;
 
   template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action, int nType=0, int nVer=0) {
+  inline void SerializationOp(Stream& s, Operation ser_action, int nType = 0, int nVer = 0) {
     unsigned int nDate = date.toTime_t();
 
     int nVersion = s.GetVersion();

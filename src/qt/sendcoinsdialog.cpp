@@ -19,10 +19,10 @@
 #include "walletmodel.h"
 
 #include "base58.h"
-#include "wallet/coincontrol.h"
 #include "main_externs.h"
 #include "ui_interface.h"
 #include "utilmoneystr.h"
+#include "wallet/coincontrol.h"
 #include "wallet/wallet.h"
 
 #include <QMessageBox>

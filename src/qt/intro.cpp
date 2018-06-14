@@ -10,8 +10,8 @@
 
 #include "guiutil.h"
 
-#include "util.h"
 #include "fs.h"
+#include "util.h"
 
 #include <QFileDialog>
 #include <QMessageBox>

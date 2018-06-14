@@ -6,15 +6,15 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "rpcconsole.h"
-#include "ui_rpcconsole.h"
 #include "bantablemodel.h"
+#include "chainparams.h"
 #include "clientmodel.h"
 #include "guiutil.h"
-#include "peertablemodel.h"
-#include "chainparams.h"
 #include "main.h"
+#include "peertablemodel.h"
 #include "rpc/rpcclient.h"
 #include "rpc/rpcserver.h"
+#include "ui_rpcconsole.h"
 #include "util.h"
 
 #ifdef ENABLE_WALLET
