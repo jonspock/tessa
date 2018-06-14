@@ -26,11 +26,11 @@ CDeterministicMint::CDeterministicMint(uint8_t nVersion, const uint32_t& nCount,
 void CDeterministicMint::SetNull() {
   nMintVersion = PrivateCoin::PRIVATECOIN_VERSION;
   nCount = 0;
-  hashSeed = 0;
-  hashSerial = 0;
-  hashStake = 0;
-  hashPubcoin = 0;
-  txid = 0;
+  hashSeed.SetNull();
+  hashSerial.SetNull();
+  hashStake.SetNull();
+  hashPubcoin.SetNull();
+  txid.SetNull();
   nHeight = 0;
   denom = CoinDenomination::ZQ_ERROR;
   isUsed = false;

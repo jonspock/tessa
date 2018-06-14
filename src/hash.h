@@ -12,6 +12,7 @@
 #include "crypto/sha512.h"
 #include "serialize.h"
 #include "uint256.h"
+#include "uint512.h"
 #include "version.h"
 
 #include <iomanip>
@@ -270,8 +271,7 @@ class CHashWriter {
 };
 
 /** Compute the 256-bit hash of an object's serialization. */
-template <typename T>
-uint256 SerializeHash(const T& obj) {  //, int nType = SER_GETHASH, int nVersion = PROTOCOL_VERSION) {
+template <typename T> uint256 SerializeHash(const T& obj) {
   CHashWriter ss;
   ss << obj;
   return ss.GetHash();

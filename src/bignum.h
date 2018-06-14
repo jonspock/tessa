@@ -13,6 +13,7 @@
 #include <openssl/bn.h>
 #include "serialize.h"
 #include "uint256.h"
+#include "arith_uint256.h"
 #include "version.h"
 
 /** Errors thrown by the bignum class */
@@ -104,6 +105,11 @@ public:
     CBigNum(unsigned long n)    { bn = BN_new(); setulong(n); }
   //  CBigNum(uint64_t n)           { bn = BN_new(); setuint64(n); }
     explicit CBigNum(uint256 n) { bn = BN_new(); setuint256(n); }
+    explicit CBigNum(arith_uint256 n) {
+        bn = BN_new();
+        uint256 c = ArithToUint256(n);
+        setuint256(c);
+    }
 
     explicit CBigNum(const std::vector<unsigned char>& vch)
     {
@@ -271,14 +277,15 @@ public:
 
     uint256 getuint256() const
     {
+        uint256 n;
+        n.SetNull();
         unsigned int nSize = BN_bn2mpi(bn, nullptr);
         if (nSize < 4)
-            return 0;
+            return n;
         std::vector<unsigned char> vch(nSize);
         BN_bn2mpi(bn, &vch[0]);
         if (vch.size() > 4)
             vch[4] &= 0x7f;
-        uint256 n = 0;
         for (unsigned int i = 0, j = vch.size()-1; i < sizeof(n) && j >= 4; i++, j--)
             ((unsigned char*)&n)[i] = vch[j];
         return n;

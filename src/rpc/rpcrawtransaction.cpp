@@ -87,7 +87,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry) 
   }
   entry.push_back(Pair("vout", vout));
 
-  if (hashBlock != 0) {
+  if (!hashBlock.IsNull()) {
     entry.push_back(Pair("blockhash", hashBlock.GetHex()));
     BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
     if (mi != mapBlockIndex.end() && (*mi).second) {
@@ -173,7 +173,7 @@ UniValue getrawtransaction(const UniValue& params, bool fHelp) {
   if (params.size() > 1) fVerbose = (params[1].get_int() != 0);
 
   CTransaction tx;
-  uint256 hashBlock = 0;
+  uint256 hashBlock(uint256S("0"));
   if (!GetTransaction(hash, tx, hashBlock, true))
     throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available about transaction");
 
@@ -439,7 +439,7 @@ UniValue decoderawtransaction(const UniValue& params, bool fHelp) {
   if (!DecodeHexTx(tx, params[0].get_str())) throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
 
   UniValue result(UniValue::VOBJ);
-  TxToJSON(tx, 0, result);
+  TxToJSON(tx, uint256S("0"), result);
 
   return result;
 }
@@ -807,7 +807,7 @@ UniValue getspentzerocoinamount(const UniValue& params, bool fHelp) {
   if (inputIndex < 0) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter for transaction input");
 
   CTransaction tx;
-  uint256 hashBlock = 0;
+  uint256 hashBlock(uint256S("0"));
   if (!GetTransaction(txHash, tx, hashBlock, true))
     throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available about transaction");
 

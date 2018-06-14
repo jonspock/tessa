@@ -84,7 +84,7 @@ CDataStream CStake::GetUniqueness() {
 
 // The block that the UTXO was added to the chain
 CBlockIndex* CStake::GetIndexFrom() {
-  uint256 hashBlock = 0;
+  uint256 hashBlock(uint256S("0"));
   CTransaction tx;
   if (GetTransaction(txFrom.GetHash(), tx, hashBlock, true)) {
     // If the index is in the chain, then set it as the "index from"

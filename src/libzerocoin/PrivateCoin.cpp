@@ -33,7 +33,7 @@ bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey&
   // Generate a new key pair, which also has a 256-bit pubkey hash that qualifies as a serial #
   // This builds off of Tim Ruffing's work on libzerocoin, but has a different implementation
   CKey keyPair;
-  if (nPrivkey == 0)
+  if (nPrivkey.IsNull())
     keyPair.MakeNewKey(true);
   else
     keyPair.Set(nPrivkey.begin(), nPrivkey.end(), true);
@@ -101,7 +101,8 @@ CBigNum PrivateCoin::CoinFromSeed(const uint512& seedZerocoin) {
   }
 
   // hash randomness seed with Bottom 256 bits of seedZerocoin & attempts256 which is initially 0
-  uint256 randomnessSeed = uint512(seedZerocoin >> 256).trim256();
+  arith_uint512 seed = UintToArith512(seedZerocoin) >> 256;
+  uint256 randomnessSeed = ArithToUint512(seed).trim256();
   uint256 hashRandomness = Hash(randomnessSeed.begin(), randomnessSeed.end());
   bnRandomness.setuint256(hashRandomness);
   bnRandomness = bnRandomness % params->coinCommitmentGroup.groupOrder;
@@ -114,7 +115,7 @@ CBigNum PrivateCoin::CoinFromSeed(const uint512& seedZerocoin) {
   IntegerMod<COIN_COMMITMENT_MODULUS> C = (g ^ s) * (h ^ r);
 
   CBigNum random;
-  uint256 attempts256 = 0;
+  arith_uint256 attempts256 = 0;
   // Iterate on Randomness until a valid commitmentValue is found
   while (true) {
     // Now verify that the commitment is a prime number

@@ -566,7 +566,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet) {
     bool fUpdated = false;
     if (!fInsertedNew) {
       // Merge
-      if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock) {
+      if (!wtxIn.hashBlock.IsNull() && wtxIn.hashBlock != wtx.hashBlock) {
         wtx.hashBlock = wtxIn.hashBlock;
         fUpdated = true;
       }
@@ -1585,7 +1585,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     // Read block header
     CBlockHeader block = pindex->GetBlockHeader();
-    uint256 hashProofOfStake = 0;
+    uint256 hashProofOfStake(uint256S("0"));
     nTxNewTime = GetAdjustedTime();
 
     // iterates each utxo inside of CheckStakeKernelHash()
@@ -2267,7 +2267,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const {
 
 unsigned int CWallet::ComputeTimeSmart(const CWalletTx& wtx) const {
   unsigned int nTimeSmart = wtx.nTimeReceived;
-  if (wtx.hashBlock != 0) {
+  if (!wtx.hashBlock.IsNull()) {
     if (mapBlockIndex.count(wtx.hashBlock)) {
       int64_t latestNow = wtx.nTimeReceived;
       int64_t latestEntry = 0;
@@ -2567,7 +2567,7 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block) {
 }
 
 int CMerkleTx::GetDepthInMainChainINTERNAL(const CBlockIndex*& pindexRet) const {
-  if (hashBlock == 0 || nIndex == -1) return 0;
+  if (hashBlock.IsNull() || nIndex == -1) return 0;
   AssertLockHeld(cs_main);
 
   // Find the block it claims to be in
@@ -2867,7 +2867,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
     }
 
     uint32_t nAccumulatorChecksum = GetChecksum(accumulator.getValue());
-    CZerocoinSpend zcSpend(spend.getCoinSerialNumber(), 0, zerocoinSelected.GetValue(),
+    CZerocoinSpend zcSpend(spend.getCoinSerialNumber(), uint256S("0"), zerocoinSelected.GetValue(),
                            zerocoinSelected.GetDenomination(), nAccumulatorChecksum);
     zcSpend.SetMintCount(nMintsAdded);
     receipt.AddSpend(zcSpend);
@@ -3140,14 +3140,14 @@ string CWallet::ResetSpentZerocoin() {
 
   for (CZerocoinSpend spend : listSpends) {
     CTransaction tx;
-    uint256 hashBlock = 0;
+    uint256 hashBlock(uint256S("0"));
     if (!GetTransaction(spend.GetTxHash(), tx, hashBlock)) {
       listUnconfirmedSpends.push_back(spend);
       continue;
     }
 
     // no confirmations
-    if (hashBlock == 0) listUnconfirmedSpends.push_back(spend);
+    if (hashBlock.IsNull()) listUnconfirmedSpends.push_back(spend);
   }
 
   for (CZerocoinSpend spend : listUnconfirmedSpends) {

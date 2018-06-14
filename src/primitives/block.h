@@ -63,7 +63,7 @@ class CBlockHeader {
     nTime = 0;
     nBits = 0;
     nNonce = 0;
-    nAccumulatorCheckpoint = 0;
+    nAccumulatorCheckpoint.SetNull();
   }
 
   bool IsNull() const { return (nBits == 0); }

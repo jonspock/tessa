@@ -67,7 +67,7 @@ class CZerocoinMint {
     value = 0;
     denomination = libzerocoin::ZQ_ERROR;
     nHeight = 0;
-    txid = 0;
+    txid.SetNull();
     nMintVersion = 1;
     privkey.clear();
   }
@@ -177,8 +177,8 @@ class CZerocoinSpend {
 
   void SetNull() {
     coinSerial = 0;
-    hashTx = 0;
-    pubCoin = 0;
+      hashTx.SetNull();
+      pubCoin=0;
     denomination = libzerocoin::ZQ_ERROR;
   }
 

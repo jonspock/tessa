@@ -459,7 +459,8 @@ bool BlockExplorer::switchTo(const QString& query) {
 
   // If the query is neither an integer nor a block hash, assume a transaction hash
   CTransaction tx;
-  uint256 hashBlock = 0;
+    uint256 hashBlock;
+    hashBlock.SetNull();
   if (GetTransaction(hash, tx, hashBlock, true)) {
     setContent(TxToString(hashBlock, tx));
     return true;

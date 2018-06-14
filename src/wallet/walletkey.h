@@ -22,10 +22,9 @@ class CWalletKey {
 
   ADD_SERIALIZE_METHODS;
 
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action) {
-      int nType = s.GetType();
-      int nVersion = s.GetVersion();
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
+    int nType = s.GetType();
+    int nVersion = s.GetVersion();
     if (!(nType & SER_GETHASH)) READWRITE(nVersion);
     READWRITE(vchPrivKey);
     READWRITE(nTimeCreated);

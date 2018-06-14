@@ -75,7 +75,7 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 //    timestamp before)
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints = {
-    {259201, uint256("1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd")}};
+    {259201, uint256S("1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd")}};
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
     1525106065,  // * UNIX timestamp of last checkpoint block
@@ -84,9 +84,9 @@ static const Checkpoints::CCheckpointData data = {
     2000         // * estimated number of transactions per day after checkpoint
 };
 
-static Checkpoints::MapCheckpoints mapCheckpointsTestnet = {{0, uint256("0x001")}};
+static Checkpoints::MapCheckpoints mapCheckpointsTestnet = {{0, uint256S("0x001")}};
 static const Checkpoints::CCheckpointData dataTestnet = {&mapCheckpointsTestnet, 1740710, 0, 250};
-static Checkpoints::MapCheckpoints mapCheckpointsRegtest = {{0, uint256("0x001")}};
+static Checkpoints::MapCheckpoints mapCheckpointsRegtest = {{0, uint256S("0x001")}};
 static const Checkpoints::CCheckpointData dataRegtest = {&mapCheckpointsRegtest, 1454124731, 0, 100};
 
 class CMainParams : public CChainParams {
@@ -104,7 +104,7 @@ class CMainParams : public CChainParams {
     pchMessageStart[2] = 0xfd;
     pchMessageStart[3] = 0xe9;
     nDefaultPort = 44444;
-    bnProofOfWorkLimit = ~uint256(0) >> 20;  // Club starting difficulty is 1 / 2^12
+    bnProofOfWorkLimit = ~arith_uint256(0) >> 20;  // Club starting difficulty is 1 / 2^12
     nSubsidyHalvingInterval = 210000;
     nMaxReorganizationDepth = 100;
     nEnforceBlockUpgradeMajority = 750;
@@ -139,7 +139,7 @@ class CMainParams : public CChainParams {
     std::cout << "main Genesis block = " << hashGenesisBlock.ToString() << "\n";
     std::cout << "Genesis MerkleRoot = " << genesis.hashMerkleRoot.ToString() << "\n";
     // assert(hashGenesisBlock == uint256("0x00000c7c73d8ce604178dae13f0fc6ec0be3275614366d44b1b4b5c6e238c60c"));
-    assert(genesis.hashMerkleRoot == uint256("0x62d496378e5834989dd9594cfc168dbb76f84a39bbda18286cddc7d1d1589f4f"));
+    assert(genesis.hashMerkleRoot == uint256S("0x62d496378e5834989dd9594cfc168dbb76f84a39bbda18286cddc7d1d1589f4f"));
 
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "club.seed.fuzzbawls.pw"));     // Primary DNS Seeder from
     // Fuzzbawls
@@ -233,7 +233,7 @@ class CTestNetParams : public CMainParams {
 
     fSkipProofOfWorkCheck = true;
     fMiningRequiresPeers = false;
-    bnProofOfWorkLimit = ~uint256(0) >> 1;
+    bnProofOfWorkLimit = ~arith_uint256(0) >> 1;
 
     nStakeMinAge = 1 * 60;   // 1 minute for Testnet
     nModifierInterval = 60;  // ? why this value
@@ -265,7 +265,7 @@ class CRegTestParams : public CTestNetParams {
     nMinerThreads = 1;
     nTargetTimespan = 24 * 60 * 60;  // Club: 1 day
     nTargetSpacing = 1 * 60;         // Club: 1 minutes
-    bnProofOfWorkLimit = ~uint256(0) >> 1;
+    bnProofOfWorkLimit = ~arith_uint256(0) >> 1;
 
     genesis = CreateGenesisBlock(1390748221, 4, 0x207fffff, 1, 5000 * COIN);
     hashGenesisBlock = genesis.GetHash();

@@ -69,7 +69,7 @@ FILE* OpenBlockFile(const CDiskBlockPos& pos, bool fReadOnly) { return OpenDiskF
 FILE* OpenUndoFile(const CDiskBlockPos& pos, bool fReadOnly) { return OpenDiskFile(pos, "rev", fReadOnly); }
 
 CBlockIndex* InsertBlockIndex(uint256 hash) {
-  if (hash == 0) return nullptr;
+  if (hash.IsNull()) return nullptr;
 
   // Return existing
   BlockMap::iterator mi = mapBlockIndex.find(hash);

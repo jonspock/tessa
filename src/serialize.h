@@ -265,6 +265,14 @@ template <typename Stream> uint64_t ReadCompactSize(Stream& is) {
  * 2^32:           [0x8E 0xFE 0xFE 0xFF 0x00]
  */
 
+//
+// Can check if VarInt Type is signed or unsigned;
+// Currently used for Signed although it shouldn't be
+//
+template <typename I> struct CheckVarIntType {
+  constexpr CheckVarIntType() { static_assert(std::is_unsigned<I>::value, "Unsigned type required for CVarInt."); }
+};
+
 template <typename I> inline unsigned int GetSizeOfVarInt(I n) {
   int nRet = 0;
   while (true) {
@@ -385,8 +393,7 @@ template <typename Stream, typename C> void Unserialize(Stream& is, std::basic_s
  */
 template <typename T, typename A> unsigned int GetSerializeSize_impl(const std::vector<T, A>& v, const unsigned char&);
 template <typename T, typename A, typename V> unsigned int GetSerializeSize_impl(const std::vector<T, A>& v, const V&);
-template <typename T, typename A>
-inline unsigned int GetSerializeSize(const std::vector<T, A>& v); 
+template <typename T, typename A> inline unsigned int GetSerializeSize(const std::vector<T, A>& v);
 template <typename Stream, typename T, typename A>
 void Serialize_impl(Stream& os, const std::vector<T, A>& v, const unsigned char&);
 template <typename Stream, typename T, typename A, typename V>

@@ -217,7 +217,7 @@ class CTransaction {
   unsigned int CalculateModifiedSize(unsigned int nTxSize = 0) const;
 
   bool IsZerocoinSpend() const {
-    return (vin.size() > 0 && vin[0].prevout.hash == 0 && vin[0].scriptSig[0] == OP_ZEROCOINSPEND);
+    return (vin.size() > 0 && (vin[0].prevout.hash).IsNull() && vin[0].scriptSig[0] == OP_ZEROCOINSPEND);
   }
 
   bool IsZerocoinMint() const {

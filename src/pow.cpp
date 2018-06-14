@@ -26,8 +26,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
   int64_t PastBlocksMin = 24;
   int64_t PastBlocksMax = 24;
   int64_t CountBlocks = 0;
-  uint256 PastDifficultyAverage;
-  uint256 PastDifficultyAveragePrev;
+  arith_uint256 PastDifficultyAverage;
+  arith_uint256 PastDifficultyAveragePrev;
 
   // Quick Exit for testnet for Now XXX
 #warning "Quick exit for testnet"
@@ -40,7 +40,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
   }
 
   if (pindexLast->nHeight > Params().LAST_POW_BLOCK()) {
-    uint256 bnTargetLimit = (~uint256(0) >> 24);
+    arith_uint256 bnTargetLimit = (~arith_uint256(0) >> 24);
     int64_t nTargetSpacing = 60;
     int64_t nTargetTimespan = 60 * 40;
 
@@ -51,7 +51,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
     // ppcoin: target change every block
     // ppcoin: retarget with exponential moving toward target spacing
-    uint256 bnNew;
+    arith_uint256 bnNew;
     bnNew.SetCompact(pindexLast->nBits);
 
     int64_t nInterval = nTargetTimespan / nTargetSpacing;
@@ -72,7 +72,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         PastDifficultyAverage.SetCompact(BlockReading->nBits);
       } else {
         PastDifficultyAverage =
-            ((PastDifficultyAveragePrev * CountBlocks) + (uint256().SetCompact(BlockReading->nBits))) /
+            ((PastDifficultyAveragePrev * CountBlocks) + (arith_uint256().SetCompact(BlockReading->nBits))) /
             (CountBlocks + 1);
       }
       PastDifficultyAveragePrev = PastDifficultyAverage;
@@ -91,7 +91,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     BlockReading = BlockReading->pprev;
   }
 
-  uint256 bnNew(PastDifficultyAverage);
+  arith_uint256 bnNew(PastDifficultyAverage);
 
   int64_t _nTargetTimespan = CountBlocks * Params().TargetSpacing();
 
@@ -110,7 +110,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 bool CheckProofOfWork(uint256 hash, unsigned int nBits) {
   bool fNegative;
   bool fOverflow;
-  uint256 bnTarget;
+  arith_uint256 bnTarget;
 
   if (Params().SkipProofOfWorkCheck()) return true;
 
@@ -122,13 +122,13 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits) {
 
   // Check proof of work matches claimed amount
   std::cout << "hash = \n" << hash.ToString() << " vs " << bnTarget.ToString() << "\n";
-  if (hash > bnTarget) return error("CheckProofOfWork() : hash doesn't match nBits");
+  if (UintToArith256(hash) > bnTarget) return error("CheckProofOfWork() : hash doesn't match nBits");
 
   return true;
 }
 
-uint256 GetBlockProof(const CBlockIndex& block) {
-  uint256 bnTarget;
+arith_uint256 GetBlockProof(const CBlockIndex& block) {
+  arith_uint256 bnTarget;
   bool fNegative;
   bool fOverflow;
   bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);

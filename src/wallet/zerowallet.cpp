@@ -40,7 +40,7 @@ CZeroWallet::CZeroWallet(std::string strWalletFile) {
 
   // Don't try to do anything if the wallet is locked.
   if (pwalletMain->IsLocked()) {
-    seedMaster = 0;
+    seedMaster.SetNull();
     nCountLastUsed = 0;
     this->mintPool = CMintPool();
     return;
@@ -72,7 +72,7 @@ bool CZeroWallet::SetMasterSeed(const uint256& seedMaster, bool fResetCount) {
   CWalletDB walletdb(strWalletFile);
   if (pwalletMain->IsLocked()) return false;
 
-  if (seedMaster != 0 && !pwalletMain->AddDeterministicSeed(seedMaster)) {
+  if (!seedMaster.IsNull() && !pwalletMain->AddDeterministicSeed(seedMaster)) {
     return error("%s: failed to set master seed.", __func__);
   }
 
@@ -90,7 +90,7 @@ bool CZeroWallet::SetMasterSeed(const uint256& seedMaster, bool fResetCount) {
   return true;
 }
 
-void CZeroWallet::Lock() { seedMaster = 0; }
+void CZeroWallet::Lock() { seedMaster.SetNull(); }
 
 void CZeroWallet::AddToMintPool(const std::pair<uint256, uint32_t>& pMint, bool fVerbose) {
   mintPool.Add(pMint, fVerbose);
@@ -99,7 +99,7 @@ void CZeroWallet::AddToMintPool(const std::pair<uint256, uint32_t>& pMint, bool 
 // Add the next 20 mints to the mint pool
 void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
   // Is locked
-  if (seedMaster == 0) return;
+  if (seedMaster.IsNull()) return;
 
   uint32_t n = nCountLastUsed + 1;
 

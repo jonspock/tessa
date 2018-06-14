@@ -569,7 +569,7 @@ bool MultisigDialog::signMultisigTx(CMutableTransaction& tx, string& errorOut, Q
         uint256 hashBlock;
         if (!GetTransaction(txin.prevout.hash, txVin, hashBlock, true)) throw runtime_error("txin could not be found");
 
-        if (hashBlock == 0) throw runtime_error("txin is unconfirmed");
+        if (hashBlock.IsNull()) throw runtime_error("txin is unconfirmed");
 
         // get pubkey from input
         CScript prevPubKey = txVin.vout[txin.prevout.n].scriptPubKey;
@@ -607,7 +607,7 @@ bool MultisigDialog::signMultisigTx(CMutableTransaction& tx, string& errorOut, Q
       uint256 hashBlock;
       if (!GetTransaction(txin.prevout.hash, txVin, hashBlock, true)) throw runtime_error("txin could not be found");
 
-      if (hashBlock == 0) throw runtime_error("txin is unconfirmed");
+      if (hashBlock.IsNull()) throw runtime_error("txin is unconfirmed");
 
       txin.scriptSig.clear();
       CScript prevPubKey = txVin.vout[txin.prevout.n].scriptPubKey;
@@ -644,7 +644,7 @@ bool MultisigDialog::isFullyVerified(CMutableTransaction& tx) {
       if (!GetTransaction(txin.prevout.hash, txVin, hashBlock, true)) {
         throw runtime_error("txin could not be found");
       }
-      if (hashBlock == 0) { throw runtime_error("txin is unconfirmed"); }
+      if (hashBlock.IsNull()) { throw runtime_error("txin is unconfirmed"); }
 
       // get pubkey from this input as output in last tx
       CScript prevPubKey = txVin.vout[txin.prevout.n].scriptPubKey;

@@ -47,7 +47,7 @@ public:
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     int GetDefaultPort() const { return nDefaultPort; }
-    const uint256& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
+    const arith_uint256& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
     /** Used to check majorities for block version upgrade */
     int EnforceBlockUpgradeMajority() const { return nEnforceBlockUpgradeMajority; }
@@ -110,7 +110,7 @@ protected:
     uint256 hashGenesisBlock;
     MessageStartChars pchMessageStart;
     int nDefaultPort;
-    uint256 bnProofOfWorkLimit;
+    arith_uint256 bnProofOfWorkLimit;
     int nMaxReorganizationDepth;
     int nSubsidyHalvingInterval;
     int nEnforceBlockUpgradeMajority;

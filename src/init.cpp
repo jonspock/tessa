@@ -801,8 +801,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // Turn off Microsoft heap dump noise
   _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
   _CrtSetReportFile(_CRT_WARN, CreateFileA("NUL", GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, 0));
-#endif
-#if _MSC_VER >= 1400
   // Disable confusing "helpful" text message on abort, Ctrl-C
   _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 #endif

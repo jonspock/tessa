@@ -377,7 +377,7 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256& hashSeed, uint256& see
       vector<unsigned char> vchCryptedSeed;
       // read encrypted seed
       if (db.ReadZKPSeed(hashSeed, vchCryptedSeed)) {
-        uint256 seedRetrieved = uint256(ReverseEndianString(HexStr(vchCryptedSeed)));
+        uint256 seedRetrieved = uint256S(ReverseEndianString(HexStr(vchCryptedSeed)));
         // this checks if the hash of the seed we just read matches the hash given, meaning it is not encrypted
         // the use case for this is when not crypted, seed is set, then password set, the seed not yet crypted in memory
         if (hashSeed == Hash(seedRetrieved.begin(), seedRetrieved.end())) {
@@ -388,7 +388,7 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256& hashSeed, uint256& see
         CKeyingMaterial kmSeed;
         // attempt decrypt
         if (DecryptSecret(vMasterKey, vchCryptedSeed, hashSeed, kmSeed)) {
-          seedOut = uint256(ReverseEndianString(HexStr(kmSeed)));
+          seedOut = uint256S(ReverseEndianString(HexStr(kmSeed)));
           return true;
         }
         strErr = "decrypt seed";
@@ -402,7 +402,7 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256& hashSeed, uint256& see
     vector<unsigned char> vchSeed;
     // wallet not crypted
     if (db.ReadZKPSeed(hashSeed, vchSeed)) {
-      seedOut = uint256(ReverseEndianString(HexStr(vchSeed)));
+      seedOut = uint256S(ReverseEndianString(HexStr(vchSeed)));
       return true;
     }
     strErr = "read seed from wallet";

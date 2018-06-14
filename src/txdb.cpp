@@ -37,7 +37,9 @@ bool CCoinsViewDB::HaveCoins(const uint256& txid) const { return db.Exists(make_
 
 uint256 CCoinsViewDB::GetBestBlock() const {
   uint256 hashBestChain;
-  if (!db.Read('B', hashBestChain)) return uint256(0);
+  uint256 z;
+  z.SetNull();
+  if (!db.Read('B', hashBestChain)) return z;
   return hashBestChain;
 }
 
@@ -54,7 +56,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
     CCoinsMap::iterator itOld = it++;
     mapCoins.erase(itOld);
   }
-  if (hashBlock != uint256(0)) BatchWriteHashBestChain(batch, hashBlock);
+  if (hashBlock != uint256S("0")) BatchWriteHashBestChain(batch, hashBlock);
 
   LogPrint(ClubLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n",
            (unsigned int)changed, (unsigned int)count);
@@ -169,7 +171,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
   std::unique_ptr<leveldb::Iterator> pcursor(NewIterator());
 
   CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
-  ssKeySet << make_pair('b', uint256(0));
+  ssKeySet << make_pair('b', uint256S("0"));
   pcursor->Seek(ssKeySet.str());
 
   // Load mapBlockIndex
@@ -225,7 +227,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
         if (pindexNew->IsProofOfStake()) gStaker.setSeen(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
         // populate accumulator checksum map in memory
-        if (pindexNew->nAccumulatorCheckpoint != 0 && pindexNew->nAccumulatorCheckpoint != nPreviousCheckpoint) {
+        if (!pindexNew->nAccumulatorCheckpoint.IsNull() && pindexNew->nAccumulatorCheckpoint != nPreviousCheckpoint) {
           // Don't load any checkpoints that exist before v2 zkp. The accumulator is invalid for v1 and not used.
           if (pindexNew->nHeight >= Params().Zerocoin_StartHeight())
             LoadAccumulatorValuesFromDB(pindexNew->nAccumulatorCheckpoint);
@@ -299,7 +301,7 @@ bool CZerocoinDB::WipeCoins(std::string strType) {
 
   char type = (strType == "spends" ? 's' : 'm');
   CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
-  ssKeySet << make_pair(type, uint256(0));
+  ssKeySet << make_pair(type, uint256S("0"));
   pcursor->Seek(ssKeySet.str());
   // Load mapBlockIndex
   std::set<uint256> setDelete;

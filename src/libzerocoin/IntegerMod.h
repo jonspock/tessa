@@ -143,15 +143,15 @@ template <ModulusType T> class IntegerMod {
     return ret;
   }
 
-  unsigned int GetSerializeSize(int nType = 0, int nVersion = PROTOCOL_VERSION) const {
-    return ::GetSerializeSize(getvch(), nType, nVersion);
+  unsigned int GetSerializeSize() const {
+    return ::GetSerializeSize(getvch());
   }
 
-  template <typename Stream> void Serialize(Stream& s, int nType = 0, int nVersion = 0) const {
+  template <typename Stream> void Serialize(Stream& s) const {
     ::Serialize(s, getvch());
   }
 
-  template <typename Stream> void Unserialize(Stream& s, int nType = 0, int nVersion = 0) {
+  template <typename Stream> void Unserialize(Stream& s) {
     std::vector<unsigned char> vch;
     ::Unserialize(s, vch);
     setvch(vch);

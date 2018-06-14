@@ -106,7 +106,7 @@ class CBlockIndex {
   CBlockIndex* pskip;
 
   // ppcoin: trust score of block chain
-  uint256 bnChainTrust;
+  arith_uint256 bnChainTrust;
 
   //! height of the entry in the chain. The genesis block has height 0
   int nHeight;
@@ -121,7 +121,7 @@ class CBlockIndex {
   unsigned int nUndoPos;
 
   //! (memory only) Total amount of work (expected number of hashes) in the chain up to and including this block
-  uint256 nChainWork;
+  arith_uint256 nChainWork;
 
   //! Number of transactions in this block.
   //! Note: in a potential headers-first mode, this number cannot be relied upon
@@ -143,7 +143,7 @@ class CBlockIndex {
   };
 
   // proof-of-stake specific fields
-  uint256 GetBlockTrust() const;
+  arith_uint256 GetBlockTrust() const;
   uint64_t nStakeModifier;              // hash modifier for proof-of-stake
   unsigned int nStakeModifierChecksum;  // checksum of index; in-memeory only
   COutPoint prevoutStake;
@@ -194,7 +194,7 @@ class CBlockIndex {
     nTime = 0;
     nBits = 0;
     nNonce = 0;
-    nAccumulatorCheckpoint = 0;
+    nAccumulatorCheckpoint.SetNull();
     // Start supply of each denomination with 0s
     for (auto& denom : libzerocoin::zerocoinDenomList) { mapZerocoinSupply.insert(make_pair(denom, 0)); }
     vMintDenominationsInBlock.clear();
@@ -213,7 +213,7 @@ class CBlockIndex {
     nAccumulatorCheckpoint = block.nAccumulatorCheckpoint;
 
     // Proof of Stake
-    bnChainTrust = uint256();
+    bnChainTrust = 0;
     nMint = 0;
     nMoneySupply = 0;
     nFlags = 0;
@@ -299,7 +299,7 @@ class CBlockIndex {
   void SetProofOfStake() { nFlags |= BLOCK_PROOF_OF_STAKE; }
 
   unsigned int GetStakeEntropyBit() const {
-    unsigned int nEntropyBit = ((GetBlockHash().Get64()) & 1);
+    unsigned int nEntropyBit = ((GetBlockHash().GetCheapHash()) & 1);
     if (GetBoolArg("-printstakemodifier", false))
       LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight,
                 GetBlockHash().ToString().c_str(), nEntropyBit);
@@ -378,7 +378,7 @@ class CDiskBlockIndex : public CBlockIndex {
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     int nType = s.GetType();
-    int nVersion = s.GetVersion();
+    unsigned int nVersion = s.GetVersion();
     if (!(nType & SER_GETHASH)) READWRITE(VARINT(nVersion));
 
     READWRITE(VARINT(nHeight));

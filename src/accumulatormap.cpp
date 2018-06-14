@@ -72,7 +72,7 @@ CBigNum AccumulatorMap::GetValue(CoinDenomination denom) {
 
 // Calculate a 32bit checksum of each accumulator value. Concatenate checksums into uint256
 uint256 AccumulatorMap::GetCheckpoint() {
-  uint256 nCheckpoint;
+  arith_uint256 nCheckpoint;
 
   // Prevent possible overflows from future changes to the list and forgetting to update this code
   assert(zerocoinDenomList.size() == 8);
@@ -82,5 +82,5 @@ uint256 AccumulatorMap::GetCheckpoint() {
     nCheckpoint = nCheckpoint << 32 | nCheckSum;
   }
 
-  return nCheckpoint;
+  return ArithToUint256(nCheckpoint);
 }

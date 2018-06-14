@@ -41,7 +41,7 @@ if(CMAKE_CXX_FLAGS_RELWITHDEBINFO MATCHES DNDEBUG)
   string(REPLACE "-DNDEBUG" "" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE}")
 endif()
 
-project(CLUB_LZ)
+project(CLUB)
 
 set(OPENSSL_VER "1.0.2n")
 set(BDB_VER "4.8.30")
@@ -74,7 +74,7 @@ else()
 	set(ANL anl)
 endif()
 
-add_definitions("-DHAVE_BUILD_INFO -DHAVE_CONFIG_H -DBOOST_SPIRIT_THREADSAFE -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
+add_definitions("-DHAVE_BUILD_INFO -DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
 
 add_definitions("-Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector -fstack-protector-all -fPIC")
 #-fvisibility=hidden")
@@ -149,6 +149,7 @@ SET(UTIL_A
 	./src/util.cpp
 	./src/sync.cpp
 	./src/uint256.cpp
+	./src/arith_uint256.cpp
 	./src/bip38.cpp
 	./src/random.cpp
 	./src/clientversion.cpp
@@ -229,22 +230,22 @@ SET(WALLET
 	  ./src/wallet/zerowallet.cpp
     )
   
+SET(PRIM
+  ./src/primitives/block.cpp
+	./src/primitives/transaction.cpp
+	./src/primitives/zerocoin.cpp
+	./src/primitives/deterministicmint.cpp
+  )
 
 SET(SOURCES
   # temp
   	./src/main_hdr.cpp
-    # end
-    
-	./src/compat/strnlen.cpp
+	  ./src/compat/strnlen.cpp
 	./src/compat/glibcxx_compat.cpp
 	./src/compat/glibc_sanity.cpp
 	./src/kernel.cpp
 	./src/leveldbwrapper.cpp
 	./src/miner.cpp
-	./src/primitives/block.cpp
-	./src/primitives/transaction.cpp
-	./src/primitives/zerocoin.cpp
-	./src/primitives/deterministicmint.cpp
 	./src/script/bitcoinconsensus.cpp
 	./src/script/interpreter.cpp
 	./src/script/script.cpp
@@ -316,15 +317,30 @@ include_directories(
 file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
 
 file(GLOB CRYPTO_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/crypto/*.h)
-source_group("CryptoHeaders" FILES ${CRYPTO_HEADERS})
+source_group("CryptHeaders" FILES ${CRYPTO_HEADERS})
 
 file(GLOB PRIMITIVE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/primitives/*.h)
-source_group("PrimHeaders" FILES ${PRIMITIVE_HEADERS})
+source_group("PrimitiveHeaders" FILES ${PRIMITIVE_HEADERS})
+
+file(GLOB WALLET_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/wallet/*.h )
+source_group("WalletHeaders" FILES ${WALLET_HEADERS})
+
+file(GLOB RPC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/rpc/*.h )
+source_group("RpcHeaders" FILES ${RPC_HEADERS})
+
+source_group("Wallet" FILES ${WALLET})
+source_group("Rpc" FILES ${RPC})
+source_group("Crypt" FILES ${CONSENSUS_CRYPTO})
+source_group("Util" FILES ${UTIL_A})
+source_group("Uni" FILES ${UNI_SOURCES})
+source_group("Zmq" FILES ${ZMQ_SOURCES})
+source_group("Primitives" FILES ${PRIM})
+source_group("CommonA" FILES ${COMMON_A})
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ELSE()
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${PRIM} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ENDIF()
 
 set_property(TARGET coin PROPERTY CXX_STANDARD 11)
@@ -336,7 +352,6 @@ add_subdirectory(src)
 set(SECP256
 	./src/secp256k1/src/secp256k1.c
 	./src/secp256k1/src/gen_context.c
-#	./src/secp256k1/src/field_5x52_asm.asm
 	)
 add_library(secp256k1 ${SECP256})
 
@@ -347,8 +362,7 @@ set_property(TARGET club-cli PROPERTY CXX_STANDARD 11)
 add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
 set_property(TARGET clubd PROPERTY CXX_STANDARD 11)
 
-target_link_libraries(club-cli coin zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread)
-###target_link_libraries(club-tx coin secp256k1 bitcoin_crypto leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} pthread)
+target_link_libraries(club-cli coin zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(clubd coin db_cxx db secp256k1 gmp zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event /usr/local/lib/libevent_pthreads.a /usr/local/lib/libzmq.a pthread )

@@ -56,7 +56,7 @@ static bool SelectBlockFromCandidates(vector<pair<int64_t, uint256> >& vSortedBy
                                       int64_t nSelectionIntervalStop, uint64_t nStakeModifierPrev,
                                       const CBlockIndex** pindexSelected) {
   bool fSelected = false;
-  uint256 hashBest = 0;
+  arith_uint256 hashBest(0);
   *pindexSelected = (const CBlockIndex*)0;
   for (const auto& item : vSortedByTimestamp) {
     if (!mapBlockIndex.count(item.second))
@@ -73,7 +73,7 @@ static bool SelectBlockFromCandidates(vector<pair<int64_t, uint256> >& vSortedBy
 
     CDataStream ss(SER_GETHASH);
     ss << hashProof << nStakeModifierPrev;
-    uint256 hashSelection = Hash(ss.begin(), ss.end());
+    arith_uint256 hashSelection = UintToArith256(Hash(ss.begin(), ss.end()));
 
     // the selection hash is divided by 2**32 so that proof-of-stake block
     // is always favored over proof-of-work block. this is to preserve
@@ -242,16 +242,17 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
 }
 
 // test hash vs target
-bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTargetPerCoinDay) {
+bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, arith_uint256 bnTargetPerCoinDay) {
   // get the stake weight - weight is equal to coin amount
-  uint256 bnCoinDayWeight = uint256(nValueIn) / 100;
+  arith_uint256 bnCoinDayWeight = arith_uint256(nValueIn) / 100;
 
   // Now check if proof-of-stake hash meets target protocol
-  return hashProofOfStake < (bnCoinDayWeight * bnTargetPerCoinDay);
+  return UintToArith256(hashProofOfStake) < (bnCoinDayWeight * bnTargetPerCoinDay);
 }
 
-bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t nStakeModifier, const uint256& bnTarget,
-                unsigned int nTimeBlockFrom, unsigned int& nTimeTx, uint256& hashProofOfStake) {
+bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t nStakeModifier,
+                const arith_uint256& bnTarget, unsigned int nTimeBlockFrom, unsigned int& nTimeTx,
+                uint256& hashProofOfStake) {
   CDataStream ss(SER_GETHASH);
   ss << nStakeModifier << nTimeBlockFrom << ssUniqueID << nTimeTx;
   hashProofOfStake = Hash(ss.begin(), ss.end());
@@ -270,7 +271,7 @@ bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockF
                  nTimeBlockFrom, Params().StakeMinAge(), nTimeTx);
 
   // grab difficulty
-  uint256 bnTargetPerCoinDay;
+  arith_uint256 bnTargetPerCoinDay;
   bnTargetPerCoinDay.SetCompact(nBits);
 
   // grab stake modifier
@@ -344,7 +345,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::uniqu
   if (!ReadBlockFromDisk(blockprev, pindex->GetBlockPos()))
     return error("CheckProofOfStake(): INFO: failed to find block");
 
-  uint256 bnTargetPerCoinDay;
+  arith_uint256 bnTargetPerCoinDay;
   bnTargetPerCoinDay.SetCompact(block.nBits);
 
   uint64_t nStakeModifier = 0;
@@ -374,9 +375,9 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex) {
   CDataStream ss(SER_GETHASH);
   if (pindex->pprev) ss << pindex->pprev->nStakeModifierChecksum;
   ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
-  uint256 hashChecksum = Hash(ss.begin(), ss.end());
+  arith_uint256 hashChecksum = UintToArith256(Hash(ss.begin(), ss.end()));
   hashChecksum >>= (256 - 32);
-  return hashChecksum.Get64();
+  return ArithToUint256(hashChecksum).GetLow64();
 }
 
 // Check stake modifier hard checkpoints
@@ -396,7 +397,7 @@ bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierCheck
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
 bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nCoinAge) {
-  uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
+  arith_uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
   nCoinAge = 0;
 
   CBlockIndex* pindex = nullptr;
@@ -428,10 +429,10 @@ bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nC
     }
 
     int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
-    bnCentSecond += uint256(nValueIn) * (nTxTime - prevblock.nTime);
+    bnCentSecond += arith_uint256(nValueIn) * (nTxTime - prevblock.nTime);
   }
 
-  uint256 bnCoinDay = bnCentSecond / COIN / (24 * 60 * 60);
+  arith_uint256 bnCoinDay = bnCentSecond / COIN / (24 * 60 * 60);
   LogPrintf("coin age bnCoinDay=%s\n", bnCoinDay.ToString().c_str());
   nCoinAge = bnCoinDay.GetCompact();
   return true;

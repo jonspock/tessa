@@ -21,16 +21,15 @@ std::list<uint256> listAccCheckpointsNoDB;
 uint32_t ParseChecksum(uint256 nChecksum, CoinDenomination denomination) {
   // shift to the beginning bit of this denomination and trim any remaining bits by returning 32 bits only
   int pos = distance(zerocoinDenomList.begin(), find(zerocoinDenomList.begin(), zerocoinDenomList.end(), denomination));
-  nChecksum = nChecksum >> (32 * ((zerocoinDenomList.size() - 1) - pos));
-  return nChecksum.Get32();
+  nChecksum = ArithToUint256(UintToArith256(nChecksum) >> (32 * ((zerocoinDenomList.size() - 1) - pos)));
+  return nChecksum.GetLow32();
 }
 
 uint32_t GetChecksum(const CBigNum& bnValue) {
   CDataStream ss(SER_GETHASH);
   ss << bnValue;
   uint256 hash = Hash(ss.begin(), ss.end());
-
-  return hash.Get32();
+  return hash.GetLow32();
 }
 
 // Find the first occurance of a certain accumulator checksum. Return 0 if not found.
@@ -80,7 +79,7 @@ void AddAccumulatorChecksum(const uint32_t nChecksum, const CBigNum& bnValue) {
 }
 
 void DatabaseChecksums(AccumulatorMap& mapAccumulators) {
-  uint256 nCheckpoint = 0;
+  arith_uint256 nCheckpoint = 0;
   for (auto& denom : zerocoinDenomList) {
     CBigNum bnValue = mapAccumulators.GetValue(denom);
     uint32_t nCheckSum = GetChecksum(bnValue);
@@ -144,7 +143,7 @@ bool EraseCheckpoints(int nStartHeight, int nEndHeight) {
 
     for (auto denom : zerocoinDenomList) {
       uint32_t nChecksumDelete = ParseChecksum(nCheckpointDelete, denom);
-      if (count(listCheckpointsPrev.begin(), listCheckpointsPrev.end(), nCheckpointDelete)) continue;
+      if (count(listCheckpointsPrev.begin(), listCheckpointsPrev.end(), UintToArith256(nCheckpointDelete))) continue;
       EraseChecksum(nChecksumDelete);
     }
     LogPrintf("%s : erasing checksums for block %d\n", __func__, pindex->nHeight);
@@ -177,7 +176,7 @@ bool InitializeAccumulators(const int nHeight, int& nHeightCheckpoint, Accumulat
 
   // Use the previous block's checkpoint to initialize the accumulator's state
   uint256 nCheckpointPrev = chainActive[nHeight - 1]->nAccumulatorCheckpoint;
-  if (nCheckpointPrev == 0)
+  if (nCheckpointPrev.IsNull())
     mapAccumulators.Reset();
   else if (!mapAccumulators.Load(nCheckpointPrev))
     return error("%s: failed to reset to previous checkpoint", __func__);
@@ -189,7 +188,7 @@ bool InitializeAccumulators(const int nHeight, int& nHeightCheckpoint, Accumulat
 // Get checkpoint value for a specific block height
 bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, AccumulatorMap& mapAccumulators) {
   if (nHeight < Params().Zerocoin_StartHeight()) {
-    nCheckpoint = 0;
+    nCheckpoint.SetNull();
     return true;
   }
 
@@ -259,7 +258,7 @@ bool ValidateAccumulatorCheckpoint(const CBlock& block, CBlockIndex* pindex, Acc
   if (pindex->nHeight < Params().Zerocoin_StartHeight() || fVerifyingBlocks) return true;
 
   if (pindex->nHeight % ACC_BLOCK_INTERVAL == 0) {
-    uint256 nCheckpointCalculated = 0;
+    uint256 nCheckpointCalculated(uint256S("0"));
 
     if (!CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators))
       return error("%s : failed to calculate accumulator checkpoint", __func__);

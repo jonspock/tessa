@@ -39,7 +39,7 @@ int CWalletTx::GetRequestCount() const {
     LOCK(pwallet->cs_wallet);
     if (IsCoinBase()) {
       // Generated block
-      if (hashBlock != 0) {
+      if (!hashBlock.IsNull()) {
         map<uint256, int>::const_iterator mi = pwallet->mapRequestCount.find(hashBlock);
         if (mi != pwallet->mapRequestCount.end()) nRequests = (*mi).second;
       }
@@ -50,7 +50,7 @@ int CWalletTx::GetRequestCount() const {
         nRequests = (*mi).second;
 
         // How about the block it's in?
-        if (nRequests == 0 && hashBlock != 0) {
+        if (nRequests == 0 && !hashBlock.IsNull()) {
           map<uint256, int>::const_iterator mi = pwallet->mapRequestCount.find(hashBlock);
           if (mi != pwallet->mapRequestCount.end())
             nRequests = (*mi).second;

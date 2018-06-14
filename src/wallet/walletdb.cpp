@@ -444,7 +444,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
       }
       CKey key;
       CPrivKey pkey;
-      uint256 hash = 0;
+      uint256 hash(uint256S("0"));
 
       if (strType == "key") {
         wss.nKeys++;
@@ -466,7 +466,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
 
       bool fSkipCheck = false;
 
-      if (hash != 0) {
+      if (!hash.IsNull()) {
         // hash pubkey/privkey to accelerate wallet load
         std::vector<unsigned char> vchKey;
         vchKey.reserve(vchPubKey.size() + pkey.size());
@@ -1124,7 +1124,7 @@ bool CWalletDB::EraseZKPSeed() {
   if (!WriteZKPSeed(hash, ToByteVector(base_uint<256>(0) << 256))) {
     return error("Failed to write empty seed to wallet");
   }
-  if (!WriteCurrentSeedHash(0)) { return error("Failed to write empty seedHash"); }
+  if (!WriteCurrentSeedHash(uint256S("0"))) { return error("Failed to write empty seedHash"); }
 
   return true;
 }
@@ -1154,7 +1154,7 @@ std::map<uint256, std::vector<pair<uint256, uint32_t> > > CWalletDB::MapMintPool
   for (;;) {
     // Read next record
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-    if (fFlags == DB_SET_RANGE) ssKey << make_pair(string("mintpool"), uint256(0));
+    if (fFlags == DB_SET_RANGE) ssKey << make_pair(string("mintpool"), uint256S("0"));
     CDataStream ssValue(SER_DISK, CLIENT_VERSION);
     int ret = ReadAtCursor(pcursor, ssKey, ssValue, fFlags);
     fFlags = DB_NEXT;
@@ -1204,7 +1204,7 @@ std::list<CDeterministicMint> CWalletDB::ListDeterministicMints() {
   for (;;) {
     // Read next record
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-    if (fFlags == DB_SET_RANGE) ssKey << make_pair(string("dzkp"), uint256(0));
+    if (fFlags == DB_SET_RANGE) ssKey << make_pair(string("dzkp"), uint256S("0"));
     CDataStream ssValue(SER_DISK, CLIENT_VERSION);
     int ret = ReadAtCursor(pcursor, ssKey, ssValue, fFlags);
     fFlags = DB_NEXT;
@@ -1243,7 +1243,7 @@ std::list<CZerocoinMint> CWalletDB::ListMintedCoins() {
   for (;;) {
     // Read next record
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-    if (fFlags == DB_SET_RANGE) ssKey << make_pair(string("zerocoin"), uint256(0));
+    if (fFlags == DB_SET_RANGE) ssKey << make_pair(string("zerocoin"), uint256S("0"));
     CDataStream ssValue(SER_DISK, CLIENT_VERSION);
     int ret = ReadAtCursor(pcursor, ssKey, ssValue, fFlags);
     fFlags = DB_NEXT;

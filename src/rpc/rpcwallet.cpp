@@ -1531,7 +1531,7 @@ UniValue listsinceblock(const UniValue& params, bool fHelp) {
   isminefilter filter = ISMINE_SPENDABLE;
 
   if (params.size() > 0) {
-    uint256 blockId = 0;
+    uint256 blockId(uint256S("0"));
 
     blockId.SetHex(params[0].get_str());
     BlockMap::iterator it = mapBlockIndex.find(blockId);
@@ -1559,7 +1559,7 @@ UniValue listsinceblock(const UniValue& params, bool fHelp) {
   }
 
   CBlockIndex* pblockLast = chainActive[chainActive.Height() + 1 - target_confirms];
-  uint256 lastblock = pblockLast ? pblockLast->GetBlockHash() : 0;
+  uint256 lastblock = pblockLast ? pblockLast->GetBlockHash() : uint256S("0");
 
   UniValue ret(UniValue::VOBJ);
   ret.push_back(Pair("transactions", transactions));
@@ -1961,7 +1961,7 @@ UniValue lockunspent(const UniValue& params, bool fHelp) {
     int nOutput = find_value(o, "vout").get_int();
     if (nOutput < 0) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, vout must be positive");
 
-    COutPoint outpt(uint256(txid), nOutput);
+    COutPoint outpt(uint256S(txid), nOutput);
 
     if (fUnlock)
       pwalletMain->UnlockCoin(outpt);
@@ -2637,7 +2637,7 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
       int nOutput = find_value(o, "vout").get_int();
       if (nOutput < 0) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, vout must be positive");
 
-      COutPoint outpt(uint256(txid), nOutput);
+      COutPoint outpt(uint256S(txid), nOutput);
       vOutpts.push_back(outpt);
     }
     strError = pwalletMain->MintZerocoinFromOutPoint(nAmount, wtx, vDMints, vOutpts);
@@ -2873,14 +2873,14 @@ UniValue resetspentzerocoin(const UniValue& params, bool fHelp) {
 
   for (CZerocoinSpend spend : listSpends) {
     CTransaction tx;
-    uint256 hashBlock = 0;
+    uint256 hashBlock(uint256S("0"));
     if (!GetTransaction(spend.GetTxHash(), tx, hashBlock)) {
       listUnconfirmedSpends.push_back(spend);
       continue;
     }
 
     // no confirmations
-    if (hashBlock == 0) listUnconfirmedSpends.push_back(spend);
+    if (hashBlock.IsNull()) listUnconfirmedSpends.push_back(spend);
   }
 
   UniValue objRet(UniValue::VOBJ);
@@ -3083,7 +3083,7 @@ UniValue importzerocoins(const UniValue& params, bool fHelp) {
     bnSerial.SetHex(find_value(o, "s").get_str());
     CBigNum bnRandom = 0;
     bnRandom.SetHex(find_value(o, "r").get_str());
-    uint256 txid(find_value(o, "t").get_str());
+    uint256 txid(uint256S(find_value(o, "t").get_str()));
 
     int nHeight = find_value(o, "h").get_int();
     if (nHeight < 0) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, h must be positive");
@@ -3099,7 +3099,7 @@ UniValue importzerocoins(const UniValue& params, bool fHelp) {
     CPrivKey privkey;
     std::string strPrivkey = find_value(o, "k").get_str();
     CKey key;
-    uint256 nPrivKey(strPrivkey);
+    uint256 nPrivKey(uint256S(strPrivkey));
     key.Set(nPrivKey.begin(), nPrivKey.end(), true);
     if (!key.IsValid()) return JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "privkey is not valid");
     privkey = key.GetPrivKey();
