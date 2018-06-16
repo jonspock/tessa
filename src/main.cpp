@@ -36,7 +36,6 @@
 #include "staker.h"
 #include "txdb.h"
 #include "txmempool.h"
-#include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
 #include "validationinterface.h"

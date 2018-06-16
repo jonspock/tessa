@@ -11,8 +11,6 @@
 #include "pubkey.h"
 #include "sync.h"
 
-#include <boost/signals2/signal.hpp>
-
 class CScript;
 class CScriptID;
 

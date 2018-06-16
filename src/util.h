@@ -45,6 +45,12 @@ extern bool fLogTimestamps;
 extern bool fLogIPs;
 extern volatile bool fReopenDebugLog;
 
+/**
+ * Bypass Translation function: Retrofit if needed to use translation later
+ */
+inline std::string _(const char *psz) {    return psz;}
+
+
 void SetupEnvironment();
 bool SetupNetworking();
 

@@ -61,8 +61,7 @@ int bitcoinconsensus_verify_script(const unsigned char* scriptPubKey, unsigned i
     CTransaction tx;
     stream >> tx;
     if (nIn >= tx.vin.size()) return set_error(err, bitcoinconsensus_ERR_TX_INDEX);
-    if (tx.GetSerializeSize() != txToLen)
-      return set_error(err, bitcoinconsensus_ERR_TX_SIZE_MISMATCH);
+    if (tx.GetSerializeSize() != txToLen) return set_error(err, bitcoinconsensus_ERR_TX_SIZE_MISMATCH);
 
     // Regardless of the verification result, the tx did not error.
     set_error(err, bitcoinconsensus_ERR_OK);

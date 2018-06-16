@@ -8,7 +8,7 @@
 #include "libzerocoin/PublicCoin.h"
 #include "main.h"
 #include "txdb.h"
-#include "ui_interface.h"
+#include "util.h"
 
 // 6 comes from OPCODE (1) + vch.size() (1) + BIGNUM size (4)
 #define SCRIPT_OFFSET 6

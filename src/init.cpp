@@ -31,7 +31,6 @@
 #include "script/standard.h"
 #include "spork.h"
 #include "sporkdb.h"
-#include "torcontrol.h"
 #include "txdb.h"
 #include "ui_interface.h"
 #include "util.h"
@@ -165,7 +164,6 @@ void Interrupt(boost::thread_group& threadGroup) {
   InterruptHTTPRPC();
   InterruptRPC();
   InterruptREST();
-  InterruptTorControl();
   threadGroup.interrupt_all();
 }
 
@@ -259,7 +257,6 @@ void Shutdown() {
   // Shutdown part 1: prepare shutdown
   if (!fRestartRequested) { PrepareShutdown(); }
   // Shutdown part 2: Stop TOR thread and delete wallet instance
-  StopTorControl();
 #ifdef ENABLE_WALLET
   delete pwalletMain;
   pwalletMain = nullptr;
@@ -387,8 +384,6 @@ std::string HelpMessage(HelpMessageMode mode) {
   strUsage +=
       HelpMessageOpt("-forcednsseed", strprintf(_("Always query for peer addresses via DNS lookup (default: %u)"), 0));
   strUsage += HelpMessageOpt("-listen", _("Accept connections from outside (default: 1 if no -proxy or -connect)"));
-  strUsage += HelpMessageOpt(
-      "-listenonion", strprintf(_("Automatically create Tor hidden service (default: %d)"), DEFAULT_LISTEN_ONION));
   strUsage += HelpMessageOpt("-maxconnections=<n>",
                              strprintf(_("Maintain at most <n> connections to peers (default: %u)"), 125));
   strUsage += HelpMessageOpt("-maxreceivebuffer=<n>",
@@ -414,9 +409,6 @@ std::string HelpMessage(HelpMessageMode mode) {
   strUsage += HelpMessageOpt(
       "-timeout=<n>",
       strprintf(_("Specify connection timeout in milliseconds (minimum: 1, default: %d)"), DEFAULT_CONNECT_TIMEOUT));
-  strUsage += HelpMessageOpt(
-      "-torcontrol=<ip>:<port>",
-      strprintf(_("Tor control port to use if onion listening enabled (default: %s)"), DEFAULT_TOR_CONTROL));
   strUsage += HelpMessageOpt("-torpassword=<pass>", _("Tor control port password (default: empty)"));
 #ifdef USE_UPNP
 #if USE_UPNP
@@ -1748,8 +1740,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   LogPrintf("mapWallet.size() = %u\n", pwalletMain ? pwalletMain->mapWallet.size() : 0);
   LogPrintf("mapAddressBook.size() = %u\n", pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
 #endif
-
-  if (GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION)) StartTorControl(threadGroup);
 
   StartNode(threadGroup, scheduler);
 

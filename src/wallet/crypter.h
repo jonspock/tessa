@@ -11,6 +11,8 @@
 #include "keystore.h"
 #include "serialize.h"
 
+#include <boost/signals2/signal.hpp>
+
 class uint256;
 
 const unsigned int WALLET_CRYPTO_KEY_SIZE = 32;
