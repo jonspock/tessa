@@ -43,6 +43,15 @@ endif()
 
 project(CLUB)
 
+
+# If ccache is available, then use it.
+find_program(CCACHE ccache)
+if(CCACHE)
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE})
+endif(CCACHE)
+
+
 set(OPENSSL_VER "1.0.2n")
 set(BDB_VER "4.8.30")
 

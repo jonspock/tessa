@@ -29,6 +29,7 @@ set(LDB_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/leveldb/db/version_set.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/leveldb/db/write_batch.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/leveldb/port/port_posix.cc
+# Future	${CMAKE_CURRENT_SOURCE_DIR}/leveldb/port/port_posix_sse.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/leveldb/table/block_builder.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/leveldb/table/block.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/leveldb/table/filter_block.cc
