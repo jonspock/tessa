@@ -94,11 +94,7 @@ ArgsManager gArgs;
 // Club only features
 /** Spork enforcement enabled time */
 bool fSucessfullyLoaded = false;
-bool fDaemon = false;
-bool fServer = false;
 string strMiscWarning;
-bool fLogTimestamps = false;
-volatile bool fReopenDebugLog = false;
 
 /** Init OpenSSL library multithreading support */
 static CCriticalSection** ppmutexOpenSSL;

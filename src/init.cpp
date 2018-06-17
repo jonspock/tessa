@@ -273,7 +273,9 @@ void Shutdown() {
  */
 void HandleSIGTERM(int) { fRequestShutdown = true; }
 
-void HandleSIGHUP(int) { fReopenDebugLog = true; }
+void HandleSIGHUP(int) {
+    GetLogger().fReopenDebugLog = true;
+}
 
 bool static InitError(const std::string& str) {
   uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
@@ -844,8 +846,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // ********************************************************* Step 2: parameter interactions
   // Set this early so that parameter interactions go to console
-  fLogTimestamps = GetBoolArg("-logtimestamps", true);
-  fLogIPs = GetBoolArg("-logips", false);
+   fLogIPs = GetBoolArg("-logips", false);
 
   if (gArgs.IsArgSet("-bind") || gArgs.IsArgSet("-whitebind")) {
     // when specifying an explicit binding address, you want to listen on it
@@ -963,7 +964,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   else if (nScriptCheckThreads > MAX_SCRIPTCHECK_THREADS)
     nScriptCheckThreads = MAX_SCRIPTCHECK_THREADS;
 
-  fServer = GetBoolArg("-server", false);
+  bool fServer = gArgs.GetBoolArg("-server", false);
   setvbuf(stdout, nullptr, _IOLBF, 0);  /// ***TODO*** do we still need this after -printtoconsole is gone?
 
   // Staking needs a CWallet instance, so make sure wallet is enabled
@@ -1092,7 +1093,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 #ifdef ENABLE_WALLET
   LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
 #endif
-  if (!fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
+  if (!logger.fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
   LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
   LogPrintf("Using data directory %s\n", strDataDir);
   LogPrintf("Using config file %s\n", GetConfigFile().string());

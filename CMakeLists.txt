@@ -256,7 +256,6 @@ SET(SOURCES
 	./src/sporkdb.cpp
 	./src/timedata.cpp
 	./src/txdb.cpp
-	./src/torcontrol.cpp
 	./src/txmempool.cpp
 	./src/denomination_functions.cpp
 # NEW

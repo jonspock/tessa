@@ -35,15 +35,7 @@
 
 // Club only features
 
-extern int keysLoaded;
-extern bool fSucessfullyLoaded;
-
-extern bool fDebug;
-extern bool fServer;
 extern std::string strMiscWarning;
-extern bool fLogTimestamps;
-extern bool fLogIPs;
-extern volatile bool fReopenDebugLog;
 
 /**
  * Bypass Translation function: Retrofit if needed to use translation later
