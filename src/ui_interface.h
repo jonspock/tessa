@@ -97,4 +97,3 @@ class CClientUIInterface {
 };
 
 extern CClientUIInterface uiInterface;
-

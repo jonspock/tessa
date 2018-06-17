@@ -13,7 +13,6 @@
 #include "util.h"
 #include "wallet/crypter.h"
 
-
 bool CKeyStore::GetPubKey(const CKeyID& address, CPubKey& vchPubKeyOut) const {
   CKey key;
   if (!GetKey(address, key)) return false;

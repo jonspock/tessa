@@ -10,6 +10,7 @@
 #include "base58.h"
 #include "chainparams.h"
 #include "core_io.h"
+#include "db.h"
 #include "init.h"
 #include "main.h"
 #include "miner.h"
@@ -17,10 +18,7 @@
 #include "pow.h"
 #include "rpcserver.h"
 #include "util.h"
-#ifdef ENABLE_WALLET
-#include "db.h"
 #include "wallet/wallet.h"
-#endif
 
 #include <cstdint>
 #include <univalue.h>
@@ -86,7 +84,6 @@ UniValue getnetworkhashps(const UniValue& params, bool fHelp) {
   return GetNetworkHashPS(params.size() > 0 ? params[0].get_int() : 120, params.size() > 1 ? params[1].get_int() : -1);
 }
 
-#ifdef ENABLE_WALLET
 UniValue getgenerate(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(
@@ -201,7 +198,6 @@ UniValue gethashespersec(const UniValue& params, bool fHelp) {
   if (GetTimeMillis() - nHPSTimerStart > 8000) return (int64_t)0;
   return (int64_t)dHashesPerSec;
 }
-#endif
 
 UniValue getmininginfo(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
@@ -242,10 +238,10 @@ UniValue getmininginfo(const UniValue& params, bool fHelp) {
   obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
   obj.push_back(Pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
   obj.push_back(Pair("chain", Params().NetworkIDString()));
-#ifdef ENABLE_WALLET
-  obj.push_back(Pair("generate", getgenerate(params, false)));
-  obj.push_back(Pair("hashespersec", gethashespersec(params, false)));
-#endif
+  if (!fDisableWallet) {
+    obj.push_back(Pair("generate", getgenerate(params, false)));
+    obj.push_back(Pair("hashespersec", gethashespersec(params, false)));
+  }
   return obj;
 }
 

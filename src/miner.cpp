@@ -20,9 +20,8 @@
 #include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
-#ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
-#endif
+
 #include "accumulators.h"
 #include "blocksignature.h"
 #include "spork.h"
@@ -451,7 +450,6 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
   pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 }
 
-#ifdef ENABLE_WALLET
 //////////////////////////////////////////////////////////////////////////////
 //
 // Internal miner
@@ -705,5 +703,3 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads) {
   minerThreads = new boost::thread_group();
   for (int i = 0; i < nThreads; i++) minerThreads->create_thread(std::bind(&ThreadBitcoinMiner, pwallet));
 }
-
-#endif  // ENABLE_WALLET

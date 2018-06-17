@@ -17,10 +17,8 @@
 #include "staker.h"
 #include "timedata.h"
 #include "util.h"
-#ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
-#endif
 
 #include <stdint.h>
 
@@ -88,11 +86,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
         "\nExamples:\n" +
         HelpExampleCli("getinfo", "") + HelpExampleRpc("getinfo", ""));
 
-#ifdef ENABLE_WALLET
   LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
-#else
-  LOCK(cs_main);
-#endif
 
   proxyType proxy;
   GetProxy(NET_IPV4, proxy);
@@ -100,13 +94,11 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   UniValue obj(UniValue::VOBJ);
   obj.push_back(Pair("version", CLIENT_VERSION));
   obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
-#ifdef ENABLE_WALLET
   if (pwalletMain) {
     obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
     obj.push_back(Pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
     obj.push_back(Pair("zerocoinbalance", ValueFromAmount(pwalletMain->GetZerocoinBalance(true))));
   }
-#endif
   obj.push_back(Pair("blocks", (int)chainActive.Height()));
   obj.push_back(Pair("timeoffset", GetTimeOffset()));
   obj.push_back(Pair("connections", (int)vNodes.size()));
@@ -129,14 +121,13 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   zkpObj.push_back(Pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
   obj.push_back(Pair("Zkpsupply", zkpObj));
 
-#ifdef ENABLE_WALLET
   if (pwalletMain) {
     obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
     obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
   }
   if (pwalletMain && pwalletMain->IsCrypted()) obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
   obj.push_back(Pair("paytxfee", ValueFromAmount(payTxFee.GetFeePerK())));
-#endif
+
   obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
   bool nStaking = false;
   if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
@@ -150,7 +141,6 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
 
 UniValue mnsync(const UniValue& params, bool fHelp) { return "failure"; }
 
-#ifdef ENABLE_WALLET
 class DescribeAddressVisitor : public boost::static_visitor<UniValue> {
  private:
   isminetype mine;
@@ -192,7 +182,6 @@ class DescribeAddressVisitor : public boost::static_visitor<UniValue> {
     return obj;
   }
 };
-#endif
 
 /*
     Used for updating/reading spork settings on the network
@@ -281,11 +270,7 @@ UniValue validateaddress(const UniValue& params, bool fHelp) {
         HelpExampleCli("validateaddress", "\"1PSSGeFHDnKNxiEyFrD1wcEaHr9hrQDDWc\"") +
         HelpExampleRpc("validateaddress", "\"1PSSGeFHDnKNxiEyFrD1wcEaHr9hrQDDWc\""));
 
-#ifdef ENABLE_WALLET
   LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
-#else
-  LOCK(cs_main);
-#endif
 
   CBitcoinAddress address(params[0].get_str());
   bool isValid = address.IsValid();
@@ -296,7 +281,6 @@ UniValue validateaddress(const UniValue& params, bool fHelp) {
     CTxDestination dest = address.Get();
     string currentAddress = address.ToString();
     ret.push_back(Pair("address", currentAddress));
-#ifdef ENABLE_WALLET
     isminetype mine = pwalletMain ? IsMine(*pwalletMain, dest) : ISMINE_NO;
     ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
     if (mine != ISMINE_NO) {
@@ -306,7 +290,6 @@ UniValue validateaddress(const UniValue& params, bool fHelp) {
     }
     if (pwalletMain && pwalletMain->mapAddressBook.count(dest))
       ret.push_back(Pair("account", pwalletMain->mapAddressBook[dest].name));
-#endif
   }
   return ret;
 }
@@ -331,7 +314,6 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
   pubkeys.resize(keys.size());
   for (unsigned int i = 0; i < keys.size(); i++) {
     const std::string& ks = keys[i].get_str();
-#ifdef ENABLE_WALLET
     // Case 1: Club address and we have full public key:
     CBitcoinAddress address(ks);
     if (pwalletMain && address.IsValid()) {
@@ -345,9 +327,7 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
     }
 
     // Case 2: hex public key
-    else
-#endif
-        if (IsHex(ks)) {
+    else if (IsHex(ks)) {
       CPubKey vchPubKey(ParseHex(ks));
       if (!vchPubKey.IsFullyValid()) throw runtime_error(" Invalid public key: " + ks);
       pubkeys[i] = vchPubKey;
@@ -478,7 +458,6 @@ UniValue setmocktime(const UniValue& params, bool fHelp) {
   return NullUniValue;
 }
 
-#ifdef ENABLE_WALLET
 UniValue getstakingstatus(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(
@@ -498,11 +477,7 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp) {
         "\nExamples:\n" +
         HelpExampleCli("getstakingstatus", "") + HelpExampleRpc("getstakingstatus", ""));
 
-#ifdef ENABLE_WALLET
   LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
-#else
-  LOCK(cs_main);
-#endif
 
   UniValue obj(UniValue::VOBJ);
   obj.push_back(Pair("validtime", chainActive.Tip()->nTime > 1471482000));
@@ -522,4 +497,3 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp) {
 
   return obj;
 }
-#endif  // ENABLE_WALLET

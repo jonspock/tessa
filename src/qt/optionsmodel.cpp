@@ -21,10 +21,8 @@
 #include "txdb.h"  // for -dbcache defaults
 #include "util.h"
 
-#ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
-#endif
 
 #include <QNetworkProxy>
 #include <QSettings>
@@ -83,12 +81,14 @@ void OptionsModel::Init() {
   if (!settings.contains("nThreadsScriptVerif")) settings.setValue("nThreadsScriptVerif", DEFAULT_SCRIPTCHECK_THREADS);
   if (!SoftSetArg("-par", settings.value("nThreadsScriptVerif").toString().toStdString())) addOverriddenOption("-par");
 
-// Wallet
-#ifdef ENABLE_WALLET
-  if (!settings.contains("bSpendZeroConfChange")) settings.setValue("bSpendZeroConfChange", false);
-  if (!SoftSetBoolArg("-spendzeroconfchange", settings.value("bSpendZeroConfChange").toBool()))
-    addOverriddenOption("-spendzeroconfchange");
-#endif
+  // Wallet
+
+  if (pwalletMain) {
+    if (!settings.contains("bSpendZeroConfChange")) settings.setValue("bSpendZeroConfChange", false);
+    if (!SoftSetBoolArg("-spendzeroconfchange", settings.value("bSpendZeroConfChange").toBool()))
+      addOverriddenOption("-spendzeroconfchange");
+  }
+
   if (!settings.contains("nStakeSplitThreshold")) settings.setValue("nStakeSplitThreshold", 1);
 
   // Network
@@ -162,10 +162,8 @@ QVariant OptionsModel::data(const QModelIndex& index, int role) const {
         return strlIpPort.at(1);
       }
 
-#ifdef ENABLE_WALLET
       case SpendZeroConfChange:
         return settings.value("bSpendZeroConfChange");
-#endif
       case StakeSplitThreshold:
         if (pwalletMain) return QVariant((int)pwalletMain->nStakeSplitThreshold);
         return settings.value("nStakeSplitThreshold");
@@ -248,14 +246,12 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
           setRestartRequired(true);
         }
       } break;
-#ifdef ENABLE_WALLET
       case SpendZeroConfChange:
         if (settings.value("bSpendZeroConfChange") != value) {
           settings.setValue("bSpendZeroConfChange", value);
           setRestartRequired(true);
         }
         break;
-#endif
       case StakeSplitThreshold:
         settings.setValue("nStakeSplitThreshold", value.toInt());
         setStakeSplitThreshold(value.toInt());

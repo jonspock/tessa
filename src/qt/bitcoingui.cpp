@@ -21,11 +21,9 @@
 #include "staker.h"
 #include "utilitydialog.h"
 
-#ifdef ENABLE_WALLET
 #include "blockexplorer.h"
 #include "walletframe.h"
 #include "walletmodel.h"
-#endif  // ENABLE_WALLET
 
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
@@ -117,12 +115,9 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent)
   GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
 
   QString windowTitle = tr("Club Core") + " - ";
-#ifdef ENABLE_WALLET
+
   /* if compiled with wallet support, -disablewallet can still disable the wallet */
   enableWallet = !GetBoolArg("-disablewallet", false);
-#else
-  enableWallet = false;
-#endif  // ENABLE_WALLET
   if (enableWallet) {
     windowTitle += tr("Wallet");
   } else {
@@ -146,14 +141,11 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent)
 #endif
 
   rpcConsole = new RPCConsole(enableWallet ? this : 0);
-#ifdef ENABLE_WALLET
   if (enableWallet) {
     /** Create wallet frame*/
     walletFrame = new WalletFrame(this);
     explorerWindow = new BlockExplorer(this);
-  } else
-#endif  // ENABLE_WALLET
-  {
+  } else {
     /* When compiled without wallet or -disablewallet is provided,
      * the central widget is the rpc console.
      */
@@ -199,7 +191,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent)
   labelConnectionsIcon->setStyleSheet(".QPushButton { background-color: rgba(255, 255, 255, 0);}");
   labelConnectionsIcon->setMaximumSize(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE);
   labelBlocksIcon = new QLabel();
-#ifdef ENABLE_WALLET
   if (enableWallet) {
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(unitDisplayControl);
@@ -209,7 +200,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent)
     frameBlocksLayout->addWidget(labelStakingIcon);
     frameBlocksLayout->addStretch();
   }
-#endif  // ENABLE_WALLET
   frameBlocksLayout->addStretch();
   frameBlocksLayout->addWidget(labelConnectionsIcon);
   frameBlocksLayout->addStretch();
@@ -347,23 +337,21 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle) {
 #endif
   tabGroup->addAction(privacyAction);
 
-#ifdef ENABLE_WALLET
-
   QSettings settings;
-
-  // These showNormalIfMinimized are needed because Send Coins and Receive Coins
-  // can be triggered from the tray menu, and need to show the GUI to be useful.
-  connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-  connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
-  connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-  connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(gotoSendCoinsPage()));
-  connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-  connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
-  connect(privacyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-  connect(privacyAction, SIGNAL(triggered()), this, SLOT(gotoPrivacyPage()));
-  connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-  connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
-#endif  // ENABLE_WALLET
+  if (!fDisableWallet) {
+    // These showNormalIfMinimized are needed because Send Coins and Receive Coins
+    // can be triggered from the tray menu, and need to show the GUI to be useful.
+    connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
+    connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(gotoSendCoinsPage()));
+    connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
+    connect(privacyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(privacyAction, SIGNAL(triggered()), this, SLOT(gotoPrivacyPage()));
+    connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
+  }
 
   quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
   quitAction->setStatusTip(tr("Quit application"));
@@ -450,7 +438,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle) {
   connect(optionsAction, SIGNAL(triggered()), this, SLOT(optionsClicked()));
   connect(toggleHideAction, SIGNAL(triggered()), this, SLOT(toggleHidden()));
   connect(showHelpMessageAction, SIGNAL(triggered()), this, SLOT(showHelpMessageClicked()));
-#ifdef ENABLE_WALLET
+
   if (walletFrame) {
     connect(encryptWalletAction, SIGNAL(triggered(bool)), walletFrame, SLOT(encryptWallet(bool)));
     connect(backupWalletAction, SIGNAL(triggered()), walletFrame, SLOT(backupWallet()));
@@ -468,7 +456,6 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle) {
     connect(multisigSpendAction, SIGNAL(triggered()), this, SLOT(gotoMultisigSpend()));
     connect(multisigSignAction, SIGNAL(triggered()), this, SLOT(gotoMultisigSign()));
   }
-#endif  // ENABLE_WALLET
 }
 
 void BitcoinGUI::createMenuBar() {
@@ -589,9 +576,7 @@ void BitcoinGUI::setClientModel(ClientModel* clientModel) {
     connect(clientModel, SIGNAL(showProgress(QString, int)), this, SLOT(showProgress(QString, int)));
 
     rpcConsole->setClientModel(clientModel);
-#ifdef ENABLE_WALLET
     if (walletFrame) { walletFrame->setClientModel(clientModel); }
-#endif  // ENABLE_WALLET
     unitDisplayControl->setOptionsModel(clientModel->getOptionsModel());
 
     // Show trayIcon
@@ -606,7 +591,6 @@ void BitcoinGUI::setClientModel(ClientModel* clientModel) {
   }
 }
 
-#ifdef ENABLE_WALLET
 bool BitcoinGUI::addWallet(const QString& name, WalletModel* walletModel) {
   if (!walletFrame) return false;
   setWalletActionsEnabled(true);
@@ -623,7 +607,6 @@ void BitcoinGUI::removeAllWallets() {
   setWalletActionsEnabled(false);
   walletFrame->removeAllWallets();
 }
-#endif  // ENABLE_WALLET
 
 void BitcoinGUI::setWalletActionsEnabled(bool enabled) {
   overviewAction->setEnabled(enabled);
@@ -733,7 +716,6 @@ void BitcoinGUI::showHelpMessageClicked() {
   help->show();
 }
 
-#ifdef ENABLE_WALLET
 void BitcoinGUI::openClicked() {
   OpenURIDialog dlg(this);
   if (dlg.exec()) { emit receivedURI(dlg.getURI()); }
@@ -795,8 +777,6 @@ void BitcoinGUI::gotoMultiSendDialog() {
 void BitcoinGUI::gotoBlockExplorerPage() {
   if (walletFrame) walletFrame->gotoBlockExplorerPage();
 }
-
-#endif  // ENABLE_WALLET
 
 void BitcoinGUI::setNumConnections(int count) {
   QString icon;
@@ -896,9 +876,7 @@ void BitcoinGUI::setNumBlocks(int count) {
   }
   prevBlocks = count;
 
-#ifdef ENABLE_WALLET
   if (walletFrame) walletFrame->showOutOfSyncWarning(true);
-#endif  // ENABLE_WALLET
 
   tooltip += QString("<br>");
   tooltip += tr("Last received block was generated %1 ago.").arg(timeBehindText);
@@ -989,7 +967,6 @@ void BitcoinGUI::closeEvent(QCloseEvent* event) {
   QMainWindow::closeEvent(event);
 }
 
-#ifdef ENABLE_WALLET
 void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type,
                                      const QString& address) {
   // Only send notifications when not disabled
@@ -1011,7 +988,6 @@ void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmoun
     pwalletMain->fMultiSendNotify = false;
   }
 }
-#endif  // ENABLE_WALLET
 
 void BitcoinGUI::dragEnterEvent(QDragEnterEvent* event) {
   // Accept only URIs
@@ -1034,7 +1010,6 @@ bool BitcoinGUI::eventFilter(QObject* object, QEvent* event) {
   return QMainWindow::eventFilter(object, event);
 }
 
-#ifdef ENABLE_WALLET
 void BitcoinGUI::setStakingStatus() {
   if (pwalletMain) fMultiSend = pwalletMain->isMultiSendEnabled();
 
@@ -1104,7 +1079,6 @@ void BitcoinGUI::setEncryptionStatus(int status) {
       break;
   }
 }
-#endif  // ENABLE_WALLET
 
 void BitcoinGUI::showNormalIfMinimized(bool fToggleHidden) {
   if (!clientModel) return;

@@ -17,17 +17,13 @@
 #include "ui_rpcconsole.h"
 #include "util.h"
 
-#ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
-#endif  // ENABLE_WALLET
 
 #include <openssl/crypto.h>
 
 #include <univalue.h>
 
-#ifdef ENABLE_WALLET
 #include <db_cxx.h>
-#endif
 
 #include <QDir>
 #include <QKeyEvent>
@@ -279,37 +275,35 @@ RPCConsole::RPCConsole(QWidget* parent)
 
   // set library version labels
   ui->openSSLVersion->setText(SSLeay_version(SSLEAY_VERSION));
-#ifdef ENABLE_WALLET
-  std::string strPathCustom = GetArg("-backuppath", "");
-  std::string strZKPPathCustom = GetArg("-zkpbackuppath", "");
-  int nCustomBackupThreshold = GetArg("-custombackupthreshold", DEFAULT_CUSTOMBACKUPTHRESHOLD);
+  if (!fDisableWallet) {
+    std::string strPathCustom = GetArg("-backuppath", "");
+    std::string strZKPPathCustom = GetArg("-zkpbackuppath", "");
+    int nCustomBackupThreshold = GetArg("-custombackupthreshold", DEFAULT_CUSTOMBACKUPTHRESHOLD);
 
-  if (!strPathCustom.empty()) {
-    ui->wallet_custombackuppath->setText(QString::fromStdString(strPathCustom));
-    ui->wallet_custombackuppath_label->show();
-    ui->wallet_custombackuppath->show();
+    if (!strPathCustom.empty()) {
+      ui->wallet_custombackuppath->setText(QString::fromStdString(strPathCustom));
+      ui->wallet_custombackuppath_label->show();
+      ui->wallet_custombackuppath->show();
+    }
+
+    if (!strZKPPathCustom.empty()) {
+      ui->wallet_customzkpbackuppath->setText(QString::fromStdString(strZKPPathCustom));
+      ui->wallet_customzkpbackuppath_label->setVisible(true);
+      ui->wallet_customzkpbackuppath->setVisible(true);
+    }
+
+    if ((!strPathCustom.empty() || !strZKPPathCustom.empty()) && nCustomBackupThreshold > 0) {
+      ui->wallet_custombackupthreshold->setText(QString::fromStdString(std::to_string(nCustomBackupThreshold)));
+      ui->wallet_custombackupthreshold_label->setVisible(true);
+      ui->wallet_custombackupthreshold->setVisible(true);
+    }
+
+    ui->berkeleyDBVersion->setText(DbEnv::version(0, 0, 0));
+    ui->wallet_path->setText(
+        QString::fromStdString(GetDataDir().string() + QDir::separator().toLatin1() + GetArg("-wallet", "wallet.dat")));
+  } else {
+    ui->berkeleyDBVersion->hide();
   }
-
-  if (!strZKPPathCustom.empty()) {
-    ui->wallet_customzkpbackuppath->setText(QString::fromStdString(strZKPPathCustom));
-    ui->wallet_customzkpbackuppath_label->setVisible(true);
-    ui->wallet_customzkpbackuppath->setVisible(true);
-  }
-
-  if ((!strPathCustom.empty() || !strZKPPathCustom.empty()) && nCustomBackupThreshold > 0) {
-    ui->wallet_custombackupthreshold->setText(QString::fromStdString(std::to_string(nCustomBackupThreshold)));
-    ui->wallet_custombackupthreshold_label->setVisible(true);
-    ui->wallet_custombackupthreshold->setVisible(true);
-  }
-
-  ui->berkeleyDBVersion->setText(DbEnv::version(0, 0, 0));
-  ui->wallet_path->setText(
-      QString::fromStdString(GetDataDir().string() + QDir::separator().toLatin1() + GetArg("-wallet", "wallet.dat")));
-#else
-
-  ui->label_berkeleyDBVersion->hide();
-  ui->berkeleyDBVersion->hide();
-#endif
   // Register RPC timer interface
   rpcTimerInterface = new QtRPCTimerInterface();
   RPCRegisterTimerInterface(rpcTimerInterface);

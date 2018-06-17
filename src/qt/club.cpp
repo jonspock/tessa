@@ -22,10 +22,8 @@
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
 
-#ifdef ENABLE_WALLET
 #include "paymentserver.h"
 #include "walletmodel.h"
-#endif
 
 #include "init.h"
 #include "main.h"
@@ -34,9 +32,7 @@
 #include "ui_interface.h"
 #include "util.h"
 
-#ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
-#endif
 
 #include <stdint.h>
 
@@ -195,10 +191,9 @@ class BitcoinApplication : public QApplication {
   explicit BitcoinApplication(int& argc, char** argv);
   ~BitcoinApplication();
 
-#ifdef ENABLE_WALLET
   /// Create payment server
   void createPaymentServer();
-#endif
+
   /// Create options model
   void createOptionsModel();
   /// Create main window
@@ -236,10 +231,9 @@ class BitcoinApplication : public QApplication {
   ClientModel* clientModel;
   BitcoinGUI* window;
   QTimer* pollShutdownTimer;
-#ifdef ENABLE_WALLET
   PaymentServer* paymentServer;
   WalletModel* walletModel;
-#endif
+
   int returnValue;
 
   void startThread();
@@ -306,10 +300,10 @@ BitcoinApplication::BitcoinApplication(int& argc, char** argv)
       clientModel(0),
       window(0),
       pollShutdownTimer(0),
-#ifdef ENABLE_WALLET
-      paymentServer(0),
+
+      paymentServer(nullptr),
       walletModel(0),
-#endif
+
       returnValue(0) {
   setQuitOnLastWindowClosed(false);
 }
@@ -324,10 +318,10 @@ BitcoinApplication::~BitcoinApplication() {
 
   delete window;
   window = 0;
-#ifdef ENABLE_WALLET
-  delete paymentServer;
-  paymentServer = 0;
-#endif
+
+  if (paymentServer) delete paymentServer;
+  paymentServer = nullptr;
+
   // Delete Qt-settings if user clicked on "Reset Options"
   QSettings settings;
   if (optionsModel && optionsModel->resetSettings) {
@@ -338,9 +332,9 @@ BitcoinApplication::~BitcoinApplication() {
   optionsModel = 0;
 }
 
-#ifdef ENABLE_WALLET
-void BitcoinApplication::createPaymentServer() { paymentServer = new PaymentServer(this); }
-#endif
+void BitcoinApplication::createPaymentServer() {
+  if (!fDisableWallet && !paymentServer) paymentServer = new PaymentServer(this);
+}
 
 void BitcoinApplication::createOptionsModel() { optionsModel = new OptionsModel(); }
 
@@ -394,13 +388,12 @@ void BitcoinApplication::requestShutdown() {
   window->setClientModel(0);
   pollShutdownTimer->stop();
 
-#ifdef ENABLE_WALLET
   window->removeAllWallets();
-  delete walletModel;
-  walletModel = 0;
-#endif
-  delete clientModel;
-  clientModel = 0;
+  if (walletModel) delete walletModel;
+  walletModel = nullptr;
+
+  if (clientModel) delete clientModel;
+  clientModel = nullptr;
 
   // Show a simple window indicating shutdown status
   ShutdownWindow::showShutdownWindow(window);
@@ -414,15 +407,13 @@ void BitcoinApplication::initializeResult(int retval) {
   // Set exit result: 0 if successful, 1 if failure
   returnValue = retval ? 0 : 1;
   if (retval) {
-#ifdef ENABLE_WALLET
     PaymentServer::LoadRootCAs();
-    paymentServer->setOptionsModel(optionsModel);
-#endif
+    createPaymentServer();
+    if (paymentServer) paymentServer->setOptionsModel(optionsModel);
 
     clientModel = new ClientModel(optionsModel);
     window->setClientModel(clientModel);
 
-#ifdef ENABLE_WALLET
     if (pwalletMain) {
       walletModel = new WalletModel(pwalletMain, optionsModel);
 
@@ -432,7 +423,6 @@ void BitcoinApplication::initializeResult(int retval) {
       connect(walletModel, SIGNAL(coinsSent(CWallet*, SendCoinsRecipient, QByteArray)), paymentServer,
               SLOT(fetchPaymentACK(CWallet*, const SendCoinsRecipient&, QByteArray)));
     }
-#endif
 
     // If -min option passed, start window minimized.
     if (GetBoolArg("-min", false)) {
@@ -442,16 +432,17 @@ void BitcoinApplication::initializeResult(int retval) {
     }
     emit splashFinished(window);
 
-#ifdef ENABLE_WALLET
     // Now that initialization/startup is done, process any command-line
     // Club: URIs or payment requests:
-    connect(paymentServer, SIGNAL(receivedPaymentRequest(SendCoinsRecipient)), window,
-            SLOT(handlePaymentRequest(SendCoinsRecipient)));
-    connect(window, SIGNAL(receivedURI(QString)), paymentServer, SLOT(handleURIOrFile(QString)));
-    connect(paymentServer, SIGNAL(message(QString, QString, unsigned int)), window,
-            SLOT(message(QString, QString, unsigned int)));
-    QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
-#endif
+    if (pwalletMain) {
+      connect(paymentServer, SIGNAL(receivedPaymentRequest(SendCoinsRecipient)), window,
+              SLOT(handlePaymentRequest(SendCoinsRecipient)));
+      connect(window, SIGNAL(receivedURI(QString)), paymentServer, SLOT(handleURIOrFile(QString)));
+      connect(paymentServer, SIGNAL(message(QString, QString, unsigned int)), window,
+              SLOT(message(QString, QString, unsigned int)));
+      QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
+    }
+
   } else {
     quit();  // Exit main loop
   }
@@ -569,10 +560,8 @@ int main(int argc, char* argv[]) {
                           QObject::tr("Error: Invalid combination of -regtest and -testnet."));
     return 1;
   }
-#ifdef ENABLE_WALLET
   // Parse URIs on command line -- this can affect Params()
   PaymentServer::ipcParseCommandLine(argc, argv);
-#endif
 
   QScopedPointer<const NetworkStyle> networkStyle(
       NetworkStyle::instantiate(QString::fromStdString(Params().NetworkIDString())));
@@ -582,19 +571,19 @@ int main(int argc, char* argv[]) {
   // Re-initialize translations after changing application name (language in network-specific settings can be different)
   initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
 
-#ifdef ENABLE_WALLET
-  /// 8. URI IPC sending
-  // - Do this early as we don't want to bother initializing if we are just calling IPC
-  // - Do this *after* setting up the data directory, as the data directory hash is used in the name
-  // of the server.
-  // - Do this after creating app and setting up translations, so errors are
-  // translated properly.
-  if (PaymentServer::ipcSendCommandLine()) exit(0);
+  if (pwalletMain) {
+    /// 8. URI IPC sending
+    // - Do this early as we don't want to bother initializing if we are just calling IPC
+    // - Do this *after* setting up the data directory, as the data directory hash is used in the name
+    // of the server.
+    // - Do this after creating app and setting up translations, so errors are
+    // translated properly.
+    if (PaymentServer::ipcSendCommandLine()) exit(0);
 
-  // Start up the payment server early, too, so impatient users that click on
-  // club: links repeatedly have their payment requests routed to this process:
-  app.createPaymentServer();
-#endif
+    // Start up the payment server early, too, so impatient users that click on
+    // club: links repeatedly have their payment requests routed to this process:
+    app.createPaymentServer();
+  }
 
   /// 9. Main GUI initialization
   // Install global event filter that makes sure that long tooltips can be word-wrapped

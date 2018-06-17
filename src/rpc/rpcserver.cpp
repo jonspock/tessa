@@ -11,6 +11,7 @@
 #include "base58.h"
 #include "init.h"
 #include "main.h"
+#include "main_externs.h"
 #include "random.h"
 #include "sync.h"
 #include "ui_interface.h"
@@ -153,9 +154,10 @@ string CRPCTable::help(string strCommand) const {
     // We already filter duplicates, but these deprecated screw up the sort order
     if (strMethod.find("label") != string::npos) continue;
     if ((strCommand != "" || pcmd->category == "hidden") && strMethod != strCommand) continue;
-#ifdef ENABLE_WALLET
-    if (pcmd->reqWallet && !pwalletMain) continue;
-#endif
+
+    if (!fDisableWallet) {
+      if (pcmd->reqWallet && !pwalletMain) continue;
+    }
 
     try {
       UniValue params;
@@ -262,12 +264,10 @@ static const CRPCCommand vRPCCommands[] = {
     {"mining", "submitblock", &submitblock, true, true, false},
     {"mining", "reservebalance", &reservebalance, true, true, false},
 
-#ifdef ENABLE_WALLET
     /* Coin generation */
     {"generating", "getgenerate", &getgenerate, true, false, false},
     {"generating", "gethashespersec", &gethashespersec, true, false, false},
     {"generating", "setgenerate", &setgenerate, true, true, false},
-#endif
 
     /* Raw transactions */
     {"rawtransactions", "createrawtransaction", &createrawtransaction, true, false, false},
@@ -292,7 +292,6 @@ static const CRPCCommand vRPCCommands[] = {
     /* Club features */
     {"club", "spork", &spork, true, true, false},
 
-#ifdef ENABLE_WALLET
     /* Wallet */
     {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},
     {"wallet", "autocombinerewards", &autocombinerewards, false, false, true},
@@ -361,7 +360,6 @@ static const CRPCCommand vRPCCommands[] = {
     {"zerocoin", "searchdzkp", &searchdzkp, false, false, true},
     {"zerocoin", "dzkpstate", &dzkpstate, false, false, true}
 
-#endif  // ENABLE_WALLET
 };
 
 CRPCTable::CRPCTable() {

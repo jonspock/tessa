@@ -76,7 +76,6 @@
 #include <sys/prctl.h>
 #endif
 
-
 using namespace std;
 ArgsManager gArgs;
 

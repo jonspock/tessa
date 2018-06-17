@@ -39,7 +39,7 @@ bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>&
   for (const CTransaction tx : block.vtx) {
     if (!tx.IsZerocoinMint()) continue;
 
-    //uint256 txHash = tx.GetHash();
+    // uint256 txHash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
       const CTxOut txOut = tx.vout[i];
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
@@ -60,7 +60,7 @@ bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMin
   for (const CTransaction& tx : block.vtx) {
     if (!tx.IsZerocoinMint()) continue;
 
-    //uint256 txHash = tx.GetHash();
+    // uint256 txHash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
       const CTxOut txOut = tx.vout[i];
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;

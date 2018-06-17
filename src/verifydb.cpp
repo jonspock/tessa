@@ -9,8 +9,8 @@
 #include "blockdisk.h"
 #include "blockundo.h"
 #include "main_externs.h"
-#include "util.h"
 #include "ui_interface.h"
+#include "util.h"
 #include "validationstate.h"
 
 #include "init.h"

@@ -59,6 +59,7 @@ extern bool fCheckBlockIndex;
 extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
 extern bool fVerifyingBlocks;
+extern bool fDisableWallet;
 
 extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;

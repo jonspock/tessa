@@ -38,13 +38,10 @@
 #include "validationinterface.h"
 #include "zerochain.h"
 
-#ifdef ENABLE_WALLET
 #include "accumulators.h"
 #include "db.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
-
-#endif
 
 #include <fstream>
 #include <stdint.h>
@@ -67,14 +64,14 @@
 using namespace boost;
 using namespace std;
 
-#ifdef ENABLE_WALLET
 CWallet* pwalletMain = nullptr;
 CZeroWallet* zwalletMain = nullptr;
 int nWalletBackups = 10;
-#endif
+
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false;  // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
+bool fDisableWallet = false;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = nullptr;
@@ -186,10 +183,10 @@ void PrepareShutdown() {
   StopREST();
   StopRPC();
   StopHTTPServer();
-#ifdef ENABLE_WALLET
+
   if (pwalletMain) bitdb.Flush(false);
   GenerateBitcoins(false, nullptr, 0);
-#endif
+
   StopNode();
   UnregisterNodeSignals(GetNodeSignals());
 
@@ -224,9 +221,7 @@ void PrepareShutdown() {
     delete pSporkDB;
     pSporkDB = nullptr;
   }
-#ifdef ENABLE_WALLET
   if (pwalletMain) bitdb.Flush(true);
-#endif
 
 #if ENABLE_ZMQ
   if (pzmqNotificationInterface) {
@@ -257,12 +252,10 @@ void Shutdown() {
   // Shutdown part 1: prepare shutdown
   if (!fRestartRequested) { PrepareShutdown(); }
   // Shutdown part 2: Stop TOR thread and delete wallet instance
-#ifdef ENABLE_WALLET
-  delete pwalletMain;
+  if (pwalletMain) delete pwalletMain;
   pwalletMain = nullptr;
-  delete zwalletMain;
+  if (zwalletMain) delete zwalletMain;
   zwalletMain = nullptr;
-#endif
   globalVerifyHandle.reset();
   ECC_Stop();
   LogPrintf("%s: done\n", __func__);
@@ -273,9 +266,7 @@ void Shutdown() {
  */
 void HandleSIGTERM(int) { fRequestShutdown = true; }
 
-void HandleSIGHUP(int) {
-    GetLogger().fReopenDebugLog = true;
-}
+void HandleSIGHUP(int) { GetLogger().fReopenDebugLog = true; }
 
 bool static InitError(const std::string& str) {
   uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
@@ -303,9 +294,9 @@ void OnRPCStopped() {
 }
 
 void OnRPCPreCommand(const CRPCCommand& cmd) {
-#ifdef ENABLE_WALLET
-  if (cmd.reqWallet && !pwalletMain) throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
-#endif
+  fDisableWallet = GetBoolArg("-disablewallet", false);
+  if (!fDisableWallet)
+    if (cmd.reqWallet && !pwalletMain) throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
 
   // Observe safe mode
   string strWarning = GetWarnings("rpc");
@@ -428,56 +419,57 @@ std::string HelpMessage(HelpMessageMode mode) {
           _("Whitelisted peers cannot be DoS banned and their transactions are always relayed, even if they are "
             "already in the mempool, useful e.g. for a gateway"));
 
-#ifdef ENABLE_WALLET
-  strUsage += HelpMessageGroup(_("Wallet options:"));
-  strUsage +=
-      HelpMessageOpt("-backuppath=<dir|file>",
-                     _("Specify custom backup path to add a copy of any wallet backup. If set as dir, every backup "
-                       "generates a timestamped file. If set as file, will rewrite to that file every backup."));
-  strUsage += HelpMessageOpt("-createwalletbackups=<n>", _("Number of automatic wallet backups (default: 10)"));
-  strUsage += HelpMessageOpt(
-      "-custombackupthreshold=<n>",
-      strprintf(_("Number of custom location backups to retain (default: %d)"), DEFAULT_CUSTOMBACKUPTHRESHOLD));
-  strUsage += HelpMessageOpt("-disablewallet", _("Do not load the wallet and disable wallet RPC calls"));
-  strUsage += HelpMessageOpt("-keypool=<n>", strprintf(_("Set key pool size to <n> (default: %u)"), 100));
-  if (GetBoolArg("-help-debug", false))
+  if (!fDisableWallet) {
+    strUsage += HelpMessageGroup(_("Wallet options:"));
+    strUsage +=
+        HelpMessageOpt("-backuppath=<dir|file>",
+                       _("Specify custom backup path to add a copy of any wallet backup. If set as dir, every backup "
+                         "generates a timestamped file. If set as file, will rewrite to that file every backup."));
+    strUsage += HelpMessageOpt("-createwalletbackups=<n>", _("Number of automatic wallet backups (default: 10)"));
     strUsage += HelpMessageOpt(
-        "-mintxfee=<amt>",
-        strprintf(
-            _("Fees (in Club/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
-            FormatMoney(CWallet::minTxFee.GetFeePerK())));
-  strUsage +=
-      HelpMessageOpt("-paytxfee=<amt>", strprintf(_("Fee (in Club/kB) to add to transactions you send (default: %s)"),
-                                                  FormatMoney(payTxFee.GetFeePerK())));
-  strUsage +=
-      HelpMessageOpt("-rescan", _("Rescan the block chain for missing wallet transactions") + " " + _("on startup"));
-  strUsage += HelpMessageOpt("-salvagewallet",
-                             _("Attempt to recover private keys from a corrupt wallet.dat") + " " + _("on startup"));
-  strUsage += HelpMessageOpt("-sendfreetransactions",
-                             strprintf(_("Send transactions as zero-fee transactions if possible (default: %u)"), 0));
-  strUsage += HelpMessageOpt("-spendzeroconfchange",
-                             strprintf(_("Spend unconfirmed change when sending transactions (default: %u)"), 1));
-  strUsage += HelpMessageOpt("-disablesystemnotifications",
-                             strprintf(_("Disable OS notifications for incoming transactions (default: %u)"), 0));
-  strUsage +=
-      HelpMessageOpt("-txconfirmtarget=<n>", strprintf(_("If paytxfee is not set, include enough fee so transactions "
-                                                         "begin confirmation on average within n blocks (default: %u)"),
-                                                       1));
-  strUsage +=
-      HelpMessageOpt("-maxtxfee=<amt>", strprintf(_("Maximum total fees to use in a single wallet transaction, setting "
-                                                    "too low may abort large transactions (default: %s)"),
-                                                  FormatMoney(maxTxFee)));
-  strUsage += HelpMessageOpt("-upgradewallet", _("Upgrade wallet to latest format") + " " + _("on startup"));
-  strUsage += HelpMessageOpt("-wallet=<file>", _("Specify wallet file (within data directory)") + " " +
-                                                   strprintf(_("(default: %s)"), "wallet.dat"));
-  strUsage += HelpMessageOpt("-walletnotify=<cmd>",
-                             _("Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)"));
-  if (mode == HMM_BITCOIN_QT) strUsage += HelpMessageOpt("-windowtitle=<name>", _("Wallet window title"));
-  strUsage += HelpMessageOpt(
-      "-zapwallettxes=<mode>",
-      _("Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup") +
-          " " + _("(1 = keep tx meta data e.g. account owner and payment request information, 2 = drop tx meta data)"));
-#endif
+        "-custombackupthreshold=<n>",
+        strprintf(_("Number of custom location backups to retain (default: %d)"), DEFAULT_CUSTOMBACKUPTHRESHOLD));
+    strUsage += HelpMessageOpt("-disablewallet", _("Do not load the wallet and disable wallet RPC calls"));
+    strUsage += HelpMessageOpt("-keypool=<n>", strprintf(_("Set key pool size to <n> (default: %u)"), 100));
+    if (GetBoolArg("-help-debug", false))
+      strUsage += HelpMessageOpt(
+          "-mintxfee=<amt>",
+          strprintf(
+              _("Fees (in Club/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
+              FormatMoney(CWallet::minTxFee.GetFeePerK())));
+    strUsage +=
+        HelpMessageOpt("-paytxfee=<amt>", strprintf(_("Fee (in Club/kB) to add to transactions you send (default: %s)"),
+                                                    FormatMoney(payTxFee.GetFeePerK())));
+    strUsage +=
+        HelpMessageOpt("-rescan", _("Rescan the block chain for missing wallet transactions") + " " + _("on startup"));
+    strUsage += HelpMessageOpt("-salvagewallet",
+                               _("Attempt to recover private keys from a corrupt wallet.dat") + " " + _("on startup"));
+    strUsage += HelpMessageOpt("-sendfreetransactions",
+                               strprintf(_("Send transactions as zero-fee transactions if possible (default: %u)"), 0));
+    strUsage += HelpMessageOpt("-spendzeroconfchange",
+                               strprintf(_("Spend unconfirmed change when sending transactions (default: %u)"), 1));
+    strUsage += HelpMessageOpt("-disablesystemnotifications",
+                               strprintf(_("Disable OS notifications for incoming transactions (default: %u)"), 0));
+    strUsage += HelpMessageOpt("-txconfirmtarget=<n>",
+                               strprintf(_("If paytxfee is not set, include enough fee so transactions "
+                                           "begin confirmation on average within n blocks (default: %u)"),
+                                         1));
+    strUsage += HelpMessageOpt("-maxtxfee=<amt>",
+                               strprintf(_("Maximum total fees to use in a single wallet transaction, setting "
+                                           "too low may abort large transactions (default: %s)"),
+                                         FormatMoney(maxTxFee)));
+    strUsage += HelpMessageOpt("-upgradewallet", _("Upgrade wallet to latest format") + " " + _("on startup"));
+    strUsage += HelpMessageOpt("-wallet=<file>", _("Specify wallet file (within data directory)") + " " +
+                                                     strprintf(_("(default: %s)"), "wallet.dat"));
+    strUsage += HelpMessageOpt("-walletnotify=<cmd>",
+                               _("Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)"));
+    if (mode == HMM_BITCOIN_QT) strUsage += HelpMessageOpt("-windowtitle=<name>", _("Wallet window title"));
+    strUsage += HelpMessageOpt(
+        "-zapwallettxes=<mode>",
+        _("Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup") +
+            " " +
+            _("(1 = keep tx meta data e.g. account owner and payment request information, 2 = drop tx meta data)"));
+  }
 
 #if ENABLE_ZMQ
   strUsage += HelpMessageGroup(_("ZeroMQ notification options:"));
@@ -531,12 +523,13 @@ std::string HelpMessage(HelpMessageMode mode) {
                          _("<category> can be:") + " " + debugCategories + ".");
   if (GetBoolArg("-help-debug", false))
     strUsage += HelpMessageOpt("-nodebug", "Turn off debugging messages, same as -debug=0");
-#ifdef ENABLE_WALLET
-  strUsage += HelpMessageOpt("-gen", strprintf(_("Generate coins (default: %u)"), 0));
-  strUsage += HelpMessageOpt(
-      "-genproclimit=<n>",
-      strprintf(_("Set the number of threads for coin generation if enabled (-1 = all cores, default: %d)"), 1));
-#endif
+  if (!fDisableWallet) {
+    strUsage += HelpMessageOpt("-gen", strprintf(_("Generate coins (default: %u)"), 0));
+    strUsage += HelpMessageOpt(
+        "-genproclimit=<n>",
+        strprintf(_("Set the number of threads for coin generation if enabled (-1 = all cores, default: %d)"), 1));
+  }
+
   strUsage += HelpMessageOpt("-help-debug", _("Show all debugging options (usage: --help -help-debug)"));
   strUsage += HelpMessageOpt("-logips", strprintf(_("Include IP addresses in debug output (default: %u)"), 0));
   strUsage += HelpMessageOpt("-logtimestamps", strprintf(_("Prepend debug output with timestamp (default: %u)"), 1));
@@ -573,30 +566,30 @@ std::string HelpMessage(HelpMessageMode mode) {
   strUsage += HelpMessageOpt("-litemode=<n>",
                              strprintf(_("Disable all Club specific functionality (Zerocoin) (0-1, default: %u)"), 0));
 
-#ifdef ENABLE_WALLET
-  strUsage += HelpMessageGroup(_("Staking options:"));
-  strUsage += HelpMessageOpt("-staking=<n>", strprintf(_("Enable staking functionality (0-1, default: %u)"), 1));
-  strUsage += HelpMessageOpt(
-      "-stake=<n>", strprintf(_("Enable or disable staking functionality for Club inputs (0-1, default: %u)"), 1));
-  strUsage += HelpMessageOpt("-reservebalance=<amt>",
-                             _("Keep the specified amount available for spending at all times (default: 0)"));
-  if (GetBoolArg("-help-debug", false)) {
-    strUsage +=
-        HelpMessageOpt("-printstakemodifier", _("Display the stake modifier calculations in the debug.log file."));
-    strUsage += HelpMessageOpt("-printcoinstake", _("Display verbose coin stake messages in the debug.log file."));
+  if (!fDisableWallet) {
+    strUsage += HelpMessageGroup(_("Staking options:"));
+    strUsage += HelpMessageOpt("-staking=<n>", strprintf(_("Enable staking functionality (0-1, default: %u)"), 1));
+    strUsage += HelpMessageOpt(
+        "-stake=<n>", strprintf(_("Enable or disable staking functionality for Club inputs (0-1, default: %u)"), 1));
+    strUsage += HelpMessageOpt("-reservebalance=<amt>",
+                               _("Keep the specified amount available for spending at all times (default: 0)"));
+    if (GetBoolArg("-help-debug", false)) {
+      strUsage +=
+          HelpMessageOpt("-printstakemodifier", _("Display the stake modifier calculations in the debug.log file."));
+      strUsage += HelpMessageOpt("-printcoinstake", _("Display verbose coin stake messages in the debug.log file."));
+    }
   }
-#endif
 
   strUsage += HelpMessageGroup(_("Zerocoin options:"));
-#ifdef ENABLE_WALLET
-  strUsage += HelpMessageOpt(
-      "-backupzkp=<n>",
-      strprintf(_("Enable automatic wallet backups triggered after each ZKP minting (0-1, default: %u)"), 1));
-  strUsage += HelpMessageOpt("-zkpbackuppath=<dir|file>",
-                             _("Specify custom backup path to add a copy of any automatic ZKP backup. If set as dir, "
-                               "every backup generates a timestamped file. If set as file, will rewrite to that file "
-                               "every backup. If backuppath is set as well, 4 backups will happen"));
-#endif  // ENABLE_WALLET
+  if (!fDisableWallet) {
+    strUsage += HelpMessageOpt(
+        "-backupzkp=<n>",
+        strprintf(_("Enable automatic wallet backups triggered after each ZKP minting (0-1, default: %u)"), 1));
+    strUsage += HelpMessageOpt("-zkpbackuppath=<dir|file>",
+                               _("Specify custom backup path to add a copy of any automatic ZKP backup. If set as dir, "
+                                 "every backup generates a timestamped file. If set as file, will rewrite to that file "
+                                 "every backup. If backuppath is set as well, 4 backups will happen"));
+  }
   strUsage += HelpMessageOpt("-reindexzerocoin=<n>",
                              strprintf(_("Delete all zerocoin spends and mints that have been recorded to the "
                                          "blockchain database and reindex them (0-1, default: %u)"),
@@ -817,10 +810,9 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
 #ifndef WIN32
   if (GetBoolArg("-sysperms", false)) {
-#ifdef ENABLE_WALLET
     if (!GetBoolArg("-disablewallet", false))
       return InitError("Error: -sysperms is not allowed in combination with enabled wallet functionality");
-#endif
+
   } else {
     umask(077);
   }
@@ -846,7 +838,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // ********************************************************* Step 2: parameter interactions
   // Set this early so that parameter interactions go to console
-   fLogIPs = GetBoolArg("-logips", false);
+  fLogIPs = GetBoolArg("-logips", false);
 
   if (gArgs.IsArgSet("-bind") || gArgs.IsArgSet("-whitebind")) {
     // when specifying an explicit binding address, you want to listen on it
@@ -968,15 +960,11 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   setvbuf(stdout, nullptr, _IOLBF, 0);  /// ***TODO*** do we still need this after -printtoconsole is gone?
 
   // Staking needs a CWallet instance, so make sure wallet is enabled
-#ifdef ENABLE_WALLET
-  bool fDisableWallet = GetBoolArg("-disablewallet", false);
+  fDisableWallet = GetBoolArg("-disablewallet", false);
   if (fDisableWallet) {
-#endif
     if (SoftSetBoolArg("-staking", false))
       LogPrintf("AppInit2 : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
-#ifdef ENABLE_WALLET
   }
-#endif
 
   nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
   if (nConnectTimeout <= 0) nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
@@ -996,47 +984,48 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
           strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), gArgs.GetArg("-minrelaytxfee", "")));
   }
 
-#ifdef ENABLE_WALLET
-  if (gArgs.IsArgSet("-mintxfee")) {
-    CAmount n = 0;
-    if (ParseMoney(gArgs.GetArg("-mintxfee", ""), n) && n > 0)
-      CWallet::minTxFee = CFeeRate(n);
-    else
-      return InitError(strprintf(_("Invalid amount for -mintxfee=<amount>: '%s'"), gArgs.GetArg("-mintxfee", "")));
-  }
-  if (gArgs.IsArgSet("-paytxfee")) {
-    CAmount nFeePerK = 0;
-    if (!ParseMoney(gArgs.GetArg("-paytxfee", ""), nFeePerK))
-      return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s'"), gArgs.GetArg("-paytxfee", "")));
-    if (nFeePerK > nHighTransactionFeeWarning)
-      InitWarning(_(
-          "Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction."));
-    payTxFee = CFeeRate(nFeePerK, 1000);
-    if (payTxFee < ::minRelayTxFee) {
-      return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
-                                 gArgs.GetArg("-paytxfee", ""), ::minRelayTxFee.ToString()));
+  if (!fDisableWallet) {
+    if (gArgs.IsArgSet("-mintxfee")) {
+      CAmount n = 0;
+      if (ParseMoney(gArgs.GetArg("-mintxfee", ""), n) && n > 0)
+        CWallet::minTxFee = CFeeRate(n);
+      else
+        return InitError(strprintf(_("Invalid amount for -mintxfee=<amount>: '%s'"), gArgs.GetArg("-mintxfee", "")));
     }
-  }
-  if (gArgs.IsArgSet("-maxtxfee")) {
-    CAmount nMaxFee = 0;
-    if (!ParseMoney(gArgs.GetArg("-maxtxfee", ""), nMaxFee))
-      return InitError(strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s'"), gArgs.GetArg("-maxtxfee", "")));
-    if (nMaxFee > nHighTransactionMaxFeeWarning)
-      InitWarning(_("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
-    maxTxFee = nMaxFee;
-    if (CFeeRate(maxTxFee, 1000) < ::minRelayTxFee) {
-      return InitError(strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of "
-                                   "%s to prevent stuck transactions)"),
-                                 gArgs.GetArg("-maxtxfee", ""), ::minRelayTxFee.ToString()));
+    if (gArgs.IsArgSet("-paytxfee")) {
+      CAmount nFeePerK = 0;
+      if (!ParseMoney(gArgs.GetArg("-paytxfee", ""), nFeePerK))
+        return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s'"), gArgs.GetArg("-paytxfee", "")));
+      if (nFeePerK > nHighTransactionFeeWarning)
+        InitWarning(
+            _("Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a "
+              "transaction."));
+      payTxFee = CFeeRate(nFeePerK, 1000);
+      if (payTxFee < ::minRelayTxFee) {
+        return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
+                                   gArgs.GetArg("-paytxfee", ""), ::minRelayTxFee.ToString()));
+      }
     }
+    if (gArgs.IsArgSet("-maxtxfee")) {
+      CAmount nMaxFee = 0;
+      if (!ParseMoney(gArgs.GetArg("-maxtxfee", ""), nMaxFee))
+        return InitError(strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s'"), gArgs.GetArg("-maxtxfee", "")));
+      if (nMaxFee > nHighTransactionMaxFeeWarning)
+        InitWarning(_("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
+      maxTxFee = nMaxFee;
+      if (CFeeRate(maxTxFee, 1000) < ::minRelayTxFee) {
+        return InitError(
+            strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of "
+                        "%s to prevent stuck transactions)"),
+                      gArgs.GetArg("-maxtxfee", ""), ::minRelayTxFee.ToString()));
+      }
+    }
+    nTxConfirmTarget = GetArg("-txconfirmtarget", 1);
+    bSpendZeroConfChange = GetBoolArg("-spendzeroconfchange", false);
+    bdisableSystemnotifications = GetBoolArg("-disablesystemnotifications", false);
+    fSendFreeTransactions = GetBoolArg("-sendfreetransactions", false);
   }
-  nTxConfirmTarget = GetArg("-txconfirmtarget", 1);
-  bSpendZeroConfChange = GetBoolArg("-spendzeroconfchange", false);
-  bdisableSystemnotifications = GetBoolArg("-disablesystemnotifications", false);
-  fSendFreeTransactions = GetBoolArg("-sendfreetransactions", false);
-
   std::string strWalletFile = GetArg("-wallet", "wallet.dat");
-#endif  // ENABLE_WALLET
 
   fIsBareMultisigStd = GetBoolArg("-permitbaremultisig", true) != 0;
   nMaxDatacarrierBytes = GetArg("-datacarriersize", nMaxDatacarrierBytes);
@@ -1054,11 +1043,11 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (!InitSanityCheck()) return InitError(_("Initialization sanity check failed. Club Core is shutting down."));
 
   std::string strDataDir = GetDataDir().string();
-#ifdef ENABLE_WALLET
-  // Wallet file must be a plain filename without a directory
-  if (strWalletFile != fs::basename(strWalletFile) + fs::extension(strWalletFile))
-    return InitError(strprintf(_("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
-#endif
+  if (!fDisableWallet) {
+    // Wallet file must be a plain filename without a directory
+    if (strWalletFile != fs::basename(strWalletFile) + fs::extension(strWalletFile))
+      return InitError(strprintf(_("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
+  }
   // Make sure only a single Club process is using the data directory.
   fs::path pathLockFile = GetDataDir() / ".lock";
   FILE* file = fopen(pathLockFile.string().c_str(), "a");  // empty lock file; created if it doesn't exist.
@@ -1090,9 +1079,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   LogPrintf("Club version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
   LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
-#ifdef ENABLE_WALLET
   LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
-#endif
   if (!logger.fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
   LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
   LogPrintf("Using data directory %s\n", strDataDir);
@@ -1127,8 +1114,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   int64_t nStart;
 
-// ********************************************************* Step 5: Backup wallet and verify wallet database integrity
-#ifdef ENABLE_WALLET
+  // ********************************************************* Step 5: Backup wallet and verify wallet database
+  // integrity
   if (!fDisableWallet) {
     filesystem::path backupDir = GetDataDir() / "backups";
     if (!filesystem::exists(backupDir)) {
@@ -1261,8 +1248,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
       if (r == CDBEnv::RECOVER_FAIL) return InitError(_("wallet.dat corrupt, salvage failed"));
     }
 
-  }     // (!fDisableWallet)
-#endif  // ENABLE_WALLET
+  }  // (!fDisableWallet)
   // ********************************************************* Step 6: network initialization
 
   RegisterNodeSignals(GetNodeSignals());
@@ -1565,8 +1551,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (!est_filein.IsNull()) mempool.ReadFeeEstimates(est_filein);
   fFeeEstimatesInitialized = true;
 
-// ********************************************************* Step 8: load wallet
-#ifdef ENABLE_WALLET
+  // ********************************************************* Step 8: load wallet
+
   if (fDisableWallet) {
     pwalletMain = nullptr;
     zwalletMain = nullptr;
@@ -1701,10 +1687,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     pwalletMain->zkpTracker->Init();
     zwalletMain->LoadMintPoolFromDB();
     zwalletMain->SyncWithChain();
-  }     // (!fDisableWallet)
-#else   // ENABLE_WALLET
-  LogPrintf("No wallet compiled in!\n");
-#endif  // !ENABLE_WALLET
+  }  // (!fDisableWallet)
   // ********************************************************* Step 9: import blocks
 
   if (gArgs.IsArgSet("-blocknotify")) uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
@@ -1736,25 +1719,22 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   //// debug print
   LogPrintf("mapBlockIndex.size() = %u\n", mapBlockIndex.size());
   LogPrintf("chainActive.Height() = %d\n", chainActive.Height());
-#ifdef ENABLE_WALLET
-  LogPrintf("setKeyPool.size() = %u\n", pwalletMain ? pwalletMain->setKeyPool.size() : 0);
-  LogPrintf("mapWallet.size() = %u\n", pwalletMain ? pwalletMain->mapWallet.size() : 0);
-  LogPrintf("mapAddressBook.size() = %u\n", pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
-#endif
+  if (!fDisableWallet) {
+    LogPrintf("setKeyPool.size() = %u\n", pwalletMain ? pwalletMain->setKeyPool.size() : 0);
+    LogPrintf("mapWallet.size() = %u\n", pwalletMain ? pwalletMain->mapWallet.size() : 0);
+    LogPrintf("mapAddressBook.size() = %u\n", pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
+  }
 
   StartNode(threadGroup, scheduler);
 
-#ifdef ENABLE_WALLET
   // Generate coins in the background
   if (pwalletMain) GenerateBitcoins(GetBoolArg("-gen", false), pwalletMain, GetArg("-genproclimit", 1));
-#endif
 
   // ********************************************************* Step 12: finished
 
   SetRPCWarmupFinished();
   uiInterface.InitMessage(_("Done loading"));
 
-#ifdef ENABLE_WALLET
   if (pwalletMain) {
     // Add wallet transactions that aren't already in a block to mapTransactions
     pwalletMain->ReacceptWalletTransactions();
@@ -1762,7 +1742,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     // Run a thread to flush wallet periodically
     threadGroup.create_thread(std::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
   }
-#endif
 
   return !fRequestShutdown;
 }

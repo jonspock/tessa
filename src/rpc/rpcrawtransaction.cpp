@@ -10,6 +10,7 @@
 #include "core_io.h"
 #include "init.h"
 #include "keystore.h"
+#include "libzerocoin/CoinSpend.h"
 #include "main.h"
 #include "net.h"
 #include "primitives/transaction.h"
@@ -20,10 +21,7 @@
 #include "script/standard.h"
 #include "uint256.h"
 #include "utilmoneystr.h"
-#ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
-#endif
-#include "libzerocoin/CoinSpend.h"
 
 #include <cstdint>
 
@@ -187,7 +185,6 @@ UniValue getrawtransaction(const UniValue& params, bool fHelp) {
   return result;
 }
 
-#ifdef ENABLE_WALLET
 UniValue listunspent(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 4)
     throw runtime_error(
@@ -304,7 +301,6 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
 
   return results;
 }
-#endif
 
 UniValue createrawtransaction(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 2)
@@ -507,11 +503,9 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
         "The second optional argument (may be null) is an array of previous transaction outputs that\n"
         "this transaction depends on but may not yet be in the block chain.\n"
         "The third optional argument (may be null) is an array of base58-encoded private\n"
-        "keys that, if given, will be the only keys used to sign the transaction.\n"
-#ifdef ENABLE_WALLET
-        + HelpRequiringPassphrase() +
+        "keys that, if given, will be the only keys used to sign the transaction.\n" +
+        HelpRequiringPassphrase() +
         "\n"
-#endif
 
         "\nArguments:\n"
         "1. \"hexstring\"     (string, required) The transaction hex string\n"
@@ -557,11 +551,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
         "\nExamples:\n" +
         HelpExampleCli("signrawtransaction", "\"myhex\"") + HelpExampleRpc("signrawtransaction", "\"myhex\""));
 
-#ifdef ENABLE_WALLET
   LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
-#else
-  LOCK(cs_main);
-#endif
   RPCTypeCheck(params, {UniValue::VSTR, UniValue::VARR, UniValue::VARR, UniValue::VSTR}, true);
 
   vector<unsigned char> txData(ParseHexV(params[0], "argument 1"));
@@ -613,11 +603,8 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
       if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Private key outside allowed range");
       tempKeystore.AddKey(key);
     }
-  }
-#ifdef ENABLE_WALLET
-  else if (pwalletMain)
+  } else if (pwalletMain)
     EnsureWalletIsUnlocked();
-#endif
 
   // Add previous txouts given in the RPC call:
   if (params.size() > 1 && !params[1].isNull()) {
@@ -668,11 +655,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
     }
   }
 
-#ifdef ENABLE_WALLET
   const CKeyStore& keystore = ((fGivenKeys || !pwalletMain) ? tempKeystore : *pwalletMain);
-#else
-  const CKeyStore& keystore = tempKeystore;
-#endif
 
   int nHashType = SIGHASH_ALL;
   if (params.size() > 3 && !params[3].isNull()) {

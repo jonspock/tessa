@@ -14,9 +14,7 @@
 #include "util.h"
 #include "version.h"
 
-#ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
-#endif
 
 #include <QApplication>
 #include <QCloseEvent>
@@ -115,28 +113,23 @@ static void ShowProgress(SplashScreen* splash, const std::string& title, int nPr
   InitMessage(splash, title + strprintf("%d", nProgress) + "%");
 }
 
-#ifdef ENABLE_WALLET
 static void ConnectWallet(SplashScreen* splash, CWallet* wallet) {
-  wallet->ShowProgress.connect(boost::bind(ShowProgress, splash, _1, _2));
+  if (wallet) wallet->ShowProgress.connect(boost::bind(ShowProgress, splash, _1, _2));
 }
-#endif
 
 void SplashScreen::subscribeToCoreSignals() {
   // Connect signals to client
   uiInterface.InitMessage.connect(boost::bind(InitMessage, this, _1));
   uiInterface.ShowProgress.connect(boost::bind(ShowProgress, this, _1, _2));
-#ifdef ENABLE_WALLET
-  uiInterface.LoadWallet.connect(boost::bind(ConnectWallet, this, _1));
-#endif
+  if (pwalletMain) uiInterface.LoadWallet.connect(boost::bind(ConnectWallet, this, _1));
 }
 
 void SplashScreen::unsubscribeFromCoreSignals() {
   // Disconnect signals from client
   uiInterface.InitMessage.disconnect(boost::bind(InitMessage, this, _1));
   uiInterface.ShowProgress.disconnect(boost::bind(ShowProgress, this, _1, _2));
-#ifdef ENABLE_WALLET
+
   if (pwalletMain) pwalletMain->ShowProgress.disconnect(boost::bind(ShowProgress, this, _1, _2));
-#endif
 }
 
 void SplashScreen::showMessage(const QString& message, int alignment, const QColor& color) {

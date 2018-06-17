@@ -7,7 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "main_externs.h"
-// for "_" 
+// for "_"
 #include "util.h"
 // for AbortNode
 #include "ui_interface.h"

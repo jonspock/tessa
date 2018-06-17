@@ -15,6 +15,7 @@
 #include "guiutil.h"
 #include "init.h"
 #include "keystore.h"
+#include "main.h"  // AcceptToMemoryPool
 #include "main_externs.h"
 #include "primitives/transaction.h"
 #include "qvalidatedlineedit.h"
@@ -23,6 +24,7 @@
 #include "script/sign.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
+#include "validationstate.h"
 #include "wallet/wallet.h"
 
 #include <QArgument>
@@ -664,34 +666,35 @@ bool MultisigDialog::isFullyVerified(CMutableTransaction& tx) {
 void MultisigDialog::commitMultisigTx() {
   CMutableTransaction tx(multisigTx);
   try {
-#ifdef ENABLE_WALLET
-    CWalletTx wtx(pwalletMain, tx);
-    CReserveKey keyChange(pwalletMain);
-    if (!pwalletMain->CommitTransaction(wtx, keyChange))
-      throw runtime_error(string("Transaction rejected - Failed to commit"));
-#else
-    uint256 hashTx = tx.GetHash();
-    CCoinsViewCache& view = *pcoinsTip;
-    const CCoins* existingCoins = view.AccessCoins(hashTx);
-    bool fOverrideFees = false;
-    bool fHaveMempool = mempool.exists(hashTx);
-    bool fHaveChain = existingCoins && existingCoins->nHeight < 1000000000;
+    if (pwalletMain) {
+      CWalletTx wtx(pwalletMain, tx);
+      CReserveKey keyChange(pwalletMain);
+      if (!pwalletMain->CommitTransaction(wtx, keyChange))
+        throw runtime_error(string("Transaction rejected - Failed to commit"));
+    } else {
+      uint256 hashTx = tx.GetHash();
+      CCoinsViewCache& view = *pcoinsTip;
+      const CCoins* existingCoins = view.AccessCoins(hashTx);
+      bool fOverrideFees = false;
+      bool fHaveMempool = mempool.exists(hashTx);
+      bool fHaveChain = existingCoins && existingCoins->nHeight < 1000000000;
 
-    if (!fHaveMempool && !fHaveChain) {
-      // push to local node and sync with wallets
-      CValidationState state;
-      if (!AcceptToMemoryPool(mempool, state, tx, false, nullptr, !fOverrideFees)) {
-        if (state.IsInvalid())
-          throw runtime_error(
-              strprintf("Transaction rejected - %i: %s", state.GetRejectCode(), state.GetRejectReason()));
-        else
-          throw runtime_error(string("Transaction rejected - ") + state.GetRejectReason());
+      if (!fHaveMempool && !fHaveChain) {
+        // push to local node and sync with wallets
+        CValidationState state;
+        if (!AcceptToMemoryPool(mempool, state, tx, false, nullptr, !fOverrideFees)) {
+          if (state.IsInvalid())
+            throw runtime_error(
+                strprintf("Transaction rejected - %i: %s", state.GetRejectCode(), state.GetRejectReason()));
+          else
+            throw runtime_error(string("Transaction rejected - ") + state.GetRejectReason());
+        }
+      } else if (fHaveChain) {
+        throw runtime_error("transaction already in block chain");
       }
-    } else if (fHaveChain) {
-      throw runtime_error("transaction already in block chain");
+      RelayTransaction(tx);
     }
-    RelayTransaction(tx);
-#endif
+
     // disable commit if successfully committed
     ui->commitButton->setEnabled(false);
     ui->signButtonStatus->setText(
@@ -720,31 +723,32 @@ bool MultisigDialog::createRedeemScript(int m, vector<string> vKeys, CScript& re
     int i = 0;
     for (vector<string>::iterator it = vKeys.begin(); it != vKeys.end(); ++it) {
       string keyString = *it;
-#ifdef ENABLE_WALLET
-      // Case 1: Club address and we have full public key:
-      CBitcoinAddress address(keyString);
-      if (pwalletMain && address.IsValid()) {
-        CKeyID keyID;
-        if (!address.GetKeyID(keyID)) { throw runtime_error(strprintf("%s does not refer to a key", keyString)); }
-        CPubKey vchPubKey;
-        if (!pwalletMain->GetPubKey(keyID, vchPubKey))
-          throw runtime_error(strprintf("no full public key for address %s", keyString));
-        if (!vchPubKey.IsFullyValid()) {
-          string sKey = keyString.empty() ? "(empty)" : keyString;
-          throw runtime_error(" Invalid public key: " + sKey);
+      if (pwalletMain) {
+        // Case 1: Club address and we have full public key:
+        CBitcoinAddress address(keyString);
+        if (pwalletMain && address.IsValid()) {
+          CKeyID keyID;
+          if (!address.GetKeyID(keyID)) { throw runtime_error(strprintf("%s does not refer to a key", keyString)); }
+          CPubKey vchPubKey;
+          if (!pwalletMain->GetPubKey(keyID, vchPubKey))
+            throw runtime_error(strprintf("no full public key for address %s", keyString));
+          if (!vchPubKey.IsFullyValid()) {
+            string sKey = keyString.empty() ? "(empty)" : keyString;
+            throw runtime_error(" Invalid public key: " + sKey);
+          }
+          pubkeys[i++] = vchPubKey;
         }
-        pubkeys[i++] = vchPubKey;
       }
 
       // case 2: hex pub key
-      else
-#endif
-          if (IsHex(keyString)) {
-        CPubKey vchPubKey(ParseHex(keyString));
-        if (!vchPubKey.IsFullyValid()) { throw runtime_error(" Invalid public key: " + keyString); }
-        pubkeys[i++] = vchPubKey;
-      } else {
-        throw runtime_error(" Invalid public key: " + keyString);
+      else {
+        if (IsHex(keyString)) {
+          CPubKey vchPubKey(ParseHex(keyString));
+          if (!vchPubKey.IsFullyValid()) { throw runtime_error(" Invalid public key: " + keyString); }
+          pubkeys[i++] = vchPubKey;
+        } else {
+          throw runtime_error(" Invalid public key: " + keyString);
+        }
       }
     }
     // populate redeem script
