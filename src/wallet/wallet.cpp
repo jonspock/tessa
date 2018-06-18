@@ -39,7 +39,6 @@
 #include <cassert>
 
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread.hpp>
 
 #define KEY_RES_SIZE 100
@@ -3227,10 +3226,12 @@ void CWallet::ReconsiderZerocoins(std::list<CZerocoinMint>& listMintsRestored,
 }
 
 string CWallet::GetUniqueWalletBackupName(bool fzkpAuto) const {
-  boost::posix_time::ptime timeLocal = boost::posix_time::second_clock::local_time();
+    /*
+  std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+  std::time_t tt = std::chrono::system_clock::to_time_t(now);
   stringstream ssDateTime;
-
-  ssDateTime << boost::gregorian::to_iso_extended_string(timeLocal.date()) << "-" << timeLocal.time_of_day();
+  ssDateTime << std::put_time(std::localtime(&tt), "%F-%T") << "\n";
+     */
   return strprintf("wallet%s.dat%s", fzkpAuto ? "-autozkpbackup" : "", DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime()));
 }
 
@@ -3271,7 +3272,7 @@ void CWallet::ZkpBackupWallet() {
   }
 
   BackupWallet(*this, backupPath.string());
-
+    
   if (!GetArg("-zkpbackuppath", "").empty()) {
     fs::path customPath(GetArg("-zkpbackuppath", ""));
     fs::create_directories(customPath);
