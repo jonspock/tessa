@@ -25,11 +25,6 @@ ENDIF(GIT)
 
 SET(CLUB_VERSION_PATCH ${PATCH_OUT})
 
-# Project Version
-SET(CLUB_VERSION_MAJOR "0")
-SET(CLUB_VERSION_MINOR "9")
-SET(CLUB_VERSION_REVISION "0")
-SET(CLUB_VERSION_BUILD "0")
 
 if(CMAKE_CXX_FLAGS_RELEASE MATCHES DNDEBUG)
   string(REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -41,7 +36,18 @@ if(CMAKE_CXX_FLAGS_RELWITHDEBINFO MATCHES DNDEBUG)
   string(REPLACE "-DNDEBUG" "" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE}")
 endif()
 
-project(CLUB)
+if (POLICY CMP0048)
+  # cmake warns if loaded from a min-3.0-required parent dir, so silence the warning:
+  cmake_policy(SET CMP0048 NEW)
+endif()
+
+project(CLUB VERSION 0.9.0.0)
+
+# Project Version - check later
+SET(CLUB_VERSION_MAJOR "0")
+SET(CLUB_VERSION_MINOR "9")
+SET(CLUB_VERSION_REVISION "0")
+SET(CLUB_VERSION_BUILD "0")
 
 
 # If ccache is available, then use it.
@@ -54,6 +60,7 @@ endif(CCACHE)
 
 set(OPENSSL_VER "1.0.2n")
 set(BDB_VER "4.8.30")
+set(ROCKSDB_VER "5.11.3")
 
 #---------------------------------------------------------------------------------------------------------
 # Code coverage
@@ -75,7 +82,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	add_compile_options(-Wno-potentially-evaluated-expression -Wno-unused-const-variable -Wno-unused-function -Wno-deprecated-declarations -Wno-inaccessible-base -Wno-unused-local-typedefs -Wno-logical-op-parentheses -Wno-shift-negative-value -Wno-array-bounds)
-	add_definitions("-DOS_MACOSX -DLEVELDB_PLATFORM_POSIX -DENABLE_ZMQ")
+	add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
 #	add_definitions("-Werror")
 else()
 	add_definitions("-Wno-cpp -Wno-unused-function")
@@ -190,6 +197,7 @@ SET(SERVER_A
 	./src/noui.cpp
 	./src/pow.cpp
 	./src/rest.cpp
+	./src/rocksdbwrapper.cpp
   )
 
 SET(RPC
@@ -252,7 +260,6 @@ SET(SOURCES
 	./src/compat/glibcxx_compat.cpp
 	./src/compat/glibc_sanity.cpp
 	./src/kernel.cpp
-	./src/leveldbwrapper.cpp
 	./src/miner.cpp
 	./src/script/bitcoinconsensus.cpp
 	./src/script/interpreter.cpp
@@ -293,6 +300,7 @@ SET(SCH_SOURCES
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(OPENSSL_ROOT_DIR "/usr/local/Cellar/openssl/${OPENSSL_VER}/")
   set(BDB_ROOT_DIR "/usr/local/Cellar/berkeley-db4/${BDB_VER}/")
+  set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
 endif()
 
 find_package(OpenSSL)
@@ -312,8 +320,7 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${OPENSSL_INCLUDE_DIR}
   ${BDB_ROOT_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
+  ${ROCKSDB_ROOT_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/
@@ -354,7 +361,6 @@ set_property(TARGET coin PROPERTY CXX_STANDARD 11)
 add_dependencies(coin buildHeader)
 
 add_subdirectory(src/libzerocoin)
-add_subdirectory(src)
 
 set(SECP256
 	./src/secp256k1/src/secp256k1.c
@@ -363,18 +369,19 @@ set(SECP256
 add_library(secp256k1 ${SECP256})
 
 link_directories(${BDB_ROOT_DIR}/lib)
+link_directories(${ROCKSDB_ROOT_DIR}/lib)
 
 add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
 set_property(TARGET club-cli PROPERTY CXX_STANDARD 11)
 add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
 set_property(TARGET clubd PROPERTY CXX_STANDARD 11)
 
-target_link_libraries(club-cli coin zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
+target_link_libraries(club-cli coin zerocoin rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	target_link_libraries(clubd coin db_cxx db secp256k1 gmp zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event /usr/local/lib/libevent_pthreads.a /usr/local/lib/libzmq.a pthread )
+	target_link_libraries(clubd coin db_cxx db secp256k1 gmp zerocoin rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event /usr/local/lib/libevent_pthreads.a /usr/local/lib/libzmq.a pthread )
 else()
-	target_link_libraries(clubd coin db_cxx db secp256k1 zerocoin leveldb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
+	target_link_libraries(clubd coin db_cxx db secp256k1 zerocoin rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
 endif()
 
 #	miniupnpc pthread)

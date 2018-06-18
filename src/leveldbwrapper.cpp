@@ -7,12 +7,12 @@
 #include "fs.h"
 #include "util.h"
 
-#include <leveldb/cache.h>
-#include <leveldb/env.h>
-#include <leveldb/filter_policy.h>
-#include <memenv.h>
+#include <rocksdb/cache.h>
+#include <rocksdb/env.h>
+#include <rocksdb/filter_policy.h>
+#include <rocksdb/utilities/leveldb_options.h>
 
-void HandleError(const leveldb::Status& status) throw(leveldb_error) {
+void HandleError(const rocksdb::Status& status) throw(leveldb_error) {
   if (status.ok()) return;
   LogPrintf("%s\n", status.ToString());
   if (status.IsCorruption()) throw leveldb_error("Database corrupted");
@@ -21,19 +21,15 @@ void HandleError(const leveldb::Status& status) throw(leveldb_error) {
   throw leveldb_error("Unknown database error");
 }
 
-static leveldb::Options GetOptions(size_t nCacheSize) {
-  leveldb::Options options;
-  options.block_cache = leveldb::NewLRUCache(nCacheSize / 2);
-  options.write_buffer_size = nCacheSize / 4;  // up to two write buffers may be held in memory simultaneously
-  options.filter_policy = leveldb::NewBloomFilterPolicy(10);
-  options.compression = leveldb::kNoCompression;
-  options.max_open_files = 64;
-  if (leveldb::kMajorVersion > 1 || (leveldb::kMajorVersion == 1 && leveldb::kMinorVersion >= 16)) {
-    // LevelDB versions before 1.16 consider short writes to be corruption. Only trigger error
-    // on corruption in later versions.
-    options.paranoid_checks = true;
-  }
-  return options;
+static rocksdb::Options GetOptions(size_t nCacheSize) {
+  rocksdb::LevelDBOptions opt;
+  //opt.block_cache = rocksdb::NewLRUCache(nCacheSize / 2);
+  opt.write_buffer_size = nCacheSize / 4;  // up to two write buffers may be held in memory simultaneously
+  opt.filter_policy = rocksdb::NewBloomFilterPolicy(10);
+  opt.compression = rocksdb::kNoCompression;
+  opt.max_open_files = 64;
+  rocksdb::Options rocksdb_options = ConvertOptions(opt);  
+  return rocksdb_options;
 }
 
 CLevelDBWrapper::CLevelDBWrapper(const fs::path& path, size_t nCacheSize, bool fMemory, bool fWipe) {
@@ -45,34 +41,34 @@ CLevelDBWrapper::CLevelDBWrapper(const fs::path& path, size_t nCacheSize, bool f
   options = GetOptions(nCacheSize);
   options.create_if_missing = true;
   if (fMemory) {
-    penv = leveldb::NewMemEnv(leveldb::Env::Default());
+    penv = rocksdb::NewMemEnv(rocksdb::Env::Default());
     options.env = penv;
   } else {
     if (fWipe) {
-      LogPrintf("Wiping LevelDB in %s\n", path.string());
-      leveldb::DestroyDB(path.string(), options);
+      LogPrintf("Wiping Rocksdb in %s\n", path.string());
+      rocksdb::DestroyDB(path.string(), options);
     }
     TryCreateDirectory(path);
-    LogPrintf("Opening LevelDB in %s\n", path.string());
+    LogPrintf("Opening Rocksdb in %s\n", path.string());
   }
-  leveldb::Status status = leveldb::DB::Open(options, path.string(), &pdb);
+  rocksdb::Status status = rocksdb::DB::Open(options, path.string(), &pdb);
   HandleError(status);
-  LogPrintf("Opened LevelDB successfully\n");
+  LogPrintf("Opened Rocksdb successfully\n");
 }
 
 CLevelDBWrapper::~CLevelDBWrapper() {
   delete pdb;
   pdb = nullptr;
-  delete options.filter_policy;
-  options.filter_policy = nullptr;
-  delete options.block_cache;
-  options.block_cache = nullptr;
+  //delete options.filter_policy;
+  //  options.filter_policy = nullptr;
+  //delete options.block_cache;
+  //  options.block_cache = nullptr;
   delete penv;
   options.env = nullptr;
 }
 
 bool CLevelDBWrapper::WriteBatch(CLevelDBBatch& batch, bool fSync) throw(leveldb_error) {
-  leveldb::Status status = pdb->Write(fSync ? syncoptions : writeoptions, &batch.batch);
+  rocksdb::Status status = pdb->Write(fSync ? syncoptions : writeoptions, &batch.batch);
   HandleError(status);
   return true;
 }

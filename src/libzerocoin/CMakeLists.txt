@@ -4,7 +4,7 @@
 # See LICENSE file or http://opensource.org/licenses/MIT for terms
 
 cmake_minimum_required(VERSION 2.8)
-project(zerocoin)
+#project(zerocoin)
 
 # Just add Debug info for Debug builds
 if (CMAKE_BUILD_TYPE MATCHES "DEBUG")

@@ -58,7 +58,6 @@ class BitcoinGUI : public QMainWindow {
   */
   void setClientModel(ClientModel* clientModel);
 
-#ifdef ENABLE_WALLET
   /** Set the wallet model.
       The wallet model represents a bitcoin wallet, and offers access to the list of transactions, address book and
      sending functionality.
@@ -66,7 +65,6 @@ class BitcoinGUI : public QMainWindow {
   bool addWallet(const QString& name, WalletModel* walletModel);
   bool setCurrentWallet(const QString& name);
   void removeAllWallets();
-#endif  // ENABLE_WALLET
   bool enableWallet;
   bool fMultiSend = false;
 
@@ -179,7 +177,6 @@ class BitcoinGUI : public QMainWindow {
   */
   void message(const QString& title, const QString& message, unsigned int style, bool* ret = nullptr);
 
-#ifdef ENABLE_WALLET
   void setStakingStatus();
 
   /** Set the encryption status as shown in the UI.
@@ -193,10 +190,8 @@ class BitcoinGUI : public QMainWindow {
   /** Show incoming transaction notification for new transactions. */
   void incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type,
                            const QString& address);
-#endif  // ENABLE_WALLET
 
  private slots:
-#ifdef ENABLE_WALLET
   /** Switch to overview (home) page */
   void gotoOverviewPage();
   /** Switch to history (transactions) page */
@@ -226,7 +221,6 @@ class BitcoinGUI : public QMainWindow {
   /** Show open dialog */
   void openClicked();
 
-#endif  // ENABLE_WALLET
   /** Show configuration dialog */
   void optionsClicked();
   /** Show about dialog */

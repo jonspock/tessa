@@ -105,8 +105,8 @@ static void CheckBlockIndex();
 
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
-
-const string strMessageMagic = "Darknet Signed Message:\n";
+#warning "Change strMessageMagic string"
+const string strMessageMagic = "ClubChain Signed Message:\n";
 
 // Internal stuff
 namespace {
