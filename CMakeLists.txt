@@ -59,8 +59,8 @@ endif(CCACHE)
 
 
 set(OPENSSL_VER "1.0.2n")
-set(BDB_VER "4.8.30")
 set(ROCKSDB_VER "5.11.3")
+set(LMDB_VER "0.9.22")
 
 #---------------------------------------------------------------------------------------------------------
 # Code coverage
@@ -197,7 +197,6 @@ SET(SERVER_A
 	./src/noui.cpp
 	./src/pow.cpp
 	./src/rest.cpp
-	./src/rocksdbwrapper.cpp
   )
 
 SET(RPC
@@ -299,7 +298,7 @@ SET(SCH_SOURCES
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(OPENSSL_ROOT_DIR "/usr/local/Cellar/openssl/${OPENSSL_VER}/")
-  set(BDB_ROOT_DIR "/usr/local/Cellar/berkeley-db4/${BDB_VER}/")
+  set(LMDB_ROOT_DIR "/usr/local/Cellar/lmdb/${LMDB_VER}/")
   set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
 endif()
 
@@ -319,7 +318,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/obj
   ${Boost_INCLUDE_DIRS}
   ${OPENSSL_INCLUDE_DIR}
-  ${BDB_ROOT_DIR}/include
+  ${LMDB_ROOT_DIR}/include
   ${ROCKSDB_ROOT_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
@@ -352,9 +351,9 @@ source_group("Primitives" FILES ${PRIM})
 source_group("CommonA" FILES ${COMMON_A})
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ELSE()
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${SOURCES} ${PRIM} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${SOURCES} ${PRIM} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ENDIF()
 
 set_property(TARGET coin PROPERTY CXX_STANDARD 11)
@@ -368,7 +367,7 @@ set(SECP256
 	)
 add_library(secp256k1 ${SECP256})
 
-link_directories(${BDB_ROOT_DIR}/lib)
+link_directories(${LMDB_ROOT_DIR}/lib)
 link_directories(${ROCKSDB_ROOT_DIR}/lib)
 
 add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
@@ -378,10 +377,12 @@ set_property(TARGET clubd PROPERTY CXX_STANDARD 11)
 
 target_link_libraries(club-cli coin zerocoin rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
 
+SET(LIBS_LIST coin secp256k1 gmp zerocoin rocksdb lmdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
+
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	target_link_libraries(clubd coin db_cxx db secp256k1 gmp zerocoin rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event /usr/local/lib/libevent_pthreads.a /usr/local/lib/libzmq.a pthread )
+	target_link_libraries(clubd ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )
 else()
-	target_link_libraries(clubd coin db_cxx db secp256k1 zerocoin rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
+	target_link_libraries(clubd coin ${LIBS_LIST})
 endif()
 
 #	miniupnpc pthread)

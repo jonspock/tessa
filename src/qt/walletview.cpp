@@ -304,10 +304,6 @@ void WalletView::encryptWallet(bool status) {
 }
 
 void WalletView::backupWallet() {
-  QString filename = GUIUtil::getSaveFileName(this, tr("Backup Wallet"), QString(), tr("Wallet Data (*.dat)"), nullptr);
-
-  if (filename.isEmpty()) return;
-  walletModel->backupWallet(filename);
 }
 
 void WalletView::changePassphrase() {

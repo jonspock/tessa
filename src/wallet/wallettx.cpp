@@ -327,7 +327,7 @@ void CWalletTx::GetAccountAmounts(const string& strAccount, CAmount& nReceived, 
   }
 }
 
-bool CWalletTx::WriteToDisk() { return CWalletDB(pwallet->strWalletFile).WriteTx(GetHash(), *this); }
+bool CWalletTx::WriteToDisk() { return gWalletDB.WriteTx(GetHash(), *this); }
 
 bool CWalletTx::InMempool() const {
   LOCK(mempool.cs);

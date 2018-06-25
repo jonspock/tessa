@@ -13,22 +13,19 @@
 #include "wallet/walletdb.h"
 #include "zerochain.h"
 
-CZeroWallet::CZeroWallet(std::string strWalletFile) {
-  this->strWalletFile = strWalletFile;
-  CWalletDB walletdb(strWalletFile);
-
+CZeroWallet::CZeroWallet() {
   uint256 hashSeed;
-  bool fFirstRun = !walletdb.ReadCurrentSeedHash(hashSeed);
+  bool fFirstRun = !gWalletDB.ReadCurrentSeedHash(hashSeed);
 
   // Check for old db version of storing zkp seed
   if (fFirstRun) {
     uint256 seed;
-    if (walletdb.ReadZKPSeed_deprecated(seed)) {
+    if (gWalletDB.ReadZKPSeed_deprecated(seed)) {
       // Update to new format, erase old
       seedMaster = seed;
       hashSeed = Hash(seed.begin(), seed.end());
       if (pwalletMain->AddDeterministicSeed(seed)) {
-        if (walletdb.EraseZKPSeed_deprecated()) {
+        if (gWalletDB.EraseZKPSeed_deprecated()) {
           LogPrint(ClubLog::ZERO, "%s: Updated ZKP seed databasing\n", __func__);
           fFirstRun = false;
         } else {
@@ -69,7 +66,6 @@ CZeroWallet::CZeroWallet(std::string strWalletFile) {
 }
 
 bool CZeroWallet::SetMasterSeed(const uint256& seedMaster, bool fResetCount) {
-  CWalletDB walletdb(strWalletFile);
   if (pwalletMain->IsLocked()) return false;
 
   if (!seedMaster.IsNull() && !pwalletMain->AddDeterministicSeed(seedMaster)) {
@@ -81,8 +77,8 @@ bool CZeroWallet::SetMasterSeed(const uint256& seedMaster, bool fResetCount) {
   nCountLastUsed = 0;
 
   if (fResetCount)
-    walletdb.WriteZKPCount(nCountLastUsed);
-  else if (!walletdb.ReadZKPCount(nCountLastUsed))
+    gWalletDB.WriteZKPCount(nCountLastUsed);
+  else if (!gWalletDB.ReadZKPCount(nCountLastUsed))
     nCountLastUsed = 0;
 
   mintPool.Reset();
@@ -132,7 +128,7 @@ void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
     CBigNum bnValue = MintedCoin.CoinFromSeed(seedZerocoin);
 
     mintPool.Add(bnValue, i);
-    CWalletDB(strWalletFile).WriteMintPoolPair(hashSeed, GetPubCoinHash(bnValue), i);
+    gWalletDB.WriteMintPoolPair(hashSeed, GetPubCoinHash(bnValue), i);
     LogPrint(ClubLog::ZERO, "%s : %s count=%d\n", __func__, bnValue.GetHex().substr(0, 6), i);
   }
 }
@@ -140,7 +136,7 @@ void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
 // pubcoin hashes are stored to db so that a full accounting of mints belonging to the seed can be tracked without
 // regenerating
 bool CZeroWallet::LoadMintPoolFromDB() {
-  map<uint256, vector<pair<uint256, uint32_t> > > mapMintPool = CWalletDB(strWalletFile).MapMintPool();
+  map<uint256, vector<pair<uint256, uint32_t> > > mapMintPool = gWalletDB.MapMintPool();
 
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
   for (auto& pair : mapMintPool[hashSeed]) mintPool.Add(pair);
@@ -161,7 +157,6 @@ void CZeroWallet::GetState(int& nCount, int& nLastGenerated) {
 void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
   uint32_t nLastCountUsed = 0;
   bool found = true;
-  CWalletDB walletdb(strWalletFile);
 
   set<uint256> setAddedTx;
   while (found) {
@@ -299,9 +294,8 @@ bool CZeroWallet::SetMintSeen(const CBigNum& bnValue, const int& nHeight, const 
 
   // Update the count if it is less than the mint's count
   if (nCountLastUsed < pMint.second) {
-    CWalletDB walletdb(strWalletFile);
     nCountLastUsed = pMint.second;
-    walletdb.WriteZKPCount(nCountLastUsed);
+    gWalletDB.WriteZKPCount(nCountLastUsed);
   }
 
   // remove from the pool
@@ -319,8 +313,7 @@ uint512 CZeroWallet::GetZerocoinSeed(uint32_t n) {
 
 void CZeroWallet::UpdateCount() {
   nCountLastUsed++;
-  CWalletDB walletdb(strWalletFile);
-  walletdb.WriteZKPCount(nCountLastUsed);
+  gWalletDB.WriteZKPCount(nCountLastUsed);
 }
 
 void CZeroWallet::GenerateDeterministicZKP(libzerocoin::CoinDenomination denom, libzerocoin::PrivateCoin& coin,

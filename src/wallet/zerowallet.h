@@ -20,11 +20,10 @@ class CZeroWallet {
  private:
   uint256 seedMaster;
   uint32_t nCountLastUsed;
-  std::string strWalletFile;
   CMintPool mintPool;
 
  public:
-  CZeroWallet(std::string strWalletFile);
+  CZeroWallet();
 
   void AddToMintPool(const std::pair<uint256, uint32_t>& pMint, bool fVerbose);
   bool SetMasterSeed(const uint256& seedMaster, bool fResetCount = false);

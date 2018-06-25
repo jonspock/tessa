@@ -142,7 +142,7 @@ void listSpends(const std::vector<CZerocoinMint>& vSelectedMints) {
     LogPrint(ClubLog::ZERO, "%s %d coins for denomination %d used\n", __func__, mapZerocoinSupply.at(denom), denom);
     nTotal += libzerocoin::ZerocoinDenominationToAmount(denom);
   }
-  LogPrint(ClubLog::ZERO, "Total value of coins %d\n", nTotal);
+  //LogPrint(ClubLog::ZERO, "Total value of coins %d\n", nTotal);
 }
 
 // -------------------------------------------------------------------------------------------------------

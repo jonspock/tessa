@@ -13,13 +13,12 @@ class CDeterministicMint;
 class CZeroTracker {
  private:
   bool fInitialized;
-  std::string strWalletFile;
   std::map<uint256, CMintMeta> mapSerialHashes;
   std::map<uint256, uint256> mapPendingSpends;  // serialhash, txid of spend
   bool UpdateStatusInternal(const std::set<uint256>& setMempool, CMintMeta& mint);
 
  public:
-  CZeroTracker(std::string strWalletFile);
+  CZeroTracker();
   ~CZeroTracker();
   void Add(const CDeterministicMint& dMint, bool isNew = false, bool isArchived = false);
   void Add(const CZerocoinMint& mint, bool isNew = false, bool isArchived = false);

@@ -340,11 +340,10 @@ void OptionsModel::setStakeSplitThreshold(int value) {
 
   nStakeSplitThreshold = value;
   if (pwalletMain && pwalletMain->nStakeSplitThreshold != nStakeSplitThreshold) {
-    CWalletDB walletdb(pwalletMain->strWalletFile);
     LOCK(pwalletMain->cs_wallet);
     {
       pwalletMain->nStakeSplitThreshold = nStakeSplitThreshold;
-      if (pwalletMain->fFileBacked) walletdb.WriteStakeSplitThreshold(nStakeSplitThreshold);
+      if (pwalletMain->fFileBacked) gWalletDB.WriteStakeSplitThreshold(nStakeSplitThreshold);
     }
   }
 }

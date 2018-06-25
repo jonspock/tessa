@@ -112,10 +112,8 @@ UniValue getnewaddress(const UniValue& params, bool fHelp) {
 }
 
 CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false) {
-  CWalletDB walletdb(pwalletMain->strWalletFile);
-
   CAccount account;
-  walletdb.ReadAccount(strAccount, account);
+  gWalletDB.ReadAccount(strAccount, account);
 
   bool bKeyUsed = false;
 
@@ -136,7 +134,7 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false) {
       throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
 
     pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
-    walletdb.WriteAccount(strAccount, account);
+    gWalletDB.WriteAccount(strAccount, account);
   }
 
   return CBitcoinAddress(account.vchPubKey.GetID());
@@ -640,14 +638,13 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
   }
 
   // Tally internal accounting entries
-  nBalance += walletdb.GetAccountCreditDebit(strAccount);
+  nBalance += gWalletDB.GetAccountCreditDebit(strAccount);
 
   return nBalance;
 }
 
 CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const isminefilter& filter) {
-  CWalletDB walletdb(pwalletMain->strWalletFile);
-  return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
+  return GetAccountBalance(gWalletDB, strAccount, nMinDepth, filter);
 }
 
 UniValue getbalance(const UniValue& params, bool fHelp) {
@@ -767,34 +764,27 @@ UniValue movecmd(const UniValue& params, bool fHelp) {
     (void)params[3].get_int();
   string strComment;
   if (params.size() > 4) strComment = params[4].get_str();
-
-  CWalletDB walletdb(pwalletMain->strWalletFile);
-  if (!walletdb.TxnBegin()) throw JSONRPCError(RPC_DATABASE_ERROR, "database error");
-
   int64_t nNow = GetAdjustedTime();
 
   // Debit
   CAccountingEntry debit;
-  debit.nOrderPos = pwalletMain->IncOrderPosNext(&walletdb);
+  debit.nOrderPos = pwalletMain->IncOrderPosNext();
   debit.strAccount = strFrom;
   debit.nCreditDebit = -nAmount;
   debit.nTime = nNow;
   debit.strOtherAccount = strTo;
   debit.strComment = strComment;
-  pwalletMain->AddAccountingEntry(debit, walletdb);
+  pwalletMain->AddAccountingEntry(debit);
 
   // Credit
   CAccountingEntry credit;
-  credit.nOrderPos = pwalletMain->IncOrderPosNext(&walletdb);
+  credit.nOrderPos = pwalletMain->IncOrderPosNext();
   credit.strAccount = strTo;
   credit.nCreditDebit = nAmount;
   credit.nTime = nNow;
   credit.strOtherAccount = strFrom;
   credit.strComment = strComment;
-  pwalletMain->AddAccountingEntry(credit, walletdb);
-
-  if (!walletdb.TxnCommit()) throw JSONRPCError(RPC_DATABASE_ERROR, "database error");
-
+  pwalletMain->AddAccountingEntry(credit);
   return true;
 }
 
@@ -1643,25 +1633,6 @@ UniValue gettransaction(const UniValue& params, bool fHelp) {
   return entry;
 }
 
-UniValue backupwallet(const UniValue& params, bool fHelp) {
-  if (fHelp || params.size() != 1)
-    throw runtime_error(
-        "backupwallet \"destination\"\n"
-        "\nSafely copies wallet.dat to destination, which can be a directory or a path with filename.\n"
-
-        "\nArguments:\n"
-        "1. \"destination\"   (string) The destination directory or file\n"
-
-        "\nExamples:\n" +
-        HelpExampleCli("backupwallet", "\"backup.dat\"") + HelpExampleRpc("backupwallet", "\"backup.dat\""));
-
-  LOCK2(cs_main, pwalletMain->cs_wallet);
-
-  string strDest = params[0].get_str();
-  if (!BackupWallet(*pwalletMain, strDest)) throw JSONRPCError(RPC_WALLET_ERROR, "Error: Wallet backup failed!");
-
-  return NullUniValue;
-}
 
 UniValue keypoolrefill(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 1)
@@ -2146,7 +2117,6 @@ UniValue setstakesplitthreshold(const UniValue& params, bool fHelp) {
 
   if (nStakeSplitThreshold > 999999) throw runtime_error("Value out of range, max allowed is 999999");
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
   LOCK(pwalletMain->cs_wallet);
   {
     bool fFileBacked = pwalletMain->fFileBacked;
@@ -2155,7 +2125,7 @@ UniValue setstakesplitthreshold(const UniValue& params, bool fHelp) {
     pwalletMain->nStakeSplitThreshold = nStakeSplitThreshold;
     result.push_back(Pair("threshold", int(pwalletMain->nStakeSplitThreshold)));
     if (fFileBacked) {
-      walletdb.WriteStakeSplitThreshold(nStakeSplitThreshold);
+      gWalletDB.WriteStakeSplitThreshold(nStakeSplitThreshold);
       result.push_back(Pair("saved", "true"));
     } else
       result.push_back(Pair("saved", "false"));
@@ -2199,7 +2169,6 @@ UniValue autocombinerewards(const UniValue& params, bool fHelp) {
         "\nExamples:\n" +
         HelpExampleCli("autocombinerewards", "true 500") + HelpExampleRpc("autocombinerewards", "true 500"));
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
   CAmount nThreshold = 0;
 
   if (fEnable) nThreshold = params[1].get_int();
@@ -2207,7 +2176,7 @@ UniValue autocombinerewards(const UniValue& params, bool fHelp) {
   pwalletMain->fCombineDust = fEnable;
   pwalletMain->nAutoCombineThreshold = nThreshold;
 
-  if (!walletdb.WriteAutoCombineSettings(fEnable, nThreshold))
+  if (!gWalletDB.WriteAutoCombineSettings(fEnable, nThreshold))
     throw runtime_error("Changed settings in wallet but failed to save to database\n");
 
   return NullUniValue;
@@ -2274,7 +2243,6 @@ unsigned int sumMultiSend() {
 }
 
 UniValue multisend(const UniValue& params, bool fHelp) {
-  CWalletDB walletdb(pwalletMain->strWalletFile);
   bool fFileBacked;
   // MultiSend Commands
   if (params.size() == 1) {
@@ -2289,7 +2257,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
       {
         bool erased = false;
         if (pwalletMain->fFileBacked) {
-          if (walletdb.EraseMultiSend(pwalletMain->vMultiSend)) erased = true;
+          if (gWalletDB.EraseMultiSend(pwalletMain->vMultiSend)) erased = true;
         }
 
         pwalletMain->vMultiSend.clear();
@@ -2307,7 +2275,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
 
       if (CBitcoinAddress(pwalletMain->vMultiSend[0].first).IsValid()) {
         pwalletMain->fMultiSendStake = true;
-        if (!walletdb.WriteMSettings(true, false, pwalletMain->nLastMultiSendHeight)) {
+        if (!gWalletDB.WriteMSettings(true, false, pwalletMain->nLastMultiSendHeight)) {
           UniValue obj(UniValue::VOBJ);
           obj.push_back(Pair("error", "MultiSend activated but writing settings to DB failed"));
           UniValue arr(UniValue::VARR);
@@ -2321,13 +2289,13 @@ UniValue multisend(const UniValue& params, bool fHelp) {
       throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to activate MultiSend, check MultiSend vector");
     } else if (strCommand == "disable" || strCommand == "deactivate") {
       pwalletMain->setMultiSendDisabled();
-      if (!walletdb.WriteMSettings(false, false, pwalletMain->nLastMultiSendHeight))
+      if (!gWalletDB.WriteMSettings(false, false, pwalletMain->nLastMultiSendHeight))
         throw JSONRPCError(RPC_DATABASE_ERROR, "MultiSend deactivated but writing settings to DB failed");
 
       return printMultiSend();
     } else if (strCommand == "enableall") {
-      if (!walletdb.EraseMSDisabledAddresses(pwalletMain->vDisabledAddresses))
-        return "failed to clear old vector from walletDB";
+      if (!gWalletDB.EraseMSDisabledAddresses(pwalletMain->vDisabledAddresses))
+        return "failed to clear old vector from gWalletDB";
       else {
         pwalletMain->vDisabledAddresses.clear();
         return printMultiSend();
@@ -2336,12 +2304,12 @@ UniValue multisend(const UniValue& params, bool fHelp) {
   }
   if (params.size() == 2 && params[0].get_str() == "delete") {
     int del = std::stoi(params[1].get_str());
-    if (!walletdb.EraseMultiSend(pwalletMain->vMultiSend))
+    if (!gWalletDB.EraseMultiSend(pwalletMain->vMultiSend))
       throw JSONRPCError(RPC_DATABASE_ERROR, "failed to delete old MultiSend vector from database");
 
     pwalletMain->vMultiSend.erase(pwalletMain->vMultiSend.begin() + del);
-    if (!walletdb.WriteMultiSend(pwalletMain->vMultiSend))
-      throw JSONRPCError(RPC_DATABASE_ERROR, "walletdb WriteMultiSend failed!");
+    if (!gWalletDB.WriteMultiSend(pwalletMain->vMultiSend))
+      throw JSONRPCError(RPC_DATABASE_ERROR, "gWalletDB WriteMultiSend failed!");
 
     return printMultiSend();
   }
@@ -2351,12 +2319,12 @@ UniValue multisend(const UniValue& params, bool fHelp) {
       throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "address you want to disable is not valid");
     else {
       pwalletMain->vDisabledAddresses.push_back(disAddress);
-      if (!walletdb.EraseMSDisabledAddresses(pwalletMain->vDisabledAddresses))
+      if (!gWalletDB.EraseMSDisabledAddresses(pwalletMain->vDisabledAddresses))
         throw JSONRPCError(RPC_DATABASE_ERROR,
-                           "disabled address from sending, but failed to clear old vector from walletDB");
+                           "disabled address from sending, but failed to clear old vector from gWalletDB");
 
-      if (!walletdb.WriteMSDisabledAddresses(pwalletMain->vDisabledAddresses))
-        throw JSONRPCError(RPC_DATABASE_ERROR, "disabled address from sending, but failed to store it to walletDB");
+      if (!gWalletDB.WriteMSDisabledAddresses(pwalletMain->vDisabledAddresses))
+        throw JSONRPCError(RPC_DATABASE_ERROR, "disabled address from sending, but failed to store it to gWalletDB");
       else
         return printMultiSend();
     }
@@ -2415,15 +2383,15 @@ UniValue multisend(const UniValue& params, bool fHelp) {
                            "Failed to add to MultiSend vector, cannot use the same address twice");
     }
 
-    if (fFileBacked) walletdb.EraseMultiSend(pwalletMain->vMultiSend);
+    if (fFileBacked) gWalletDB.EraseMultiSend(pwalletMain->vMultiSend);
 
     std::pair<std::string, int> newMultiSend;
     newMultiSend.first = strAddress;
     newMultiSend.second = nPercent;
     pwalletMain->vMultiSend.push_back(newMultiSend);
     if (fFileBacked) {
-      if (!walletdb.WriteMultiSend(pwalletMain->vMultiSend))
-        throw JSONRPCError(RPC_DATABASE_ERROR, "walletdb WriteMultiSend failed!");
+      if (!gWalletDB.WriteMultiSend(pwalletMain->vMultiSend))
+        throw JSONRPCError(RPC_DATABASE_ERROR, "gWalletDB WriteMultiSend failed!");
     }
   }
   return printMultiSend();
@@ -2476,7 +2444,6 @@ UniValue listmintedzerocoins(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked(true);
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
   set<CMintMeta> setMints = pwalletMain->zkpTracker->ListMints(true, false, true);
 
   UniValue jsonList(UniValue::VARR);
@@ -2509,7 +2476,6 @@ UniValue listzerocoinamounts(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked(true);
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
   set<CMintMeta> setMints = pwalletMain->zkpTracker->ListMints(true, true, true);
 
   std::map<libzerocoin::CoinDenomination, CAmount> spread;
@@ -2548,8 +2514,7 @@ UniValue listspentzerocoins(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked(true);
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
-  list<CBigNum> listPubCoin = walletdb.ListSpentCoinsSerial();
+  list<CBigNum> listPubCoin = gWalletDB.ListSpentCoinsSerial();
 
   UniValue jsonList(UniValue::VARR);
   for (const CBigNum& pubCoinItem : listPubCoin) { jsonList.push_back(pubCoinItem.GetHex()); }
@@ -2813,7 +2778,6 @@ UniValue resetmintzerocoin(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
   CZeroTracker* zkpTracker = pwalletMain->zkpTracker.get();
   set<CMintMeta> setMints = zkpTracker->ListMints(false, false, true);
   vector<CMintMeta> vMintsToFind(setMints.begin(), setMints.end());
@@ -2865,10 +2829,9 @@ UniValue resetspentzerocoin(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
   CZeroTracker* zkpTracker = pwalletMain->zkpTracker.get();
   set<CMintMeta> setMints = zkpTracker->ListMints(false, false, false);
-  list<CZerocoinSpend> listSpends = walletdb.ListSpentCoins();
+  list<CZerocoinSpend> listSpends = gWalletDB.ListSpentCoins();
   list<CZerocoinSpend> listUnconfirmedSpends;
 
   for (CZerocoinSpend spend : listSpends) {
@@ -2889,7 +2852,7 @@ UniValue resetspentzerocoin(const UniValue& params, bool fHelp) {
     for (auto& meta : setMints) {
       if (meta.hashSerial == GetSerialHash(spend.GetSerial())) {
         zkpTracker->SetPubcoinNotUsed(meta.hashPubcoin);
-        walletdb.EraseZerocoinSpendSerialEntry(spend.GetSerial());
+        gWalletDB.EraseZerocoinSpendSerialEntry(spend.GetSerial());
         RemoveSerialFromDB(spend.GetSerial());
         UniValue obj(UniValue::VOBJ);
         obj.push_back(Pair("serial", spend.GetSerial().GetHex()));
@@ -2931,9 +2894,8 @@ UniValue getarchivedzerocoin(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked();
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
-  list<CZerocoinMint> listMints = walletdb.ListArchivedZerocoins();
-  list<CDeterministicMint> listDMints = walletdb.ListArchivedDeterministicMints();
+  list<CZerocoinMint> listMints = gWalletDB.ListArchivedZerocoins();
+  list<CDeterministicMint> listDMints = gWalletDB.ListArchivedDeterministicMints();
 
   UniValue arrRet(UniValue::VARR);
   for (const CZerocoinMint mint : listMints) {
@@ -2995,8 +2957,6 @@ UniValue exportzerocoins(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   EnsureWalletIsUnlocked();
-
-  CWalletDB walletdb(pwalletMain->strWalletFile);
 
   bool fIncludeSpent = params[0].get_bool();
   libzerocoin::CoinDenomination denomination = libzerocoin::ZQ_ERROR;
@@ -3063,7 +3023,6 @@ UniValue importzerocoins(const UniValue& params, bool fHelp) {
 
   RPCTypeCheck(params, {UniValue::VARR, UniValue::VOBJ});
   UniValue arrMints = params[0].get_array();
-  CWalletDB walletdb(pwalletMain->strWalletFile);
 
   int count = 0;
   CAmount nValue = 0;
@@ -3300,7 +3259,6 @@ UniValue dzkpstate(const UniValue& params, bool fHelp) {
 
 void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
   LogPrintf("%s: start=%d end=%d\n", __func__, nCountStart, nCountEnd);
-  CWalletDB walletDB(pwalletMain->strWalletFile);
   try {
     uint256 seedMaster = zwallet->GetMasterSeed();
     uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
@@ -3315,7 +3273,7 @@ void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
 
       uint256 hashPubcoin = GetPubCoinHash(bnValue);
       zwallet->AddToMintPool(make_pair(hashPubcoin, i), true);
-      walletDB.WriteMintPoolPair(hashSeed, hashPubcoin, i);
+      gWalletDB.WriteMintPoolPair(hashSeed, hashPubcoin, i);
     }
   } catch (std::exception& e) { LogPrintf("SearchThread() exception"); } catch (...) {
     LogPrintf("SearchThread() exception");

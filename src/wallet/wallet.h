@@ -72,7 +72,7 @@ class CScript;
 class CWalletTx;
 
 /** (client) version numbers for particular wallet features */
-enum WalletFeature { FEATURE_LATEST = 61000 };
+enum WalletFeature { FEATURE_LATEST = 90000 };
 
 enum AvailableCoinsType {
   ALL_COINS = 1,
@@ -143,7 +143,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   std::string ResetSpentZerocoin();
   void ReconsiderZerocoins(std::list<CZerocoinMint>& listMintsRestored,
                            std::list<CDeterministicMint>& listDMintsRestored);
-  void ZkpBackupWallet();
   bool GetZerocoinKey(const CBigNum& bnSerial, CKey& key);
   bool CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint);
   bool GetMint(const uint256& hashSerial, CZerocoinMint& mint);
@@ -172,7 +171,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   bool fFileBacked;
   bool fWalletUnlockAnonymizeOnly;
-  std::string strWalletFile;
   bool fBackupMints;
   std::unique_ptr<CZeroTracker> zkpTracker;
 
@@ -202,12 +200,8 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool fCombineDust;
   CAmount nAutoCombineThreshold;
 
-  CWallet() { SetNull(); }
-
-  CWallet(std::string strWalletFileIn) {
+  CWallet() {
     SetNull();
-
-    strWalletFile = strWalletFileIn;
     fFileBacked = true;
   }
 
@@ -248,7 +242,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   void setZWallet(CZeroWallet* zwallet) {
     zwalletMain = zwallet;
-    zkpTracker = std::unique_ptr<CZeroTracker>(new CZeroTracker(strWalletFile));
+    zkpTracker = std::unique_ptr<CZeroTracker>(new CZeroTracker());
   }
 
   CZeroWallet* getZWallet() { return zwalletMain; }
@@ -361,7 +355,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
    * Increment the next transaction order id
    * @return next transaction order id
    */
-  int64_t IncOrderPosNext(CWalletDB* pwalletdb = nullptr);
+  int64_t IncOrderPosNext();
 
   void MarkDirty();
   bool AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet = false);
@@ -394,7 +388,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
                          CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = nullptr,
                          AvailableCoinsType coin_type = ALL_COINS, bool useIX = false, CAmount nFeePay = 0);
   bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
-  bool AddAccountingEntry(const CAccountingEntry&, CWalletDB& pwalletdb);
+  bool AddAccountingEntry(const CAccountingEntry& c);
   bool ConvertList(std::vector<CTxIn> vCoins, std::vector<int64_t>& vecAmounts);
   bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval,
                        CMutableTransaction& txNew, unsigned int& nTxNewTime);
@@ -488,14 +482,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   }
 
   bool SetDefaultKey(const CPubKey& vchPubKey);
-
-  //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if
-  //! those are lower
-  bool SetMinVersion(enum WalletFeature, CWalletDB* pwalletdbIn = nullptr, bool fExplicit = false);
-
-  //! change which version we're allowed to upgrade to (note that this does not immediately imply upgrading to that
-  //! format)
-  bool SetMaxVersion(int nVersion);
 
   //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
   int GetVersion() {

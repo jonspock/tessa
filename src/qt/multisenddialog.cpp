@@ -131,8 +131,7 @@ void MultiSendDialog::on_addButton_clicked() {
       model->updateAddressBookLabels(address.Get(), "(no label)", "send");
   }
 
-  CWalletDB walletdb(pwalletMain->strWalletFile);
-  if (!walletdb.WriteMultiSend(pwalletMain->vMultiSend)) {
+  if (!gWalletDB.WriteMultiSend(pwalletMain->vMultiSend)) {
     ui->message->setProperty("status", "error");
     ui->message->style()->polish(ui->message);
     ui->message->setText(tr("Saved the MultiSend to memory, but failed saving properties to the database.\n"));
@@ -153,9 +152,8 @@ void MultiSendDialog::on_deleteButton_clicked() {
       fRemoved = true;
     }
   }
-  CWalletDB walletdb(pwalletMain->strWalletFile);
-  if (!walletdb.EraseMultiSend(vMultiSendTemp)) fRemoved = false;
-  if (!walletdb.WriteMultiSend(pwalletMain->vMultiSend)) fRemoved = false;
+  if (!gWalletDB.EraseMultiSend(vMultiSendTemp)) fRemoved = false;
+  if (!gWalletDB.WriteMultiSend(pwalletMain->vMultiSend)) fRemoved = false;
 
   if (fRemoved)
     ui->message->setText(tr("Removed ") + QString(strAddress.c_str()));
@@ -175,8 +173,7 @@ void MultiSendDialog::on_activateButton_clicked() {
     strRet = "Need to select to send on stake\n";
   } else if (CBitcoinAddress(pwalletMain->vMultiSend[0].first).IsValid()) {
     pwalletMain->fMultiSendStake = ui->multiSendStakeCheckBox->isChecked();
-    CWalletDB walletdb(pwalletMain->strWalletFile);
-    if (!walletdb.WriteMSettings(pwalletMain->fMultiSendStake, false, pwalletMain->nLastMultiSendHeight))
+    if (!gWalletDB.WriteMSettings(pwalletMain->fMultiSendStake, false, pwalletMain->nLastMultiSendHeight))
       strRet = "MultiSend activated but writing settings to DB failed";
     else
       strRet = "MultiSend activated";
@@ -191,8 +188,7 @@ void MultiSendDialog::on_activateButton_clicked() {
 void MultiSendDialog::on_disableButton_clicked() {
   std::string strRet = "";
   pwalletMain->setMultiSendDisabled();
-  CWalletDB walletdb(pwalletMain->strWalletFile);
-  if (!walletdb.WriteMSettings(false, false, pwalletMain->nLastMultiSendHeight))
+  if (!gWalletDB.WriteMSettings(false, false, pwalletMain->nLastMultiSendHeight))
     strRet = "MultiSend deactivated but writing settings to DB failed";
   else
     strRet = "MultiSend deactivated";

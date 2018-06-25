@@ -4,9 +4,7 @@
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
-#ifndef BITCOIN_WALLETDB_H
-#define BITCOIN_WALLETDB_H
+#pragma once
 
 #include "amount.h"
 #include "db.h"
@@ -69,7 +67,8 @@ class CKeyMetadata {
 /** Access to the wallet database (wallet.dat) */
 class CWalletDB : public CDB {
  public:
-  CWalletDB(const std::string& strFilename, const char* pszMode = "r+") : CDB(strFilename, pszMode) {}
+  CWalletDB() {}
+  CWalletDB(const fs::path& strFilename, const char* pszMode = "r+") { init(strFilename, pszMode); }
 
   bool WriteName(const std::string& strAddress, const std::string& strName);
   bool EraseName(const std::string& strAddress);
@@ -98,7 +97,6 @@ class CWalletDB : public CDB {
 
   bool WriteOrderPosNext(int64_t nOrderPosNext);
 
-  // presstab
   bool WriteStakeSplitThreshold(uint64_t nStakeSplitThreshold);
   bool WriteMultiSend(std::vector<std::pair<std::string, int> > vMultiSend);
   bool EraseMultiSend(std::vector<std::pair<std::string, int> > vMultiSend);
@@ -134,8 +132,6 @@ class CWalletDB : public CDB {
   DBErrors LoadWallet(CWallet* pwallet);
   DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, std::vector<CWalletTx>& vWtx);
   DBErrors ZapWalletTx(CWallet* pwallet, std::vector<CWalletTx>& vWtx);
-  static bool Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys);
-  static bool Recover(CDBEnv& dbenv, std::string filename);
 
   bool WriteDeterministicMint(const CDeterministicMint& dMint);
   bool ReadDeterministicMint(const uint256& hashPubcoin, CDeterministicMint& dMint);
@@ -177,8 +173,5 @@ class CWalletDB : public CDB {
   bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
 };
 
-void NotifyBacked(const CWallet& wallet, bool fSuccess, string strMessage);
-bool BackupWallet(const CWallet& wallet, const fs::path& strDest, bool fEnableCustom = true);
-bool AttemptBackupWallet(const CWallet& wallet, const fs::path& pathSrc, const fs::path& pathDest);
 
-#endif  // BITCOIN_WALLETDB_H
+extern CWalletDB gWalletDB;
