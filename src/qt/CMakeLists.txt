@@ -235,9 +235,9 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 # STATIC LINK SPECIFIC FOR MAC-DEPLOY TARGET
   
-  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} /usr/local/opt/lmdb/lib/liblmdb.a secp256k1 gmp zerocoin rocksdb /usr/local/opt/openssl/lib/libssl.a /usr/local/opt/openssl/lib/libcrypto.a ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a /usr/local/lib/libqrencode.a /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
+  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb /usr/local/opt/openssl/lib/libssl.a /usr/local/opt/openssl/lib/libcrypto.a ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a /usr/local/lib/libqrencode.a /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
 else()
-  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb lmdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} ${PROTOBUF_LIBRARIES} miniupnpc qrencode event event_pthreads pthread )
+  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} ${PROTOBUF_LIBRARIES} miniupnpc qrencode event event_pthreads pthread )
 endif()
 
 #############################################################

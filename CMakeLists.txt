@@ -60,7 +60,6 @@ endif(CCACHE)
 
 set(OPENSSL_VER "1.0.2n")
 set(ROCKSDB_VER "5.11.3")
-set(LMDB_VER "0.9.22")
 
 #---------------------------------------------------------------------------------------------------------
 # Code coverage
@@ -298,7 +297,6 @@ SET(SCH_SOURCES
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(OPENSSL_ROOT_DIR "/usr/local/Cellar/openssl/${OPENSSL_VER}/")
-  set(LMDB_ROOT_DIR "/usr/local/Cellar/lmdb/${LMDB_VER}/")
   set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
 endif()
 
@@ -318,8 +316,8 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/obj
   ${Boost_INCLUDE_DIRS}
   ${OPENSSL_INCLUDE_DIR}
-  ${LMDB_ROOT_DIR}/include
   ${ROCKSDB_ROOT_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/liblmdb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/
@@ -360,6 +358,7 @@ set_property(TARGET coin PROPERTY CXX_STANDARD 11)
 add_dependencies(coin buildHeader)
 
 add_subdirectory(src/libzerocoin)
+add_subdirectory(src/liblmdb)
 
 set(SECP256
 	./src/secp256k1/src/secp256k1.c
@@ -375,9 +374,9 @@ set_property(TARGET club-cli PROPERTY CXX_STANDARD 11)
 add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
 set_property(TARGET clubd PROPERTY CXX_STANDARD 11)
 
-target_link_libraries(club-cli coin zerocoin rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
+target_link_libraries(club-cli coin zerocoin lmdb rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
 
-SET(LIBS_LIST coin secp256k1 gmp zerocoin rocksdb lmdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
+SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(clubd ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )
