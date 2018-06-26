@@ -1075,6 +1075,7 @@ static void ApproximateBestSubset(vector<pair<CAmount, pair<const CWalletTx*, un
 }
 
 bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInputs, CAmount nTargetAmount) {
+  LOCK(cs_main);
   // Add Club
   vector<COutput> vCoins;
   AvailableCoins(vCoins, true, nullptr, false, STAKABLE_COINS);
@@ -1110,6 +1111,7 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInp
 }
 
 bool CWallet::MintableCoins() {
+  LOCK(cs_main);
   CAmount nBalance = GetBalance();
   CAmount nZkpBalance = GetZerocoinBalance(false);
 
@@ -2278,6 +2280,7 @@ bool CWallet::GetDestData(const CTxDestination& dest, const std::string& key, st
 }
 
 void CWallet::AutoCombineDust() {
+  LOCK2(cs_main, cs_wallet);
   if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300) || IsLocked()) { return; }
 
   map<CBitcoinAddress, vector<COutput> > mapCoinsByAddress =
@@ -2362,6 +2365,7 @@ void CWallet::AutoCombineDust() {
 }
 
 bool CWallet::MultiSend() {
+  LOCK2(cs_main, cs_wallet);
   // Stop the old blocks from sending multisends
   if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300) || IsLocked()) { return false; }
 
@@ -2537,6 +2541,7 @@ int CMerkleTx::GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX)
 }
 
 int CMerkleTx::GetBlocksToMaturity() const {
+  LOCK(cs_main);
   if (!(IsCoinBase() || IsCoinStake())) return 0;
   return max(0, (Params().COINBASE_MATURITY() + 1) - GetDepthInMainChain());
 }
