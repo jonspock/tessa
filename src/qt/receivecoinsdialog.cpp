@@ -23,7 +23,7 @@
 #include <QScrollBar>
 #include <QTextDocument>
 
-ReceiveCoinsDialog::ReceiveCoinsDialog(QWidget* parent) : QDialog(parent), ui(new Ui::ReceiveCoinsDialog), model(0) {
+ReceiveCoinsDialog::ReceiveCoinsDialog(QWidget* parent) : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::ReceiveCoinsDialog), model(0) {
   ui->setupUi(this);
 
 #ifdef Q_OS_MAC  // Icons on push buttons are very uncommon on Mac

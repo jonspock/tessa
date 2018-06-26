@@ -24,7 +24,7 @@
 #include <QSortFilterProxyModel>
 
 AddressBookPage::AddressBookPage(Mode mode, Tabs tab, QWidget* parent)
-    : QDialog(parent), ui(new Ui::AddressBookPage), model(0), mode(mode), tab(tab) {
+  : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::AddressBookPage), model(0), mode(mode), tab(tab) {
   ui->setupUi(this);
 
 #ifdef Q_OS_MAC  // Icons on push buttons are very uncommon on Mac

@@ -41,7 +41,7 @@
 
 extern bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow);
 
-MultisigDialog::MultisigDialog(QWidget* parent) : QDialog(parent), ui(new Ui::MultisigDialog), model(0) {
+MultisigDialog::MultisigDialog(QWidget* parent) : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::MultisigDialog), model(0) {
   ui->setupUi(this);
   multisigTx = CMutableTransaction();
 

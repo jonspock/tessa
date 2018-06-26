@@ -37,7 +37,7 @@ int CoinControlDialog::nSplitBlockDummy;
 CCoinControl* CoinControlDialog::coinControl = new CCoinControl();
 
 CoinControlDialog::CoinControlDialog(QWidget* parent, bool fMultisigEnabled)
-    : QDialog(parent), ui(new Ui::CoinControlDialog), model(0) {
+  : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::CoinControlDialog), model(0) {
   ui->setupUi(this);
   this->fMultisigEnabled = fMultisigEnabled;
 

@@ -16,7 +16,7 @@ using namespace libzerocoin;
 std::set<std::string> ZPivControlDialog::setSelectedMints;
 std::set<CMintMeta> ZPivControlDialog::setMints;
 
-ZPivControlDialog::ZPivControlDialog(QWidget* parent) : QDialog(parent), ui(new Ui::ZPivControlDialog), model(0) {
+ZPivControlDialog::ZPivControlDialog(QWidget* parent) : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::ZPivControlDialog), model(0) {
   ui->setupUi(this);
   setMints.clear();
   privacyDialog = (PrivacyDialog*)parent;
