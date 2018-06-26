@@ -179,6 +179,7 @@ SET(SERVER_A
 	./src/chain.cpp
 	./src/checkpoints.cpp
 	./src/leveldbwrapper.cpp
+	./src/dbwrapper.cpp
 	./src/init.cpp
 	./src/main.cpp
 	./src/mainzero.cpp

@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "leveldbwrapper.h"
+#include "dbwrapper.h"
 #include "spork.h"
 
-class CSporkDB : public CLevelDBWrapper {
+class CSporkDB : public CDbWrapper {
  public:
   CSporkDB(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
 
