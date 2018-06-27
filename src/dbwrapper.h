@@ -35,10 +35,9 @@ class CDbWrapper {
   void Close();
 
   MDB_txn* TxnBegin();
-  MDB_txn* ReadBegin();
+  MDB_txn* ReadBegin() const;
 
- protected:
-  template <typename K, typename T> bool Read(const K& key, T& value) {
+  template <typename K, typename T> bool Read(const K& key, T& value) const {
     // Key
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
     ssKey.reserve(KEY_RESERVE);
@@ -49,8 +48,8 @@ class CDbWrapper {
 
     // Read
     MDB_val datValue;
-    activeTxn = ReadBegin();
-    int dbr = mdb_get(activeTxn, dbi, &datKey, &datValue);
+    auto Txn = ReadBegin();
+    int dbr = mdb_get(Txn, dbi, &datKey, &datValue);
 
     if (dbr) return false;
     // Throw if ret ! = 0!!!!
@@ -112,7 +111,7 @@ class CDbWrapper {
     return (ret == 0 || ret == MDB_NOTFOUND);
   }
 
-  template <typename K> bool Exists(const K& key) {
+  template <typename K> bool Exists(const K& key) const {
     // Key
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
     ssKey.reserve(KEY_RESERVE);
@@ -122,17 +121,16 @@ class CDbWrapper {
     datKey.mv_size = ssKey.size();
 
     // Exists
-    activeTxn = ReadBegin();
-    int ret = mdb_get(activeTxn, dbi, &datKey, 0);
+    auto Txn = ReadBegin();
+    int ret = mdb_get(Txn, dbi, &datKey, 0);
 
     // if non-zero, it doesn't exist!
     return (ret == 0);
   }
 
-  MDB_cursor* GetCursor();
-  int ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, unsigned int fFlags = MDB_NEXT);
+  MDB_cursor* GetCursor() const;
+  int ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, unsigned int fFlags = MDB_NEXT) const;
 
- public:
   bool Verify();
   bool TxnCommit();
   void TxnAbort();

@@ -65,10 +65,10 @@ bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
   return 0;
 }
 
-MDB_cursor* CDbWrapper::GetCursor() {
+MDB_cursor* CDbWrapper::GetCursor() const {
   MDB_cursor* pcursor = nullptr;
-  if (!activeTxn) activeTxn = TxnBegin();
-  int dbr = mdb_cursor_open(activeTxn, dbi, &pcursor);
+  MDB_txn* Txn = (activeTxn) ? activeTxn : ReadBegin();
+  int dbr = mdb_cursor_open(Txn, dbi, &pcursor);
   if (dbr != 0) return nullptr;
   return pcursor;
 }
@@ -80,7 +80,7 @@ MDB_txn* CDbWrapper::TxnBegin() {
   if (!ptxn || dbr != 0) return nullptr;
   return ptxn;
 }
-MDB_txn* CDbWrapper::ReadBegin() {
+MDB_txn* CDbWrapper::ReadBegin() const {
   if (activeTxn) return activeTxn;
   MDB_txn* ptxn = nullptr;
   int dbr = mdb_txn_begin(env, nullptr, MDB_RDONLY, &ptxn);
@@ -129,7 +129,7 @@ void CDbWrapper::TxnAbort() {
   activeTxn = nullptr;
 }
 
-int CDbWrapper::ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, unsigned int fFlags) {
+int CDbWrapper::ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, unsigned int fFlags) const {
   // Read at cursor
   MDB_val datKey;
   if (fFlags == MDB_SET || fFlags == MDB_SET_RANGE || fFlags == MDB_GET_BOTH || fFlags == MDB_GET_BOTH_RANGE) {
