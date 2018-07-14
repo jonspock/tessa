@@ -48,9 +48,9 @@ class CDbWrapper {
 
     // Read
     MDB_val datValue;
-    auto Txn = ReadBegin();
-    int dbr = mdb_get(Txn, dbi, &datKey, &datValue);
-
+    activeTxn = TxnBegin();
+    int dbr = mdb_get(activeTxn, dbi, &datKey, &datValue);
+    if (dbr) activeTxn = nullptr;
     if (dbr) return false;
     // Throw if ret ! = 0!!!!
 
@@ -121,9 +121,8 @@ class CDbWrapper {
     datKey.mv_size = ssKey.size();
 
     // Exists
-    auto Txn = ReadBegin();
-    int ret = mdb_get(Txn, dbi, &datKey, 0);
-
+    activeTxn = TxnBegin();
+    int ret = mdb_get(activeTxn, dbi, &datKey, 0);
     // if non-zero, it doesn't exist!
     return (ret == 0);
   }

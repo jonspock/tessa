@@ -31,14 +31,16 @@ bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
   TryCreateDirectory(wallet_dir);
 
   LogPrintf("CDBEnv::Open: %s\n", wallet_dir.string());
-  int dbr;
 
-  dbr = mdb_env_set_mapsize(env, 10485760);
+  int dbr = mdb_env_set_mapsize(env, 2*10485760);
   dbr |= mdb_env_set_maxdbs(env, 4);
-
   dbr |= mdb_env_open(env, wallet_dir.c_str(), MDB_FIXEDMAP | MDB_NOSYNC, 0664);
 
-  if (dbr != 0) return error("CDBEnv::Open : Error opening database environment:\n");
+  if (dbr != 0) {
+      LogPrintf("CDBEnv::Open: Error opening database env %s\n", wallet_dir.string());
+      Close();
+      return dbr;
+  }
 
   fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
   bool fCreate = false;
@@ -57,7 +59,11 @@ bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
                          wallet_dir.c_str(), MDB_CREATE | MDB_DUPSORT, &dbi);
       fCreate = true;
     }
-    if (dbr != 0) { return error("CDB : Error, can't open database dbi"); }
+    if (dbr != 0) {
+        LogPrintf("CDBEnv::Open: Error opening database dbi %s\n", wallet_dir.string());
+        Close();
+        return dbr;
+    }
 
     if (fCreate) WriteVersion(CLIENT_VERSION);
   }
@@ -80,6 +86,7 @@ MDB_txn* CDB::TxnBegin() {
   if (!ptxn || dbr != 0) return nullptr;
   return ptxn;
 }
+// Only for Read Only DBs
 MDB_txn* CDB::ReadBegin() {
   if (activeTxn) return activeTxn;
   MDB_txn* ptxn = nullptr;
