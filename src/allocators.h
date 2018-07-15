@@ -14,8 +14,6 @@
 #include <vector>
 #include "support/cleanse.h"
 
-#include <openssl/crypto.h>  // for OPENSSL_cleanse()
-
 /**
  * Thread-safe class to keep track of locked (ie, non-swappable) memory pages.
  *
