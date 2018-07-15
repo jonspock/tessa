@@ -14,6 +14,7 @@
 #include "txdb.h"
 
 using namespace libzerocoin;
+using namespace std;
 
 std::map<uint32_t, CBigNum> mapAccumulatorValues;
 std::list<uint256> listAccCheckpointsNoDB;

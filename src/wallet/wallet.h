@@ -122,22 +122,22 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   // Zerocoin additions
   bool CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransaction& txNew,
-                                     vector<CDeterministicMint>& vDMints, CReserveKey* reservekey, int64_t& nFeeRet,
+                                     std::vector<CDeterministicMint>& vDMints, CReserveKey* reservekey, int64_t& nFeeRet,
                                      std::string& strFailReason, const CCoinControl* coinControl = nullptr,
                                      const bool isZCSpendChange = false);
   bool CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel, CWalletTx& wtxNew, CReserveKey& reserveKey,
-                                      CZerocoinSpendReceipt& receipt, vector<CZerocoinMint>& vSelectedMints,
-                                      vector<CDeterministicMint>& vNewMints, bool fMintChange, bool fMinimizeChange,
+                                      CZerocoinSpendReceipt& receipt, std::vector<CZerocoinMint>& vSelectedMints,
+                                      std::vector<CDeterministicMint>& vNewMints, bool fMintChange, bool fMinimizeChange,
                                       CBitcoinAddress* address = nullptr);
   bool MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
                   CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType,
                   CBlockIndex* pindexCheckpoint = nullptr);
   std::string MintZerocoinFromOutPoint(CAmount nValue, CWalletTx& wtxNew, std::vector<CDeterministicMint>& vDMints,
-                                       const vector<COutPoint> vOutpts);
-  std::string MintZerocoin(CAmount nValue, CWalletTx& wtxNew, vector<CDeterministicMint>& vDMints,
+                                       const std::vector<COutPoint> vOutpts);
+  std::string MintZerocoin(CAmount nValue, CWalletTx& wtxNew, std::vector<CDeterministicMint>& vDMints,
                            const CCoinControl* coinControl = nullptr);
   bool SpendZerocoin(CAmount nValue, int nSecurityLevel, CWalletTx& wtxNew, CZerocoinSpendReceipt& receipt,
-                     vector<CZerocoinMint>& vMintsSelected, bool fMintChange, bool fMinimizeChange,
+                     std::vector<CZerocoinMint>& vMintsSelected, bool fMintChange, bool fMinimizeChange,
                      CBitcoinAddress* addressTo = nullptr);
   std::string ResetMintZerocoin();
   std::string ResetSpentZerocoin();
@@ -150,7 +150,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool SetMintUnspent(const CBigNum& bnSerial);
   bool UpdateMint(const CBigNum& bnValue, const int& nHeight, const uint256& txid,
                   const libzerocoin::CoinDenomination& denom);
-  string GetUniqueWalletBackupName(bool fzkpAuto) const;
+  std::string GetUniqueWalletBackupName(bool fzkpAuto) const;
 
   /** Zerocin entry changed.
    * @note called with lock cs_wallet held.

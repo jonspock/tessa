@@ -11,7 +11,10 @@
 #include "txdb.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
+#include "uint512.h"
 #include "zerochain.h"
+
+using namespace std;
 
 CZeroWallet::CZeroWallet() {
   uint256 hashSeed;

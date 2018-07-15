@@ -12,6 +12,7 @@
 #include "script/standard.h"
 #include "serialize.h"
 #include "uint256.h"
+#include "arith_uint256.h"
 #include "undo.h"
 
 #include <cassert>

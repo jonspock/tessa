@@ -11,6 +11,8 @@
 #include "primitives/deterministicmint.h"
 #include "wallet/wallet.h"
 
+using namespace std;
+
 //! Club Stake
 bool CStake::SetInput(CTransaction txPrev, unsigned int n) {
   this->txFrom = txPrev;

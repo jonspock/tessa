@@ -26,7 +26,7 @@ struct QueuedBlock {
 
 struct CBlockReject {
   unsigned char chRejectCode;
-  string strRejectReason;
+  std::string strRejectReason;
   uint256 hashBlock;
 };
 
@@ -59,7 +59,7 @@ struct CNodeState {
   bool fSyncStarted;
   //! Since when we're stalling block download progress (in microseconds), or 0.
   int64_t nStallingSince;
-  list<QueuedBlock> vBlocksInFlight;
+  std::list<QueuedBlock> vBlocksInFlight;
   int nBlocksInFlight;
   //! Whether we consider this a preferred download peer.
   bool fPreferredDownload;

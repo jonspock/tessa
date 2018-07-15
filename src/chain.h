@@ -13,6 +13,7 @@
 #include "primitives/block.h"
 #include "tinyformat.h"
 #include "uint256.h"
+#include "arith_uint256.h"
 #include "util.h"
 
 #include <vector>
@@ -196,7 +197,7 @@ class CBlockIndex {
     nNonce = 0;
     nAccumulatorCheckpoint.SetNull();
     // Start supply of each denomination with 0s
-    for (auto& denom : libzerocoin::zerocoinDenomList) { mapZerocoinSupply.insert(make_pair(denom, 0)); }
+      for (auto& denom : libzerocoin::zerocoinDenomList) { mapZerocoinSupply.insert(std::make_pair(denom, 0)); }
     vMintDenominationsInBlock.clear();
   }
 

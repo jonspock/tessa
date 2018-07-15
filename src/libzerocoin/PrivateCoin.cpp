@@ -19,7 +19,10 @@
 #include "IntegerMod.h"
 #include "ModulusType.h"
 #include "pubkey.h"
+#include "uint512.h"
 #include <stdexcept>
+
+using namespace std;
 
 namespace libzerocoin {
 

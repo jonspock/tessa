@@ -18,6 +18,7 @@
 #include "utilmoneystr.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
+#include "uint512.h"
 
 #include <stdint.h>
 

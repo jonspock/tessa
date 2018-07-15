@@ -16,6 +16,8 @@
 
 #include "wallet/wallet.h"
 
+using namespace std;
+
 int CCrypter::BytesToKeySHA512AES(const std::vector<uint8_t> &chSalt, const SecureString &strKeyData, int count,
                                   uint8_t *key, uint8_t *iv) const {
   // This mimics the behavior of openssl's EVP_BytesToKey with an aes256cbc

@@ -39,6 +39,8 @@
 #include <QVariant>
 #include <QtGlobal>
 
+using namespace std;
+
 extern bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow);
 
 MultisigDialog::MultisigDialog(QWidget* parent) : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::MultisigDialog), model(0) {

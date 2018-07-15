@@ -28,6 +28,8 @@
 #include <primitives/deterministicmint.h>
 #include <utilmoneystr.h>
 
+using namespace std;
+
 PrivacyDialog::PrivacyDialog(QWidget* parent)
     : QDialog(parent), ui(new Ui::PrivacyDialog), walletModel(0), currentBalance(-1) {
   nDisplayUnit = 0;  // just make sure it's not unitialized

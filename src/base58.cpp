@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <boost/variant/apply_visitor.hpp>
 #include <boost/variant/static_visitor.hpp>
+#include <iomanip>
 #include <sstream>
 #include <stdint.h>
 #include <string.h>
@@ -69,7 +70,7 @@ std::string DecodeBase58(const char* psz) {
 
   for (unsigned int i = 0; i < vch.size(); i++) {
     unsigned char* c = &vch[i];
-    ss << setw(2) << setfill('0') << (int)c[0];
+    ss << std::setw(2) << std::setfill('0') << (int)c[0];
   }
 
   return ss.str();
