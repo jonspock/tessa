@@ -221,6 +221,7 @@ SET(CONSENSUS
 )	
 
 SET(CONSENSUS_CRYPTO
+	./src/crypto/chacha20.cpp
 	./src/crypto/hmac_sha512.cpp
 	./src/crypto/hmac_sha256.cpp
 	./src/crypto/ripemd160.cpp

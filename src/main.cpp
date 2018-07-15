@@ -3815,6 +3815,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
     return true;
   }
+  FastRandomContext insecure_rand;
 
   if (strCommand == "version") {
     // Each connection can only send one version message
@@ -3880,11 +3881,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CAddress addr = GetLocalAddress(&pfrom->addr);
         if (addr.IsRoutable()) {
           LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
-          pfrom->PushAddress(addr);
+          pfrom->PushAddress(addr, insecure_rand);
         } else if (IsPeerAddrLocalGood(pfrom)) {
           addr.SetIP(pfrom->addrLocal);
           LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
-          pfrom->PushAddress(addr);
+          pfrom->PushAddress(addr, insecure_rand);
         }
       }
 
@@ -3971,7 +3972,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
           }
           int nRelayNodes = fReachable ? 2 : 1;  // limited relaying of addresses outside our network(s)
           for (multimap<uint256, CNode*>::iterator mi = mapMix.begin(); mi != mapMix.end() && nRelayNodes-- > 0; ++mi)
-            ((*mi).second)->PushAddress(addr);
+            ((*mi).second)->PushAddress(addr, insecure_rand);
         }
       }
       // Do not store addresses outside our network
@@ -4329,7 +4330,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
   else if ((strCommand == "getaddr") && (pfrom->fInbound)) {
     pfrom->vAddrToSend.clear();
     vector<CAddress> vAddr = addrman.GetAddr();
-    for (const CAddress& addr : vAddr) pfrom->PushAddress(addr);
+    for (const CAddress& addr : vAddr) pfrom->PushAddress(addr, insecure_rand);
   }
 
   else if (strCommand == "mempool") {
