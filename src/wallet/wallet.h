@@ -172,6 +172,10 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool fFileBacked;
   bool fWalletUnlockAnonymizeOnly;
   bool fBackupMints;
+
+  /* the HD chain data model (external chain counters) */
+  CHDChain hdChain;
+  
   std::unique_ptr<CZeroTracker> zkpTracker;
 
   std::set<int64_t> setKeyPool;
@@ -482,6 +486,23 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   }
 
   bool SetDefaultKey(const CPubKey& vchPubKey);
+
+  CWallet* CreateWalletFromFile(const std::string walletFile);
+
+  
+  /* Set the HD chain model (chain child index counters) */
+  bool SetHDChain(const CHDChain &chain, bool memonly);
+  const CHDChain &GetHDChain() { return hdChain; }
+  
+  /* Returns true if HD is enabled */
+  bool IsHDEnabled();
+  
+  /* Generates a new HD master key (will not be activated) */
+  CPubKey GenerateNewHDMasterKey();
+  
+  /* Set the current HD master key (will reset the chain child index counters)
+   */
+  bool SetHDMasterKey(const CPubKey &key);
 
   //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
   int GetVersion() {

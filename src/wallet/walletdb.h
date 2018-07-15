@@ -17,7 +17,7 @@
 #include "zerotracker.h"
 
 #include <list>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,15 +39,48 @@ class uint256;
 /** Error statuses for the wallet database */
 enum DBErrors { DB_LOAD_OK, DB_CORRUPT, DB_NONCRITICAL_ERROR, DB_TOO_NEW, DB_LOAD_FAIL, DB_NEED_REWRITE };
 
+
+/* simple HD chain data model */
+class CHDChain {
+public:
+    uint32_t nExternalChainCounter;
+    //!< master key hash160
+    CKeyID masterKeyID;
+
+    static const int CURRENT_VERSION = 1;
+    int nVersion;
+
+    CHDChain() { SetNull(); }
+    ADD_SERIALIZE_METHODS;
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream &s, Operation ser_action) {
+        READWRITE(this->nVersion);
+        READWRITE(nExternalChainCounter);
+        READWRITE(masterKeyID);
+    }
+
+    void SetNull() {
+        nVersion = CHDChain::CURRENT_VERSION;
+        nExternalChainCounter = 0;
+        masterKeyID.SetNull();
+    }
+};
+
+
 class CKeyMetadata {
  public:
   static const int CURRENT_VERSION = 1;
   int nVersion;
   int64_t nCreateTime;  // 0 means unknown
+  // optional HD/bip32 keypath.
+  std::string hdKeypath;
+  // Id of the HD masterkey used to derive this key.
+  CKeyID hdMasterKeyID;
 
+  
   CKeyMetadata() { SetNull(); }
   CKeyMetadata(int64_t nCreateTime_) {
-    nVersion = CKeyMetadata::CURRENT_VERSION;
+    SetNull();
     nCreateTime = nCreateTime_;
   }
 
@@ -56,11 +89,15 @@ class CKeyMetadata {
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(this->nVersion);
     READWRITE(nCreateTime);
+    READWRITE(hdKeypath);
+    READWRITE(hdMasterKeyID);
   }
 
   void SetNull() {
     nVersion = CKeyMetadata::CURRENT_VERSION;
     nCreateTime = 0;
+    hdKeypath.clear();
+    hdMasterKeyID.SetNull();
   }
 };
 
@@ -112,6 +149,9 @@ class CWalletDB : public CDB {
   bool ErasePool(int64_t nPool);
 
   bool WriteMinVersion(int nVersion);
+
+  //! write the hdchain model (external chain child index counter)
+  bool WriteHDChain(const CHDChain &chain);
 
   /// This writes directly to the database, and will not update the CWallet's cached accounting entries!
   /// Use wallet.AddAccountingEntry instead, to write *and* update its caches.

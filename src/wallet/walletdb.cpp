@@ -539,7 +539,15 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
         strErr = "Error reading wallet database: LoadDestData failed";
         return false;
       }
+    } else if (strType == "hdchain") {
+      CHDChain chain;
+      ssValue >> chain;
+      if (!pwallet->SetHDChain(chain, true)) {
+        strErr = "Error reading wallet database: SetHDChain failed";
+        return false;
+      }
     }
+    
   } catch (...) { return false; }
   return true;
 }
@@ -715,6 +723,10 @@ bool CWalletDB::WriteDestData(const std::string& address, const std::string& key
 
 bool CWalletDB::EraseDestData(const std::string& address, const std::string& key) {
   return Erase(std::make_pair(std::string("destdata"), std::make_pair(address, key)));
+}
+
+bool CWalletDB::WriteHDChain(const CHDChain &chain) {
+  return Write(std::string("hdchain"), chain);
 }
 
 bool CWalletDB::WriteZerocoinSpendSerialEntry(const CZerocoinSpend& zerocoinSpend) {
