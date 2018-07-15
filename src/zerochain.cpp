@@ -15,7 +15,8 @@
 // For Script size (BIGNUM/Uint256 size)
 #define BIGNUM_SIZE 4
 
-bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom, std::vector<CBigNum>& vValues) {
+bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom,
+                            std::vector<CBigNum>& vValues) {
   for (const CTransaction tx : block.vtx) {
     if (!tx.IsZerocoinMint()) continue;
 

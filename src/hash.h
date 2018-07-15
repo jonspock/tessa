@@ -111,7 +111,9 @@ inline std::string Hash(std::string input) {
   SHA256_Update(&sha256, input.c_str(), input.size());
   SHA256_Final(hash, &sha256);
   std::stringstream ss;
-  for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) { ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i]; }
+  for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+    ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+  }
   return ss.str();
 }
 
@@ -279,4 +281,3 @@ unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char
 
 void BIP32Hash(const ChainCode chainCode, unsigned int nChild, unsigned char header, const unsigned char data[32],
                unsigned char output[64]);
-

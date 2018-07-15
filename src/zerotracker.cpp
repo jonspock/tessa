@@ -121,7 +121,7 @@ for (auto& denom : libzerocoin::zerocoinDenomList) {
   LogPrint(ClubLog::ZERO, "%s My coins for denomination %d pubcoin %s\n", __func__, denom,
            myZerocoinSupply.at(denom));
 }
-   
+
   LogPrint(ClubLog::ZERO, "Total value of coins %d\n", nTotal);
 */
   if (nTotal < 0) nTotal = 0;  // Sanity never hurts

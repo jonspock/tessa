@@ -7,12 +7,12 @@
 
 #pragma once
 
+#include "arith_uint256.h"
 #include "compressor.h"
 #include "consensus/consensus.h"
 #include "script/standard.h"
 #include "serialize.h"
 #include "uint256.h"
-#include "arith_uint256.h"
 #include "undo.h"
 
 #include <cassert>

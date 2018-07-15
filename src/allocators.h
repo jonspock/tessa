@@ -6,13 +6,13 @@
 #ifndef BITCOIN_ALLOCATORS_H
 #define BITCOIN_ALLOCATORS_H
 
+#include "support/cleanse.h"
 #include <boost/thread/mutex.hpp>
 #include <cstring>
 #include <map>
 #include <mutex>
 #include <string>
 #include <vector>
-#include "support/cleanse.h"
 
 /**
  * Thread-safe class to keep track of locked (ie, non-swappable) memory pages.

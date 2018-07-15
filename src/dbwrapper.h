@@ -47,7 +47,7 @@ class CDbWrapper {
 
     // Read
     MDB_val datValue;
-    MDB_txn *Txn = ReadBegin();
+    MDB_txn* Txn = ReadBegin();
     int dbr = mdb_get(Txn, dbi, &datKey, &datValue);
     if (dbr) return false;
     // Throw if ret ! = 0!!!!
