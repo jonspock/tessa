@@ -12,6 +12,7 @@
 #include "leveldbwrapper.h"
 #include "main.h"
 #include "primitives/zerocoin.h"
+//#include "libzerocoin/CoinSpend.h"
 
 #include <map>
 #include <string>
@@ -81,6 +82,8 @@ class CZerocoinDB : public CLevelDBWrapper {
   void operator=(const CZerocoinDB&);
 
  public:
+  bool WriteCoinMintBatch(const std::vector<std::pair<libzerocoin::PublicCoin, uint256> >& mintInfo);
+  //  bool WriteCoinSpendBatch(const std::vector<std::pair<libzerocoin::CoinSpend, uint256> >& spendInfo);
   bool WriteCoinMint(const libzerocoin::PublicCoin& pubCoin, const uint256& txHash);
   bool ReadCoinMint(const CBigNum& bnPubcoin, uint256& txHash);
   bool ReadCoinMint(const uint256& hashPubcoin, uint256& hashTx);

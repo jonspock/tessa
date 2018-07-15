@@ -23,12 +23,12 @@ void HandleError(const rocksdb::Status& status) throw(leveldb_error) {
 
 static rocksdb::Options GetOptions(size_t nCacheSize) {
   rocksdb::LevelDBOptions opt;
-  //opt.block_cache = rocksdb::NewLRUCache(nCacheSize / 2);
+  // opt.block_cache = rocksdb::NewLRUCache(nCacheSize / 2);
   opt.write_buffer_size = nCacheSize / 4;  // up to two write buffers may be held in memory simultaneously
   opt.filter_policy = rocksdb::NewBloomFilterPolicy(10);
   opt.compression = rocksdb::kNoCompression;
   opt.max_open_files = 64;
-  rocksdb::Options rocksdb_options = ConvertOptions(opt);  
+  rocksdb::Options rocksdb_options = ConvertOptions(opt);
   return rocksdb_options;
 }
 
@@ -59,9 +59,9 @@ CLevelDBWrapper::CLevelDBWrapper(const fs::path& path, size_t nCacheSize, bool f
 CLevelDBWrapper::~CLevelDBWrapper() {
   delete pdb;
   pdb = nullptr;
-  //delete options.filter_policy;
+  // delete options.filter_policy;
   //  options.filter_policy = nullptr;
-  //delete options.block_cache;
+  // delete options.block_cache;
   //  options.block_cache = nullptr;
   delete penv;
   options.env = nullptr;

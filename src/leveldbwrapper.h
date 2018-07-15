@@ -141,4 +141,3 @@ class CLevelDBWrapper {
   // not exactly clean encapsulation, but it's easiest for now
   rocksdb::Iterator* NewIterator() { return pdb->NewIterator(iteroptions); }
 };
-

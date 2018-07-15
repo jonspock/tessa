@@ -7,11 +7,12 @@
 #define BITCOIN_ALLOCATORS_H
 
 #include <boost/thread/mutex.hpp>
+#include <cstring>
 #include <map>
 #include <mutex>
-#include <string.h>
 #include <string>
 #include <vector>
+#include "support/cleanse.h"
 
 #include <openssl/crypto.h>  // for OPENSSL_cleanse()
 
@@ -150,7 +151,7 @@ class LockedPageManager : public LockedPageManagerBase<MemoryPageLocker> {
 template <typename T> void LockObject(const T& t) { LockedPageManager::Instance().LockRange((void*)(&t), sizeof(T)); }
 
 template <typename T> void UnlockObject(const T& t) {
-  OPENSSL_cleanse((void*)(&t), sizeof(T));
+  memory_cleanse((void*)(&t), sizeof(T));
   LockedPageManager::Instance().UnlockRange((void*)(&t), sizeof(T));
 }
 
@@ -183,7 +184,7 @@ template <typename T> struct secure_allocator : public std::allocator<T> {
 
   void deallocate(T* p, std::size_t n) {
     if (p != nullptr) {
-      OPENSSL_cleanse(p, sizeof(T) * n);
+      memory_cleanse(p, sizeof(T) * n);
       LockedPageManager::Instance().UnlockRange(p, sizeof(T) * n);
     }
     std::allocator<T>::deallocate(p, n);
@@ -210,7 +211,7 @@ template <typename T> struct zero_after_free_allocator : public std::allocator<T
   template <typename _Other> struct rebind { typedef zero_after_free_allocator<_Other> other; };
 
   void deallocate(T* p, std::size_t n) {
-    if (p != nullptr) OPENSSL_cleanse(p, sizeof(T) * n);
+    if (p != nullptr) memory_cleanse(p, sizeof(T) * n);
     std::allocator<T>::deallocate(p, n);
   }
 };

@@ -1980,11 +1980,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
   }
 
-  // Record mints to db
-  for (pair<PublicCoin, uint256> pMint : vMints) {
-    if (!zerocoinDB->WriteCoinMint(pMint.first, pMint.second))
-      return state.Abort(("Failed to record new mint to database"));
-  }
+  // Flush spend/mint info to disk
+  // if (!zerocoinDB->WriteCoinSpendBatch(vSpends)) return state.Abort(("Failed to record coin serials to database"));
+  if (!zerocoinDB->WriteCoinMintBatch(vMints)) return state.Abort(("Failed to record new mints to database"));
 
   // Record accumulator checksums
   DatabaseChecksums(mapAccumulators);

@@ -6,7 +6,6 @@
 
 #pragma once
 
-
 #include "clientversion.h"
 #include "fs.h"
 #include "serialize.h"
@@ -19,7 +18,7 @@
 
 class CDbWrapper {
  protected:
-  const int KEY_RESERVE=100;
+  const int KEY_RESERVE = 100;
   MDB_dbi dbi = 0;
   MDB_txn* activeTxn = nullptr;
   MDB_env* env = nullptr;
@@ -120,7 +119,7 @@ class CDbWrapper {
     datKey.mv_size = ssKey.size();
 
     // Exists
-    MDB_txn *Txn = ReadBegin();
+    MDB_txn* Txn = ReadBegin();
     int ret = mdb_get(Txn, dbi, &datKey, 0);
     // if non-zero, it doesn't exist!
     return (ret == 0);

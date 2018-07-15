@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "utilstrencodings.h"
-
+#include "support/cleanse.h"
 #include "tinyformat.h"
 
 #include <cstdlib>
@@ -16,7 +16,6 @@
 
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
-#include <openssl/crypto.h>  // for OPENSSL_cleanse()
 #include <openssl/evp.h>
 
 using namespace std;
@@ -237,7 +236,7 @@ SecureString EncodeBase64Secure(const SecureString& input) {
   SecureString output(bptr->data, bptr->length);
 
   // Cleanse secure data buffer from memory
-  OPENSSL_cleanse((void*)bptr->data, bptr->length);
+  memory_cleanse((void*)bptr->data, bptr->length);
 
   // Free memory
   BIO_free_all(b64);

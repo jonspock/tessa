@@ -120,6 +120,7 @@ endif()
 
 
 SET(COMMON_A
+  ./src/support/cleanse.cpp
 	./src/spork.cpp
 	./src/accumulators.cpp
 	./src/accumulatormap.cpp

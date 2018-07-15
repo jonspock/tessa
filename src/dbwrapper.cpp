@@ -67,7 +67,7 @@ bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
         return -1;
     }
 
-    //if (fCreate) WriteVersion(CLIENT_VERSION);
+    // if (fCreate) WriteVersion(CLIENT_VERSION);
   }
   fDbEnvInit = true;
   return 0;

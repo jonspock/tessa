@@ -8,11 +8,11 @@
 #include "txdb.h"
 
 #include "accumulators.h"
+#include "libzerocoin/CoinSpend.h"
 #include "main.h"
 #include "pow.h"
 #include "staker.h"
 #include "uint256.h"
-
 #include <stdint.h>
 
 #include <boost/thread.hpp>
@@ -252,6 +252,20 @@ bool CZerocoinDB::WriteCoinMint(const libzerocoin::PublicCoin& pubCoin, const ui
   uint256 hash = GetPubCoinHash(pubCoin.getValue());
   return Write(make_pair('m', hash), hashTx, true);
 }
+bool CZerocoinDB::WriteCoinMintBatch(const std::vector<std::pair<libzerocoin::PublicCoin, uint256> >& mintInfo) {
+  CLevelDBBatch batch;
+  size_t count = 0;
+  for (std::vector<std::pair<libzerocoin::PublicCoin, uint256> >::const_iterator it = mintInfo.begin();
+       it != mintInfo.end(); it++) {
+    libzerocoin::PublicCoin pubCoin = it->first;
+    uint256 hash = GetPubCoinHash(pubCoin.getValue());
+    batch.Write(make_pair('m', hash), it->second);
+    ++count;
+  }
+
+  LogPrint(ClubLog::ZERO, "Writing %u coin mints to db.\n", (unsigned int)count);
+  return WriteBatch(batch, true);
+}
 
 bool CZerocoinDB::ReadCoinMint(const CBigNum& bnPubcoin, uint256& hashTx) {
   return ReadCoinMint(GetPubCoinHash(bnPubcoin), hashTx);
@@ -273,7 +287,20 @@ bool CZerocoinDB::WriteCoinSpend(const CBigNum& bnSerial, const uint256& txHash)
 
   return Write(make_pair('s', hash), txHash, true);
 }
+/*
+bool CZerocoinDB::WriteCoinSpendBatch(const std::vector<std::pair<libzerocoin::CoinSpend, uint256> >& spendInfo) {
+    CLevelDBBatch batch;
+    size_t count = 0;
+    for (std::vector<std::pair<libzerocoin::CoinSpend, uint256> >::const_iterator it=spendInfo.begin(); it !=
+spendInfo.end(); it++) { CBigNum bnSerial = it->first.getCoinSerialNumber(); CDataStream ss(SER_GETHASH, 0); ss <<
+bnSerial; uint256 hash = Hash(ss.begin(), ss.end()); batch.Write(make_pair('s', hash), it->second);
+        ++count;
+    }
 
+    LogPrint(ClubLog::ZERO, "Writing %u coin spends to db.\n", (unsigned int)count);
+    return WriteBatch(batch, true);
+ }
+*/
 bool CZerocoinDB::ReadCoinSpend(const CBigNum& bnSerial, uint256& txHash) {
   CDataStream ss(SER_GETHASH);
   ss << bnSerial;

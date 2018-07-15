@@ -9,6 +9,7 @@
 #include "hash.h"
 #include "uint256.h"
 
+#include "support/cleanse.h"
 #include <assert.h>
 #include <boost/variant/apply_visitor.hpp>
 #include <boost/variant/static_visitor.hpp>
@@ -166,7 +167,7 @@ bool CBase58Data::SetString(const char* psz, unsigned int nVersionBytes) {
   vchVersion.assign(vchTemp.begin(), vchTemp.begin() + nVersionBytes);
   vchData.resize(vchTemp.size() - nVersionBytes);
   if (!vchData.empty()) memcpy(&vchData[0], &vchTemp[nVersionBytes], vchData.size());
-  OPENSSL_cleanse(&vchTemp[0], vchData.size());
+  memory_cleanse(&vchTemp[0], vchData.size());
   return true;
 }
 

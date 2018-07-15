@@ -12,12 +12,12 @@
 #include "libzerocoin/SpendType.h"
 #include <algorithm>
 #include <assert.h>
+#include <cstring>
 #include <ios>
 #include <limits>
 #include <map>
 #include <set>
 #include <stdint.h>
-#include <string.h>
 #include <string>
 #include <utility>
 #include <vector>

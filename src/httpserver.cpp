@@ -14,9 +14,9 @@
 #include "ui_interface.h"
 #include "util.h"
 
+#include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <signal.h>
 #include <sys/stat.h>
