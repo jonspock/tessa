@@ -12,11 +12,10 @@
 
 #include <cstdint>
 
-/* Seed OpenSSL PRNG with additional entropy data */
 void RandAddSeed();
 
 /**
- * Functions to gather random data via the OpenSSL PRNG
+ * Functions to gather random data 
  */
 void GetRandBytes(uint8_t *buf, int num);
 uint64_t GetRand(uint64_t nMax);
