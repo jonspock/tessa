@@ -403,7 +403,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase) {
   //RandAddSeedPerfmon();
 
   vMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
-  GetStringRandBytes(&vMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
+  GetStrongRandBytes(&vMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
 
   CMasterKey kMasterKey;
   //RandAddSeedPerfmon();
