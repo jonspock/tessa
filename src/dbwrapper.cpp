@@ -38,7 +38,11 @@ bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
 
   dbr |= mdb_env_open(env, wallet_dir.c_str(), MDB_FIXEDMAP | MDB_NOSYNC, 0664);
 
-  if (dbr != 0) return error("CDbWrapperEnv::Open : Error opening database environment:\n");
+    if (dbr != 0) {
+       LogPrintf("CDbWrapperEnv::Open : Error opening database environment:\n");
+        Close();
+        return -1;
+    }
 
   fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
   bool fCreate = false;
@@ -57,7 +61,11 @@ bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
                          wallet_dir.c_str(), MDB_CREATE | MDB_DUPSORT, &dbi);
       fCreate = true;
     }
-    if (dbr != 0) { return error("CDbWrapper : Error, can't open database dbi"); }
+    if (dbr != 0) {
+        LogPrintf("CDbWrapper : Error, can't open database dbi");
+        Close();
+        return -1;
+    }
 
     //if (fCreate) WriteVersion(CLIENT_VERSION);
   }

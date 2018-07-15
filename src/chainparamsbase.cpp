@@ -31,7 +31,7 @@ class CBaseTestNetParams : public CBaseMainParams {
   CBaseTestNetParams() {
     networkID = CBaseChainParams::TESTNET;
     nRPCPort = 44445;
-    strDataDir = "testnet4";
+    strDataDir = "testnet";
   }
 };
 static CBaseTestNetParams testNetParams;
