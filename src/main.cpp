@@ -3810,7 +3810,6 @@ void static ProcessGetData(CNode* pfrom) {
 
 bool fRequestedSporksIDB = false;
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived) {
-  RandAddSeedPerfmon();
   LogPrint(ClubLog::NET, "received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
   if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "0").c_str()) == 0)) {
     LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");

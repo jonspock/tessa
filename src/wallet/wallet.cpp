@@ -115,7 +115,7 @@ CPubKey CWallet::GenerateNewKey() {
   AssertLockHeld(cs_wallet);  // mapKeyMetadata
   bool fCompressed = true;    // default to compressed public keys
 
-  RandAddSeedPerfmon();
+  //RandAddSeedPerfmon();
   CKey secret;
   secret.MakeNewKey(fCompressed);
 
@@ -400,16 +400,16 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase) {
   if (IsCrypted()) return false;
 
   CKeyingMaterial vMasterKey;
-  RandAddSeedPerfmon();
+  //RandAddSeedPerfmon();
 
   vMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
-  GetRandBytes(&vMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
+  GetStringRandBytes(&vMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
 
   CMasterKey kMasterKey;
-  RandAddSeedPerfmon();
+  //RandAddSeedPerfmon();
 
   kMasterKey.vchSalt.resize(WALLET_CRYPTO_SALT_SIZE);
-  GetRandBytes(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE);
+  GetStrongRandBytes(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE);
 
   CCrypter crypter;
   int64_t nStartTime = GetTimeMillis();

@@ -10,11 +10,9 @@
 
 #include <stdint.h>
 
-/**
- * Seed OpenSSL PRNG with additional entropy data
- */
+/* Seed OpenSSL PRNG with additional entropy data */
 void RandAddSeed();
-void RandAddSeedPerfmon();
+//void RandAddSeedPerfmon();
 
 /**
  * Functions to gather random data via the OpenSSL PRNG
@@ -23,6 +21,12 @@ void GetRandBytes(unsigned char* buf, int num);
 uint64_t GetRand(uint64_t nMax);
 int GetRandInt(int nMax);
 uint256 GetRandHash();
+
+/**
+ * Function to gather random data from multiple sources, failing whenever any
+ * of those source fail to provide a result.
+ */
+void GetStrongRandBytes(unsigned char* buf, int num);
 
 /**
  * Seed insecure_rand using the random pool.
@@ -39,10 +43,11 @@ void seed_insecure_rand(bool fDeterministic = false);
  */
 extern uint32_t insecure_rand_Rz;
 extern uint32_t insecure_rand_Rw;
-static inline uint32_t insecure_rand(void) {
-  insecure_rand_Rz = 36969 * (insecure_rand_Rz & 65535) + (insecure_rand_Rz >> 16);
-  insecure_rand_Rw = 18000 * (insecure_rand_Rw & 65535) + (insecure_rand_Rw >> 16);
-  return (insecure_rand_Rw << 16) + insecure_rand_Rz;
+static inline uint32_t insecure_rand(void)
+{
+    insecure_rand_Rz = 36969 * (insecure_rand_Rz & 65535) + (insecure_rand_Rz >> 16);
+    insecure_rand_Rw = 18000 * (insecure_rand_Rw & 65535) + (insecure_rand_Rw >> 16);
+    return (insecure_rand_Rw << 16) + insecure_rand_Rz;
 }
 
-#endif  // BITCOIN_RANDOM_H
+#endif // BITCOIN_RANDOM_H
