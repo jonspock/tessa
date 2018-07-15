@@ -18,9 +18,6 @@
 #include "util.h"
 
 #include "wallet/wallet.h"
-
-#include <openssl/crypto.h>
-
 #include <univalue.h>
 
 #include <QDir>
