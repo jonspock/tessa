@@ -5,7 +5,6 @@
 #pragma once
 #include "serialize.h"
 #include "bignum.h"
-#include <openssl/bn.h>
 #include <stdexcept>
 #include <vector>
 
