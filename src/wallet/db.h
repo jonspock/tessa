@@ -51,7 +51,7 @@ class CDB {
     MDB_val datValue;
     activeTxn = TxnBegin();
     int dbr = mdb_get(activeTxn, dbi, &datKey, &datValue);
-    
+
     // Make sure we don't try to re-use this
     // if (dbr) activeTxn = nullptr;
 

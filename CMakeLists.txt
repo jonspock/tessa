@@ -230,8 +230,8 @@ SET(CONSENSUS_CRYPTO
 	./src/crypto/sha256.cpp
 	./src/crypto/sha1.cpp
 	./src/crypto/sha512.cpp
-#	./src/crypto/aes.cpp
-#	./src/crypto/ctaes/ctaes.c
+	./src/crypto/aes.cpp
+	./src/crypto/ctaes/ctaes.c
 )
 
 SET(WALLET

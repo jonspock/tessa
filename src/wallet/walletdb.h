@@ -173,5 +173,4 @@ class CWalletDB : public CDB {
   bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
 };
 
-
 extern CWalletDB gWalletDB;

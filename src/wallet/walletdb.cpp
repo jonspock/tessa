@@ -709,8 +709,6 @@ void NotifyBacked(const CWallet& wallet, bool fSuccess, string strMessage) {
   wallet.NotifyWalletBacked(fSuccess, strMessage);
 }
 
-
-
 bool CWalletDB::WriteDestData(const std::string& address, const std::string& key, const std::string& value) {
   return Write(std::make_pair(std::string("destdata"), std::make_pair(address, key)), value);
 }

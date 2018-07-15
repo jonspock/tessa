@@ -3167,8 +3167,6 @@ void CWallet::ReconsiderZerocoins(std::list<CZerocoinMint>& listMintsRestored,
   }
 }
 
-
-
 string CWallet::MintZerocoinFromOutPoint(CAmount nValue, CWalletTx& wtxNew, vector<CDeterministicMint>& vDMints,
                                          const vector<COutPoint> vOutpts) {
   CCoinControl* coinControl = new CCoinControl();
