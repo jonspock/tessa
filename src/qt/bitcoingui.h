@@ -98,7 +98,6 @@ class BitcoinGUI : public QMainWindow {
   QAction* usedReceivingAddressesAction;
   QAction* signMessageAction;
   QAction* verifyMessageAction;
-  QAction* bip38ToolAction;
   QAction* multisigCreateAction;
   QAction* multisigSpendAction;
   QAction* multisigSignAction;
@@ -215,8 +214,6 @@ class BitcoinGUI : public QMainWindow {
   void gotoMultisigCreate();
   void gotoMultisigSpend();
   void gotoMultisigSign();
-  /** Show BIP 38 tool - default to Encryption tab */
-  void gotoBip38Tool();
 
   /** Show open dialog */
   void openClicked();

@@ -73,8 +73,6 @@ class WalletFrame : public QFrame {
   void gotoMultiSendDialog();
   /** show a multisig tab **/
   void gotoMultisigDialog(int index);
-  /** Show BIP 38 tool - default to Encryption tab */
-  void gotoBip38Tool();
 
   /** Encrypt the wallet */
   void encryptWallet(bool status);

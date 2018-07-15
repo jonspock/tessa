@@ -101,7 +101,6 @@ source_group("QtHeaders" FILES ${LOCAL_QT_HEADERS})
 set(GUI_FORMS
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/addressbookpage.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/askpassphrasedialog.ui
-  ${CMAKE_CURRENT_SOURCE_DIR}/forms/bip38tooldialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/coincontroldialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/zerocontroldialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/blockexplorer.ui
@@ -138,7 +137,6 @@ SET(QT_FILES
 	multisenddialog.cpp
 	multisigdialog.cpp
 	bantablemodel.cpp
-	bip38tooldialog.cpp
 	blockexplorer.cpp
 	bitcoinaddressvalidator.cpp
 	bitcoinamountfield.cpp

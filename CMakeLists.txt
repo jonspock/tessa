@@ -165,7 +165,6 @@ SET(UTIL_A
 	./src/sync.cpp
 	./src/uint256.cpp
 	./src/arith_uint256.cpp
-	./src/bip38.cpp
 	./src/random.cpp
 	./src/clientversion.cpp
 	./src/chainparamsbase.cpp
@@ -222,7 +221,6 @@ SET(CONSENSUS
 )	
 
 SET(CONSENSUS_CRYPTO
-	./src/crypto/scrypt.cpp
 	./src/crypto/hmac_sha512.cpp
 	./src/crypto/hmac_sha256.cpp
 	./src/crypto/ripemd160.cpp
