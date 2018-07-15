@@ -24,7 +24,6 @@
 #include <list>
 #include <vector>
 
-using namespace std;
 namespace libzerocoin {
 /**A Signature of knowledge on the hash of metadata attesting that the signer knows the values
  *  necessary to open a commitment which contains a coin(which it self is of course a commitment)
@@ -65,8 +64,8 @@ class SerialNumberSignatureOfKnowledge {
 
   // challenge response values
   // this is s_notprime instead of s because the serialization macros define s
-  vector<CBigNum> s_notprime;
-  vector<CBigNum> sprime;
+  std::vector<CBigNum> s_notprime;
+  std::vector<CBigNum> sprime;
   inline CBigNum challengeCalculation(const CBigNum& a_exp, const CBigNum& b_exp, const CBigNum& h_exp) const;
 };
 

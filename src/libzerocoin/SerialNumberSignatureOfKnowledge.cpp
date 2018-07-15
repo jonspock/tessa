@@ -17,6 +17,8 @@
 #include "IntegerMod.h"
 #include <streams.h>
 
+using namespace std;
+
 namespace libzerocoin {
 SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const ZerocoinParams* p) : params(p) {}
 
