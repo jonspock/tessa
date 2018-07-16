@@ -3415,23 +3415,18 @@ CPubKey CWallet::GenerateNewHDMasterKey() {
 bool CWallet::SetHDMasterKey(const CPubKey &pubkey) {
     LOCK(cs_wallet);
 
-    // Ensure this wallet.dat can only be opened by clients supporting HD.
-    //SetMinVersion(FEATURE_HD);
-
     // Store the keyid (hash160) together with the child index counter in the
     // database as a hdchain object.
     CHDChain newHdChain;
     newHdChain.masterKeyID = pubkey.GetID();
     SetHDChain(newHdChain, false);
-
     return true;
 }
 
 bool CWallet::SetHDChain(const CHDChain &chain, bool memonly) {
     LOCK(cs_wallet);
     if (!memonly && !gWalletDB.WriteHDChain(chain)) {
-        throw std::runtime_error(std::string(__func__) +
-                                 ": writing chain failed");
+        throw std::runtime_error(std::string(__func__) + ": writing chain failed");
     }
 
     hdChain = chain;
