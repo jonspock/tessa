@@ -121,6 +121,7 @@ endif()
 
 SET(COMMON_A
   ./src/support/cleanse.cpp
+  ./src/support/lockedpool.cpp
 	./src/spork.cpp
 	./src/accumulators.cpp
 	./src/accumulatormap.cpp
@@ -140,7 +141,6 @@ SET(COMMON_A
 	./src/chainparams.cpp
 	./src/base58.cpp
 	./src/amount.cpp
-	./src/allocators.cpp
   ./src/logging.cpp
   ./src/fs.cpp
 	)

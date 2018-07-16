@@ -12,7 +12,7 @@
 #include "guiutil.h"
 #include "walletmodel.h"
 
-#include "allocators.h"
+#include "support/allocators/secure.h"
 
 #include <QKeyEvent>
 #include <QMessageBox>

@@ -7,9 +7,9 @@
 #ifndef BITCOIN_CRYPTER_H
 #define BITCOIN_CRYPTER_H
 
-#include "allocators.h"
 #include "keystore.h"
 #include "serialize.h"
+#include "support/allocators/secure.h"
 #include "support/cleanse.h"
 
 #include <boost/signals2/signal.hpp>
