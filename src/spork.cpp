@@ -150,7 +150,7 @@ void CSporkManager::ReprocessBlocks(int nBlocks) {
   if (state.IsValid()) { ActivateBestChain(state); }
 }
 
-bool CSporkManager::VerifyMessage(CPubKey pubkey, vector<unsigned char>& vchSig, std::string strMessage) {
+bool CSporkManager::VerifyMessage(CPubKey pubkey, vector<uint8_t>& vchSig, std::string strMessage) {
   CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
@@ -188,7 +188,7 @@ bool CSporkManager::SetKey(std::string strSecret, CKey& key, CPubKey& pubkey) {
   return true;
 }
 
-bool CSporkManager::SignMessage(std::string strMessage, vector<unsigned char>& vchSig, CKey key) {
+bool CSporkManager::SignMessage(std::string strMessage, vector<uint8_t>& vchSig, CKey key) {
   CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;

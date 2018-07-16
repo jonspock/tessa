@@ -70,7 +70,7 @@ class CDataStream {
     Init(nTypeIn, nVersionIn);
   }
 
-  CDataStream(const std::vector<unsigned char>& vchIn, int nTypeIn, int nVersionIn) : vch(vchIn.begin(), vchIn.end()) {
+  CDataStream(const std::vector<uint8_t>& vchIn, int nTypeIn, int nVersionIn) : vch(vchIn.begin(), vchIn.end()) {
     Init(nTypeIn, nVersionIn);
   }
 

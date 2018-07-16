@@ -51,22 +51,22 @@ class CScriptCompressor {
   bool IsToScriptID(CScriptID& hash) const;
   bool IsToPubKey(CPubKey& pubkey) const;
 
-  bool Compress(std::vector<unsigned char>& out) const;
+  bool Compress(std::vector<uint8_t>& out) const;
   unsigned int GetSpecialSize(unsigned int nSize) const;
-  bool Decompress(unsigned int nSize, const std::vector<unsigned char>& out);
+  bool Decompress(unsigned int nSize, const std::vector<uint8_t>& out);
 
  public:
   CScriptCompressor(CScript& scriptIn) : script(scriptIn) {}
 
   unsigned int GetSerializeSize() const {
-    std::vector<unsigned char> compr;
+    std::vector<uint8_t> compr;
     if (Compress(compr)) return compr.size();
     unsigned int nSize = script.size() + nSpecialScripts;
     return script.size() + VARINT(nSize).GetSerializeSize();
   }
 
   template <typename Stream> void Serialize(Stream& s) const {
-    std::vector<unsigned char> compr;
+    std::vector<uint8_t> compr;
     if (Compress(compr)) {
       s << CFlatData(compr);
       return;
@@ -80,7 +80,7 @@ class CScriptCompressor {
     unsigned int nSize = 0;
     s >> VARINT(nSize);
     if (nSize < nSpecialScripts) {
-      std::vector<unsigned char> vch(GetSpecialSize(nSize), 0x00);
+      std::vector<uint8_t> vch(GetSpecialSize(nSize), 0x00);
       s >> REF(CFlatData(vch));
       Decompress(nSize, vch);
       return;

@@ -187,7 +187,7 @@ class CCoins {
     ::Serialize(s, VARINT(nCode));
     // spentness bitmask
     for (unsigned int b = 0; b < nMaskSize; b++) {
-      unsigned char chAvail = 0;
+      uint8_t chAvail = 0;
       for (unsigned int i = 0; i < 8 && 2 + b * 8 + i < vout.size(); i++)
         if (!vout[2 + b * 8 + i].IsNull()) chAvail |= (1 << i);
       ::Serialize(s, chAvail);
@@ -214,7 +214,7 @@ class CCoins {
     unsigned int nMaskCode = (nCode / 16) + ((nCode & 12) != 0 ? 0 : 1);
     // spentness bitmask
     while (nMaskCode > 0) {
-      unsigned char chAvail = 0;
+      uint8_t chAvail = 0;
       ::Unserialize(s, chAvail);
       for (unsigned int p = 0; p < 8; p++) {
         bool f = (chAvail & (1 << p)) != 0;
@@ -264,7 +264,7 @@ class CCoinsKeyHasher {
 
 struct CCoinsCacheEntry {
   CCoins coins;  // The actual cached data.
-  unsigned char flags;
+  uint8_t flags;
 
   enum Flags {
     DIRTY = (1 << 0),  // This cache entry is potentially different from the version in the parent view.

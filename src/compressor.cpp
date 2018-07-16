@@ -40,7 +40,7 @@ bool CScriptCompressor::IsToPubKey(CPubKey& pubkey) const {
   return false;
 }
 
-bool CScriptCompressor::Compress(std::vector<unsigned char>& out) const {
+bool CScriptCompressor::Compress(std::vector<uint8_t>& out) const {
   CKeyID keyID;
   if (IsToKeyID(keyID)) {
     out.resize(21);
@@ -76,7 +76,7 @@ unsigned int CScriptCompressor::GetSpecialSize(unsigned int nSize) const {
   return 0;
 }
 
-bool CScriptCompressor::Decompress(unsigned int nSize, const std::vector<unsigned char>& in) {
+bool CScriptCompressor::Decompress(unsigned int nSize, const std::vector<uint8_t>& in) {
   switch (nSize) {
     case 0x00:
       script.resize(25);
@@ -104,7 +104,7 @@ bool CScriptCompressor::Decompress(unsigned int nSize, const std::vector<unsigne
       return true;
     case 0x04:
     case 0x05:
-      unsigned char vch[33] = {};
+      uint8_t vch[33] = {};
       vch[0] = nSize - 2;
       memcpy(&vch[1], &in[0], 32);
       CPubKey pubkey(&vch[0], &vch[33]);

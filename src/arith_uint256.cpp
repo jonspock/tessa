@@ -24,7 +24,7 @@ template <> void base_uint<512>::SetHex(const char* psz) { *this = UintToArith51
 
 template <unsigned int BITS> base_uint<BITS>::base_uint(const std::string& str) { SetHex(str); }
 
-template <unsigned int BITS> base_uint<BITS>::base_uint(const std::vector<unsigned char>& vch) {
+template <unsigned int BITS> base_uint<BITS>::base_uint(const std::vector<uint8_t>& vch) {
   if (vch.size() != sizeof(pn)) throw std::runtime_error("Converting vector of wrong size to base_uint");
   memcpy(pn, &vch[0], sizeof(pn));
 }
@@ -145,7 +145,7 @@ template <unsigned int BITS> unsigned int base_uint<BITS>::bits() const {
 
 // Explicit instantiations for base_uint<256>
 template base_uint<256>::base_uint(const std::string&);
-template base_uint<256>::base_uint(const std::vector<unsigned char>&);
+template base_uint<256>::base_uint(const std::vector<uint8_t>&);
 template base_uint<256>& base_uint<256>::operator<<=(unsigned int);
 template base_uint<256>& base_uint<256>::operator>>=(unsigned int);
 template base_uint<256>& base_uint<256>::operator*=(uint32_t b32);
@@ -161,7 +161,7 @@ template unsigned int base_uint<256>::bits() const;
 
 // Explicit instantiations for base_uint<512>
 template base_uint<512>::base_uint(const std::string&);
-template base_uint<512>::base_uint(const std::vector<unsigned char>&);
+template base_uint<512>::base_uint(const std::vector<uint8_t>&);
 template base_uint<512>& base_uint<512>::operator<<=(unsigned int);
 template base_uint<512>& base_uint<512>::operator>>=(unsigned int);
 template base_uint<512>& base_uint<512>::operator*=(uint32_t b32);

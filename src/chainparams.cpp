@@ -144,9 +144,9 @@ class CMainParams : public CChainParams {
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "club.seed.fuzzbawls.pw"));     // Primary DNS Seeder from
     // Fuzzbawls
 
-    base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 28);  // Start with "C"
-    base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 7);
-    base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 212);
+    base58Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 28);  // Start with "C"
+    base58Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 7);
+    base58Prefixes[SECRET_KEY] = std::vector<uint8_t>(1, 212);
     base58Prefixes[EXT_PUBLIC_KEY] = {0x02, 0x2D, 0x25, 0x33};
     base58Prefixes[EXT_SECRET_KEY] = {0x02, 0x21, 0x31, 0x2B};
     // 	BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
@@ -213,11 +213,11 @@ class CTestNetParams : public CMainParams {
     vSeeds.clear();
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "club-testnet.seed.fuzzbawls.pw"));
 
-    base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 87);  // Testnet club addresses start with 'c'
+    base58Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 87);  // Testnet club addresses start with 'c'
     base58Prefixes[SCRIPT_ADDRESS] =
-        std::vector<unsigned char>(1, 9);  // Testnet club script addresses start with '4' or '5'
+        std::vector<uint8_t>(1, 9);  // Testnet club script addresses start with '4' or '5'
     base58Prefixes[SECRET_KEY] =
-        std::vector<unsigned char>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
+        std::vector<uint8_t>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
     // Testnet club BIP32 pubkeys start with 'DRKV'
     base58Prefixes[EXT_PUBLIC_KEY] = {0x3a, 0x80, 0x61, 0xa0};
     // Testnet club BIP32 prvkeys start with 'DRKP'

@@ -611,7 +611,7 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
   for (unsigned int i = 0; i < tx.vin.size(); i++) {
     const CTxOut& prev = mapInputs.GetOutputFor(tx.vin[i]);
 
-    vector<vector<unsigned char> > vSolutions;
+    vector<vector<uint8_t> > vSolutions;
     txnouttype whichType;
     // get the scriptPubKey corresponding to this input:
     const CScript& prevScript = prev.scriptPubKey;
@@ -625,13 +625,13 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
     // beside "push data" in the scriptSig
     // IsStandard() will have already returned false
     // and this method isn't called.
-    vector<vector<unsigned char> > stack;
+    vector<vector<uint8_t> > stack;
     if (!EvalScript(stack, tx.vin[i].scriptSig, false, BaseSignatureChecker())) return false;
 
     if (whichType == TX_SCRIPTHASH) {
       if (stack.empty()) return false;
       CScript subscript(stack.back().begin(), stack.back().end());
-      vector<vector<unsigned char> > vSolutions2;
+      vector<vector<uint8_t> > vSolutions2;
       txnouttype whichType2;
       if (Solver(subscript, whichType2, vSolutions2)) {
         int tmpExpected = ScriptSigArgsExpected(whichType2, vSolutions2);
@@ -3418,7 +3418,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp) {
       unsigned int nSize = 0;
       try {
         // locate a header
-        unsigned char buf[MESSAGE_START_SIZE];
+        uint8_t buf[MESSAGE_START_SIZE];
         blkdat.FindByte(Params().MessageStart()[0]);
         nRewind = blkdat.GetPos() + 1;
         blkdat >> FLATDATA(buf);
@@ -4119,7 +4119,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     // masternode signed transaction
     bool ignoreFees = false;
     CTxIn vin;
-    vector<unsigned char> vchSig;
+    vector<uint8_t> vchSig;
 
     if (strCommand == "tx") { vRecv >> tx; }
 
@@ -4443,7 +4443,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
   }
 
   else if (strCommand == "filteradd") {
-    vector<unsigned char> vData;
+    vector<uint8_t> vData;
     vRecv >> vData;
 
     // Nodes must NEVER send a data item > 520 bytes (the max size for a script data object,
@@ -4473,7 +4473,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     if (gArgs.IsArgSet("-debug")) {
       try {
         string strMsg;
-        unsigned char ccode;
+        uint8_t ccode;
         string strReason;
         vRecv >> LIMITED_STRING(strMsg, CMessageHeader::COMMAND_SIZE) >> ccode >>
             LIMITED_STRING(strReason, MAX_REJECT_MESSAGE_LENGTH);
@@ -4632,7 +4632,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
     }
     if (pingSend) {
       uint64_t nonce = 0;
-      while (nonce == 0) { GetRandBytes((unsigned char*)&nonce, sizeof(nonce)); }
+      while (nonce == 0) { GetRandBytes((uint8_t*)&nonce, sizeof(nonce)); }
       pto->fPingQueued = false;
       pto->nPingUsecStart = GetTimeMicros();
       pto->nPingNonceSent = nonce;

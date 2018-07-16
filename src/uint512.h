@@ -12,13 +12,13 @@ class uint512 : public base_blob<512> {
  public:
   uint512() {}
   uint512(const base_blob<512>& b) : base_blob<512>(b) {}
-  // explicit uint512(const std::vector<unsigned char>& vch) : base_uint<512>(vch) {}
-  explicit uint512(const std::vector<unsigned char>& vch) : base_blob<512>(vch) {}
+  // explicit uint512(const std::vector<uint8_t>& vch) : base_uint<512>(vch) {}
+  explicit uint512(const std::vector<uint8_t>& vch) : base_blob<512>(vch) {}
   // explicit uint512(const std::string& str) : base_blob<512>(str) {}
 
   uint256 trim256() const {
-    std::vector<unsigned char> vch;
-    const unsigned char* p = this->begin();
+    std::vector<uint8_t> vch;
+    const uint8_t* p = this->begin();
     for (unsigned int i = 0; i < 32; i++) { vch.push_back(*p++); }
     uint256 retval(vch);
     return retval;

@@ -43,7 +43,7 @@ template <unsigned int BITS> class base_uint {
   }
 
   explicit base_uint(const std::string& str);
-  explicit base_uint(const std::vector<unsigned char>& vch);
+  explicit base_uint(const std::vector<uint8_t>& vch);
 
   bool operator!() const {
     for (int i = 0; i < WIDTH; i++)
@@ -195,13 +195,13 @@ template <unsigned int BITS> class base_uint {
   void SetHex(const std::string& str);
   std::string ToString() const;
 
-  unsigned char* begin() { return (unsigned char*)&pn[0]; }
+  uint8_t* begin() { return (uint8_t*)&pn[0]; }
 
-  unsigned char* end() { return (unsigned char*)&pn[WIDTH]; }
+  uint8_t* end() { return (uint8_t*)&pn[WIDTH]; }
 
-  const unsigned char* begin() const { return (unsigned char*)&pn[0]; }
+  const uint8_t* begin() const { return (uint8_t*)&pn[0]; }
 
-  const unsigned char* end() const { return (unsigned char*)&pn[WIDTH]; }
+  const uint8_t* end() const { return (uint8_t*)&pn[WIDTH]; }
 
   unsigned int size() const { return sizeof(pn); }
 
@@ -224,7 +224,7 @@ class arith_uint256 : public base_uint<256> {
   arith_uint256(const base_uint<256>& b) : base_uint<256>(b) {}
   arith_uint256(uint64_t b) : base_uint<256>(b) {}
   explicit arith_uint256(const std::string& str) : base_uint<256>(str) {}
-  explicit arith_uint256(const std::vector<unsigned char>& vch) : base_uint<256>(vch) {}
+  explicit arith_uint256(const std::vector<uint8_t>& vch) : base_uint<256>(vch) {}
 
   /**
    * The "compact" format is a representation of a whole
@@ -261,7 +261,7 @@ class arith_uint512 : public base_uint<512> {
   arith_uint512(const base_uint<512>& b) : base_uint<512>(b) {}
   arith_uint512(uint64_t b) : base_uint<512>(b) {}
   explicit arith_uint512(const std::string& str) : base_uint<512>(str) {}
-  explicit arith_uint512(const std::vector<unsigned char>& vch) : base_uint<512>(vch) {}
+  explicit arith_uint512(const std::vector<uint8_t>& vch) : base_uint<512>(vch) {}
 
   friend arith_uint512 UintToArith512(const uint512& a);
   friend uint512 ArithToUint512(const arith_uint512& a);

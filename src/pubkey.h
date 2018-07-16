@@ -48,10 +48,10 @@ class CPubKey {
    * Just store the serialized data.
    * Its length can very cheaply be computed from the first byte.
    */
-  unsigned char vch[PUBLIC_KEY_SIZE];
+  uint8_t vch[PUBLIC_KEY_SIZE];
 
   //! Compute the length of a pubkey with a given first byte.
-  unsigned int static GetLen(unsigned char chHeader) {
+  unsigned int static GetLen(uint8_t chHeader) {
     if (chHeader == 2 || chHeader == 3) return COMPRESSED_PUBLIC_KEY_SIZE;
     if (chHeader == 4 || chHeader == 6 || chHeader == 7) return PUBLIC_KEY_SIZE;
     return 0;
@@ -68,7 +68,7 @@ class CPubKey {
   template <typename T> void Set(const T pbegin, const T pend) {
     int len = pend == pbegin ? 0 : GetLen(pbegin[0]);
     if (len && len == (pend - pbegin))
-      memcpy(vch, (unsigned char*)&pbegin[0], len);
+      memcpy(vch, (uint8_t*)&pbegin[0], len);
     else
       Invalidate();
   }
@@ -77,13 +77,13 @@ class CPubKey {
   template <typename T> CPubKey(const T pbegin, const T pend) { Set(pbegin, pend); }
 
   //! Construct a public key from a byte vector.
-  explicit CPubKey(const std::vector<unsigned char>& _vch) { Set(_vch.begin(), _vch.end()); }
+  explicit CPubKey(const std::vector<uint8_t>& _vch) { Set(_vch.begin(), _vch.end()); }
 
   //! Simple read-only vector-like interface to the pubkey data.
   unsigned int size() const { return GetLen(vch[0]); }
-  const unsigned char* begin() const { return vch; }
-  const unsigned char* end() const { return vch + size(); }
-  const unsigned char& operator[](unsigned int pos) const { return vch[pos]; }
+  const uint8_t* begin() const { return vch; }
+  const uint8_t* end() const { return vch + size(); }
+  const uint8_t& operator[](unsigned int pos) const { return vch[pos]; }
 
   //! Comparator implementation.
   friend bool operator==(const CPubKey& a, const CPubKey& b) {
@@ -136,15 +136,15 @@ class CPubKey {
    * Verify a DER signature (~72 bytes).
    * If this public key is not fully valid, the return value will be false.
    */
-  bool Verify(const uint256& hash, const std::vector<unsigned char>& vchSig) const;
+  bool Verify(const uint256& hash, const std::vector<uint8_t>& vchSig) const;
 
   /**
    * Check whether a signature is normalized (lower-S).
    */
-  static bool CheckLowS(const std::vector<unsigned char>& vchSig);
+  static bool CheckLowS(const std::vector<uint8_t>& vchSig);
 
   //! Recover a public key from a compact signature.
-  bool RecoverCompact(const uint256& hash, const std::vector<unsigned char>& vchSig);
+  bool RecoverCompact(const uint256& hash, const std::vector<uint8_t>& vchSig);
 
   //! Turn this public key into an uncompressed public key.
   bool Decompress();
@@ -152,7 +152,7 @@ class CPubKey {
   //! Derive BIP32 child pubkey.
   bool Derive(CPubKey& pubkeyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const;
 
-  std::vector<unsigned char> Raw() const { return std::vector<unsigned char>(vch, vch + size()); }
+  std::vector<uint8_t> Raw() const { return std::vector<uint8_t>(vch, vch + size()); }
 
   std::string GetHex() {
     std::string my_std_string(reinterpret_cast<const char*>(vch), 65);
@@ -161,8 +161,8 @@ class CPubKey {
 };
 
 struct CExtPubKey {
-  unsigned char nDepth;
-  unsigned char vchFingerprint[4];
+  uint8_t nDepth;
+  uint8_t vchFingerprint[4];
   unsigned int nChild;
   ChainCode chaincode;
   CPubKey pubkey;
@@ -172,8 +172,8 @@ struct CExtPubKey {
            a.nChild == b.nChild && a.chaincode == b.chaincode && a.pubkey == b.pubkey;
   }
 
-  void Encode(unsigned char code[BIP32_EXTKEY_SIZE]) const;
-  void Decode(const unsigned char code[BIP32_EXTKEY_SIZE]);
+  void Encode(uint8_t code[BIP32_EXTKEY_SIZE]) const;
+  void Decode(const uint8_t code[BIP32_EXTKEY_SIZE]);
   bool Derive(CExtPubKey& out, unsigned int nChild) const;
 
   void Serialize(CSizeComputer& s) const {
@@ -183,13 +183,13 @@ struct CExtPubKey {
   template <typename Stream> void Serialize(Stream& s) const {
     unsigned int len = BIP32_EXTKEY_SIZE;
     ::WriteCompactSize(s, len);
-    unsigned char code[BIP32_EXTKEY_SIZE];
+    uint8_t code[BIP32_EXTKEY_SIZE];
     Encode(code);
     s.write((const char*)&code[0], len);
   }
   template <typename Stream> void Unserialize(Stream& s) {
     unsigned int len = ::ReadCompactSize(s);
-    unsigned char code[BIP32_EXTKEY_SIZE];
+    uint8_t code[BIP32_EXTKEY_SIZE];
     if (len != BIP32_EXTKEY_SIZE) throw std::runtime_error("Invalid extended key size\n");
     s.read((char*)&code[0], len);
     Decode(code);

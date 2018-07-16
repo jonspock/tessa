@@ -25,7 +25,7 @@ struct QueuedBlock {
 };
 
 struct CBlockReject {
-  unsigned char chRejectCode;
+  uint8_t chRejectCode;
   std::string strRejectReason;
   uint256 hashBlock;
 };

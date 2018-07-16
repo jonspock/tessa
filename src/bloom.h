@@ -44,14 +44,14 @@ enum bloomflags {
  */
 class CBloomFilter {
  private:
-  std::vector<unsigned char> vData;
+  std::vector<uint8_t> vData;
   bool isFull;
   bool isEmpty;
   unsigned int nHashFuncs;
   unsigned int nTweak;
-  unsigned char nFlags;
+  uint8_t nFlags;
 
-  unsigned int Hash(unsigned int nHashNum, const std::vector<unsigned char>& vDataToHash) const;
+  unsigned int Hash(unsigned int nHashNum, const std::vector<uint8_t>& vDataToHash) const;
 
  public:
   /**
@@ -63,7 +63,7 @@ class CBloomFilter {
    * It should generally always be a random value (and is largely only exposed for unit testing)
    * nFlags should be one of the BLOOM_UPDATE_* enums (not _MASK)
    */
-  CBloomFilter(unsigned int nElements, double nFPRate, unsigned int nTweak, unsigned char nFlagsIn);
+  CBloomFilter(unsigned int nElements, double nFPRate, unsigned int nTweak, uint8_t nFlagsIn);
   CBloomFilter() : isFull(true), isEmpty(false), nHashFuncs(0), nTweak(0), nFlags(0) {}
 
   ADD_SERIALIZE_METHODS;
@@ -75,11 +75,11 @@ class CBloomFilter {
     READWRITE(nFlags);
   }
 
-  void insert(const std::vector<unsigned char>& vKey);
+  void insert(const std::vector<uint8_t>& vKey);
   void insert(const COutPoint& outpoint);
   void insert(const uint256& hash);
 
-  bool contains(const std::vector<unsigned char>& vKey) const;
+  bool contains(const std::vector<uint8_t>& vKey) const;
   bool contains(const COutPoint& outpoint) const;
   bool contains(const uint256& hash) const;
 

@@ -396,7 +396,7 @@ static bool rest_getutxos(HTTPRequest* req, const std::string& strURIPart) {
   switch (rf) {
     case RF_HEX: {
       // convert hex to bin, continue then with bin part
-      std::vector<unsigned char> strRequestV = ParseHex(strRequestMutable);
+      std::vector<uint8_t> strRequestV = ParseHex(strRequestMutable);
       strRequestMutable.assign(strRequestV.begin(), strRequestV.end());
     }
 
@@ -436,10 +436,10 @@ static bool rest_getutxos(HTTPRequest* req, const std::string& strURIPart) {
         strprintf("Error: max outpoints exceeded (max: %d, tried: %d)", MAX_GETUTXOS_OUTPOINTS, vOutPoints.size()));
 
   // check spentness and form a bitmap (as well as a JSON capable human-readble string representation)
-  vector<unsigned char> bitmap;
+  vector<uint8_t> bitmap;
   vector<CCoin> outs;
   std::string bitmapStringRepresentation;
-  boost::dynamic_bitset<unsigned char> hits(vOutPoints.size());
+  boost::dynamic_bitset<uint8_t> hits(vOutPoints.size());
   {
     LOCK2(cs_main, mempool.cs);
 

@@ -284,9 +284,9 @@ uint256 ParseHashUO(map<string, UniValue>& o, string strKey) {
   return ParseHashUV(o[strKey], strKey);
 }
 
-vector<unsigned char> ParseHexUO(map<string, UniValue>& o, string strKey) {
+vector<uint8_t> ParseHexUO(map<string, UniValue>& o, string strKey) {
   if (!o.count(strKey)) {
-    vector<unsigned char> emptyVec;
+    vector<uint8_t> emptyVec;
     return emptyVec;
   }
   return ParseHexUV(o[strKey], strKey);
@@ -341,7 +341,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr) {
       int nOut = atoi(prevOut["vout"].getValStr());
       if (nOut < 0) throw runtime_error("vout must be positive");
 
-      vector<unsigned char> pkData(ParseHexUV(prevOut["scriptPubKey"], "scriptPubKey"));
+      vector<uint8_t> pkData(ParseHexUV(prevOut["scriptPubKey"], "scriptPubKey"));
       CScript scriptPubKey(pkData.begin(), pkData.end());
 
       {
@@ -360,7 +360,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr) {
       // add redeemScript to the tempKeystore so it can be signed:
       if (fGivenKeys && scriptPubKey.IsPayToScriptHash() && prevOut.exists("redeemScript")) {
         UniValue v = prevOut["redeemScript"];
-        vector<unsigned char> rsData(ParseHexUV(v, "redeemScript"));
+        vector<uint8_t> rsData(ParseHexUV(v, "redeemScript"));
         CScript redeemScript(rsData.begin(), rsData.end());
         tempKeystore.AddCScript(redeemScript);
       }
