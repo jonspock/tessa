@@ -17,27 +17,6 @@
 using namespace std;
 
 CZeroWallet::CZeroWallet() {
-  uint256 hashSeed;
-  bool fFirstRun = !gWalletDB.ReadCurrentSeedHash(hashSeed);
-
-  // Check for old db version of storing zkp seed
-  if (fFirstRun) {
-    uint256 seed;
-    if (gWalletDB.ReadZKPSeed_deprecated(seed)) {
-      // Update to new format, erase old
-      seedMaster = seed;
-      hashSeed = Hash(seed.begin(), seed.end());
-      if (pwalletMain->AddDeterministicSeed(seed)) {
-        if (gWalletDB.EraseZKPSeed_deprecated()) {
-          LogPrint(ClubLog::ZERO, "%s: Updated ZKP seed databasing\n", __func__);
-          fFirstRun = false;
-        } else {
-          LogPrintf("%s: failed to remove old zkp seed\n", __func__);
-        }
-      }
-    }
-  }
-
   // Don't try to do anything if the wallet is locked.
   if (pwalletMain->IsLocked()) {
     seedMaster.SetNull();
@@ -47,7 +26,9 @@ CZeroWallet::CZeroWallet() {
   }
 
   // First time running, generate master seed
+  uint256 hashSeed;
   uint256 seed;
+  bool fFirstRun = !gWalletDB.ReadCurrentSeedHash(hashSeed);
   if (fFirstRun) {
     // Borrow random generator from the key class so that we don't have to worry about randomness
     CKey key;

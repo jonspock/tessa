@@ -197,10 +197,8 @@ class CWalletDB : public CDB {
   bool ReadCurrentSeedHash(uint256& hashSeed);
   bool WriteZKPSeed(const uint256& hashSeed, const std::vector<unsigned char>& seed);
   bool ReadZKPSeed(const uint256& hashSeed, std::vector<unsigned char>& seed);
-  bool ReadZKPSeed_deprecated(uint256& seed);
   bool EraseZKPSeed();
-  bool EraseZKPSeed_deprecated();
-
+ 
   bool WriteZKPCount(const uint32_t& nCount);
   bool ReadZKPCount(uint32_t& nCount);
   std::map<uint256, std::vector<std::pair<uint256, uint32_t> > > MapMintPool();

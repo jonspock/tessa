@@ -855,13 +855,9 @@ bool CWalletDB::EraseZKPSeed() {
   return true;
 }
 
-bool CWalletDB::EraseZKPSeed_deprecated() { return Erase(string("dzs")); }
-
 bool CWalletDB::ReadZKPSeed(const uint256& hashSeed, vector<unsigned char>& seed) {
   return Read(make_pair(string("dzs"), hashSeed), seed);
 }
-
-bool CWalletDB::ReadZKPSeed_deprecated(uint256& seed) { return Read(string("dzs"), seed); }
 
 bool CWalletDB::WriteZKPCount(const uint32_t& nCount) { return Write(string("dzc"), nCount); }
 
