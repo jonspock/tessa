@@ -111,14 +111,14 @@ uint256 ParseHashV(const UniValue& v, string strName) {
   return result;
 }
 uint256 ParseHashO(const UniValue& o, string strKey) { return ParseHashV(find_value(o, strKey), strKey); }
-vector<unsigned char> ParseHexV(const UniValue& v, string strName) {
+vector<uint8_t> ParseHexV(const UniValue& v, string strName) {
   string strHex;
   if (v.isStr()) strHex = v.get_str();
   if (!IsHex(strHex))
     throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
   return ParseHex(strHex);
 }
-vector<unsigned char> ParseHexO(const UniValue& o, string strKey) { return ParseHexV(find_value(o, strKey), strKey); }
+vector<uint8_t> ParseHexO(const UniValue& o, string strKey) { return ParseHexV(find_value(o, strKey), strKey); }
 
 int ParseInt(const UniValue& o, string strKey) {
   const UniValue& v = find_value(o, strKey);

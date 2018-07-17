@@ -27,9 +27,9 @@ CBigNum SeedTo1024(uint256 hashSeed) {
   CHashWriter hasher;
   hasher << hashSeed;
 
-  vector<unsigned char> vResult;
+  vector<uint8_t> vResult;
   for (int i = 0; i < 4; i++) {
-    vector<unsigned char> vHash = CBigNum(hasher.GetHash()).getvch();
+    vector<uint8_t> vHash = CBigNum(hasher.GetHash()).getvch();
     vResult.insert(vResult.end(), vHash.begin(), vHash.end());
     hasher << vResult;
   }
@@ -84,7 +84,7 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const Zerocoi
   for (uint32_t i = 0; i < params->zkp_iterations; i++) { hasher << c[i]; }
 
   this->hash = hasher.GetHash();
-  unsigned char* hashbytes = (unsigned char*)&hash;
+  uint8_t* hashbytes = (uint8_t*)&hash;
 
   for (uint32_t i = 0; i < params->zkp_iterations; i++) {
     int bit = i % 8;
@@ -125,7 +125,7 @@ bool SerialNumberSignatureOfKnowledge::Verify(const CBigNum& coinSerialNumber, c
   CHashWriter hasher;
   hasher << *params << valueOfCommitmentToCoin << coinSerialNumber << msghash;
 
-  unsigned char* hashbytes = (unsigned char*)&this->hash;
+  uint8_t* hashbytes = (uint8_t*)&this->hash;
 
   for (uint32_t i = 0; i < params->zkp_iterations; i++) {
     CBigNum tprime;

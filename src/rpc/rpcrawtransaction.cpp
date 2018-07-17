@@ -471,7 +471,7 @@ UniValue decodescript(const UniValue& params, bool fHelp) {
   UniValue r(UniValue::VOBJ);
   CScript script;
   if (params[0].get_str().size() > 0) {
-    vector<unsigned char> scriptData(ParseHexV(params[0], "argument"));
+    vector<uint8_t> scriptData(ParseHexV(params[0], "argument"));
     script = CScript(scriptData.begin(), scriptData.end());
   } else {
     // Empty scripts are valid
@@ -554,7 +554,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
   RPCTypeCheck(params, {UniValue::VSTR, UniValue::VARR, UniValue::VARR, UniValue::VSTR}, true);
 
-  vector<unsigned char> txData(ParseHexV(params[0], "argument 1"));
+  vector<uint8_t> txData(ParseHexV(params[0], "argument 1"));
   CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
   vector<CMutableTransaction> txVariants;
   while (!ssData.empty()) {
@@ -623,7 +623,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
       int nOut = find_value(prevOut, "vout").get_int();
       if (nOut < 0) throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "vout must be positive");
 
-      vector<unsigned char> pkData(ParseHexO(prevOut, "scriptPubKey"));
+      vector<uint8_t> pkData(ParseHexO(prevOut, "scriptPubKey"));
       CScript scriptPubKey(pkData.begin(), pkData.end());
 
       {
@@ -647,7 +647,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
                                   {"redeemScript", UniValue::VSTR}});
         UniValue v = find_value(prevOut, "redeemScript");
         if (!v.isNull()) {
-          vector<unsigned char> rsData(ParseHexV(v, "redeemScript"));
+          vector<uint8_t> rsData(ParseHexV(v, "redeemScript"));
           CScript redeemScript(rsData.begin(), rsData.end());
           tempKeystore.AddCScript(redeemScript);
         }

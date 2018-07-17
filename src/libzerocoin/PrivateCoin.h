@@ -56,7 +56,7 @@ class PrivateCoin {
   void setSerialNumber(Bignum n) { serialNumber = n; }
   void setVersion(uint8_t nVersion) { this->version = nVersion; }
   void setPrivKey(const CPrivKey& privkey) { this->privkey = privkey; }
-  bool sign(const uint256& hash, std::vector<unsigned char>& vchSig) const;
+  bool sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
   bool IsValid();
 
   ADD_SERIALIZE_METHODS;

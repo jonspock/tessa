@@ -44,12 +44,12 @@ template <ModulusType T> class IntegerMod {
     if (!BN_rand_range(&Value, &Mod)) { throw std::runtime_error("IntegerMod:rand : BN_rand_range failed"); }
   }
 
-  explicit IntegerMod(const std::vector<unsigned char>& vch) { Value.setvch(vch); }
+  explicit IntegerMod(const std::vector<uint8_t>& vch) { Value.setvch(vch); }
 
   int bitSize() const { return BN_num_bits(&Value); }
 
-  void setvch(const std::vector<unsigned char>& vch) { Value.setvch(vch); }
-  std::vector<unsigned char> getvch() const { return Value.getvch(); }
+  void setvch(const std::vector<uint8_t>& vch) { Value.setvch(vch); }
+  std::vector<uint8_t> getvch() const { return Value.getvch(); }
   void SetHex(const std::string& str) { Value.SetHex(str); }
   std::string ToString(int nBase = 10) const { return Value.ToString(nBase); }
   std::string GetHex() const { return ToString(16); }
@@ -151,7 +151,7 @@ template <ModulusType T> class IntegerMod {
   }
 
   template <typename Stream> void Unserialize(Stream& s) {
-    std::vector<unsigned char> vch;
+    std::vector<uint8_t> vch;
     ::Unserialize(s, vch);
     setvch(vch);
   }

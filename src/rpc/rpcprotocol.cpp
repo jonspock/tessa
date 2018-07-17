@@ -76,7 +76,7 @@ fs::path GetAuthCookieFile() {
 }
 
 bool GenerateAuthCookie(std::string* cookie_out) {
-  unsigned char rand_pwd[32];
+  uint8_t rand_pwd[32];
   GetRandBytes(rand_pwd, 32);
   std::string cookie = COOKIEAUTH_USER + ":" + EncodeBase64(&rand_pwd[0], 32);
 

@@ -86,7 +86,7 @@ class CoinSpend {
    * @return the txout hash
    */
   uint256 getTxOutHash() const { return ptxHash; }
-  std::vector<unsigned char> getSignature() const { return vchSig; }
+  std::vector<uint8_t> getSignature() const { return vchSig; }
 
   bool HasValidSerial(ZerocoinParams* params) const;
   bool HasValidSignature() const;
@@ -120,7 +120,7 @@ class CoinSpend {
   CBigNum serialCommitmentToCoinValue;
   CBigNum coinSerialNumber;
   CPubKey pubkey;
-  std::vector<unsigned char> vchSig;
+  std::vector<uint8_t> vchSig;
   AccumulatorProofOfKnowledge accumulatorPoK;
   SerialNumberSignatureOfKnowledge serialNumberSoK;
   CommitmentProofOfKnowledge commitmentPoK;

@@ -149,7 +149,7 @@ CPubKey PrivateCoin::getPubKey() const {
   return key.GetPubKey();
 }
 
-bool PrivateCoin::sign(const uint256& hash, vector<unsigned char>& vchSig) const {
+bool PrivateCoin::sign(const uint256& hash, vector<uint8_t>& vchSig) const {
   CKey key;
   key.SetPrivKey(privkey, true);
   return key.Sign(hash, vchSig);

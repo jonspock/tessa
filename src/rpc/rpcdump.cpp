@@ -44,7 +44,7 @@ int64_t static DecodeDumpTime(const std::string& str) {
 
 std::string static EncodeDumpString(const std::string& str) {
   std::stringstream ret;
-  for (unsigned char c : str) {
+  for (uint8_t c : str) {
     if (c <= 32 || c >= 128 || c == '%') {
       ret << '%' << HexStr(&c, &c + 1);
     } else {
@@ -57,7 +57,7 @@ std::string static EncodeDumpString(const std::string& str) {
 std::string DecodeDumpString(const std::string& str) {
   std::stringstream ret;
   for (unsigned int pos = 0; pos < str.length(); pos++) {
-    unsigned char c = str[pos];
+    uint8_t c = str[pos];
     if (c == '%' && pos + 2 < str.length()) {
       c = (((str[pos + 1] >> 6) * 9 + ((str[pos + 1] - '0') & 15)) << 4) |
           ((str[pos + 2] >> 6) * 9 + ((str[pos + 2] - '0') & 15));
@@ -161,7 +161,7 @@ UniValue importaddress(const UniValue& params, bool fHelp) {
   if (address.IsValid()) {
     script = GetScriptForDestination(address.Get());
   } else if (IsHex(params[0].get_str())) {
-    std::vector<unsigned char> data(ParseHex(params[0].get_str()));
+    std::vector<uint8_t> data(ParseHex(params[0].get_str()));
     script = CScript(data.begin(), data.end());
   } else {
     throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address or script");
