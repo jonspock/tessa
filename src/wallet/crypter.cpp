@@ -41,7 +41,7 @@ int CCrypter::BytesToKeySHA512AES(const std::vector<uint8_t> &chSalt, const Secu
   return WALLET_CRYPTO_KEY_SIZE;
 }
 
-bool CCrypter::SetKeyFromPassphrase(const SecureString &strKeyData, const std::vector<unsigned char> &chSalt,
+bool CCrypter::SetKeyFromPassphrase(const SecureString &strKeyData, const std::vector<uint8_t> &chSalt,
                                     const unsigned int nRounds, const unsigned int nDerivationMethod) {
   if (nRounds < 1 || chSalt.size() != WALLET_CRYPTO_SALT_SIZE) return false;
 
@@ -107,7 +107,7 @@ static bool EncryptSecret(const CKeyingMaterial &vMasterKey, const CKeyingMateri
   return cKeyCrypter.Encrypt(*((const CKeyingMaterial *)&vchPlaintext), vchCiphertext);
 }
 
-bool DecryptSecret(const CKeyingMaterial &vMasterKey, const std::vector<unsigned char> &vchCiphertext,
+bool DecryptSecret(const CKeyingMaterial &vMasterKey, const std::vector<uint8_t> &vchCiphertext,
                    const uint256 &nIV, CKeyingMaterial &vchPlaintext) {
   CCrypter cKeyCrypter;
   std::vector<uint8_t> chIV(WALLET_CRYPTO_IV_SIZE);
@@ -284,7 +284,7 @@ bool CCryptoKeyStore::AddDeterministicSeed(const uint256 &seed) {
     if (!IsLocked()) {  // if we have password
 
       CKeyingMaterial kmSeed(seed.begin(), seed.end());
-      vector<unsigned char> vchSeedSecret;
+      vector<uint8_t> vchSeedSecret;
 
       // attempt encrypt
       if (EncryptSecret(vMasterKey, kmSeed, hashSeed, vchSeedSecret)) {
@@ -308,7 +308,7 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &see
   if (IsCrypted()) {
     if (!IsLocked()) {  // if we have password
 
-      vector<unsigned char> vchCryptedSeed;
+      vector<uint8_t> vchCryptedSeed;
       // read encrypted seed
       if (gWalletDB.ReadZKPSeed(hashSeed, vchCryptedSeed)) {
         uint256 seedRetrieved = uint256S(ReverseEndianString(HexStr(vchCryptedSeed)));
@@ -333,7 +333,7 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &see
       strErr = "read seed; wallet is locked";
     }
   } else {
-    vector<unsigned char> vchSeed;
+    vector<uint8_t> vchSeed;
     // wallet not crypted
     if (gWalletDB.ReadZKPSeed(hashSeed, vchSeed)) {
       seedOut = uint256S(ReverseEndianString(HexStr(vchSeed)));

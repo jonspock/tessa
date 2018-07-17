@@ -19,12 +19,12 @@
 #include <string>
 #include <vector>
 
-typedef std::vector<unsigned char> valtype;
+typedef std::vector<uint8_t> valtype;
 
 static const unsigned int MAX_SCRIPT_ELEMENT_SIZE = 520;  // bytes
 
-template <typename T> std::vector<unsigned char> ToByteVector(const T& in) {
-  return std::vector<unsigned char>(in.begin(), in.end());
+template <typename T> std::vector<uint8_t> ToByteVector(const T& in) {
+  return std::vector<uint8_t>(in.begin(), in.end());
 }
 
 /** Script opcodes */
@@ -193,7 +193,7 @@ class CScriptNum {
  public:
   explicit CScriptNum(const int64_t& n) { m_value = n; }
 
-  explicit CScriptNum(const std::vector<unsigned char>& vch, bool fRequireMinimal) {
+  explicit CScriptNum(const std::vector<uint8_t>& vch, bool fRequireMinimal) {
     if (vch.size() > nMaxNumSize) { throw scriptnum_error("script number overflow"); }
     if (fRequireMinimal && vch.size() > 0) {
       // Check that the number is encoded with the minimum possible
@@ -270,12 +270,12 @@ class CScriptNum {
     return m_value;
   }
 
-  std::vector<unsigned char> getvch() const { return serialize(m_value); }
+  std::vector<uint8_t> getvch() const { return serialize(m_value); }
 
-  static std::vector<unsigned char> serialize(const int64_t& value) {
-    if (value == 0) return std::vector<unsigned char>();
+  static std::vector<uint8_t> serialize(const int64_t& value) {
+    if (value == 0) return std::vector<uint8_t>();
 
-    std::vector<unsigned char> result;
+    std::vector<uint8_t> result;
     const bool neg = value < 0;
     uint64_t absvalue = neg ? -value : value;
 
@@ -305,7 +305,7 @@ class CScriptNum {
   static const size_t nMaxNumSize = 4;
 
  private:
-  static int64_t set_vch(const std::vector<unsigned char>& vch) {
+  static int64_t set_vch(const std::vector<uint8_t>& vch) {
     if (vch.empty()) return 0;
 
     int64_t result = 0;
@@ -322,7 +322,7 @@ class CScriptNum {
 };
 
 /** Serialized script, used inside transaction inputs and outputs */
-class CScript : public std::vector<unsigned char> {
+class CScript : public std::vector<uint8_t> {
  protected:
   CScript& push_int64(int64_t n) {
     if (n == -1 || (n >= 1 && n <= 16)) {
@@ -337,9 +337,9 @@ class CScript : public std::vector<unsigned char> {
 
  public:
   CScript() {}
-  CScript(const CScript& b) : std::vector<unsigned char>(b.begin(), b.end()) {}
-  CScript(const_iterator pbegin, const_iterator pend) : std::vector<unsigned char>(pbegin, pend) {}
-  CScript(const unsigned char* pbegin, const unsigned char* pend) : std::vector<unsigned char>(pbegin, pend) {}
+  CScript(const CScript& b) : std::vector<uint8_t>(b.begin(), b.end()) {}
+  CScript(const_iterator pbegin, const_iterator pend) : std::vector<uint8_t>(pbegin, pend) {}
+  CScript(const uint8_t* pbegin, const uint8_t* pend) : std::vector<uint8_t>(pbegin, pend) {}
 
   CScript& operator+=(const CScript& b) {
     insert(end(), b.begin(), b.end());
@@ -356,13 +356,13 @@ class CScript : public std::vector<unsigned char> {
 
   explicit CScript(opcodetype b) { operator<<(b); }
   explicit CScript(const CScriptNum& b) { operator<<(b); }
-  explicit CScript(const std::vector<unsigned char>& b) { operator<<(b); }
+  explicit CScript(const std::vector<uint8_t>& b) { operator<<(b); }
 
   CScript& operator<<(int64_t b) { return push_int64(b); }
 
   CScript& operator<<(opcodetype opcode) {
     if (opcode < 0 || opcode > 0xff) throw std::runtime_error("CScript::operator<<() : invalid opcode");
-    insert(end(), (unsigned char)opcode);
+    insert(end(), (uint8_t)opcode);
     return *this;
   }
 
@@ -371,20 +371,20 @@ class CScript : public std::vector<unsigned char> {
     return *this;
   }
 
-  CScript& operator<<(const std::vector<unsigned char>& b) {
+  CScript& operator<<(const std::vector<uint8_t>& b) {
     if (b.size() < OP_PUSHDATA1) {
-      insert(end(), (unsigned char)b.size());
+      insert(end(), (uint8_t)b.size());
     } else if (b.size() <= 0xff) {
       insert(end(), OP_PUSHDATA1);
-      insert(end(), (unsigned char)b.size());
+      insert(end(), (uint8_t)b.size());
     } else if (b.size() <= 0xffff) {
       insert(end(), OP_PUSHDATA2);
       unsigned short nSize = b.size();
-      insert(end(), (unsigned char*)&nSize, (unsigned char*)&nSize + sizeof(nSize));
+      insert(end(), (uint8_t*)&nSize, (uint8_t*)&nSize + sizeof(nSize));
     } else {
       insert(end(), OP_PUSHDATA4);
       unsigned int nSize = b.size();
-      insert(end(), (unsigned char*)&nSize, (unsigned char*)&nSize + sizeof(nSize));
+      insert(end(), (uint8_t*)&nSize, (uint8_t*)&nSize + sizeof(nSize));
     }
     insert(end(), b.begin(), b.end());
     return *this;
@@ -398,11 +398,11 @@ class CScript : public std::vector<unsigned char> {
   }
 
   CScript& operator<<(const CPubKey& key) {
-    std::vector<unsigned char> vchKey = key.Raw();
+    std::vector<uint8_t> vchKey = key.Raw();
     return (*this) << vchKey;
   }
 
-  bool GetOp(iterator& pc, opcodetype& opcodeRet, std::vector<unsigned char>& vchRet) {
+  bool GetOp(iterator& pc, opcodetype& opcodeRet, std::vector<uint8_t>& vchRet) {
     // Wrapper so it can be called with either iterator or const_iterator
     const_iterator pc2 = pc;
     bool fRet = GetOp2(pc2, opcodeRet, &vchRet);
@@ -417,13 +417,13 @@ class CScript : public std::vector<unsigned char> {
     return fRet;
   }
 
-  bool GetOp(const_iterator& pc, opcodetype& opcodeRet, std::vector<unsigned char>& vchRet) const {
+  bool GetOp(const_iterator& pc, opcodetype& opcodeRet, std::vector<uint8_t>& vchRet) const {
     return GetOp2(pc, opcodeRet, &vchRet);
   }
 
   bool GetOp(const_iterator& pc, opcodetype& opcodeRet) const { return GetOp2(pc, opcodeRet, nullptr); }
 
-  bool GetOp2(const_iterator& pc, opcodetype& opcodeRet, std::vector<unsigned char>* pvchRet) const {
+  bool GetOp2(const_iterator& pc, opcodetype& opcodeRet, std::vector<uint8_t>* pvchRet) const {
     opcodeRet = OP_INVALIDOPCODE;
     if (pvchRet) pvchRet->clear();
     if (pc >= end()) return false;
@@ -526,7 +526,7 @@ class CScript : public std::vector<unsigned char> {
   std::string ToString() const;
   void clear() {
     // The default std::vector::clear() does not release memory.
-    std::vector<unsigned char>().swap(*this);
+    std::vector<uint8_t>().swap(*this);
   }
 };
 

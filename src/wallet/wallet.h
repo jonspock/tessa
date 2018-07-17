@@ -321,9 +321,9 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   }
 
   //! Adds an encrypted key to the store, and saves it to disk.
-  bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
+  bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret);
   //! Adds an encrypted key to the store, without saving it to disk (used by LoadWallet)
-  bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
+  bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret);
   bool AddCScript(const CScript& redeemScript);
   bool LoadCScript(const CScript& redeemScript);
 

@@ -16,15 +16,15 @@
 
 using namespace std;
 
-typedef vector<unsigned char> valtype;
+typedef vector<uint8_t> valtype;
 
 bool Sign1(const CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet) {
   CKey key;
   if (!keystore.GetKey(address, key)) return false;
 
-  vector<unsigned char> vchSig;
+  vector<uint8_t> vchSig;
   if (!key.Sign(hash, vchSig)) return false;
-  vchSig.push_back((unsigned char)nHashType);
+  vchSig.push_back((uint8_t)nHashType);
   scriptSigRet << vchSig;
 
   return true;
@@ -215,7 +215,7 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
         CScript pubKey2(spk.begin(), spk.end());
 
         txnouttype txType2;
-        vector<vector<unsigned char> > vSolutions2;
+        vector<vector<uint8_t> > vSolutions2;
         Solver(pubKey2, txType2, vSolutions2);
         sigs1.pop_back();
         sigs2.pop_back();
@@ -233,7 +233,7 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
 CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction& txTo, unsigned int nIn,
                           const CScript& scriptSig1, const CScript& scriptSig2) {
   txnouttype txType;
-  vector<vector<unsigned char> > vSolutions;
+  vector<vector<uint8_t> > vSolutions;
   Solver(scriptPubKey, txType, vSolutions);
 
   vector<valtype> stack1;

@@ -67,7 +67,7 @@ class CMasterKey {
   }
 };
 
-typedef std::vector<unsigned char, secure_allocator<unsigned char> > CKeyingMaterial;
+typedef std::vector<uint8_t, secure_allocator<uint8_t> > CKeyingMaterial;
 
 /** Encryption/decryption context with key information */
 class CCrypter {

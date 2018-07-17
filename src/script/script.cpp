@@ -10,7 +10,7 @@
 #include "utilstrencodings.h"
 
 namespace {
-inline std::string ValueString(const std::vector<unsigned char>& vch) {
+inline std::string ValueString(const std::vector<uint8_t>& vch) {
   if (vch.size() <= 4)
     return strprintf("%d", CScriptNum(vch, false).getint());
   else
@@ -306,7 +306,7 @@ unsigned int CScript::GetSigOpCount(const CScript& scriptSig) const {
   // get the last item that the scriptSig
   // pushes onto the stack:
   const_iterator pc = scriptSig.begin();
-  vector<unsigned char> data;
+  vector<uint8_t> data;
   while (pc < scriptSig.end()) {
     opcodetype opcode;
     if (!scriptSig.GetOp(pc, opcode, data)) return 0;
@@ -379,7 +379,7 @@ bool CScript::IsPushOnly() const { return this->IsPushOnly(begin()); }
 std::string CScript::ToString() const {
   std::string str;
   opcodetype opcode;
-  std::vector<unsigned char> vch;
+  std::vector<uint8_t> vch;
   const_iterator pc = begin();
   while (pc < end()) {
     if (!str.empty()) str += " ";

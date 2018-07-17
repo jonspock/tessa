@@ -14,7 +14,7 @@ namespace {
 /** A class that deserializes a single CTransaction one time. */
 class TxInputStream {
  public:
-  TxInputStream(int nTypeIn, int nVersionIn, const unsigned char* txTo, size_t txToLen)
+  TxInputStream(int nTypeIn, int nVersionIn, const uint8_t* txTo, size_t txToLen)
       : m_data(txTo), m_remaining(txToLen) {}
 
   TxInputStream& read(char* pch, size_t nSize) {
@@ -36,7 +36,7 @@ class TxInputStream {
   }
 
  private:
-  const unsigned char* m_data;
+  const uint8_t* m_data;
   size_t m_remaining;
 };
 
@@ -53,8 +53,8 @@ ECCryptoClosure instance_of_eccryptoclosure;
 
 }  // namespace
 
-int bitcoinconsensus_verify_script(const unsigned char* scriptPubKey, unsigned int scriptPubKeyLen,
-                                   const unsigned char* txTo, unsigned int txToLen, unsigned int nIn,
+int bitcoinconsensus_verify_script(const uint8_t* scriptPubKey, unsigned int scriptPubKeyLen,
+                                   const uint8_t* txTo, unsigned int txToLen, unsigned int nIn,
                                    unsigned int flags, bitcoinconsensus_error* err) {
   try {
     TxInputStream stream(SER_NETWORK, PROTOCOL_VERSION, txTo, txToLen);

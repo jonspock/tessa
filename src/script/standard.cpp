@@ -14,7 +14,7 @@
 
 using namespace std;
 
-typedef vector<unsigned char> valtype;
+typedef vector<uint8_t> valtype;
 
 unsigned nMaxDatacarrierBytes = MAX_OP_RETURN_RELAY;
 
@@ -43,7 +43,7 @@ const char* GetTxnOutputType(txnouttype t) {
 /**
  * Return public keys or hashes from scriptPubKey, for 'standard' transaction types.
  */
-bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsigned char> >& vSolutionsRet) {
+bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<uint8_t> >& vSolutionsRet) {
   // Templates
   static multimap<txnouttype, CScript> mTemplates;
   if (mTemplates.empty()) {
@@ -63,7 +63,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
   // it is always OP_HASH160 20 [20 byte hash] OP_EQUAL
   if (scriptPubKey.IsPayToScriptHash()) {
     typeRet = TX_SCRIPTHASH;
-    vector<unsigned char> hashBytes(scriptPubKey.begin() + 2, scriptPubKey.begin() + 22);
+    vector<uint8_t> hashBytes(scriptPubKey.begin() + 2, scriptPubKey.begin() + 22);
     vSolutionsRet.push_back(hashBytes);
     return true;
   }
@@ -72,7 +72,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
   if (scriptPubKey.IsZerocoinMint()) {
     typeRet = TX_ZEROCOINMINT;
     if (scriptPubKey.size() > 150) return false;
-    vector<unsigned char> hashBytes(scriptPubKey.begin() + 2, scriptPubKey.end());
+    vector<uint8_t> hashBytes(scriptPubKey.begin() + 2, scriptPubKey.end());
     vSolutionsRet.push_back(hashBytes);
     return true;
   }
@@ -94,7 +94,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
     vSolutionsRet.clear();
 
     opcodetype opcode1, opcode2;
-    vector<unsigned char> vch1, vch2;
+    vector<uint8_t> vch1, vch2;
 
     // Compare
     CScript::const_iterator pc1 = script1.begin();
@@ -105,8 +105,8 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
         typeRet = tplate.first;
         if (typeRet == TX_MULTISIG) {
           // Additional checks for TX_MULTISIG:
-          unsigned char m = vSolutionsRet.front()[0];
-          unsigned char n = vSolutionsRet.back()[0];
+          uint8_t m = vSolutionsRet.front()[0];
+          uint8_t n = vSolutionsRet.back()[0];
           if (m < 1 || n < 1 || m > n || vSolutionsRet.size() - 2 != n) return false;
         }
         return true;
@@ -149,7 +149,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
   return false;
 }
 
-int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned char> >& vSolutions) {
+int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<uint8_t> >& vSolutions) {
   switch (t) {
     case TX_NONSTANDARD:
     case TX_NULL_DATA:
@@ -173,8 +173,8 @@ bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType) {
   if (!Solver(scriptPubKey, whichType, vSolutions)) return false;
 
   if (whichType == TX_MULTISIG) {
-    unsigned char m = vSolutions.front()[0];
-    unsigned char n = vSolutions.back()[0];
+    uint8_t m = vSolutions.front()[0];
+    uint8_t n = vSolutions.back()[0];
     // Support up to x-of-3 multisig txns as standard
     if (n < 1 || n > 3) return false;
     if (m < 1 || m > n) return false;

@@ -20,7 +20,7 @@ class CachingTransactionSignatureChecker : public TransactionSignatureChecker {
   CachingTransactionSignatureChecker(const CTransaction* txToIn, unsigned int nInIn, bool storeIn = true)
       : TransactionSignatureChecker(txToIn, nInIn), store(storeIn) {}
 
-  bool VerifySignature(const std::vector<unsigned char>& vchSig, const CPubKey& vchPubKey,
+  bool VerifySignature(const std::vector<uint8_t>& vchSig, const CPubKey& vchPubKey,
                        const uint256& sighash) const;
 };
 

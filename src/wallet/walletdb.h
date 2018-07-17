@@ -117,7 +117,7 @@ class CWalletDB : public CDB {
   bool EraseTx(uint256 hash);
 
   bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta);
-  bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret,
+  bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret,
                        const CKeyMetadata& keyMeta);
   bool WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey);
 
@@ -195,8 +195,8 @@ class CWalletDB : public CDB {
   bool ReadZerocoinSpendSerialEntry(const CBigNum& bnSerial);
   bool WriteCurrentSeedHash(const uint256& hashSeed);
   bool ReadCurrentSeedHash(uint256& hashSeed);
-  bool WriteZKPSeed(const uint256& hashSeed, const std::vector<unsigned char>& seed);
-  bool ReadZKPSeed(const uint256& hashSeed, std::vector<unsigned char>& seed);
+  bool WriteZKPSeed(const uint256& hashSeed, const std::vector<uint8_t>& seed);
+  bool ReadZKPSeed(const uint256& hashSeed, std::vector<uint8_t>& seed);
   bool EraseZKPSeed();
  
   bool WriteZKPCount(const uint32_t& nCount);

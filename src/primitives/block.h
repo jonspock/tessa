@@ -79,7 +79,7 @@ class CBlock : public CBlockHeader {
   std::vector<CTransaction> vtx;
 
   // ppcoin: block signature - signed by one of the coin base txout[N]'s owner
-  std::vector<unsigned char> vchBlockSig;
+  std::vector<uint8_t> vchBlockSig;
 
   // memory only
   mutable CScript payee;

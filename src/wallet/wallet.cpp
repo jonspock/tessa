@@ -146,7 +146,7 @@ bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey& pubkey) {
   return true;
 }
 
-bool CWallet::AddCryptedKey(const CPubKey& vchPubKey, const vector<unsigned char>& vchCryptedSecret) {
+bool CWallet::AddCryptedKey(const CPubKey& vchPubKey, const vector<uint8_t>& vchCryptedSecret) {
   if (!CCryptoKeyStore::AddCryptedKey(vchPubKey, vchCryptedSecret)) return false;
   if (!fFileBacked) return true;
   {
@@ -167,7 +167,7 @@ bool CWallet::LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta) {
   return true;
 }
 
-bool CWallet::LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) {
+bool CWallet::LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret) {
   return CCryptoKeyStore::AddCryptedKey(vchPubKey, vchCryptedSecret);
 }
 
@@ -2783,7 +2783,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
     // Deserialize the CoinSpend intro a fresh object
     CDataStream serializedCoinSpend(SER_NETWORK, PROTOCOL_VERSION);
     serializedCoinSpend << spend;
-    std::vector<unsigned char> data(serializedCoinSpend.begin(), serializedCoinSpend.end());
+    std::vector<uint8_t> data(serializedCoinSpend.begin(), serializedCoinSpend.end());
 
     // Add the coin spend into a Club transaction
     newTxIn.scriptSig = CScript() << OP_ZEROCOINSPEND << data.size();

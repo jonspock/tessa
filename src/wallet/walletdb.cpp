@@ -58,7 +58,7 @@ bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, c
   if (!Write(std::make_pair(std::string("keymeta"), vchPubKey), keyMeta, false)) return false;
 
   // hash pubkey/privkey to accelerate wallet load
-  std::vector<unsigned char> vchKey;
+  std::vector<uint8_t> vchKey;
   vchKey.reserve(vchPubKey.size() + vchPrivKey.size());
   vchKey.insert(vchKey.end(), vchPubKey.begin(), vchPubKey.end());
   vchKey.insert(vchKey.end(), vchPrivKey.begin(), vchPrivKey.end());
@@ -67,7 +67,7 @@ bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, c
                std::make_pair(vchPrivKey, Hash(vchKey.begin(), vchKey.end())), false);
 }
 
-bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret,
+bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret,
                                 const CKeyMetadata& keyMeta) {
   const bool fEraseUnencryptedKey = true;
 
@@ -421,7 +421,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
 
       if (!hash.IsNull()) {
         // hash pubkey/privkey to accelerate wallet load
-        std::vector<unsigned char> vchKey;
+        std::vector<uint8_t> vchKey;
         vchKey.reserve(vchPubKey.size() + pkey.size());
         vchKey.insert(vchKey.end(), vchPubKey.begin(), vchPubKey.end());
         vchKey.insert(vchKey.end(), pkey.begin(), pkey.end());
@@ -456,7 +456,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
     } else if (strType == "ckey") {
       CPubKey vchPubKey;
       ssKey >> vchPubKey;
-      vector<unsigned char> vchPrivKey;
+      vector<uint8_t> vchPrivKey;
       ssValue >> vchPrivKey;
       wss.nCKeys++;
 
@@ -838,7 +838,7 @@ bool CWalletDB::WriteCurrentSeedHash(const uint256& hashSeed) { return Write(str
 
 bool CWalletDB::ReadCurrentSeedHash(uint256& hashSeed) { return Read(string("seedhash"), hashSeed); }
 
-bool CWalletDB::WriteZKPSeed(const uint256& hashSeed, const vector<unsigned char>& seed) {
+bool CWalletDB::WriteZKPSeed(const uint256& hashSeed, const vector<uint8_t>& seed) {
   if (!WriteCurrentSeedHash(hashSeed)) return error("%s: failed to write current seed hash", __func__);
 
   return Write(make_pair(string("dzs"), hashSeed), seed);
@@ -855,7 +855,7 @@ bool CWalletDB::EraseZKPSeed() {
   return true;
 }
 
-bool CWalletDB::ReadZKPSeed(const uint256& hashSeed, vector<unsigned char>& seed) {
+bool CWalletDB::ReadZKPSeed(const uint256& hashSeed, vector<uint8_t>& seed) {
   return Read(make_pair(string("dzs"), hashSeed), seed);
 }
 

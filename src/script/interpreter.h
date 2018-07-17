@@ -74,7 +74,7 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
 
 class BaseSignatureChecker {
  public:
-  virtual bool CheckSig(const std::vector<unsigned char>& scriptSig, const std::vector<unsigned char>& vchPubKey,
+  virtual bool CheckSig(const std::vector<uint8_t>& scriptSig, const std::vector<uint8_t>& vchPubKey,
                         const CScript& scriptCode) const {
     return false;
   }
@@ -88,12 +88,12 @@ class TransactionSignatureChecker : public BaseSignatureChecker {
   unsigned int nIn;
 
  protected:
-  virtual bool VerifySignature(const std::vector<unsigned char>& vchSig, const CPubKey& vchPubKey,
+  virtual bool VerifySignature(const std::vector<uint8_t>& vchSig, const CPubKey& vchPubKey,
                                const uint256& sighash) const;
 
  public:
   TransactionSignatureChecker(const CTransaction* txToIn, unsigned int nInIn) : txTo(txToIn), nIn(nInIn) {}
-  bool CheckSig(const std::vector<unsigned char>& scriptSig, const std::vector<unsigned char>& vchPubKey,
+  bool CheckSig(const std::vector<uint8_t>& scriptSig, const std::vector<uint8_t>& vchPubKey,
                 const CScript& scriptCode) const;
 };
 
@@ -106,7 +106,7 @@ class MutableTransactionSignatureChecker : public TransactionSignatureChecker {
       : TransactionSignatureChecker(&txTo, nInIn), txTo(*txToIn) {}
 };
 
-bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& script, unsigned int flags,
+bool EvalScript(std::vector<std::vector<uint8_t> >& stack, const CScript& script, unsigned int flags,
                 const BaseSignatureChecker& checker, ScriptError* error = nullptr);
 bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, unsigned int flags,
                   const BaseSignatureChecker& checker, ScriptError* error = nullptr);

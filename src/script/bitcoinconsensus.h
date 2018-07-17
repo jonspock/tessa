@@ -33,6 +33,8 @@ extern "C" {
 
 #define BITCOINCONSENSUS_API_VER 0
 
+#include <cstdint>
+    
 typedef enum bitcoinconsensus_error_t {
   bitcoinconsensus_ERR_OK = 0,
   bitcoinconsensus_ERR_TX_INDEX,
@@ -51,8 +53,8 @@ enum {
 /// txTo correctly spends the scriptPubKey pointed to by scriptPubKey under
 /// the additional constraints specified by flags.
 /// If not NULL, err will contain an error/success code for the operation
-EXPORT_SYMBOL int bitcoinconsensus_verify_script(const unsigned char *scriptPubKey, unsigned int scriptPubKeyLen,
-                                                 const unsigned char *txTo, unsigned int txToLen, unsigned int nIn,
+EXPORT_SYMBOL int bitcoinconsensus_verify_script(const uint8_t *scriptPubKey, unsigned int scriptPubKeyLen,
+                                                 const uint8_t *txTo, unsigned int txToLen, unsigned int nIn,
                                                  unsigned int flags, bitcoinconsensus_error *err);
 
 EXPORT_SYMBOL unsigned int bitcoinconsensus_version();
