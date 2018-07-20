@@ -207,7 +207,8 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   // Combined balances
   CAmount availableTotalBalance = pivAvailableBalance + matureZerocoinBalance;
   CAmount sumTotalBalance = nTotalBalance + zerocoinBalance;
-
+  CAmount nAvailableWatchBalance = watchOnlyBalance - watchImmatureBalance - nWatchOnlyLockedBalance;
+ 
   // Club labels
   ui->labelBalance->setText(
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, pivAvailableBalance, false, BitcoinUnits::separatorAlways));
@@ -222,7 +223,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
 
   // Watchonly labels
   ui->labelWatchAvailable->setText(
-      BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, watchOnlyBalance, false, BitcoinUnits::separatorAlways));
+      BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, nAvailableWatchBalance, false, BitcoinUnits::separatorAlways));
   ui->labelWatchPending->setText(
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, watchUnconfBalance, false, BitcoinUnits::separatorAlways));
   ui->labelWatchImmature->setText(

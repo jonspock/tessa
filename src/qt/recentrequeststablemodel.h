@@ -30,10 +30,7 @@ class RecentRequestEntry {
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action, int nType = 0, int nVer = 0) {
     unsigned int nDate = date.toTime_t();
-
-    int nVersion = s.GetVersion();
     READWRITE(this->nVersion);
-    nVersion = this->nVersion;
     READWRITE(id);
     READWRITE(nDate);
     READWRITE(recipient);

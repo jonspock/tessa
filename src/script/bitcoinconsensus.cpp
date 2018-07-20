@@ -53,9 +53,9 @@ ECCryptoClosure instance_of_eccryptoclosure;
 
 }  // namespace
 
-int bitcoinconsensus_verify_script(const uint8_t* scriptPubKey, unsigned int scriptPubKeyLen,
-                                   const uint8_t* txTo, unsigned int txToLen, unsigned int nIn,
-                                   unsigned int flags, bitcoinconsensus_error* err) {
+int bitcoinconsensus_verify_script(const uint8_t* scriptPubKey, unsigned int scriptPubKeyLen, const uint8_t* txTo,
+                                   unsigned int txToLen, unsigned int nIn, unsigned int flags,
+                                   bitcoinconsensus_error* err) {
   try {
     TxInputStream stream(SER_NETWORK, PROTOCOL_VERSION, txTo, txToLen);
     CTransaction tx;

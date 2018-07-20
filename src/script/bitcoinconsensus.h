@@ -34,7 +34,7 @@ extern "C" {
 #define BITCOINCONSENSUS_API_VER 0
 
 #include <cstdint>
-    
+
 typedef enum bitcoinconsensus_error_t {
   bitcoinconsensus_ERR_OK = 0,
   bitcoinconsensus_ERR_TX_INDEX,

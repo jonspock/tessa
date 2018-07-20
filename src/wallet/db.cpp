@@ -32,9 +32,9 @@ bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
 
   LogPrintf("CDBEnv::Open: %s\n", wallet_dir.string());
 
-  int dbr = mdb_env_set_mapsize(env, 2 * 10485760);
+  int dbr = mdb_env_set_mapsize(env, 10485760);
   dbr |= mdb_env_set_maxdbs(env, 4);
-  dbr |= mdb_env_open(env, wallet_dir.c_str(), MDB_FIXEDMAP | MDB_NOSYNC, 0664);
+    dbr |= mdb_env_open(env, wallet_dir.c_str(), 0, 0664); // MDB_FIXEDMAP | MDB_NOSYNC, 0664);
 
   if (dbr != 0) {
     LogPrintf("CDBEnv::Open: Error opening database env %s\n", wallet_dir.string());

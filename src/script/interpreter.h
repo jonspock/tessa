@@ -9,7 +9,7 @@
 #include "primitives/transaction.h"
 #include "script_error.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 

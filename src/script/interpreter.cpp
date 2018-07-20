@@ -939,8 +939,8 @@ bool TransactionSignatureChecker::VerifySignature(const std::vector<uint8_t>& vc
   return pubkey.Verify(sighash, vchSig);
 }
 
-bool TransactionSignatureChecker::CheckSig(const vector<uint8_t>& vchSigIn,
-                                           const vector<uint8_t>& vchPubKey, const CScript& scriptCode) const {
+bool TransactionSignatureChecker::CheckSig(const vector<uint8_t>& vchSigIn, const vector<uint8_t>& vchPubKey,
+                                           const CScript& scriptCode) const {
   CPubKey pubkey(vchPubKey);
   if (!pubkey.IsValid()) return false;
 

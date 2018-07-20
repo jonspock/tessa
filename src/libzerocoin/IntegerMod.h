@@ -41,12 +41,12 @@ template <ModulusType T> class IntegerMod {
   bool isPrime(const int checks = BN_prime_checks) const { return Value.isPrime(checks); }
 
   void randomize() {
-    if (!BN_rand_range(&Value, &Mod)) { throw std::runtime_error("IntegerMod:rand : BN_rand_range failed"); }
+    if (!BN_rand_range(Value.bn, Mod.bn)) { throw std::runtime_error("IntegerMod:rand : BN_rand_range failed"); }
   }
 
   explicit IntegerMod(const std::vector<uint8_t>& vch) { Value.setvch(vch); }
 
-  int bitSize() const { return BN_num_bits(&Value); }
+  int bitSize() const { return BN_num_bits(Value.bn); }
 
   void setvch(const std::vector<uint8_t>& vch) { Value.setvch(vch); }
   std::vector<uint8_t> getvch() const { return Value.getvch(); }

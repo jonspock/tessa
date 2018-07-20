@@ -44,6 +44,7 @@ enum DBErrors { DB_LOAD_OK, DB_CORRUPT, DB_NONCRITICAL_ERROR, DB_TOO_NEW, DB_LOA
 class CHDChain {
 public:
     uint32_t nExternalChainCounter;
+    uint32_t nInternalChainCounter;
     //!< master key hash160
     CKeyID masterKeyID;
 
@@ -57,11 +58,13 @@ public:
         READWRITE(this->nVersion);
         READWRITE(nExternalChainCounter);
         READWRITE(masterKeyID);
+        READWRITE(nInternalChainCounter);
     }
 
     void SetNull() {
         nVersion = CHDChain::CURRENT_VERSION;
         nExternalChainCounter = 0;
+        nInternalChainCounter = 0;
         masterKeyID.SetNull();
     }
 };

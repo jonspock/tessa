@@ -68,7 +68,6 @@ class SendCoinsRecipient {
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action, int nType = 0, int nVer = 0) {
-    int nVersion = s.GetVersion();
     std::string sAddress = address.toStdString();
     std::string sLabel = label.toStdString();
     std::string sMessage = message.toStdString();
@@ -77,7 +76,6 @@ class SendCoinsRecipient {
     std::string sAuthenticatedMerchant = authenticatedMerchant.toStdString();
 
     READWRITE(this->nVersion);
-    nVersion = this->nVersion;
     READWRITE(sAddress);
     READWRITE(sLabel);
     READWRITE(amount);

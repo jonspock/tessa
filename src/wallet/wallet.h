@@ -175,7 +175,11 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   /* the HD chain data model (external chain counters) */
   CHDChain hdChain;
-  
+
+  /* HD derive new child key (on internal or external chain) */
+  void DeriveNewChildKey(CWalletDB &walletdb, CKeyMetadata &metadata,
+                         CKey &secret, bool internal = false);
+
   std::unique_ptr<CZeroTracker> zkpTracker;
 
   std::set<int64_t> setKeyPool;
@@ -308,6 +312,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   //! Adds a key to the store, and saves it to disk.
   bool AddKeyPubKey(const CKey& key, const CPubKey& pubkey);
+  bool AddKeyPubKeyWithDB(CWalletDB &walletdb, const CKey &key, const CPubKey &pubkey);
   //! Adds a key to the store, without saving it to disk (used by LoadWallet)
   bool LoadKey(const CKey& key, const CPubKey& pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
   //! Load metadata (used by LoadWallet)

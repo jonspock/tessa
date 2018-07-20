@@ -20,8 +20,7 @@ class CachingTransactionSignatureChecker : public TransactionSignatureChecker {
   CachingTransactionSignatureChecker(const CTransaction* txToIn, unsigned int nInIn, bool storeIn = true)
       : TransactionSignatureChecker(txToIn, nInIn), store(storeIn) {}
 
-  bool VerifySignature(const std::vector<uint8_t>& vchSig, const CPubKey& vchPubKey,
-                       const uint256& sighash) const;
+  bool VerifySignature(const std::vector<uint8_t>& vchSig, const CPubKey& vchPubKey, const uint256& sighash) const;
 };
 
 #endif  // BITCOIN_SCRIPT_SIGCACHE_H

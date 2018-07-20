@@ -758,7 +758,7 @@ bool MultisigDialog::createRedeemScript(int m, vector<string> vKeys, CScript& re
     redeemRet << redeemRet.EncodeOP_N(m);
     // public keys
     for (CPubKey& key : pubkeys) {
-      vector<unsigned char> vKey = ToByteVector(key);
+      vector<uint8_t> vKey = ToByteVector(key);
       redeemRet << vKey;
     }
     // OP_N for total pubkeys
