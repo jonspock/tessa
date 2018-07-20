@@ -122,13 +122,8 @@ CPubKey CWallet::GenerateNewKey() {
   int64_t nCreationTime = GetTime();
   CKeyMetadata metadata(nCreationTime);
 
-  // use HD key derivation if HD was enabled during wallet creation
-  if (IsHDEnabled()) {
-    DeriveNewChildKey(
-                      gWalletDB, metadata, secret, internal);
-  } else {
-    secret.MakeNewKey(fCompressed);
-  }
+  // use HD key derivation - always enabled
+  DeriveNewChildKey(gWalletDB, metadata, secret, internal);
 
   CPubKey pubkey = secret.GetPubKey();
   assert(secret.VerifyPubKey(pubkey));
@@ -596,16 +591,11 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase) {
     Lock();
     Unlock(strWalletPassphrase);
 
-    // If we are using HD, replace the HD master key (seed) with a new one.
-    if (IsHDEnabled()) {
-      CKey key;
-      CPubKey masterPubKey = GenerateNewHDMasterKey();
-      if (!SetHDMasterKey(masterPubKey)) {
-        return false;
-      }
-    }
-
-
+    // replace the HD master key (seed) with a new one.
+#warning "Why this?"
+    CKey key;
+    CPubKey masterPubKey = GenerateNewHDMasterKey();
+    if (!SetHDMasterKey(masterPubKey)) return false;
     
     NewKeyPool();
     Lock();
@@ -3636,16 +3626,12 @@ CWallet *CWallet::CreateWalletFromFile(const std::string walletFile) {
     }
 
     if (fFirstRun) {
-        // Create new keyUser and set as default key.
-        if (GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) &&
-            !walletInstance->IsHDEnabled()) {
-            // Generate a new master key.
-            CPubKey masterPubKey = walletInstance->GenerateNewHDMasterKey();
-            if (!walletInstance->SetHDMasterKey(masterPubKey)) {
+        // Generate a new master key.
+        CPubKey masterPubKey = walletInstance->GenerateNewHDMasterKey();
+        if (!walletInstance->SetHDMasterKey(masterPubKey)) {
                 throw std::runtime_error(std::string(__func__) +
                                          ": Storing master key failed");
             }
-        }
 
         CPubKey newDefaultKey;
         if (walletInstance->GetKeyFromPool(newDefaultKey)) {
@@ -3658,21 +3644,6 @@ CWallet *CWallet::CreateWalletFromFile(const std::string walletFile) {
         }
 
         walletInstance->SetBestChain(chainActive.GetLocator());
-    } else if (IsArgSet("-usehd")) {
-        bool useHD = GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
-        if (walletInstance->IsHDEnabled() && !useHD) {
-            InitError(strprintf(_("Error loading %s: You can't disable HD on a "
-                                  "already existing HD wallet"),
-                                walletFile));
-            return nullptr;
-        }
-
-        if (!walletInstance->IsHDEnabled() && useHD) {
-            InitError(strprintf(_("Error loading %s: You can't enable HD on a "
-                                  "already existing non-HD wallet"),
-                                walletFile));
-            return nullptr;
-        }
     }
 
     LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
