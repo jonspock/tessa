@@ -140,7 +140,7 @@ static int ec_privkey_export_der(const secp256k1_context* ctx, uint8_t* privkey,
 bool CKey::Check(const uint8_t* vch) { return secp256k1_ec_seckey_verify(secp256k1_context_sign, vch); }
 
 void CKey::MakeNewKey(bool fCompressedIn) {
-  do { GetRandBytes(keydata.data(), keydata.size()); } while (!Check(keydata.data()));
+  do { GetStrongRandBytes(keydata.data(), keydata.size()); } while (!Check(keydata.data()));
   fValid = true;
   fCompressed = fCompressedIn;
 }
