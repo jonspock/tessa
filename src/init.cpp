@@ -1563,9 +1563,18 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     }
 
     if (fFirstRun) {
-      // Create new keyUser and set as default key
-      //RandAddSeedPerfmon();
+      if (!pwalletMain->IsHDEnabled()) {
+        // Generate a new master key.
+        CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey();
+        if (!pwalletMain->SetHDMasterKey(masterPubKey)) {
+          throw std::runtime_error(std::string(__func__) +
+                                   ": Storing master key failed");
+        }
+      }
+ 
 
+      
+        // Create new keyUser and set as default key
       CPubKey newDefaultKey;
       if (pwalletMain->GetKeyFromPool(newDefaultKey)) {
         pwalletMain->SetDefaultKey(newDefaultKey);

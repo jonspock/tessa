@@ -66,6 +66,9 @@ static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
 //! -custombackupthreshold default
 static const int DEFAULT_CUSTOMBACKUPTHRESHOLD = 1;
 
+//! if set, all keys will be derived by using BIP32
+static const bool DEFAULT_USE_HD_WALLET = true;
+
 class CCoinControl;
 class COutput;
 class CScript;
