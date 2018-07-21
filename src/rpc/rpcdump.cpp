@@ -385,14 +385,25 @@ UniValue dumpwallet(const UniValue& params, bool fHelp) {
     std::string strAddr = CBitcoinAddress(keyid).ToString();
     CKey key;
     if (pwalletMain->GetKey(keyid, key)) {
+        file << strprintf("%s %s ", CBitcoinSecret(key).ToString(), strTime);
       if (pwalletMain->mapAddressBook.count(keyid)) {
         file << strprintf("%s %s label=%s # addr=%s\n", CBitcoinSecret(key).ToString(), strTime,
                           EncodeDumpString(pwalletMain->mapAddressBook[keyid].name), strAddr);
+      } else if (keyid == masterKeyID) {
+        file << "hdmaster=1";
       } else if (setKeyPool.count(keyid)) {
-        file << strprintf("%s %s reserve=1 # addr=%s\n", CBitcoinSecret(key).ToString(), strTime, strAddr);
+        file << "reserve=1";
+      } else if (pwalletMain->mapKeyMetadata[keyid].hdKeypath == "m") {
+        file << "inactivehdmaster=1";
       } else {
-        file << strprintf("%s %s change=1 # addr=%s\n", CBitcoinSecret(key).ToString(), strTime, strAddr);
+        file << "change=1";
       }
+      file << strprintf(
+                        " # addr=%s%s\n", strAddr,
+                        (pwalletMain->mapKeyMetadata[keyid].hdKeypath.size() > 0
+                         ? " hdkeypath=" +
+                         pwalletMain->mapKeyMetadata[keyid].hdKeypath
+                         : ""));
     }
   }
   file << "\n";
