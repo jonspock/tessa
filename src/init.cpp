@@ -1020,6 +1020,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // pidfile, debug log
 
   // Initialize elliptic curve code
+  RandomInit();
   ECC_Start();
   globalVerifyHandle.reset(new ECCVerifyHandle());
 

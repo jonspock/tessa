@@ -176,6 +176,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
 
   // Load mapBlockIndex
   uint256 nPreviousCheckpoint;
+  nPreviousCheckpoint.SetNull();
   while (pcursor->Valid()) {
     boost::this_thread::interruption_point();
     try {
