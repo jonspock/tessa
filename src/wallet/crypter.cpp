@@ -185,13 +185,9 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vMasterKeyIn) {
       }
       pwalletMain->zwalletMain->SetMasterSeed(nSeed, false);
     } else {
-      // First time this wallet has been unlocked with dZkp
-      // Borrow random generator from the key class so that we don't have to worry about randomness
-      CKey key;
-      key.MakeNewKey(true);
-      uint256 seed = key.GetPrivKey_256();
-      LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,
-                Hash(seed.begin(), seed.end()).GetHex());
+      // First time this wallet has been unlocked with dZkp. Get HD MasterKey for ZKP
+      uint256 seed = pwalletMain->GetMasterKeySeed();
+      //LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,Hash(seed.begin(), seed.end()).GetHex());
       pwalletMain->zwalletMain->SetMasterSeed(seed, true);
       pwalletMain->zwalletMain->GenerateMintPool();
     }

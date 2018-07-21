@@ -3,8 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_DETERMINISTICMINT_H
-#define Club_DETERMINISTICMINT_H
+#pragma once
 
 #include <libzerocoin/Denominations.h>
 #include <serialize.h>
@@ -66,4 +65,3 @@ class CDeterministicMint {
   };
 };
 
-#endif  // Club_DETERMINISTICMINT_H

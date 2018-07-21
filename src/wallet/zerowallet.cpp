@@ -35,8 +35,7 @@ CZeroWallet::CZeroWallet() {
     key.MakeNewKey(true);
     seed = key.GetPrivKey_256();
     seedMaster = seed;
-    LogPrint(ClubLog::ZERO, "%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,
-             Hash(seed.begin(), seed.end()).GetHex());
+    LogPrint(ClubLog::ZERO, "%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__, Hash(seed.begin(), seed.end()).GetHex());
   } else if (!pwalletMain->GetDeterministicSeed(hashSeed, seed)) {
     LogPrintf("%s: failed to get deterministic seed for hashseed %s\n", __func__, hashSeed.GetHex());
     return;

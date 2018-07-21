@@ -138,6 +138,17 @@ CPubKey CWallet::GenerateNewKey() {
   return pubkey;
 }
 
+uint256 CWallet::GetMasterKeySeed() {
+  CKey key;
+  // try to get the master key
+  if (!GetKey(hdChain.masterKeyID, key)) {
+    throw std::runtime_error(std::string(__func__) +
+                             ": Master key not found");
+  }
+  uint256 seed = key.GetPrivKey_256();
+  return seed;
+}
+
 
 void CWallet::DeriveNewChildKey(CWalletDB &walletdb, CKeyMetadata &metadata,
                                 CKey &secret, bool internal) {
