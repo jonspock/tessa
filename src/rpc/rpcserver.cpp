@@ -337,6 +337,8 @@ static const CRPCCommand vRPCCommands[] = {
     {"wallet", "walletlock", &walletlock, true, false, true},
     {"wallet", "walletpassphrasechange", &walletpassphrasechange, true, false, true},
     {"wallet", "walletpassphrase", &walletpassphrase, true, false, true},
+    {"wallet", "getmasterHDseed", &getMasterHDseed, false, false, true},
+    {"wallet", "setmasterHDseed", &setMasterHDseed, false, false, true},
 
     {"zerocoin", "getzerocoinbalance", &getzerocoinbalance, false, false, true},
     {"zerocoin", "listmintedzerocoins", &listmintedzerocoins, false, false, true},
@@ -351,8 +353,6 @@ static const CRPCCommand vRPCCommands[] = {
     {"zerocoin", "exportzerocoins", &exportzerocoins, false, false, true},
     {"zerocoin", "reconsiderzerocoins", &reconsiderzerocoins, false, false, true},
     {"zerocoin", "getspentzerocoinamount", &getspentzerocoinamount, false, false, false},
-    {"zerocoin", "getzkpseed", &getzkpseed, false, false, true},
-    {"zerocoin", "setzkpseed", &setzkpseed, false, false, true},
     {"zerocoin", "generatemintlist", &generatemintlist, false, false, true},
     {"zerocoin", "searchdzkp", &searchdzkp, false, false, true},
     {"zerocoin", "dzkpstate", &dzkpstate, false, false, true}

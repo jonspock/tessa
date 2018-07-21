@@ -14,11 +14,11 @@
 #include "netbase.h"
 #include "rpcserver.h"
 #include "timedata.h"
+#include "uint512.h"
 #include "util.h"
 #include "utilmoneystr.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
-#include "uint512.h"
 
 #include <stdint.h>
 
@@ -1634,7 +1634,6 @@ UniValue gettransaction(const UniValue& params, bool fHelp) {
   return entry;
 }
 
-
 UniValue keypoolrefill(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 1)
     throw runtime_error(
@@ -2033,6 +2032,7 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp) {
         "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
         "  \"unlocked_until\": ttt,      (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that "
         "the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
+        "  \"hdmasterkeyid\": \"<hash160>\" (string) the Hash160 of the HD master pubkey\n"
         "}\n"
 
         "\nExamples:\n" +
@@ -2047,6 +2047,8 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp) {
   obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
   obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
   if (pwalletMain->IsCrypted()) obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+  CKeyID masterKeyID = pwalletMain->GetHDChain().masterKeyID;
+  obj.push_back(Pair("hdmasterkeyid", masterKeyID.GetHex()));
   return obj;
 }
 
@@ -2152,7 +2154,7 @@ UniValue getstakesplitthreshold(const UniValue& params, bool fHelp) {
 }
 
 UniValue autocombinerewards(const UniValue& params, bool fHelp) {
-  bool fEnable;
+  bool fEnable = false;
   if (params.size() >= 1) fEnable = params[0].get_bool();
 
   if (fHelp || params.size() < 1 || (fEnable && params.size() != 2) || params.size() > 2)
@@ -3130,11 +3132,11 @@ UniValue reconsiderzerocoins(const UniValue& params, bool fHelp) {
   return arrRet;
 }
 
-UniValue setzkpseed(const UniValue& params, bool fHelp) {
+UniValue setMasterHDseed(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 1)
     throw runtime_error(
-        "setzkpseed \"seed\"\n"
-        "\nSet the wallet's deterministic zkp seed to a specific value.\n" +
+        "setMasterHDseed \"seed\"\n"
+        "\nSet the wallet's HD deterministic seed to a specific value.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
@@ -3145,17 +3147,22 @@ UniValue setzkpseed(const UniValue& params, bool fHelp) {
         "\"success\" : b,  (boolean) Whether the seed was successfully set.\n"
 
         "\nExamples\n" +
-        HelpExampleCli("setzkpseed", "63f793e7895dd30d99187b35fbfb314a5f91af0add9e0a4e5877036d1e392dd5") +
-        HelpExampleRpc("setzkpseed", "63f793e7895dd30d99187b35fbfb314a5f91af0add9e0a4e5877036d1e392dd5"));
+        HelpExampleCli("setmasterHDseed", "63f793e7895dd30d99187b35fbfb314a5f91af0add9e0a4e5877036d1e392dd5") +
+        HelpExampleRpc("setmasterHDseed", "63f793e7895dd30d99187b35fbfb314a5f91af0add9e0a4e5877036d1e392dd5"));
 
   EnsureWalletIsUnlocked();
 
   uint256 seed;
   seed.SetHex(params[0].get_str());
 
-  CZeroWallet* zwallet = pwalletMain->getZWallet();
-  bool fSuccess = zwallet->SetMasterSeed(seed, true);
-  if (fSuccess) zwallet->SyncWithChain();
+  bool fSuccess = pwalletMain->SetHDMasterKeyFromSeed(seed);
+  if (fSuccess) {
+    CZeroWallet* zwallet = pwalletMain->getZWallet();
+    fSuccess |= zwallet->SetMasterSeed(seed, true);
+    zwallet->SetMasterSeed(seed, true);
+    zwallet->GenerateMintPool();
+    zwallet->SyncWithChain();
+  }
 
   UniValue ret(UniValue::VOBJ);
   ret.push_back(Pair("success", fSuccess));
@@ -3163,22 +3170,20 @@ UniValue setzkpseed(const UniValue& params, bool fHelp) {
   return ret;
 }
 
-UniValue getzkpseed(const UniValue& params, bool fHelp) {
+UniValue getMasterHDseed(const UniValue& params, bool fHelp) {
   if (fHelp || !params.empty())
-    throw runtime_error(
-        "getzkpseed\n"
-        "\nCheck archived ZKP list to see if any mints were added to the blockchain.\n" +
-        HelpRequiringPassphrase() +
-        "\n"
+    throw runtime_error("getMasterHDseed\n" + HelpRequiringPassphrase() +
+                        "\n"
 
-        "\nResult\n"
-        "\"seed\" : s,  (string) The deterministic ZKP seed.\n"
+                        "\nResult\n"
+                        "\"seed\" : s,  (string) The Hierarchical Deterministic Master seed.\n"
 
-        "\nExamples\n" +
-        HelpExampleCli("getzkpseed", "") + HelpExampleRpc("getzkpseed", ""));
+                        "\nExamples\n" +
+                        HelpExampleCli("getMasterHDseed", "") + HelpExampleRpc("getMasterHDseed", ""));
 
   EnsureWalletIsUnlocked();
 
+  // Get from ZeroWallet as it's the same
   CZeroWallet* zwallet = pwalletMain->getZWallet();
   uint256 seed = zwallet->GetMasterSeed();
 

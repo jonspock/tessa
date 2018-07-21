@@ -363,6 +363,22 @@ UniValue dumpwallet(const UniValue& params, bool fHelp) {
                     chainActive.Tip()->GetBlockHash().ToString());
   file << strprintf("#   mined on %s\n", EncodeDumpTime(chainActive.Tip()->GetBlockTime()));
   file << "\n";
+
+  // add the base58check encoded extended master if the wallet uses HD
+  CKeyID masterKeyID = pwalletMain->GetHDChain().masterKeyID;
+  if (!masterKeyID.IsNull()) {
+    CKey key;
+    if (pwalletMain->GetKey(masterKeyID, key)) {
+      CExtKey masterKey;
+      masterKey.SetMaster(key.begin(), key.size());
+
+      CBitcoinExtKey b58extkey;
+      b58extkey.SetKey(masterKey);
+
+      file << "# extended private masterkey: " << b58extkey.ToString() << "\n\n";
+    }
+  }
+
   for (std::vector<std::pair<int64_t, CKeyID> >::const_iterator it = vKeyBirth.begin(); it != vKeyBirth.end(); it++) {
     const CKeyID& keyid = it->second;
     std::string strTime = EncodeDumpTime(it->first);

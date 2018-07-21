@@ -508,6 +508,8 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   /* Generates a new HD master key (will not be activated) */
   CPubKey GenerateNewHDMasterKey();
   uint256 GetMasterKeySeed(); // returns HDMasterKey as uint256 for ZKP
+  bool SetHDMasterKeyFromSeed(const uint256 seed);
+
   
   /* Set the current HD master key (will reset the chain child index counters)
    */

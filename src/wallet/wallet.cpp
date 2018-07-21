@@ -3536,6 +3536,29 @@ CPubKey CWallet::GenerateNewHDMasterKey() {
     return pubkey;
 }
 
+bool CWallet::SetHDMasterKeyFromSeed(const uint256 seed) {
+    CKey key;
+
+    int64_t nCreationTime = GetTime();
+    CKeyMetadata metadata(nCreationTime);
+
+    // Calculate the pubkey.
+    CPubKey pubkey = key.GetPubKey();
+    assert(key.VerifyPubKey(pubkey));
+
+    // Set the hd keypath to "m" -> Master, refers the masterkeyid to itself.
+    metadata.hdKeypath = "m";
+    metadata.hdMasterKeyID = pubkey.GetID();
+
+    LOCK(cs_wallet);
+
+    // mem store the metadata
+    mapKeyMetadata[pubkey.GetID()] = metadata;
+
+    return SetHDMasterKey(pubkey);
+}
+
+
 bool CWallet::SetHDMasterKey(const CPubKey &pubkey) {
     LOCK(cs_wallet);
 
