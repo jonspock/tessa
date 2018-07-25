@@ -1,4 +1,24 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+project(CLUB VERSION 0.9.0.0)
+
+
+# Add path for custom modules
+set(CMAKE_MODULE_PATH
+	${CMAKE_MODULE_PATH}
+	${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
+)
+
+
+# If ccache is available, then use it.
+find_program(CCACHE ccache)
+if(CCACHE)
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE})
+endif(CCACHE)
+
+# Add the magic taret check and check-all
+add_custom_target(check-all)
+add_custom_target(check)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE "Release")
@@ -41,7 +61,6 @@ if (POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif()
 
-project(CLUB VERSION 0.9.0.0)
 
 # Project Version - check later
 SET(CLUB_VERSION_MAJOR "0")
@@ -323,6 +342,8 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/forms
+  # For config file
+  ${CMAKE_CURRENT_BINARY_DIR}
   )
 
 #file(GLOB_RECURSE HEADERS *.h)
@@ -358,6 +379,7 @@ ENDIF()
 set_property(TARGET coin PROPERTY CXX_STANDARD 11)
 add_dependencies(coin buildHeader)
 
+add_subdirectory(src)
 add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 
