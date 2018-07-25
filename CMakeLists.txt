@@ -16,6 +16,12 @@ if(CCACHE)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE})
 endif(CCACHE)
 
+set(CMAKE_CXX_STANDARD 11)
+
+# Default visibility is hidden on all targets.
+#set(CMAKE_C_VISIBILITY_PRESET hidden)
+#set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 # Add the magic taret check and check-all
 add_custom_target(check-all)
 add_custom_target(check)
@@ -77,7 +83,6 @@ if(CCACHE)
 endif(CCACHE)
 
 
-set(OPENSSL_VER "1.0.2n")
 set(ROCKSDB_VER "5.14.2")
 
 #---------------------------------------------------------------------------------------------------------
@@ -109,8 +114,25 @@ endif()
 
 add_definitions("-DHAVE_BUILD_INFO -DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
 
-add_definitions("-Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector -fstack-protector-all -fPIC")
-#-fvisibility=hidden")
+
+# Enable warning
+include(AddCompilerFlags)
+
+add_c_compiler_flag(-Wnested-externs -Wstrict-prototypes)
+add_compiler_flag(
+	-Wall
+	-Wextra
+	-Wformat
+	-Wvla
+	-Wformat-security
+	-Wcast-align
+  # club added
+	-Wno-unused-parameter
+  -Wstack-protector
+  -fstack-protector-all
+)
+
+add_definitions("-fPIC")
 
 # run autogen.sh if missing header files from configure on Linux/Mac
 if (EXISTS	"${CMAKE_CURRENT_SOURCE_DIR}/configure")
@@ -122,7 +144,7 @@ else()
 endif()
 
 # run configure if club_config.h doesn't exist, For Linux add "--with-incompatible-bdb"
-if (EXISTS	"${CMAKE_CURRENT_SOURCE_DIR}/src/config/club-config.h")
+if (EXISTS	"${CMAKE_CURRENT_BINARY_DIR}/src/club-config.h")
 else()	
 	IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	  execute_process(
@@ -131,7 +153,7 @@ else()
 		)
 else()
 	  execute_process(
-		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure  --with-incompatible-bdb --enable-module-recovery
+		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure --enable-module-recovery
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	endif()
@@ -316,14 +338,8 @@ SET(SCH_SOURCES
   )
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(OPENSSL_ROOT_DIR "/usr/local/Cellar/openssl/${OPENSSL_VER}/")
   set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
 endif()
-
-find_package(OpenSSL)
-if (OPENSSL_FOUND)
-  message(STATUS "Found OpenSSL")
-endif()  
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package( Boost COMPONENTS  filesystem thread)
@@ -335,7 +351,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/univalue/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/obj
   ${Boost_INCLUDE_DIRS}
-  ${OPENSSL_INCLUDE_DIR}
   ${ROCKSDB_ROOT_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/liblmdb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
@@ -376,10 +391,12 @@ ELSE()
   add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${SOURCES} ${PRIM} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ENDIF()
 
-set_property(TARGET coin PROPERTY CXX_STANDARD 11)
 add_dependencies(coin buildHeader)
 
 add_subdirectory(src)
+
+include_directories(${include_directories} ${OPENSSL_INCLUDE_DIR})
+
 add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 
@@ -393,13 +410,11 @@ link_directories(${LMDB_ROOT_DIR}/lib)
 link_directories(${ROCKSDB_ROOT_DIR}/lib)
 
 add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
-set_property(TARGET club-cli PROPERTY CXX_STANDARD 11)
 add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
-set_property(TARGET clubd PROPERTY CXX_STANDARD 11)
 
-target_link_libraries(club-cli coin zerocoin lmdb rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
+target_link_libraries(club-cli coin zerocoin lmdb rocksdb ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
 
-SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
+SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(clubd ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )

@@ -119,6 +119,4 @@ set(ENABLE_WALLET ${BUILD_BITCOIN_WALLET})
 set(ENABLE_ZMQ ${BUILD_BITCOIN_ZMQ})
 
 # Generate the config
-message("Run club-config configure-file")
 configure_file(club-config.h.in club-config.h ESCAPE_QUOTES)
-message("Ran club-config configure-file")
