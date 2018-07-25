@@ -153,7 +153,7 @@ else()
 		)
 else()
 	  execute_process(
-		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure --enable-module-recovery
+		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure --with-unsupported-ssl --enable-module-recovery
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	endif()
@@ -413,6 +413,7 @@ add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
 add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
 
 target_link_libraries(club-cli coin zerocoin lmdb rocksdb ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
+target_link_libraries(clubd coin zerocoin lmdb rocksdb ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} event pthread)
 
 SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
 
