@@ -203,7 +203,7 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	ADD_LIBRARY(qt_stuff ${QT_FILES} ${PROTO_SRCS} ${PROTO_HDRS} ${UI_HEADERS})
 else()
-	ADD_LIBRARY(qt_stuff ${QT_FILES} ../rpcclient.cpp ${PROTO_SRCS} ${PROTO_HDRS} ${UI_HEADERS})
+	ADD_LIBRARY(qt_stuff ${QT_FILES} ../rpc/rpcclient.cpp ${PROTO_SRCS} ${PROTO_HDRS} ${UI_HEADERS})
 endif()
 
 set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)
