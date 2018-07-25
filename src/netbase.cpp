@@ -4,11 +4,6 @@
 // Copyright (c) 2018 The ClubChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
-#ifdef HAVE_CONFIG_H
-#include "config/club-config.h"
-#endif
-
 #include "netbase.h"
 
 #include "hash.h"

@@ -13,7 +13,7 @@
 #pragma once
 
 #if defined(HAVE_CONFIG_H)
-#include "config/club-config.h"
+#include "club-config.h"
 #endif
 
 #include "compat.h"

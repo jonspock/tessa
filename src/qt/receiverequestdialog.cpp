@@ -24,7 +24,7 @@
 #endif
 
 #if defined(HAVE_CONFIG_H)
-#include "config/club-config.h" /* for USE_QRCODE */
+#include "club-config.h" /* for USE_QRCODE */
 #endif
 
 #ifdef USE_QRCODE

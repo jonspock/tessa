@@ -358,7 +358,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/forms
   # For config file
-  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}/src
   )
 
 #file(GLOB_RECURSE HEADERS *.h)
