@@ -19,7 +19,7 @@ class leveldb_error : public std::runtime_error {
   leveldb_error(const std::string& msg) : std::runtime_error(msg) {}
 };
 
-void HandleError(const rocksdb::Status& status) 
+void HandleError(const rocksdb::Status& status);
 
 /** Batch of changes queued to be written to a CLevelDBWrapper */
 class CLevelDBBatch {
@@ -133,7 +133,7 @@ class CLevelDBWrapper {
   // not available for Rocksdb; provide for compatibility with BDB
   bool Flush() { return true; }
 
-  bool Sync() throw(leveldb_error) {
+  bool Sync() {
     CLevelDBBatch batch;
     return WriteBatch(batch, true);
   }
