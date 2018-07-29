@@ -12,7 +12,7 @@
 #include <rocksdb/filter_policy.h>
 #include <rocksdb/utilities/leveldb_options.h>
 
-void HandleError(const rocksdb::Status& status) throw(leveldb_error) {
+void HandleError(const rocksdb::Status& status) {
   if (status.ok()) return;
   LogPrintf("%s\n", status.ToString());
   if (status.IsCorruption()) throw leveldb_error("Database corrupted");
@@ -67,7 +67,7 @@ CLevelDBWrapper::~CLevelDBWrapper() {
   options.env = nullptr;
 }
 
-bool CLevelDBWrapper::WriteBatch(CLevelDBBatch& batch, bool fSync) throw(leveldb_error) {
+bool CLevelDBWrapper::WriteBatch(CLevelDBBatch& batch, bool fSync) {
   rocksdb::Status status = pdb->Write(fSync ? syncoptions : writeoptions, &batch.batch);
   HandleError(status);
   return true;
