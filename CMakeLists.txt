@@ -347,7 +347,7 @@ link_directories ( ${Boost_LIBRARY_DIRS} )
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/config
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/wallet
   ${CMAKE_CURRENT_SOURCE_DIR}/src/univalue/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/obj
   ${Boost_INCLUDE_DIRS}
