@@ -459,6 +459,7 @@ static void OutputTx(const CTransaction& tx) {
   else
     OutputTxHex(tx);
 }
+inline bool is_not_space(int c) { return !std::isspace(c); }
 
 static string readStdin() {
   char buf[4096];
@@ -472,7 +473,8 @@ static string readStdin() {
 
   if (ferror(stdin)) throw runtime_error("error reading stdin");
 
-  boost::algorithm::trim_right(ret);
+  auto rtrim = [](std::string& s) { s.erase(std::find_if(s.rbegin(), s.rend(), is_not_space).base(), s.end()); };
+  rtime(ret);
 
   return ret;
 }

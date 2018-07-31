@@ -17,8 +17,6 @@
 #include "util.h"
 #include "utilstrencodings.h"
 
-#include <boost/algorithm/string.hpp>  // boost::trim
-
 /** Simple one-shot callback timer to be used by the RPC mechanism to e.g.
  * re-lock the wellet.
  */
@@ -69,12 +67,18 @@ static void JSONErrorReply(HTTPRequest* req, const UniValue& objError, const Uni
   req->WriteReply(nStatus, strReply);
 }
 
+inline bool is_not_space(int c) { return !std::isspace(c); }
+
 static bool RPCAuthorized(const std::string& strAuth) {
+  // left and right trim for strings
+  auto ltrim = [](std::string& s) { s.erase(s.begin(), std::find_if(s.begin(), s.end(), is_not_space)); };
+  auto rtrim = [](std::string& s) { s.erase(std::find_if(s.rbegin(), s.rend(), is_not_space).base(), s.end()); };
   if (strRPCUserColonPass.empty())  // Belt-and-suspenders measure if InitRPCAuthentication was not called
     return false;
   if (strAuth.substr(0, 6) != "Basic ") return false;
   std::string strUserPass64 = strAuth.substr(6);
-  boost::trim(strUserPass64);
+  ltrim(strUserPass64);
+  rtrim(strUserPass64);
   std::string strUserPass = DecodeBase64(strUserPass64);
   return TimingResistantEqual(strUserPass, strRPCUserColonPass);
 }
