@@ -13,13 +13,13 @@
 #include "streams.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include "utilsplitstring.h"
 #include "version.h"
 #include <univalue.h>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/split.hpp>
 
 using namespace boost;
 using namespace boost::algorithm;
@@ -46,7 +46,7 @@ CScript ParseScript(std::string s) {
   }
 
   vector<string> words;
-  split(words, s, is_any_of(" \t\n"), token_compress_on);
+  Split(words, s, " \t\n", true);
 
   for (std::vector<std::string>::const_iterator w = words.begin(); w != words.end(); ++w) {
     if (w->empty()) {

@@ -15,9 +15,9 @@
 #include "sync.h"
 #include "txmempool.h"
 #include "utilstrencodings.h"
+#include "utilsplitstring.h"
 #include "version.h"
 
-#include <boost/algorithm/string.hpp>
 #include <boost/dynamic_bitset.hpp>
 
 #include <univalue.h>
@@ -71,7 +71,7 @@ static bool RESTERR(HTTPRequest* req, enum HTTPStatusCode status, string message
 }
 
 static enum RetFormat ParseDataFormat(vector<string>& params, const string& strReq) {
-  boost::split(params, strReq, boost::is_any_of("."));
+  Split(params, strReq, ".");
   if (params.size() > 1) {
     for (unsigned int i = 0; i < ARRAYLEN(rf_names); i++)
       if (params[1] == rf_names[i].name) return rf_names[i].rf;
@@ -113,7 +113,7 @@ static bool rest_headers(HTTPRequest* req, const std::string& strURIPart) {
   vector<string> params;
   const RetFormat rf = ParseDataFormat(params, strURIPart);
   vector<string> path;
-  boost::split(path, params[0], boost::is_any_of("/"));
+  Split(path, params[0], "/");
 
   if (path.size() != 2)
     return RESTERR(req, HTTP_BAD_REQUEST, "No header count specified. Use /rest/headers/<count>/<hash>.<ext>.");
@@ -355,7 +355,7 @@ static bool rest_getutxos(HTTPRequest* req, const std::string& strURIPart) {
   vector<string> uriParts;
   if (params.size() > 0 && params[0].length() > 1) {
     std::string strUriParams = params[0].substr(1);
-    boost::split(uriParts, strUriParams, boost::is_any_of("/"));
+    Split(uriParts, strUriParams, "/");
   }
 
   // throw exception in case of a empty request
