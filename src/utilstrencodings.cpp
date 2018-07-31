@@ -13,6 +13,7 @@
 #include <cstring>
 #include <errno.h>
 #include <limits>
+#include <algorithm>
 
 using namespace std;
 
@@ -428,4 +429,15 @@ std::string FormatParagraph(const std::string in, size_t width, size_t indent) {
     ptr = endword;
   }
   return out.str();
+}
+void Downcase(std::string& str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c){return ToLower(c);});
+}
+
+std::string Capitalize(std::string str)
+{
+    if (str.empty()) return str;
+    str[0] = ToUpper(str.front());
+    return str;
 }
