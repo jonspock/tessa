@@ -11,6 +11,8 @@
 #endif
 
 #include "init.h"
+// For OPENSSL version
+#include <openssl/bn.h>
 
 #include "accumulatorcheckpoints.h"
 #include "accumulators.h"
