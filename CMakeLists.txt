@@ -75,14 +75,6 @@ SET(CLUB_VERSION_REVISION "0")
 SET(CLUB_VERSION_BUILD "0")
 
 
-# If ccache is available, then use it.
-find_program(CCACHE ccache)
-if(CCACHE)
-	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
-	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE})
-endif(CCACHE)
-
-
 set(ROCKSDB_VER "5.14.2")
 
 #---------------------------------------------------------------------------------------------------------
@@ -345,12 +337,19 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package( Boost COMPONENTS  filesystem thread)
 link_directories ( ${Boost_LIBRARY_DIRS} )
 
+
+find_package(gmp)
+if (GMP_FOUND)
+  message(STATUS "Found libgmp")
+endif()
+  
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/wallet
   ${CMAKE_CURRENT_SOURCE_DIR}/src/univalue/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/obj
   ${Boost_INCLUDE_DIRS}
+  ${GMP_INCLUDE_DIR}
   ${ROCKSDB_ROOT_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/liblmdb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
