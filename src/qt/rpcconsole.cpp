@@ -30,6 +30,8 @@
 #include <QTime>
 #include <QTimer>
 
+#include <openssl/bn.h> // for Version info
+
 #if QT_VERSION < 0x050000
 #include <QUrl>
 #endif
