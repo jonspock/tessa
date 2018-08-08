@@ -140,3 +140,14 @@ constexpr unsigned char ToUpper(unsigned char c)
  * @return          string with the first letter capitalized.
  */
 std::string Capitalize(std::string str);
+
+
+/**
+ * Tests if the given character is a decimal digit.
+ * @param[in] c     character to test
+ * @return          true if the argument is a decimal digit; otherwise false.
+ */
+constexpr bool IsDigit(char c)
+{
+    return c >= '0' && c <= '9';
+}
