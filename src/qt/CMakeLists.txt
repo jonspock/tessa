@@ -129,8 +129,6 @@ find_package(Protobuf REQUIRED)
 include_directories(${include_directories} ${PROTOBUF_INCLUDE_DIRS})
 include_directories(${include_directories} ${CMAKE_CURRENT_BINARY_DIR})
 
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS paymentrequest.proto)
-
 SET(QT_FILES
 	../script/standard.cpp
 	../rpc/rpcclient.cpp
@@ -169,8 +167,6 @@ SET(QT_FILES
 	editaddressdialog.cpp
 	openuridialog.cpp
 	overviewpage.cpp
-	paymentrequestplus.cpp
-	paymentserver.cpp
 	receivecoinsdialog.cpp
 	receiverequestdialog.cpp
 	recentrequeststablemodel.cpp

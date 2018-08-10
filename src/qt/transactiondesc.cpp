@@ -10,7 +10,6 @@
 
 #include "bitcoinunits.h"
 #include "guiutil.h"
-#include "paymentserver.h"
 #include "transactionrecord.h"
 
 #include "base58.h"
@@ -255,19 +254,6 @@ QString TransactionDesc::toHTML(CWallet* wallet, CWalletTx& wtx, TransactionReco
   foreach (const auto& r, wtx.vOrderForm)
     if (r.first == "Message")
       strHTML += "<br><b>" + tr("Message") + ":</b><br>" + GUIUtil::HtmlEscape(r.second, true) + "<br>";
-
-  //
-  // PaymentRequest info:
-  //
-  foreach (const auto& r, wtx.vOrderForm) {
-    if (r.first == "PaymentRequest") {
-      PaymentRequestPlus req;
-      req.parse(QByteArray::fromRawData(r.second.data(), r.second.size()));
-      QString merchant;
-      if (req.getMerchant(PaymentServer::getCertStore(), merchant))
-        strHTML += "<b>" + tr("Merchant") + ":</b> " + GUIUtil::HtmlEscape(merchant) + "<br>";
-    }
-  }
 
   if (wtx.IsCoinBase()) {
     quint32 numBlocksToMaturity = Params().COINBASE_MATURITY() + 1;

@@ -48,8 +48,9 @@ class Accumulator {
    **/
   Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination d,
               int iterations = ZEROCOIN_DEFAULT_SECURITYLEVEL);
-  Accumulator(const ZerocoinParams* p, const CoinDenomination d, Bignum bnValue = 0);
-
+  Accumulator(const ZerocoinParams* p, const CoinDenomination d);
+  Accumulator(const ZerocoinParams* p, const CoinDenomination d, Bignum bnValue);
+    
   /**
    * Accumulate a coin into the accumulator. Validates
    * the coin prior to accumulation.

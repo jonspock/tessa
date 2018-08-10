@@ -13,7 +13,8 @@ std::map<int, Checkpoint> mapAccCheckpoints;
 bool LoadCheckpoints(const std::string& strNetwork) {
   // Just start with Checkpoints all 0s initially
   Checkpoint checkpoint;
-  CBigNum bn(0);
+#warning "hard coded default value for Accum Checkpoint"
+  CBigNum bn(961);
   int StartHeight = 0;
   for (auto denom : libzerocoin::zerocoinDenomList) checkpoint.insert(std::make_pair(denom, bn));
   mapAccCheckpoints.insert(make_pair(StartHeight, checkpoint));

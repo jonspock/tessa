@@ -11,8 +11,6 @@
 #endif
 
 #include "init.h"
-// For OPENSSL version
-#include <openssl/bn.h>
 
 #include "accumulatorcheckpoints.h"
 #include "accumulators.h"
@@ -741,7 +739,7 @@ bool InitSanityCheck(void) {
         "information, visit https://en.bitcoin.it/wiki/OpenSSL_and_EC_Libraries");
     return false;
   }
-  if (!glibc_sanity_test() || !glibcxx_sanity_test()) return false;
+  //if (!glibc_sanity_test() || !glibcxx_sanity_test()) return false;
 
   return true;
 }
@@ -1065,7 +1063,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   LogPrintf("Club version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
-  LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
+  // LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
   // LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
   if (!logger.fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
   LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());

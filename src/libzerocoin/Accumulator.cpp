@@ -27,6 +27,12 @@ Accumulator::Accumulator(const AccumulatorAndProofParams* p, const CoinDenominat
   this->zkp_iterations = iterations;
 }
 
+Accumulator::Accumulator(const ZerocoinParams* p, const CoinDenomination d) : denomination(d) {
+    assert(p);
+    this->params = &(p->accumulatorParams);
+    this->zkp_iterations = p->zkp_iterations;
+    this->value = this->params->accumulatorBase;
+}
 Accumulator::Accumulator(const ZerocoinParams* p, const CoinDenomination d, const Bignum bnValue) : denomination(d) {
   assert(p);
   this->params = &(p->accumulatorParams);
@@ -45,12 +51,14 @@ void Accumulator::increment(const CBigNum& bnValue) {
 
 void Accumulator::accumulate(const PublicCoin& coin) {
   // Make sure we're initialized
+    /*
   if (!(this->value)) {
       std::cout << "Accumulator is not initialized"
                 << "\n";
       throw std::runtime_error("Accumulator is not initialized");
   }
-
+*/
+    
   if (this->denomination != coin.getDenomination()) {
     std::cout << "Wrong denomination for coin. Expected coins of denomination: ";
     std::cout << this->denomination;

@@ -30,8 +30,6 @@
 #include <QTime>
 #include <QTimer>
 
-#include <openssl/bn.h> // for Version info
-
 #if QT_VERSION < 0x050000
 #include <QUrl>
 #endif
@@ -271,7 +269,7 @@ RPCConsole::RPCConsole(QWidget* parent)
   connect(ui->btn_resync, SIGNAL(clicked()), this, SLOT(walletResync()));
 
   // set library version labels
-  ui->openSSLVersion->setText(SSLeay_version(SSLEAY_VERSION));
+  ui->openSSLVersion->setText("...");
   if (!fDisableWallet) {
     std::string strPathCustom = GetArg("-backuppath", "");
     std::string strZKPPathCustom = GetArg("-zkpbackuppath", "");

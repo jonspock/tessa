@@ -361,7 +361,7 @@ bool CZerocoinDB::WipeCoins(std::string strType) {
 }
 
 bool CZerocoinDB::WriteAccumulatorValue(const uint32_t& nChecksum, const CBigNum& bnValue) {
-  LogPrint(ClubLog::ZERO, "%s : checksum:%d val:%s\n", __func__, nChecksum, bnValue.GetHex());
+  LogPrint(ClubLog::ZERO, "%s : checksum:%d val:%s\n", __func__, nChecksum, bnValue.ToString());
   return Write(make_pair('2', nChecksum), bnValue);
 }
 

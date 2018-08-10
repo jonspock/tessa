@@ -17,6 +17,7 @@
 #include "IntegerMod.h"
 #include "ModulusType.h"
 #include "hash.h"
+#include "rand_bignum.h"
 
 namespace libzerocoin {
 AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p,
@@ -33,11 +34,11 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
   const CBigNum& e = commitmentToCoin.getSerial();
   const CBigNum& r = commitmentToCoin.getRandomness();
 
-  const CBigNum aM_4 = params->accumulatorModulus / CBigNum((long)4);
+  const CBigNum aM_4 = params->accumulatorModulus / CBigNum((uint8_t)4);
 
-  const IntegerMod<ACCUMULATOR_MODULUS> r_1(CBigNum::randBignum(aM_4));
-  const IntegerMod<ACCUMULATOR_MODULUS> r_2(CBigNum::randBignum(aM_4));
-  const IntegerMod<ACCUMULATOR_MODULUS> r_3(CBigNum::randBignum(aM_4));
+  const IntegerMod<ACCUMULATOR_MODULUS> r_1(randBignum(aM_4));
+  const IntegerMod<ACCUMULATOR_MODULUS> r_2(randBignum(aM_4));
+  const IntegerMod<ACCUMULATOR_MODULUS> r_3(randBignum(aM_4));
 
   /// Auxiliary commitments
   ///
@@ -50,28 +51,28 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
 
   const CBigNum power_value = CBigNum(2).pow(params->k_prime + params->k_dprime);
 
-  CBigNum r_alpha = CBigNum::randBignum(params->maxCoinValue * power_value);
-  if (!(CBigNum::randBignum(CBigNum(3)) % 2)) { r_alpha = 0 - r_alpha; }
+  CBigNum r_alpha = randBignum(params->maxCoinValue * power_value);
+  if (!(randBignum(CBigNum(3)) % 2)) { r_alpha = 0 - r_alpha; }
 
   /// The proves chooses \f$ r_&gamma;, r_&phi;, r_&sigma;, r_&epsilon;, r_&xi;, r_&eta;, r_&zeta;, r_&beta;, r_&delta;
   /// \f$
-  const CBigNum r_gamma = CBigNum::randBignum(PoKmod);
-  const CBigNum r_phi = CBigNum::randBignum(PoKmod);
-  const CBigNum r_psi = CBigNum::randBignum(PoKmod);
-  const CBigNum r_sigma = CBigNum::randBignum(PoKmod);
-  const CBigNum r_xi = CBigNum::randBignum(PoKmod);
+  const CBigNum r_gamma = randBignum(PoKmod);
+  const CBigNum r_phi = randBignum(PoKmod);
+  const CBigNum r_psi = randBignum(PoKmod);
+  const CBigNum r_sigma = randBignum(PoKmod);
+  const CBigNum r_xi = randBignum(PoKmod);
 
-  CBigNum r_epsilon = CBigNum::randBignum((aM_4)*power_value);
-  if (!(CBigNum::randBignum(CBigNum(3)) % 2)) { r_epsilon = 0 - r_epsilon; }
-  CBigNum r_eta = CBigNum::randBignum((aM_4)*power_value);
-  if (!(CBigNum::randBignum(CBigNum(3)) % 2)) { r_eta = 0 - r_eta; }
-  CBigNum r_zeta = CBigNum::randBignum((aM_4)*power_value);
-  if (!(CBigNum::randBignum(CBigNum(3)) % 2)) { r_zeta = 0 - r_zeta; }
+  CBigNum r_epsilon = randBignum((aM_4)*power_value);
+  if (!(randBignum(CBigNum(3)) % 2)) { r_epsilon = 0 - r_epsilon; }
+  CBigNum r_eta = randBignum((aM_4)*power_value);
+  if (!(randBignum(CBigNum(3)) % 2)) { r_eta = 0 - r_eta; }
+  CBigNum r_zeta = randBignum((aM_4)*power_value);
+  if (!(randBignum(CBigNum(3)) % 2)) { r_zeta = 0 - r_zeta; }
 
-  CBigNum r_beta = CBigNum::randBignum((aM_4)*PoKmod * power_value);
-  if (!(CBigNum::randBignum(CBigNum(3)) % 2)) { r_beta = 0 - r_beta; }
-  CBigNum r_delta = CBigNum::randBignum((aM_4)*PoKmod * power_value);
-  if (!(CBigNum::randBignum(CBigNum(3)) % 2)) { r_delta = 0 - r_delta; }
+  CBigNum r_beta = randBignum((aM_4)*PoKmod * power_value);
+  if (!(randBignum(CBigNum(3)) % 2)) { r_beta = 0 - r_beta; }
+  CBigNum r_delta = randBignum((aM_4)*PoKmod * power_value);
+  if (!(randBignum(CBigNum(3)) % 2)) { r_delta = 0 - r_delta; }
 
   const IntegerMod<ACCUMULATOR_POK_COMMITMENT_MODULUS> sg(params->accumulatorPoKCommitmentGroup.g);
   const IntegerMod<ACCUMULATOR_POK_COMMITMENT_MODULUS> sh(params->accumulatorPoKCommitmentGroup.h);

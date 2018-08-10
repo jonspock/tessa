@@ -22,7 +22,6 @@
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
 
-#include "paymentserver.h"
 #include "walletmodel.h"
 
 #include "init.h"
@@ -191,9 +190,6 @@ class BitcoinApplication : public QApplication {
   explicit BitcoinApplication(int& argc, char** argv);
   ~BitcoinApplication();
 
-  /// Create payment server
-  void createPaymentServer();
-
   /// Create options model
   void createOptionsModel();
   /// Create main window
@@ -231,7 +227,6 @@ class BitcoinApplication : public QApplication {
   ClientModel* clientModel;
   BitcoinGUI* window;
   QTimer* pollShutdownTimer;
-  PaymentServer* paymentServer;
   WalletModel* walletModel;
 
   int returnValue;
@@ -300,8 +295,6 @@ BitcoinApplication::BitcoinApplication(int& argc, char** argv)
       clientModel(0),
       window(0),
       pollShutdownTimer(0),
-
-      paymentServer(nullptr),
       walletModel(0),
 
       returnValue(0) {
@@ -319,9 +312,6 @@ BitcoinApplication::~BitcoinApplication() {
   delete window;
   window = 0;
 
-  if (paymentServer) delete paymentServer;
-  paymentServer = nullptr;
-
   // Delete Qt-settings if user clicked on "Reset Options"
   QSettings settings;
   if (optionsModel && optionsModel->resetSettings) {
@@ -330,10 +320,6 @@ BitcoinApplication::~BitcoinApplication() {
   }
   delete optionsModel;
   optionsModel = 0;
-}
-
-void BitcoinApplication::createPaymentServer() {
-  if (!fDisableWallet && !paymentServer) paymentServer = new PaymentServer(this);
 }
 
 void BitcoinApplication::createOptionsModel() { optionsModel = new OptionsModel(); }
@@ -407,10 +393,6 @@ void BitcoinApplication::initializeResult(int retval) {
   // Set exit result: 0 if successful, 1 if failure
   returnValue = retval ? 0 : 1;
   if (retval) {
-    PaymentServer::LoadRootCAs();
-    createPaymentServer();
-    if (paymentServer) paymentServer->setOptionsModel(optionsModel);
-
     clientModel = new ClientModel(optionsModel);
     window->setClientModel(clientModel);
 
@@ -419,9 +401,10 @@ void BitcoinApplication::initializeResult(int retval) {
 
       window->addWallet(BitcoinGUI::DEFAULT_WALLET, walletModel);
       window->setCurrentWallet(BitcoinGUI::DEFAULT_WALLET);
-
+      /*
       connect(walletModel, SIGNAL(coinsSent(CWallet*, SendCoinsRecipient, QByteArray)), paymentServer,
               SLOT(fetchPaymentACK(CWallet*, const SendCoinsRecipient&, QByteArray)));
+      */
     }
 
     // If -min option passed, start window minimized.
@@ -434,6 +417,7 @@ void BitcoinApplication::initializeResult(int retval) {
 
     // Now that initialization/startup is done, process any command-line
     // Club: URIs or payment requests:
+    /*
     if (pwalletMain) {
       connect(paymentServer, SIGNAL(receivedPaymentRequest(SendCoinsRecipient)), window,
               SLOT(handlePaymentRequest(SendCoinsRecipient)));
@@ -442,6 +426,7 @@ void BitcoinApplication::initializeResult(int retval) {
               SLOT(message(QString, QString, unsigned int)));
       QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
     }
+    */
 
   } else {
     quit();  // Exit main loop
@@ -560,9 +545,6 @@ int main(int argc, char* argv[]) {
                           QObject::tr("Error: Invalid combination of -regtest and -testnet."));
     return 1;
   }
-  // Parse URIs on command line -- this can affect Params()
-  PaymentServer::ipcParseCommandLine(argc, argv);
-
   QScopedPointer<const NetworkStyle> networkStyle(
       NetworkStyle::instantiate(QString::fromStdString(Params().NetworkIDString())));
   assert(!networkStyle.isNull());
@@ -578,11 +560,7 @@ int main(int argc, char* argv[]) {
     // of the server.
     // - Do this after creating app and setting up translations, so errors are
     // translated properly.
-    if (PaymentServer::ipcSendCommandLine()) exit(0);
 
-    // Start up the payment server early, too, so impatient users that click on
-    // club: links repeatedly have their payment requests routed to this process:
-    app.createPaymentServer();
   }
 
   /// 9. Main GUI initialization

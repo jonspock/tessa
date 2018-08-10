@@ -4,7 +4,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "random.h"
-
+#include "rand_bignum.h"
+#include "bignum.h"
 #include "crypto/sha512.h"
 #include "support/cleanse.h"
 #ifdef WIN32
@@ -44,7 +45,7 @@
 #include <cpuid.h>
 #endif
 
-#include <openssl/err.h>
+// For RAND_add and RAND_bytes
 #include <openssl/rand.h>
 
 [[noreturn]] static void RandFailure() {
@@ -468,3 +469,42 @@ FastRandomContext::FastRandomContext(bool fDeterministic)
 void RandomInit() {
     RDRandInit();
 }
+
+/** Generates a cryptographically secure random number between zero and range exclusive
+ * i.e. 0 < returned number < range
+ * @param range The upper bound on the number.
+ * @return
+ */
+CBigNum randBignum(const CBigNum& range) {
+  CBigNum ret;
+  if(!BN_rand_range(ret.bn, range.bn)){
+    throw bignum_error("CBigNum:rand element : BN_rand_range failed");
+  }
+  return ret;
+}
+
+/** Generates a cryptographically secure random k-bit number
+ * @param k The bit length of the number.
+ * @return
+ */
+CBigNum RandKBitBigum(const uint32_t k){
+  CBigNum ret;
+  if(!BN_rand(ret.bn, k, -1, 0)){
+    throw bignum_error("CBigNum:rand element : BN_rand failed");
+  }
+  return ret;
+}
+
+/**
+ * Generates a random (safe) prime of numBits bits
+ * @param numBits the number of bits
+ * @param safe true for a safe prime
+ * @return the prime
+ */
+CBigNum generatePrime(const unsigned int numBits, bool safe) {
+  CBigNum ret;
+  if(!BN_generate_prime_ex(ret.bn, numBits, (safe == true), nullptr, nullptr, nullptr))
+    throw bignum_error("CBigNum::generatePrime*= :BN_generate_prime_ex");
+  return ret;
+}
+

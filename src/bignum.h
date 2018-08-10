@@ -117,31 +117,6 @@ public:
         setvch(vch);
     }
 
-    /** Generates a cryptographically secure random number between zero and range exclusive
-    * i.e. 0 < returned number < range
-    * @param range The upper bound on the number.
-    * @return
-    */
-    static CBigNum  randBignum(const CBigNum& range) {
-        CBigNum ret;
-        if(!BN_rand_range(ret.bn, range.bn)){
-            throw bignum_error("CBigNum:rand element : BN_rand_range failed");
-        }
-        return ret;
-    }
-
-    /** Generates a cryptographically secure random k-bit number
-    * @param k The bit length of the number.
-    * @return
-    */
-    static CBigNum RandKBitBigum(const uint32_t k){
-        CBigNum ret;
-        if(!BN_rand(ret.bn, k, -1, 0)){
-            throw bignum_error("CBigNum:rand element : BN_rand failed");
-        }
-        return ret;
-    }
-
     /**Returns the size in bits of the underlying bignum.
      *
      * @return the size
@@ -549,19 +524,6 @@ public:
         CBigNum ret;
         if (!BN_mod_inverse(ret.bn, bn, m.bn, pctx))
             throw bignum_error("CBigNum::inverse*= :BN_mod_inverse");
-        return ret;
-    }
-
-    /**
-     * Generates a random (safe) prime of numBits bits
-     * @param numBits the number of bits
-     * @param safe true for a safe prime
-     * @return the prime
-     */
-    static CBigNum generatePrime(const unsigned int numBits, bool safe = false) {
-        CBigNum ret;
-        if(!BN_generate_prime_ex(ret.bn, numBits, (safe == true), nullptr, nullptr, nullptr))
-            throw bignum_error("CBigNum::generatePrime*= :BN_generate_prime_ex");
         return ret;
     }
 

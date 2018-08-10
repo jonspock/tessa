@@ -254,9 +254,7 @@ void SendCoinsDialog::on_sendButton_clicked() {
 
     QString recipientElement;
 
-    if (!rcp.paymentRequest.IsInitialized())  // normal payment
-    {
-      if (rcp.label.length() > 0)  // label with address
+    if (rcp.label.length() > 0)  // label with address
       {
         recipientElement = tr("%1 to %2").arg(amount, GUIUtil::HtmlEscape(rcp.label));
         recipientElement.append(QString(" (%1)").arg(address));
@@ -264,13 +262,6 @@ void SendCoinsDialog::on_sendButton_clicked() {
       {
         recipientElement = tr("%1 to %2").arg(amount, address);
       }
-    } else if (!rcp.authenticatedMerchant.isEmpty())  // secure payment request
-    {
-      recipientElement = tr("%1 to %2").arg(amount, GUIUtil::HtmlEscape(rcp.authenticatedMerchant));
-    } else  // insecure payment request
-    {
-      recipientElement = tr("%1 to %2").arg(amount, address);
-    }
 
     if (CoinControlDialog::coinControl->fSplitBlock) {
       recipientElement.append(

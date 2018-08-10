@@ -9,7 +9,6 @@
 #define BITCOIN_QT_WALLETMODEL_H
 
 #include "askpassphrasedialog.h"
-#include "paymentrequestplus.h"
 #include "walletmodeltransaction.h"
 
 #include "support/allocators/secure.h"
@@ -56,8 +55,6 @@ class SendCoinsRecipient {
   // If from a payment request, this is used for storing the memo
   QString message;
 
-  // If from a payment request, paymentRequest.IsInitialized() will be true
-  PaymentRequestPlus paymentRequest;
   // Empty if no authentication or invalid signature/cert/etc.
   QString authenticatedMerchant;
 
@@ -71,25 +68,17 @@ class SendCoinsRecipient {
     std::string sAddress = address.toStdString();
     std::string sLabel = label.toStdString();
     std::string sMessage = message.toStdString();
-    std::string sPaymentRequest;
-    if (!ser_action.ForRead() && paymentRequest.IsInitialized()) paymentRequest.SerializeToString(&sPaymentRequest);
-    std::string sAuthenticatedMerchant = authenticatedMerchant.toStdString();
 
     READWRITE(this->nVersion);
     READWRITE(sAddress);
     READWRITE(sLabel);
     READWRITE(amount);
     READWRITE(sMessage);
-    READWRITE(sPaymentRequest);
-    READWRITE(sAuthenticatedMerchant);
 
     if (ser_action.ForRead()) {
       address = QString::fromStdString(sAddress);
       label = QString::fromStdString(sLabel);
       message = QString::fromStdString(sMessage);
-      if (!sPaymentRequest.empty())
-        paymentRequest.parse(QByteArray::fromRawData(sPaymentRequest.data(), sPaymentRequest.size()));
-      authenticatedMerchant = QString::fromStdString(sAuthenticatedMerchant);
     }
   }
 };

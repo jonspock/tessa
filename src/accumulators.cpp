@@ -10,6 +10,7 @@
 #include "init.h"
 #include "main.h"
 #include "main_constants.h"
+#include "rand_bignum.h"
 #include "spork.h"
 #include "txdb.h"
 
@@ -171,6 +172,7 @@ bool InitializeAccumulators(const int nHeight, int& nHeightCheckpoint, Accumulat
       if (nHeightCheckpoint < 0) return error("%s: failed to load hard-checkpoint for block %s", __func__, nHeight);
 
       mapAccumulators.Load(checkpoint);
+        LogPrintf("loaded checkpoints for mapAccumulators at height %d", nHeight);
       return true;
     }
   }
@@ -287,7 +289,7 @@ void RandomizeSecurityLevel(int& nSecurityLevel) {
   // blocks that the mint originated from.
   if (nSecurityLevel < 100) {
     // add some randomness to the user's selection so that it is not always the same
-    nSecurityLevel += CBigNum::randBignum(ACC_BLOCK_INTERVAL).getint();
+    nSecurityLevel += randBignum(ACC_BLOCK_INTERVAL).getint();
 
     // security level 100 represents adding all available coins that have been accumulated - user did not select this
     if (nSecurityLevel >= 100) nSecurityLevel = 99;
@@ -411,7 +413,7 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
   // Iterate through the chain and calculate the witness
   int nCheckpointsAdded = 0;
   nMintsAdded = 0;
-  RandomizeSecurityLevel(nSecurityLevel);  // make security level not always the same and predictable
+  if (Params().NetworkID() == CBaseChainParams::MAIN) RandomizeSecurityLevel(nSecurityLevel);  // make security level not always the same and predictable
   libzerocoin::Accumulator witnessAccumulator = accumulator;
 
   while (pindex) {
