@@ -2012,7 +2012,6 @@ UniValue settxfee(const UniValue& params, bool fHelp) {
   CAmount nAmount = 0;
   if (params[0].get_real() != 0.0) nAmount = AmountFromValue(params[0]);  // rejects 0.0 amounts
 
-  payTxFee = CFeeRate(nAmount, 1000);
   return true;
 }
 

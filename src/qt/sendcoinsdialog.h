@@ -72,13 +72,9 @@ class SendCoinsDialog : public QDialog {
   // Additional parameter msgArg can be used via .arg(msgArg).
   void processSendCoinsReturn(const WalletModel::SendCoinsReturn& sendCoinsReturn, const QString& msgArg = QString(),
                               bool fPrepare = false);
-  void minimizeFeeSection(bool fMinimize);
-  void updateFeeMinimizedLabel();
 
  private slots:
   void on_sendButton_clicked();
-  void on_buttonChooseFee_clicked();
-  void on_buttonMinimizeFee_clicked();
   void removeEntry(SendCoinsEntry* entry);
   void updateDisplayUnit();
   void coinControlFeatureChanged(bool);
@@ -96,11 +92,6 @@ class SendCoinsDialog : public QDialog {
   void coinControlClipboardChange();
   void splitBlockChecked(int);
   void splitBlockLineEditChanged(const QString& text);
-  void setMinimumFee();
-  void updateFeeSectionControls();
-  void updateMinFeeLabel();
-  void updateSmartFeeLabel();
-  void updateGlobalFeeVariables();
 
  signals:
   // Fired when a message should be reported to the user

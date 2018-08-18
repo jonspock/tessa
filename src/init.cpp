@@ -95,7 +95,6 @@ enum BindFlags {
   BF_WHITELIST = (1U << 2),
 };
 
-static const char* FEE_ESTIMATES_FILENAME = "fee_estimates.dat";
 CClientUIInterface uiInterface;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -191,12 +190,6 @@ void PrepareShutdown() {
   UnregisterNodeSignals(GetNodeSignals());
 
   if (fFeeEstimatesInitialized) {
-    fs::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
-    CAutoFile est_fileout(fopen(est_path.string().c_str(), "wb"), SER_DISK, CLIENT_VERSION);
-    if (!est_fileout.IsNull())
-      mempool.WriteFeeEstimates(est_fileout);
-    else
-      LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
     fFeeEstimatesInitialized = false;
   }
 
@@ -437,9 +430,6 @@ std::string HelpMessage(HelpMessageMode mode) {
               _("Fees (in Club/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
               FormatMoney(CWallet::minTxFee.GetFeePerK())));
     strUsage +=
-        HelpMessageOpt("-paytxfee=<amt>", strprintf(_("Fee (in Club/kB) to add to transactions you send (default: %s)"),
-                                                    FormatMoney(payTxFee.GetFeePerK())));
-    strUsage +=
         HelpMessageOpt("-rescan", _("Rescan the block chain for missing wallet transactions") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-sendfreetransactions",
                                strprintf(_("Send transactions as zero-fee transactions if possible (default: %u)"), 0));
@@ -448,13 +438,9 @@ std::string HelpMessage(HelpMessageMode mode) {
     strUsage += HelpMessageOpt("-disablesystemnotifications",
                                strprintf(_("Disable OS notifications for incoming transactions (default: %u)"), 0));
     strUsage += HelpMessageOpt("-txconfirmtarget=<n>",
-                               strprintf(_("If paytxfee is not set, include enough fee so transactions "
+                               strprintf(_("Include enough fee so transactions "
                                            "begin confirmation on average within n blocks (default: %u)"),
                                          1));
-    strUsage += HelpMessageOpt("-maxtxfee=<amt>",
-                               strprintf(_("Maximum total fees to use in a single wallet transaction, setting "
-                                           "too low may abort large transactions (default: %s)"),
-                                         FormatMoney(maxTxFee)));
     strUsage += HelpMessageOpt("-wallet=<file>", _("Specify wallet directory (within data directory)") + " " +
                                                      strprintf(_("(default: %s)"), "wallet"));
     strUsage += HelpMessageOpt("-walletnotify=<cmd>",
@@ -974,34 +960,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
       else
         return InitError(strprintf(_("Invalid amount for -mintxfee=<amount>: '%s'"), gArgs.GetArg("-mintxfee", "")));
     }
-    if (gArgs.IsArgSet("-paytxfee")) {
-      CAmount nFeePerK = 0;
-      if (!ParseMoney(gArgs.GetArg("-paytxfee", ""), nFeePerK))
-        return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s'"), gArgs.GetArg("-paytxfee", "")));
-      if (nFeePerK > nHighTransactionFeeWarning)
-        InitWarning(
-            _("Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a "
-              "transaction."));
-      payTxFee = CFeeRate(nFeePerK, 1000);
-      if (payTxFee < ::minRelayTxFee) {
-        return InitError(strprintf(_("Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
-                                   gArgs.GetArg("-paytxfee", ""), ::minRelayTxFee.ToString()));
-      }
-    }
-    if (gArgs.IsArgSet("-maxtxfee")) {
-      CAmount nMaxFee = 0;
-      if (!ParseMoney(gArgs.GetArg("-maxtxfee", ""), nMaxFee))
-        return InitError(strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s'"), gArgs.GetArg("-maxtxfee", "")));
-      if (nMaxFee > nHighTransactionMaxFeeWarning)
-        InitWarning(_("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
-      maxTxFee = nMaxFee;
-      if (CFeeRate(maxTxFee, 1000) < ::minRelayTxFee) {
-        return InitError(
-            strprintf(_("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of "
-                        "%s to prevent stuck transactions)"),
-                      gArgs.GetArg("-maxtxfee", ""), ::minRelayTxFee.ToString()));
-      }
-    }
     nTxConfirmTarget = GetArg("-txconfirmtarget", 1);
     bSpendZeroConfChange = GetBoolArg("-spendzeroconfchange", false);
     bdisableSystemnotifications = GetBoolArg("-disablesystemnotifications", false);
@@ -1508,10 +1466,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   }
   LogPrintf(" block index %15dms\n", GetTimeMillis() - nStart);
 
-  fs::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
-  CAutoFile est_filein(fopen(est_path.string().c_str(), "rb"), SER_DISK, CLIENT_VERSION);
-  // Allowed to fail as this file IS missing on first startup.
-  if (!est_filein.IsNull()) mempool.ReadFeeEstimates(est_filein);
   fFeeEstimatesInitialized = true;
 
   // ********************************************************* Step 8: load wallet

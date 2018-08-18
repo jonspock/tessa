@@ -77,7 +77,6 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
         "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
         "  \"unlocked_until\": ttt,      (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that "
         "the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
-        "  \"paytxfee\": x.xxxx,         (numeric) the transaction fee set in club/kb\n"
         "  \"relayfee\": x.xxxx,         (numeric) minimum relay fee for non-free transactions in club/kb\n"
         "  \"staking status\": true|false,  (boolean) if the wallet is staking or not\n"
         "  \"errors\": \"...\"           (string) any error messages\n"
@@ -126,7 +125,6 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
     obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
   }
   if (pwalletMain && pwalletMain->IsCrypted()) obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
-  obj.push_back(Pair("paytxfee", ValueFromAmount(payTxFee.GetFeePerK())));
 
   obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
   bool nStaking = false;

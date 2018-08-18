@@ -68,8 +68,6 @@ enum ZerocoinSpendStatus {
 /**
  * Settings
  */
-CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
-CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 unsigned int nTxConfirmTarget = 1;
 bool bSpendZeroConfChange = true;
 bool bdisableSystemnotifications =
@@ -1832,20 +1830,7 @@ bool CWallet::AddAccountingEntry(const CAccountingEntry& acentry) {
 }
 
 CAmount CWallet::GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool) {
-  // payTxFee is user-set "I want to pay this much"
-  CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
-  // user selected total at least (default=true)
-  if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK()) nFeeNeeded = payTxFee.GetFeePerK();
-  // User didn't set: use -txconfirmtarget to estimate...
-  if (nFeeNeeded == 0) nFeeNeeded = pool.estimateFee(nConfirmTarget).GetFee(nTxBytes);
-  // ... unless we don't have enough mempool data, in which case fall
-  // back to a hard-coded fee
-  if (nFeeNeeded == 0) nFeeNeeded = minTxFee.GetFee(nTxBytes);
-  // prevent user from paying a non-sense fee (like 1 satoshi): 0 < fee < minRelayFee
-  if (nFeeNeeded < ::minRelayTxFee.GetFee(nTxBytes)) nFeeNeeded = ::minRelayTxFee.GetFee(nTxBytes);
-  // But always obey the maximum
-  if (nFeeNeeded > maxTxFee) nFeeNeeded = maxTxFee;
-  return nFeeNeeded;
+  return minTxFee.GetFee(nTxBytes);
 }
 
 CAmount CWallet::GetTotalValue(std::vector<CTxIn> vCoins) {

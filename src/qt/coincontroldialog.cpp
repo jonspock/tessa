@@ -637,7 +637,7 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog) {
   l6->setText(sPriorityLabel);                                         // Priority
   l7->setText(fDust ? tr("yes") : tr("no"));                           // Dust
   l8->setText(BitcoinUnits::formatWithUnit(nDisplayUnit, nChange));    // Change
-  if (nPayFee > 0 && !(payTxFee.GetFeePerK() > 0 && fPayAtLeastCustomFee && nBytes < 1000)) {
+  if (nPayFee > 0 && !(fPayAtLeastCustomFee && nBytes < 1000)) {
     l3->setText("~" + l3->text());
     l4->setText("~" + l4->text());
     if (nChange > 0) l8->setText("~" + l8->text());
@@ -665,11 +665,7 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog) {
                          .arg(BitcoinUnits::formatWithUnit(nDisplayUnit, ::minRelayTxFee.GetFee(546)));
 
   // how many satoshis the estimated fee can vary per byte we guess wrong
-  double dFeeVary;
-  if (payTxFee.GetFeePerK() > 0)
-    dFeeVary = (double)std::max(CWallet::minTxFee.GetFeePerK(), payTxFee.GetFeePerK()) / 1000;
-  else
-    dFeeVary =
+  double dFeeVary =
         (double)std::max(CWallet::minTxFee.GetFeePerK(), mempool.estimateFee(nTxConfirmTarget).GetFeePerK()) / 1000;
   QString toolTip4 = tr("Can vary +/- %1 upiv per input.").arg(dFeeVary);
 

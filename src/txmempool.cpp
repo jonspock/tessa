@@ -135,28 +135,23 @@ class CMinerPolicyEstimator {
    * nBlocksAgo is 0 based, i.e. transactions that confirmed in the highest seen block are
    * nBlocksAgo == 0, transactions in the block before that are nBlocksAgo == 1 etc.
    */
-  void seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& minRelayFee, double dPriority, int nBlocksAgo) {
+  void seenTxConfirm(double dPriority, int nBlocksAgo) {
     // Last entry records "everything else".
     int nBlocksTruncated = min(nBlocksAgo, (int)history.size() - 1);
     assert(nBlocksTruncated >= 0);
 
     // We need to guess why the transaction was included in a block-- either
     // because it is high-priority or because it has sufficient fees.
-    bool sufficientFee = (feeRate > minRelayFee);
     bool sufficientPriority = AllowFree(dPriority);
     const char* assignedTo = "unassigned";
-    if (sufficientFee && !sufficientPriority && CBlockAverage::AreSane(feeRate, minRelayFee)) {
-      history[nBlocksTruncated].RecordFee(feeRate);
-      assignedTo = "fee";
-    } else if (sufficientPriority && !sufficientFee && CBlockAverage::AreSane(dPriority)) {
+    if (sufficientPriority && CBlockAverage::AreSane(dPriority)) {
       history[nBlocksTruncated].RecordPriority(dPriority);
       assignedTo = "priority";
     } else {
-      // Neither or both fee and priority sufficient to get confirmed:
+      // priority insufficient to get confirmed:
       // don't know why they got confirmed.
     }
-    LogPrint(ClubLog::ESTIMATEFEE, "Seen TX confirm: %s : %s fee/%g priority, took %d blocks\n", assignedTo,
-             feeRate.ToString(), dPriority, nBlocksAgo);
+    LogPrint(ClubLog::ESTIMATEFEE, "Seen TX confirm: %s : %g priority, took %d blocks\n", assignedTo, dPriority, nBlocksAgo);
   }
 
  public:
@@ -197,24 +192,20 @@ class CMinerPolicyEstimator {
         e.resize(10);
       }
       for (const CTxMemPoolEntry* entry : e) {
-        // Fees are stored and reported as BTC-per-kb:
-        CFeeRate feeRate(entry->GetFee(), entry->GetTxSize());
-        double dPriority = entry->GetPriority(entry->GetHeight());  // Want priority when it went IN
-        seenTxConfirm(feeRate, minRelayFee, dPriority, i);
+         double dPriority = entry->GetPriority(entry->GetHeight());  // Want priority when it went IN
+        seenTxConfirm(dPriority, i);
       }
     }
 
     // After new samples are added, we have to clear the sorted lists,
     // so they'll be resorted the next time someone asks for an estimate
-    sortedFeeSamples.clear();
     sortedPrioritySamples.clear();
 
     for (size_t i = 0; i < history.size(); i++) {
-      if (history[i].FeeSamples() + history[i].PrioritySamples() > 0)
+      if (history[i].PrioritySamples() > 0)
         LogPrint(ClubLog::ESTIMATEFEE,
-                 "estimates: for confirming within %d blocks based on %d/%d samples, fee=%s, prio=%g\n", i,
-                 history[i].FeeSamples(), history[i].PrioritySamples(), estimateFee(i + 1).ToString(),
-                 estimatePriority(i + 1));
+                 "estimates: for confirming within %d blocks based on %d samples, prio=%g\n", i,
+                 history[i].PrioritySamples(), estimatePriority(i + 1));
     }
   }
 
@@ -223,31 +214,7 @@ class CMinerPolicyEstimator {
    */
   CFeeRate estimateFee(int nBlocksToConfirm) {
     nBlocksToConfirm--;
-
-    if (nBlocksToConfirm < 0 || nBlocksToConfirm >= (int)history.size()) return CFeeRate(0);
-
-    if (sortedFeeSamples.size() == 0) {
-      for (size_t i = 0; i < history.size(); i++) history.at(i).GetFeeSamples(sortedFeeSamples);
-      std::sort(sortedFeeSamples.begin(), sortedFeeSamples.end(), std::greater<CFeeRate>());
-    }
-    if (sortedFeeSamples.size() < 11) {
-      // Eleven is Gavin's Favorite Number
-      // ... but we also take a maximum of 10 samples per block so eleven means
-      // we're getting samples from at least two different blocks
-      return CFeeRate(0);
-    }
-
-    int nBucketSize = history.at(nBlocksToConfirm).FeeSamples();
-
-    // Estimates should not increase as number of confirmations goes up,
-    // but the estimates are noisy because confirmations happen discretely
-    // in blocks. To smooth out the estimates, use all samples in the history
-    // and use the nth highest where n is (number of samples in previous bucket +
-    // half the samples in nBlocksToConfirm bucket):
-    size_t nPrevSize = 0;
-    for (int i = 0; i < nBlocksToConfirm; i++) nPrevSize += history.at(i).FeeSamples();
-    size_t index = min(nPrevSize + nBucketSize / 2, sortedFeeSamples.size() - 1);
-    return sortedFeeSamples[index];
+    return CFeeRate(minRelayTxFee);
   }
   double estimatePriority(int nBlocksToConfirm) {
     nBlocksToConfirm--;
