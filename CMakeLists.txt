@@ -190,6 +190,9 @@ add_custom_target(
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/share/genbuild.sh ${CMAKE_CURRENT_SOURCE_DIR}/src/obj/build.h ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
+SET(LIB_RAND
+  ./src/random.cpp)
+
 
 SET(UTIL_A
 	./src/utiltime.cpp
@@ -198,7 +201,6 @@ SET(UTIL_A
 	./src/sync.cpp
 	./src/uint256.cpp
 	./src/arith_uint256.cpp
-	./src/random.cpp
 	./src/clientversion.cpp
 	./src/chainparamsbase.cpp
 	)
@@ -333,6 +335,11 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
 endif()
 
+find_package(OpenSSL)
+if (OPENSSL_FOUND)
+  message(STATUS "Found OpenSSL")
+endif()  
+
 set(Boost_USE_STATIC_LIBS ON)
 find_package( Boost COMPONENTS  filesystem thread)
 link_directories ( ${Boost_LIBRARY_DIRS} )
@@ -379,6 +386,7 @@ source_group("Wallet" FILES ${WALLET})
 source_group("Rpc" FILES ${RPC})
 source_group("Crypt" FILES ${CONSENSUS_CRYPTO})
 source_group("Util" FILES ${UTIL_A})
+source_group("Rand" FILES ${LIB_RAND})
 source_group("Uni" FILES ${UNI_SOURCES})
 source_group("Zmq" FILES ${ZMQ_SOURCES})
 source_group("Primitives" FILES ${PRIM})
@@ -394,7 +402,9 @@ add_dependencies(coin buildHeader)
 
 add_subdirectory(src)
 
+# REMOVE LATER IF SSL only needed for Rand lib
 include_directories(${include_directories} ${OPENSSL_INCLUDE_DIR})
+
 
 add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
@@ -405,16 +415,20 @@ set(SECP256
 	)
 add_library(secp256k1 ${SECP256})
 
+add_library(rand ${LIB_RAND})
+target_include_directories(rand PUBLIC ${OPENSSL_INCLUDE_DIR})
+target_link_libraries(rand ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} event pthread gmp)
+
 link_directories(${LMDB_ROOT_DIR}/lib)
 link_directories(${ROCKSDB_ROOT_DIR}/lib)
 
 add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
 add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
 
-target_link_libraries(club-cli coin zerocoin lmdb rocksdb ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} event pthread) # ${ANL} ?
-target_link_libraries(clubd coin zerocoin lmdb rocksdb ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} event pthread)
+target_link_libraries(club-cli coin zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} event pthread gmp) # ${ANL} ?
+target_link_libraries(clubd coin zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} event pthread)
 
-SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
+SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(clubd ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )
