@@ -732,7 +732,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
 
     if (tx.IsZerocoinSpend()) {
       // require that a zerocoinspend only has inputs that are zerocoins
-      for (const CTxIn in : tx.vin) {
+      for (const CTxIn& in : tx.vin) {
         if (!in.scriptSig.IsZerocoinSpend())
           return state.DoS(100, error("CheckTransaction() : zerocoinspend contains inputs that are not zerocoins"));
       }
@@ -903,7 +903,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       // do all inputs exist?
       // Note that this does not check for the presence of actual outputs (see the next check for that),
       // only helps filling in pfMissingInputs (to determine missing vs spent).
-      for (const CTxIn txin : tx.vin) {
+      for (const CTxIn& txin : tx.vin) {
         if (!view.HaveCoins(txin.prevout.hash)) {
           if (pfMissingInputs) *pfMissingInputs = true;
           return false;
@@ -1097,7 +1097,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
       // do all inputs exist?
       // Note that this does not check for the presence of actual outputs (see the next check for that),
       // only helps filling in pfMissingInputs (to determine missing vs spent).
-      for (const CTxIn txin : tx.vin) {
+      for (const CTxIn& txin : tx.vin) {
         if (!view.HaveCoins(txin.prevout.hash)) {
           if (pfMissingInputs) *pfMissingInputs = true;
           return false;
@@ -1468,7 +1468,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
     if (tx.ContainsZerocoins()) {
       if (tx.IsZerocoinSpend()) {
         // erase all zerocoinspends in this transaction
-        for (const CTxIn txin : tx.vin) {
+        for (const CTxIn& txin : tx.vin) {
           if (txin.scriptSig.IsZerocoinSpend()) {
             CoinSpend spend = TxInToZerocoinSpend(txin);
             if (!zerocoinDB->EraseCoinSpend(spend.getCoinSerialNumber()))
@@ -1487,7 +1487,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 
       if (tx.IsZerocoinMint()) {
         // erase all zerocoinmints in this transaction
-        for (const CTxOut txout : tx.vout) {
+        for (const CTxOut& txout : tx.vout) {
           if (txout.scriptPubKey.empty() || !txout.scriptPubKey.IsZerocoinMint()) continue;
 
           PublicCoin pubCoin;
@@ -2841,7 +2841,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     // double check that there are no double spent ZKP spends in this block
     if (tx.IsZerocoinSpend()) {
-      for (const CTxIn txIn : tx.vin) {
+      for (const CTxIn& txIn : tx.vin) {
         if (txIn.scriptSig.IsZerocoinSpend()) {
           libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
           if (count(vBlockSerials.begin(), vBlockSerials.end(), spend.getCoinSerialNumber()))
@@ -3180,12 +3180,12 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
   int nMints = 0;
   int nSpends = 0;
-  for (const CTransaction tx : pblock->vtx) {
+  for (const CTransaction& tx : pblock->vtx) {
     if (tx.ContainsZerocoins()) {
-      for (const CTxIn in : tx.vin) {
+      for (const CTxIn& in : tx.vin) {
         if (in.scriptSig.IsZerocoinSpend()) nSpends++;
       }
-      for (const CTxOut out : tx.vout) {
+      for (const CTxOut& out : tx.vout) {
         if (out.IsZerocoinMint()) nMints++;
       }
     }

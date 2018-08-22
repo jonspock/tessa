@@ -67,13 +67,11 @@ if (POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif()
 
-
 # Project Version - check later
 SET(CLUB_VERSION_MAJOR "0")
 SET(CLUB_VERSION_MINOR "9")
 SET(CLUB_VERSION_REVISION "0")
 SET(CLUB_VERSION_BUILD "0")
-
 
 set(ROCKSDB_VER "5.14.2")
 
@@ -92,20 +90,14 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     endif()
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
-
-
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	add_compile_options(-Wno-potentially-evaluated-expression -Wno-unused-const-variable -Wno-unused-function -Wno-deprecated-declarations -Wno-inaccessible-base -Wno-unused-local-typedefs -Wno-logical-op-parentheses -Wno-shift-negative-value -Wno-array-bounds)
 	add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
-#	add_definitions("-Werror")
 else()
 	add_definitions("-Wno-cpp -Wno-unused-function")
 	set(ANL anl)
 endif()
 
 add_definitions("-DHAVE_BUILD_INFO -DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
-
 
 # Enable warning
 include(AddCompilerFlags)
@@ -117,7 +109,10 @@ add_compiler_flag(
 	-Wformat
 	-Wvla
 	-Wformat-security
-	-Wcast-align
+	-Wno-cast-align
+  -Wno-unused-function
+  -Wpedantic
+  -Wrange-loop-analysis
   # club added
 	-Wno-unused-parameter
   -Wstack-protector

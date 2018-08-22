@@ -17,10 +17,10 @@
 
 bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom,
                             std::vector<CBigNum>& vValues) {
-  for (const CTransaction tx : block.vtx) {
+  for (const CTransaction& tx : block.vtx) {
     if (!tx.IsZerocoinMint()) continue;
 
-    for (const CTxOut txOut : tx.vout) {
+    for (const CTxOut& txOut : tx.vout) {
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
 
       CValidationState state;
@@ -37,7 +37,7 @@ bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomina
 }
 
 bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins) {
-  for (const CTransaction tx : block.vtx) {
+  for (const CTransaction& tx : block.vtx) {
     if (!tx.IsZerocoinMint()) continue;
 
     // uint256 txHash = tx.GetHash();
@@ -277,10 +277,10 @@ bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CV
 // return a list of zerocoin spends contained in a specific block, list may have many denominations
 std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block) {
   std::list<libzerocoin::CoinDenomination> vSpends;
-  for (const CTransaction tx : block.vtx) {
+  for (const CTransaction& tx : block.vtx) {
     if (!tx.IsZerocoinSpend()) continue;
 
-    for (const CTxIn txin : tx.vin) {
+    for (const CTxIn& txin : tx.vin) {
       if (!txin.scriptSig.IsZerocoinSpend()) continue;
 
       libzerocoin::CoinDenomination c = libzerocoin::IntToZerocoinDenomination(txin.nSequence);

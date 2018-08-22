@@ -300,7 +300,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         if (IsTransactionInChain(tx.GetHash(), nHeightTx)) continue;
 
         bool fDoubleSerial = false;
-        for (const CTxIn txIn : tx.vin) {
+        for (const CTxIn& txIn : tx.vin) {
           if (txIn.scriptSig.IsZerocoinSpend()) {
             libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
             if (!spend.HasValidSerial(libzerocoin::gpZerocoinParams)) fDoubleSerial = true;
@@ -337,7 +337,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       nBlockSigOps += nTxSigOps;
       nFees += nTxFees;
 
-      for (const CBigNum bnSerial : vTxSerials) vBlockSerials.emplace_back(bnSerial);
+      for (const CBigNum& bnSerial : vTxSerials) vBlockSerials.emplace_back(bnSerial);
 
       if (fPrintPriority) {
         LogPrintf("priority %.1f fee %s txid %s\n", dPriority, feeRate.ToString(), tx.GetHash().ToString());
