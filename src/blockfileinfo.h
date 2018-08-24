@@ -19,7 +19,7 @@ class CBlockFileInfo {
   uint64_t nTimeFirst;        //! earliest time of block in file
   uint64_t nTimeLast;         //! latest time of block in file
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(VARINT(nBlocks));

@@ -59,7 +59,7 @@ class PrivateCoin {
   bool sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
   bool IsValid();
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(publicCoin);

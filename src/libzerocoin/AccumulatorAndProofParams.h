@@ -90,7 +90,7 @@ class AccumulatorAndProofParams {
    * The statistical zero-knowledgeness of the accumulator proof.
    */
   uint32_t k_dprime;
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(initialized);

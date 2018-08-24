@@ -58,7 +58,7 @@ class CommitmentProofOfKnowledge {
    */
   bool Verify(const CBigNum& A, const CBigNum& B) const;
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(S1);

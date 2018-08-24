@@ -37,7 +37,7 @@ class CMessageHeader {
   std::string GetCommand() const;
   bool IsValid() const;
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(FLATDATA(pchMessageStart));
@@ -95,7 +95,7 @@ class CAddress : public CService {
 
   void Init();
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     if (ser_action.ForRead()) Init();
@@ -125,7 +125,7 @@ class CInv {
   CInv(int typeIn, const uint256& hashIn);
   CInv(const std::string& strType, const uint256& hashIn);
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(type);

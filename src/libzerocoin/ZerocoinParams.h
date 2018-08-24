@@ -70,7 +70,7 @@ class ZerocoinParams {
    */
   uint32_t zkp_hash_len;
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(initialized);

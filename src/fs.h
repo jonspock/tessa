@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include <string>
 
+// For now Clang doesn't yet support std::filesystem
+#if __cplusplus < 201703L || __APPLE__
+
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -16,9 +19,16 @@
 /** Filesystem operations and types */
 namespace fs = boost::filesystem;
 
+#else
+
+#include <filesystem>
+namespace fs = std::filesystem;
+
+#endif
+
 /** Bridge operations to C stdio */
 namespace fsbridge {
 FILE *fopen(const fs::path &p, const char *mode);
 FILE *freopen(const fs::path &p, const char *mode, FILE *stream);
-};
+}
 // clang-format on

@@ -40,7 +40,7 @@ class CMerkleTx : public CTransaction {
     fMerkleVerified = false;
   }
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(*(CTransaction*)this);
@@ -157,7 +157,7 @@ class CWalletTx : public CMerkleTx {
     nOrderPos = -1;
   }
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     if (ser_action.ForRead()) Init(nullptr);

@@ -13,6 +13,8 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "version.h"
+#include <algorithm>
+#include <random>
 
 #include <boost/circular_buffer.hpp>
 
@@ -188,7 +190,14 @@ class CMinerPolicyEstimator {
       // Insert at most 10 random entries per bucket, otherwise a single block
       // can dominate an estimate:
       if (e.size() > 10) {
+
+#if __cplusplus < 201703L
         std::random_shuffle(e.begin(), e.end());
+#else
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(e.begin(), e.end(), g);
+#endif   
         e.resize(10);
       }
       for (const CTxMemPoolEntry* entry : e) {

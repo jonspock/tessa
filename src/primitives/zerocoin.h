@@ -137,7 +137,7 @@ class CZerocoinMint {
     }
   }
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -151,7 +151,7 @@ class CZerocoinMint {
     READWRITE(denomination);
     READWRITE(nHeight);
     READWRITE(txid);
-  };
+  }
 };
 
 class CZerocoinSpend {
@@ -192,7 +192,7 @@ class CZerocoinSpend {
   void SetMintCount(int nMintsAdded) { this->nMintCount = nMintsAdded; }
   int GetMintCount() const { return nMintCount; }
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -201,7 +201,7 @@ class CZerocoinSpend {
     READWRITE(pubCoin);
     READWRITE(denomination);
     READWRITE(nAccumulatorChecksum);
-  };
+  }
 };
 
 class CZerocoinSpendReceipt {

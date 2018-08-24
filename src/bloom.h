@@ -66,7 +66,7 @@ class CBloomFilter {
   CBloomFilter(unsigned int nElements, double nFPRate, unsigned int nTweak, uint8_t nFlagsIn);
   CBloomFilter() : isFull(true), isEmpty(false), nHashFuncs(0), nTweak(0), nFlags(0) {}
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(vData);

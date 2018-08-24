@@ -37,6 +37,9 @@
 #include "primitives/deterministicmint.h"
 #include "zerowallet.h"
 #include <cassert>
+#include <algorithm>
+#include <random>
+
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
@@ -1252,7 +1255,13 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
   vector<pair<CAmount, pair<const CWalletTx*, unsigned int> > > vValue;
   CAmount nTotalLower = 0;
 
-  random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
+#if __cplusplus < 201703L
+  std::random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
+#else
+  std::random_device rd;
+  std::mt19937 g(rd());
+  std::shuffle(vCoins.begin(), vCoins.end(), g);
+#endif   
 
 #warning "Refactoring done here - need to test"
 

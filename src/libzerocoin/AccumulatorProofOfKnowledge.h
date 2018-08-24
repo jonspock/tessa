@@ -35,7 +35,7 @@ class AccumulatorProofOfKnowledge {
   /** Verifies that  a commitment c is accumulated in accumulated a	 */
   bool Verify(const Accumulator& a, const CBigNum& valueOfCommitmentToCoin) const;
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(C_e);

@@ -76,7 +76,7 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints = {
     {259201, uint256S("1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd")}};
-static const Checkpoints::CCheckpointData data = {
+static const Checkpoints::CCheckpointData dataMain = {
     &mapCheckpoints,
     1525106065,  // * UNIX timestamp of last checkpoint block
     2498834,     // * total number of transactions between genesis and last checkpoint
@@ -173,7 +173,7 @@ class CMainParams : public CChainParams {
     nZerocoinHeaderVersion = 1;   // Block headers must be this version once zerocoin is active
   }
 
-  const Checkpoints::CCheckpointData& Checkpoints() const { return data; }
+  const Checkpoints::CCheckpointData& Checkpoints() const { return dataMain; }
 };
 static CMainParams mainParams;
 
@@ -307,7 +307,7 @@ class CUnitTestParams : public CMainParams, public CModifiableParams {
 
   const Checkpoints::CCheckpointData& Checkpoints() const {
     // UnitTest share the same checkpoints as MAIN
-    return data;
+    return dataMain;
   }
 
   //! Published setters to allow changing values in unit test cases

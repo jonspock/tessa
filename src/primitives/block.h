@@ -42,7 +42,7 @@ class CBlockHeader {
 
   CBlockHeader() { SetNull(); }
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -92,7 +92,7 @@ class CBlock : public CBlockHeader {
     *((CBlockHeader*)this) = header;
   }
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -156,7 +156,7 @@ struct CBlockLocator {
 
   CBlockLocator(const std::vector<uint256>& vHaveIn) { vHave = vHaveIn; }
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {

@@ -29,7 +29,7 @@ class COutPoint {
     n = nIn;
   }
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -75,7 +75,7 @@ class CTxIn {
   CTxIn(uint256 hashPrevTx, uint32_t nOut, CScript scriptSigIn = CScript(),
         uint32_t nSequenceIn = std::numeric_limits<uint32_t>::max());
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -108,7 +108,7 @@ class CTxOut {
 
   CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn);
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -189,7 +189,7 @@ class CTransaction {
 
   CTransaction& operator=(const CTransaction& tx);
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -262,7 +262,7 @@ struct CMutableTransaction {
   CMutableTransaction();
   CMutableTransaction(const CTransaction& tx);
 
-  ADD_SERIALIZE_METHODS;
+  ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation>
   inline void SerializationOp(Stream& s, Operation ser_action) {
