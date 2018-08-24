@@ -89,16 +89,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     endif()
 endif()
 
-IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(CMAKE_CXX_STANDARD 17)
-  # For 17 we need BOOST_NO_AUTO_PTR defined for boost
-	add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
-else()
-  set(CMAKE_CXX_STANDARD 11)
-	add_definitions("-Wno-cpp -Wno-unused-function")
-	set(ANL anl)
-endif()
-
 add_definitions("-DHAVE_BUILD_INFO -DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
 
 # Enable warning
@@ -114,12 +104,22 @@ add_compiler_flag(
 	-Wno-cast-align
   -Wno-unused-function
   -Wpedantic
-  -Wrange-loop-analysis
   # club added
 	-Wno-unused-parameter
   -Wstack-protector
   -fstack-protector-all
 )
+
+IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(CMAKE_CXX_STANDARD 17)
+  add_compiler_flag(-Wrange-loop-analysis)
+  # For 17 we need BOOST_NO_AUTO_PTR defined for boost
+	add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
+else()
+  set(CMAKE_CXX_STANDARD 11)
+	add_definitions("-Wno-cpp -Wno-unused-function")
+	set(ANL anl)
+endif()
 
 add_definitions("-fPIC")
 

@@ -66,6 +66,13 @@ class CClientUIInterface {
     MSG_ERROR = (ICON_ERROR | BTN_OK | MODAL)
   };
 
+#define ADD_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                                  \
+    rtype signal_name(__VA_ARGS__);                                                        \
+    using signal_name##Sig = rtype(__VA_ARGS__);                                           \
+    boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
+    void signal_name##_disconnect(std::function<signal_name##Sig> fn);
+
+  
   /** Show message box. */
   boost::signals2::signal<bool(const std::string& message, const std::string& caption, unsigned int style),
                           boost::signals2::last_value<bool> >

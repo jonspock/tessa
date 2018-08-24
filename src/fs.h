@@ -6,9 +6,6 @@
 // clang-format off
 #pragma once
 
-#include <stdio.h>
-#include <string>
-
 // For now Clang doesn't yet support std::filesystem
 #if __cplusplus < 201703L || __APPLE__
 
