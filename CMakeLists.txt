@@ -16,7 +16,6 @@ if(CCACHE)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE})
 endif(CCACHE)
 
-set(CMAKE_CXX_STANDARD 11)
 
 # Default visibility is hidden on all targets.
 #set(CMAKE_C_VISIBILITY_PRESET hidden)
@@ -91,8 +90,11 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 endif()
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
+  set(CMAKE_CXX_STANDARD 17)
+  # For 17 we need BOOST_NO_AUTO_PTR defined for boost
+	add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
 else()
+  set(CMAKE_CXX_STANDARD 11)
 	add_definitions("-Wno-cpp -Wno-unused-function")
 	set(ANL anl)
 endif()
