@@ -35,7 +35,7 @@ class CZeroWallet {
                     CDeterministicMint& dMint);
   void GetState(int& nCount, int& nLastGenerated);
   bool RegenerateMint(const CDeterministicMint& dMint, CZerocoinMint& mint);
-  void GenerateMintPool(uint32_t nCountStart = 0, uint32_t nCountEnd = 0);
+  void GenerateZMintPool(uint32_t nCountStart = 0, uint32_t nCountEnd = 0);
   bool LoadMintPoolFromDB();
   void RemoveMintsFromPool(const std::vector<uint256>& vPubcoinHashes);
   bool SetMintSeen(const CBigNum& bnValue, const int& nHeight, const uint256& txid,

@@ -263,6 +263,14 @@ SET(CONSENSUS_CRYPTO
 	./src/crypto/sha512.cpp
 	./src/crypto/aes.cpp
 	./src/crypto/ctaes/ctaes.c
+
+  ./src/crypto/argon2/argon2.c
+  ./src/crypto/argon2/best.c
+  ./src/crypto/argon2/thread.c
+  ./src/crypto/argon2/ref.c
+  ./src/crypto/argon2/encoding.c
+  ./src/crypto/argon2/core.c
+  ./src/crypto/argon2/blake2b.c
 )
 
 SET(WALLET

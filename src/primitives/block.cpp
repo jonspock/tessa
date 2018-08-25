@@ -13,9 +13,14 @@
 #include "tinyformat.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include "crypto/hashargon2d.h"
 
 uint256 CBlockHeader::GetHash() const {
+#ifdef POWSHA256
   return Hash(BEGIN(nHeaderVersion), END(nAccumulatorCheckpoint));
+#else
+  return HashArgon2d(BEGIN(nHeaderVersion), END(nAccumulatorCheckpoint));
+#endif
 }
 
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const {

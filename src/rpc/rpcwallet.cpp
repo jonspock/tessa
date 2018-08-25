@@ -3159,7 +3159,7 @@ UniValue setMasterHDseed(const UniValue& params, bool fHelp) {
     CZeroWallet* zwallet = pwalletMain->getZWallet();
     fSuccess |= zwallet->SetMasterSeed(seed, true);
     zwallet->SetMasterSeed(seed, true);
-    zwallet->GenerateMintPool();
+    zwallet->GenerateZMintPool();
     zwallet->SyncWithChain();
   }
 

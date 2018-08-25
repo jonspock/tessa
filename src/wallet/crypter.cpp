@@ -189,7 +189,7 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vMasterKeyIn) {
       uint256 seed = pwalletMain->GetMasterKeySeed();
       //LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,Hash(seed.begin(), seed.end()).GetHex());
       pwalletMain->zwalletMain->SetMasterSeed(seed, true);
-      pwalletMain->zwalletMain->GenerateMintPool();
+      pwalletMain->zwalletMain->GenerateZMintPool();
     }
   }
   NotifyStatusChanged(this);

@@ -16,6 +16,12 @@
 
 using namespace std;
 
+#ifdef DEBUG
+const int ZMINTS_TO_ADD=1;
+#else
+const int ZMINTS_TO_ADD=20;
+#endif
+
 CZeroWallet::CZeroWallet() {
   // Don't try to do anything if the wallet is locked.
   if (pwalletMain->IsLocked()) {
@@ -75,8 +81,8 @@ void CZeroWallet::AddToMintPool(const std::pair<uint256, uint32_t>& pMint, bool 
   mintPool.Add(pMint, fVerbose);
 }
 
-// Add the next 20 mints to the mint pool
-void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
+// Add the next ZMINTS_TO_ADD mints to the mint pool
+void CZeroWallet::GenerateZMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
   // Is locked
   if (seedMaster.IsNull()) return;
 
@@ -84,7 +90,7 @@ void CZeroWallet::GenerateMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
 
   if (nCountStart > 0) n = nCountStart;
 
-  uint32_t nStop = n + 20;
+  uint32_t nStop = n + ZMINTS_TO_ADD;
   if (nCountEnd > 0) nStop = std::max(n, n + nCountEnd);
 
   bool fFound;
@@ -147,7 +153,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
   set<uint256> setAddedTx;
   while (found) {
     found = false;
-    if (fGenerateMintPool) GenerateMintPool();
+    if (fGenerateMintPool) GenerateZMintPool();
     LogPrint(ClubLog::ZERO, "%s: Mintpool size=%d\n", __func__, mintPool.size());
 
     std::set<uint256> setChecked;
