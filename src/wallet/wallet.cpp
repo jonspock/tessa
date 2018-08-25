@@ -2855,12 +2855,6 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
 
     if (!spend.Verify(accumulator)) {
       receipt.SetStatus(_("The new spend coin transaction did not verify"), ZKP_INVALID_WITNESS);
-      // return false;
-      LogPrintf("** spend.verify failed, trying with different params\n");
-
-      libzerocoin::CoinSpend spend2(libzerocoin::gpZerocoinParams, privateCoin, accumulator, nChecksum, witness,
-                                    hashTxOut);  //, libzerocoin::SpendType::SPEND);
-      LogPrintf("*** spend2 valid=%d\n", spend2.Verify(accumulator));
       return false;
     }
 
@@ -3539,6 +3533,7 @@ bool CWallet::SetHDChain(const CHDChain& chain, bool memonly) {
 bool CWallet::IsHDEnabled() { return !hdChain.masterKeyID.IsNull(); }
 
 CWallet* CWallet::CreateWalletFromFile(const std::string walletFile) {
+#warning "Need to re-enable this code"
 #ifdef DEBUG_CWFF
   // Needed to restore wallet transaction meta data after -zapwallettxes
   std::vector<CWalletTx> vWtx;
@@ -3702,6 +3697,8 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile) {
   LogPrintf("mapWallet.size() = %u\n", walletInstance->mapWallet.size());
   LogPrintf("mapAddressBook.size() = %u\n", walletInstance->mapAddressBook.size());
 
-  return walletInstance;
+#else
+    CWallet* walletInstance = new CWallet;
 #endif
+    return walletInstance;
 }

@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "accumulatorcheckpoints.h"
+#include "libzerocoin/ZerocoinParams.h"
 
 namespace AccumulatorCheckpoints {
 
@@ -13,8 +14,8 @@ std::map<int, Checkpoint> mapAccCheckpoints;
 bool LoadCheckpoints(const std::string& strNetwork) {
   // Just start with Checkpoints all 0s initially
   Checkpoint checkpoint;
-#warning "hard coded default value for Accum Checkpoint"
-  CBigNum bn(961);
+  libzerocoin::ZerocoinParams* params = libzerocoin::gpZerocoinParams;
+  CBigNum bn(params->accumulatorParams.accumulatorBase);
   int StartHeight = 0;
   for (auto denom : libzerocoin::zerocoinDenomList) checkpoint.insert(std::make_pair(denom, bn));
   mapAccCheckpoints.insert(make_pair(StartHeight, checkpoint));
