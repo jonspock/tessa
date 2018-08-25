@@ -3213,49 +3213,6 @@ bool IsMintInChain(const uint256& hashPubcoin, uint256& txid, int& nHeight) {
   return true;
 }
 
-void CWallet::ReconsiderZerocoins(std::list<CZerocoinMint>& listMintsRestored,
-                                  std::list<CDeterministicMint>& listDMintsRestored) {
-  list<CZerocoinMint> listMints = gWalletDB.ListArchivedZerocoins();
-  list<CDeterministicMint> listDMints = gWalletDB.ListArchivedDeterministicMints();
-
-  if (listMints.empty() && listDMints.empty()) return;
-
-  for (CZerocoinMint mint : listMints) {
-    uint256 txid;
-    int nHeight;
-    uint256 hashPubcoin = GetPubCoinHash(mint.GetValue());
-    if (!IsMintInChain(hashPubcoin, txid, nHeight)) continue;
-
-    mint.SetTxHash(txid);
-    mint.SetHeight(nHeight);
-    mint.SetUsed(IsSerialInBlockchain(mint.GetSerialNumber(), nHeight));
-
-    if (!zkpTracker->UnArchive(hashPubcoin, false)) {
-      LogPrintf("%s : failed to unarchive mint %s\n", __func__, mint.GetValue().GetHex());
-    } else {
-      zkpTracker->UpdateZerocoinMint(mint);
-    }
-    listMintsRestored.emplace_back(mint);
-  }
-
-  for (CDeterministicMint dMint : listDMints) {
-    uint256 txid;
-    int nHeight;
-    if (!IsMintInChain(dMint.GetPubcoinHash(), txid, nHeight)) continue;
-
-    dMint.SetTxHash(txid);
-    dMint.SetHeight(nHeight);
-    uint256 txidSpend;
-    dMint.SetUsed(IsSerialInBlockchain(dMint.GetSerialHash(), nHeight, txidSpend));
-
-    if (!zkpTracker->UnArchive(dMint.GetPubcoinHash(), true)) {
-      LogPrintf("%s : failed to unarchive deterministic mint %s\n", __func__, dMint.GetPubcoinHash().GetHex());
-    } else {
-      zkpTracker->Add(dMint, true);
-    }
-    listDMintsRestored.emplace_back(dMint);
-  }
-}
 
 string CWallet::MintZerocoinFromOutPoint(CAmount nValue, CWalletTx& wtxNew, vector<CDeterministicMint>& vDMints,
                                          const vector<COutPoint> vOutpts) {
@@ -3406,17 +3363,10 @@ bool CWallet::GetMint(const uint256& hashSerial, CZerocoinMint& mint) {
   if (!zkpTracker->HasSerialHash(hashSerial))
     return error("%s: serialhash %s is not in tracker", __func__, hashSerial.GetHex());
   CMintMeta meta = zkpTracker->Get(hashSerial);
-  if (meta.isDeterministic) {
     CDeterministicMint dMint;
     if (!gWalletDB.ReadDeterministicMint(meta.hashPubcoin, dMint))
       return error("%s: failed to read deterministic mint", __func__);
     if (!zwalletMain->RegenerateMint(dMint, mint)) return error("%s: failed to generate mint", __func__);
-
-    return true;
-  } else if (!gWalletDB.ReadZerocoinMint(meta.hashPubcoin, mint)) {
-    return error("%s: failed to read zerocoinmint from database", __func__);
-  }
-
   return true;
 }
 

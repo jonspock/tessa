@@ -21,7 +21,6 @@ class CZeroTracker {
   CZeroTracker();
   ~CZeroTracker();
   void Add(const CDeterministicMint& dMint, bool isNew = false, bool isArchived = false);
-  void Add(const CZerocoinMint& mint, bool isNew = false, bool isArchived = false);
   bool Archive(CMintMeta& meta);
   bool HasPubcoin(const CBigNum& bnValue) const;
   bool HasPubcoinHash(const uint256& hashPubcoin) const;
@@ -40,8 +39,7 @@ class CZeroTracker {
   void RemovePending(const uint256& txid);
   void SetPubcoinUsed(const uint256& hashPubcoin, const uint256& txid);
   void SetPubcoinNotUsed(const uint256& hashPubcoin);
-  bool UnArchive(const uint256& hashPubcoin, bool isDeterministic);
-  bool UpdateZerocoinMint(const CZerocoinMint& mint);
+  bool UnArchive(const uint256& hashPubcoin);
   bool UpdateState(const CMintMeta& meta);
   void Clear();
 };
