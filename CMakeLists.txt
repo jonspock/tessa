@@ -340,10 +340,13 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
 endif()
 
-find_package(OpenSSL)
-if (OPENSSL_FOUND)
-  message(STATUS "Found OpenSSL")
-endif()  
+
+find_package(sodium)
+if (SODIUM_FOUND)
+  message(STATUS "Found libsodium")
+  message(STATUS "Sodium include dir = ${sodium_INCLUDE_DIR}")
+endif()
+
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package( Boost COMPONENTS  filesystem thread)
@@ -363,6 +366,7 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${GMP_INCLUDE_DIR}
   ${ROCKSDB_ROOT_DIR}/include
+  ${sodium_INCLUDE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/src/liblmdb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
@@ -407,10 +411,6 @@ add_dependencies(coin buildHeader)
 
 add_subdirectory(src)
 
-# REMOVE LATER IF SSL only needed for Rand lib
-include_directories(${include_directories} ${OPENSSL_INCLUDE_DIR})
-
-
 add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 
@@ -421,8 +421,8 @@ set(SECP256
 add_library(secp256k1 ${SECP256})
 
 add_library(rand ${LIB_RAND})
-target_include_directories(rand PUBLIC ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(rand ${OPENSSL_CRYPTO_LIBRARY} ${Boost_LIBRARIES} event pthread gmp)
+target_include_directories(rand PUBLIC {sodium_INCLUDE_DIR})
+target_link_libraries(rand sodium ${Boost_LIBRARIES} event pthread gmp)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
 link_directories(${ROCKSDB_ROOT_DIR}/lib)
@@ -430,10 +430,10 @@ link_directories(${ROCKSDB_ROOT_DIR}/lib)
 add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
 add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
 
-target_link_libraries(club-cli coin zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} event pthread gmp) # ${ANL} ?
-target_link_libraries(clubd coin zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} event pthread)
 
-SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread)
+SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
+
+target_link_libraries(club-cli coin zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(clubd ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )

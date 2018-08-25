@@ -124,11 +124,6 @@ set(GUI_FORMS
   
 QT5_WRAP_UI( UI_HEADERS ${GUI_FORMS})
 
-
-find_package(Protobuf REQUIRED)
-include_directories(${include_directories} ${PROTOBUF_INCLUDE_DIRS})
-include_directories(${include_directories} ${CMAKE_CURRENT_BINARY_DIR})
-
 SET(QT_FILES
 	../script/standard.cpp
 	../rpc/rpcclient.cpp
@@ -197,13 +192,13 @@ endif()
 
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	ADD_LIBRARY(qt_stuff ${QT_FILES} ${PROTO_SRCS} ${PROTO_HDRS} ${UI_HEADERS})
+	ADD_LIBRARY(qt_stuff ${QT_FILES} ${UI_HEADERS})
 else()
-	ADD_LIBRARY(qt_stuff ${QT_FILES} ../rpc/rpcclient.cpp ${PROTO_SRCS} ${PROTO_HDRS} ${UI_HEADERS})
+	ADD_LIBRARY(qt_stuff ${QT_FILES} ../rpc/rpcclient.cpp ${UI_HEADERS})
 endif()
 
 set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)
-target_include_directories(qt_stuff PUBLIC ${OPENSSL_INCLUDE_DIR})
+#target_include_directories(qt_stuff PUBLIC {OPENSSL_INCLUDE_DIR})
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
 SET(QT_TRANSLATIONS_FILES
@@ -225,14 +220,14 @@ add_dependencies(club-qt translations_target)
 set_property(TARGET club-qt PROPERTY CXX_STANDARD 11)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  # ORIG TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff db_cxx db secp256k1 bitcoin_crypto zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} ${PROTOBUF_LIBRARIES} qrencode miniupnpc /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a pthread "-framework Cocoa")
+  # ORIG TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff db_cxx db secp256k1 bitcoin_crypto zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} qrencode miniupnpc /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a pthread "-framework Cocoa")
 
 # STATIC LINK SPECIFIC FOR MAC-DEPLOY TARGET
   
 ## Ref  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a /usr/local/lib/libqrencode.a /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
-  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a qrencode /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
+  TARGET_LINK_LIBRARIES(club-qt ${LIBS_LIST} qt_stuff mac_stuff ${Qt5_LIBRARIES} qrencode /usr/local/lib/libzmq.a "-framework Cocoa")
 else()
-	TARGET_LINK_LIBRARIES(club-qt coin qt_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} ${PROTOBUF_LIBRARIES} miniupnpc qrencode event event_pthreads pthread )
+	TARGET_LINK_LIBRARIES(club-qt coin qt_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} miniupnpc qrencode event event_pthreads pthread )
 endif()
 
 #############################################################

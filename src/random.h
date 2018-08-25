@@ -18,6 +18,7 @@ void RandAddSeed();
  * Functions to gather random data 
  */
 void GetRandBytes(uint8_t *buf, int num);
+void GetRandBytes(std::vector<uint8_t>& buf);
 uint64_t GetRand(uint64_t nMax);
 int GetRandInt(int nMax);
 uint256 GetRandHash();

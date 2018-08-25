@@ -60,6 +60,8 @@
 #include "zmq/zmqnotificationinterface.h"
 #endif
 
+#include <sodium/core.h>
+
 using namespace boost;
 using namespace std;
 
@@ -978,7 +980,9 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // pidfile, debug log
 
   // Initialize elliptic curve code
-  RandomInit();
+  if (sodium_init() < 0) {
+    throw string("Libsodium initialization failed.");
+  }
   ECC_Start();
   globalVerifyHandle.reset(new ECCVerifyHandle());
 
