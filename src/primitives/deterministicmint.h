@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include <libzerocoin/Denominations.h>
-#include <serialize.h>
-#include <uint256.h>
+#include "libzerocoin/Denominations.h"
+#include "serialize.h"
+#include "uint256.h"
 
 // struct that is safe to store essential mint data, without holding any information that allows for actual spending
 // (serial, randomness, private key)

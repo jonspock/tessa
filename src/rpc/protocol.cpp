@@ -17,7 +17,7 @@
 #include "version.h"
 
 #include <fstream>
-#include <stdint.h>
+#include <cstdint>
 
 using namespace std;
 

@@ -15,7 +15,7 @@
 #include "uint256.h"
 #include "util.h"
 
-#include <math.h>
+#include <cmath>
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock) {
   /* current difficulty formula, club - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */

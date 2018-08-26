@@ -10,8 +10,7 @@
 #include "libzerocoin/Denominations.h"
 #include "bignum.h"
 #include "serialize.h"
-#include <amount.h>
-#include <limits.h>
+#include "amount.h"
 
 // struct that is safe to store essential mint data, without holding any information that allows for actual spending
 // (serial, randomness, private key)

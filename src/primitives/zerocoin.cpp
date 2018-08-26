@@ -7,7 +7,7 @@
 #include "hash.h"
 #include "util.h"
 #include "utilstrencodings.h"
-#include <streams.h>
+#include "streams.h"
 
 bool CMintMeta::operator<(const CMintMeta& a) const { return this->hashPubcoin < a.hashPubcoin; }
 

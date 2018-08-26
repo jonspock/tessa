@@ -20,7 +20,7 @@
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <univalue.h>
 

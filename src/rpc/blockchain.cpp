@@ -17,7 +17,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <univalue.h>
 
 using namespace std;

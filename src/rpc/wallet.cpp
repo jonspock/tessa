@@ -20,7 +20,7 @@
 #include "utilmoneystr.h"
 #include "wallet/walletdb.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "libzerocoin/PrivateCoin.h"
 #include "primitives/deterministicmint.h"

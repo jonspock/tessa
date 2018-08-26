@@ -5,10 +5,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "coins.h"
-
 #include "random.h"
-
-#include <assert.h>
+#include <cassert>
 
 /**
  * calculate number of bytes for the bitmask, and its number of non-zero bytes

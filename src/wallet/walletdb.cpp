@@ -18,7 +18,7 @@
 #include "util.h"
 #include "utiltime.h"
 #include "wallet.h"
-#include <primitives/deterministicmint.h>
+#include "primitives/deterministicmint.h"
 
 #include <boost/thread.hpp>
 #include <fstream>

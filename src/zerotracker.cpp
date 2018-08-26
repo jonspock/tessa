@@ -10,7 +10,7 @@
 #include "txdb.h"
 #include "util.h"
 #include "wallet/walletdb.h"
-#include <primitives/deterministicmint.h>
+#include "primitives/deterministicmint.h"
 
 using namespace std;
 

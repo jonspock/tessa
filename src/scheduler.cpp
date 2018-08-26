@@ -8,7 +8,7 @@
 
 #include "reverselock.h"
 
-#include <assert.h>
+#include <cassert>
 #include <utility>
 
 CScheduler::CScheduler() : nThreadsServicingQueue(0), stopRequested(false), stopWhenEmpty(false) {}

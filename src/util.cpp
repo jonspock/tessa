@@ -13,7 +13,6 @@
 #include <mutex>
 
 #include "util.h"
-
 #include "chainparamsbase.h"
 #include "random.h"
 #include "serialize.h"
