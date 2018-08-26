@@ -82,13 +82,12 @@ void AddAccumulatorChecksum(const uint32_t nChecksum, const CBigNum& bnValue) {
 
 void DatabaseChecksums(AccumulatorMap& mapAccumulators) {
   arith_uint256 nCheckpoint = 0;
-    //
+  //
   {
-        CBigNum bnValue = mapAccumulators.GetValue(CoinDenomination::ZQ_ONE);
-        uint32_t nCheckSum = GetChecksum(bnValue);
-        LogPrint(ClubLog::ZERO, "%s : checksum:%d\n", __func__, nCheckSum);
-   }
-    
+    CBigNum bnValue = mapAccumulators.GetValue(CoinDenomination::ZQ_ONE);
+    uint32_t nCheckSum = GetChecksum(bnValue);
+    LogPrint(ClubLog::ZERO, "%s : checksum:%d\n", __func__, nCheckSum);
+  }
 
   for (auto& denom : zerocoinDenomList) {
     CBigNum bnValue = mapAccumulators.GetValue(denom);
@@ -180,7 +179,7 @@ bool InitializeAccumulators(const int nHeight, int& nHeightCheckpoint, Accumulat
       if (nHeightCheckpoint < 0) return error("%s: failed to load hard-checkpoint for block %s", __func__, nHeight);
 
       mapAccumulators.Load(checkpoint);
-        LogPrintf("loaded checkpoints for mapAccumulators at height %d", nHeight);
+      LogPrintf("loaded checkpoints for mapAccumulators at height %d", nHeight);
       return true;
     }
   }
@@ -212,7 +211,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
   // set the accumulators to last checkpoint value
   int nHeightCheckpoint;
   mapAccumulators.Reset();
-  LogPrint(ClubLog::ZERO,"%s Reseting MapAccumulators\n",__func__);
+  LogPrint(ClubLog::ZERO, "%s Reseting MapAccumulators\n", __func__);
   if (!InitializeAccumulators(nHeight, nHeightCheckpoint, mapAccumulators))
     return error("%s: failed to initialize accumulators", __func__);
 
@@ -243,7 +242,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
       return error("%s: failed to get zerocoin mintlist from block %d", __func__, pindex->nHeight);
 
     nTotalMintsFound += listPubcoins.size();
-    LogPrint(ClubLog::ZERO, "%s found %d mints at height %d\n", __func__, listPubcoins.size(),pindex->nHeight);
+    LogPrint(ClubLog::ZERO, "%s found %d mints at height %d\n", __func__, listPubcoins.size(), pindex->nHeight);
 
     // add the pubcoins to accumulator
     for (const PublicCoin& pubcoin : listPubcoins) {
@@ -387,7 +386,7 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
   LogPrint(ClubLog::ZERO, "%s: after lock\n", __func__);
   uint256 txid;
   if (!zerocoinDB->ReadCoinMint(coin.getValue(), txid)) return error("%s failed to read mint from db", __func__);
-    LogPrint(ClubLog::ZERO,"%s Read mint for %s from DB",__func__,coin.getValue());
+  LogPrint(ClubLog::ZERO, "%s Read mint for %s from DB", __func__, coin.getValue());
 
   CTransaction txMinted;
   uint256 hashBlock;
@@ -396,14 +395,14 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
   int nHeightTest;
   if (!IsTransactionInChain(txid, nHeightTest)) return error("%s: mint tx %s is not in chain", __func__, txid.GetHex());
 
-    LogPrint(ClubLog::ZERO,"%s Got mint for in chain %s",__func__,txid.GetHex());
+  LogPrint(ClubLog::ZERO, "%s Got mint for in chain %s", __func__, txid.GetHex());
 
   int nHeightMintAdded = mapBlockIndex[hashBlock]->nHeight;
 
   // get the checkpoint added at the next multiple of ACC_BLOCK_INTERVAL
   int nHeightCheckpoint = nHeightMintAdded + (ACC_BLOCK_INTERVAL - (nHeightMintAdded % ACC_BLOCK_INTERVAL));
-    LogPrint(ClubLog::ZERO,"%s nHeightCheckpoint %d",__func__,nHeightCheckpoint);
- 
+  LogPrint(ClubLog::ZERO, "%s nHeightCheckpoint %d", __func__, nHeightCheckpoint);
+
   // the height to start accumulating coins to add to witness
   int nAccStartHeight = nHeightMintAdded - (nHeightMintAdded % ACC_BLOCK_INTERVAL);
 
@@ -426,11 +425,13 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
   // Iterate through the chain and calculate the witness
   int nCheckpointsAdded = 0;
   nMintsAdded = 0;
-  if (Params().NetworkID() == CBaseChainParams::MAIN) RandomizeSecurityLevel(nSecurityLevel);  // make security level not always the same and predictable
+  if (Params().NetworkID() == CBaseChainParams::MAIN)
+    RandomizeSecurityLevel(nSecurityLevel);  // make security level not always the same and predictable
   libzerocoin::Accumulator witnessAccumulator = accumulator;
 
   while (pindex) {
-      LogPrint(ClubLog::ZERO,"%s Height = %d CheckPoint = %s",__func__,pindex->nHeight,pindex->nAccumulatorCheckpoint.ToString());
+    LogPrint(ClubLog::ZERO, "%s Height = %d CheckPoint = %s", __func__, pindex->nHeight,
+             pindex->nAccumulatorCheckpoint.ToString());
     if (pindex->nHeight != nAccStartHeight && pindex->pprev->nAccumulatorCheckpoint != pindex->nAccumulatorCheckpoint)
       ++nCheckpointsAdded;
 

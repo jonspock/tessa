@@ -191,9 +191,7 @@ void PrepareShutdown() {
   StopNode();
   UnregisterNodeSignals(GetNodeSignals());
 
-  if (fFeeEstimatesInitialized) {
-    fFeeEstimatesInitialized = false;
-  }
+  if (fFeeEstimatesInitialized) { fFeeEstimatesInitialized = false; }
 
   {
     LOCK(cs_main);
@@ -620,8 +618,8 @@ std::string HelpMessage(HelpMessageMode mode) {
 
 std::string LicenseInfo() {
   return FormatParagraph(strprintf(_("Copyright (C) 2009-%i The Bitcoin Core Developers"), COPYRIGHT_YEAR)) + "\n" +
-        "\n" + FormatParagraph(strprintf(_("Copyright (C) 2014-%i The Dash Core Developers"), COPYRIGHT_YEAR)) + "\n" +
-        "\n" + FormatParagraph(strprintf(_("Copyright (C) 2015-%i The PIVX Core Developers"), COPYRIGHT_YEAR)) + "\n" +
+         "\n" + FormatParagraph(strprintf(_("Copyright (C) 2014-%i The Dash Core Developers"), COPYRIGHT_YEAR)) + "\n" +
+         "\n" + FormatParagraph(strprintf(_("Copyright (C) 2015-%i The PIVX Core Developers"), COPYRIGHT_YEAR)) + "\n" +
          "\n" + FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Club Core Developers"), COPYRIGHT_YEAR)) + "\n" +
          "\n" + FormatParagraph(_("This is experimental software.")) + "\n" + "\n" +
          FormatParagraph(_("Distributed under the MIT software license, see the accompanying file COPYING or "
@@ -727,7 +725,7 @@ bool InitSanityCheck(void) {
         "information, visit https://en.bitcoin.it/wiki/OpenSSL_and_EC_Libraries");
     return false;
   }
-  //if (!glibc_sanity_test() || !glibcxx_sanity_test()) return false;
+  // if (!glibc_sanity_test() || !glibcxx_sanity_test()) return false;
 
   return true;
 }
@@ -980,9 +978,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // pidfile, debug log
 
   // Initialize elliptic curve code
-  if (sodium_init() < 0) {
-    throw string("Libsodium initialization failed.");
-  }
+  if (sodium_init() < 0) { throw string("Libsodium initialization failed."); }
   ECC_Start();
   globalVerifyHandle.reset(new ECCVerifyHandle());
 
@@ -1522,17 +1518,13 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     }
 
     if (fFirstRun) {
-        // Generate a new master key.
-        CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey();
-        if (!pwalletMain->SetHDMasterKey(masterPubKey)) {
-          throw std::runtime_error(std::string(__func__) +
-                                   ": Storing master key failed");
-        }
-      
- 
+      // Generate a new master key.
+      CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey();
+      if (!pwalletMain->SetHDMasterKey(masterPubKey)) {
+        throw std::runtime_error(std::string(__func__) + ": Storing master key failed");
+      }
 
-      
-        // Create new keyUser and set as default key
+      // Create new keyUser and set as default key
       CPubKey newDefaultKey;
       if (pwalletMain->GetKeyFromPool(newDefaultKey)) {
         pwalletMain->SetDefaultKey(newDefaultKey);
@@ -1628,7 +1620,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   if (!strErrors.str().empty()) return InitError(strErrors.str());
 
-  //RandAddSeedPerfmon();
+  // RandAddSeedPerfmon();
 
   //// debug print
   LogPrintf("mapBlockIndex.size() = %u\n", mapBlockIndex.size());

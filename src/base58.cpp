@@ -110,9 +110,7 @@ std::string EncodeBase58(const uint8_t* pbegin, const uint8_t* pend) {
 
 std::string EncodeBase58(const std::vector<uint8_t>& vch) { return EncodeBase58(&vch[0], &vch[0] + vch.size()); }
 
-bool DecodeBase58(const std::string& str, std::vector<uint8_t>& vchRet) {
-  return DecodeBase58(str.c_str(), vchRet);
-}
+bool DecodeBase58(const std::string& str, std::vector<uint8_t>& vchRet) { return DecodeBase58(str.c_str(), vchRet); }
 
 std::string EncodeBase58Check(const std::vector<uint8_t>& vchIn) {
   // add 4-byte hash check to the end
@@ -152,8 +150,7 @@ void CBase58Data::SetData(const std::vector<uint8_t>& vchVersionIn, const void* 
   if (!vchData.empty()) memcpy(&vchData[0], pdata, nSize);
 }
 
-void CBase58Data::SetData(const std::vector<uint8_t>& vchVersionIn, const uint8_t* pbegin,
-                          const uint8_t* pend) {
+void CBase58Data::SetData(const std::vector<uint8_t>& vchVersionIn, const uint8_t* pbegin, const uint8_t* pend) {
   SetData(vchVersionIn, (void*)pbegin, pend - pbegin);
 }
 

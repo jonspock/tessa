@@ -153,7 +153,8 @@ class CMinerPolicyEstimator {
       // priority insufficient to get confirmed:
       // don't know why they got confirmed.
     }
-    LogPrint(ClubLog::ESTIMATEFEE, "Seen TX confirm: %s : %g priority, took %d blocks\n", assignedTo, dPriority, nBlocksAgo);
+    LogPrint(ClubLog::ESTIMATEFEE, "Seen TX confirm: %s : %g priority, took %d blocks\n", assignedTo, dPriority,
+             nBlocksAgo);
   }
 
  public:
@@ -190,18 +191,17 @@ class CMinerPolicyEstimator {
       // Insert at most 10 random entries per bucket, otherwise a single block
       // can dominate an estimate:
       if (e.size() > 10) {
-
 #if __cplusplus < 201703L
         std::random_shuffle(e.begin(), e.end());
 #else
         std::random_device rd;
         std::mt19937 g(rd());
         std::shuffle(e.begin(), e.end(), g);
-#endif   
+#endif
         e.resize(10);
       }
       for (const CTxMemPoolEntry* entry : e) {
-         double dPriority = entry->GetPriority(entry->GetHeight());  // Want priority when it went IN
+        double dPriority = entry->GetPriority(entry->GetHeight());  // Want priority when it went IN
         seenTxConfirm(dPriority, i);
       }
     }
@@ -212,8 +212,7 @@ class CMinerPolicyEstimator {
 
     for (size_t i = 0; i < history.size(); i++) {
       if (history[i].PrioritySamples() > 0)
-        LogPrint(ClubLog::ESTIMATEFEE,
-                 "estimates: for confirming within %d blocks based on %d samples, prio=%g\n", i,
+        LogPrint(ClubLog::ESTIMATEFEE, "estimates: for confirming within %d blocks based on %d samples, prio=%g\n", i,
                  history[i].PrioritySamples(), estimatePriority(i + 1));
     }
   }

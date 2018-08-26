@@ -89,7 +89,7 @@ static void Repeat(CScheduler *s, CScheduler::Function f, int64_t deltaSeconds) 
 }
 
 void CScheduler::scheduleEvery(CScheduler::Function f, int64_t deltaSeconds) {
-  scheduleFromNow([=] {Repeat(this, f, deltaSeconds);}, deltaSeconds);
+  scheduleFromNow([=] { Repeat(this, f, deltaSeconds); }, deltaSeconds);
 }
 
 size_t CScheduler::getQueueInfo(boost::chrono::system_clock::time_point &first,

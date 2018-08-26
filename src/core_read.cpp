@@ -12,11 +12,11 @@
 #include "serialize.h"
 #include "streams.h"
 #include "util.h"
-#include "utilstrencodings.h"
 #include "utilsplitstring.h"
+#include "utilstrencodings.h"
 #include "version.h"
-#include <univalue.h>
 #include <algorithm>
+#include <univalue.h>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -53,11 +53,11 @@ CScript ParseScript(std::string s) {
       // Empty string, ignore. (boost::split given '' will return one word)
 
     } else if (std::all_of(w->begin(), w->end(), ::IsDigit) ||
-               (w->front() == '-' && w->size() > 1 && std::all_of(w->begin()+1, w->end(), ::IsDigit))) {
+               (w->front() == '-' && w->size() > 1 && std::all_of(w->begin() + 1, w->end(), ::IsDigit))) {
       // Number
       int64_t n = std::atoi((*w).c_str());
       result << n;
-    } else if (w->substr(0,2) == "0x" && w->size() > 2 && IsHex(std::string(w->begin()+2, w->end()))) {
+    } else if (w->substr(0, 2) == "0x" && w->size() > 2 && IsHex(std::string(w->begin() + 2, w->end()))) {
       // Raw hex data, inserted NOT pushed onto stack:
       std::vector<uint8_t> raw = ParseHex(string(w->begin() + 2, w->end()));
       result.insert(result.end(), raw.begin(), raw.end());

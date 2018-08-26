@@ -9,11 +9,11 @@
 #include "support/cleanse.h"
 #include "tinyformat.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <errno.h>
 #include <limits>
-#include <algorithm>
 
 using namespace std;
 
@@ -333,14 +333,12 @@ vector<uint8_t> DecodeBase32(const char* p, bool* pfInvalid) {
         break;
 
       case 4:  // 8n+4 base32 characters processed: require '===='
-        if (left || p[0] != '=' || p[1] != '=' || p[2] != '=' || p[3] != '=' ||
-            decode32_table[(uint8_t)p[4]] != -1)
+        if (left || p[0] != '=' || p[1] != '=' || p[2] != '=' || p[3] != '=' || decode32_table[(uint8_t)p[4]] != -1)
           *pfInvalid = true;
         break;
 
       case 5:  // 8n+5 base32 characters processed: require '==='
-        if (left || p[0] != '=' || p[1] != '=' || p[2] != '=' || decode32_table[(uint8_t)p[3]] != -1)
-          *pfInvalid = true;
+        if (left || p[0] != '=' || p[1] != '=' || p[2] != '=' || decode32_table[(uint8_t)p[3]] != -1) *pfInvalid = true;
         break;
 
       case 7:  // 8n+7 base32 characters processed: require '='
@@ -430,14 +428,12 @@ std::string FormatParagraph(const std::string in, size_t width, size_t indent) {
   }
   return out.str();
 }
-void Downcase(std::string& str)
-{
-    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c){return ToLower(c);});
+void Downcase(std::string& str) {
+  std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return ToLower(c); });
 }
 
-std::string Capitalize(std::string str)
-{
-    if (str.empty()) return str;
-    str[0] = ToUpper(str.front());
-    return str;
+std::string Capitalize(std::string str) {
+  if (str.empty()) return str;
+  str[0] = ToUpper(str.front());
+  return str;
 }

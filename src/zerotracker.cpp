@@ -38,10 +38,9 @@ bool CZeroTracker::Archive(CMintMeta& meta) {
 
   CDeterministicMint dMint;
   if (!gWalletDB.ReadDeterministicMint(meta.hashPubcoin, dMint))
-      return error("%s: could not find pubcoinhash %s in db", __func__, meta.hashPubcoin.GetHex());
+    return error("%s: could not find pubcoinhash %s in db", __func__, meta.hashPubcoin.GetHex());
   if (!gWalletDB.ArchiveDeterministicOrphan(dMint))
-      return error("%s: failed to archive deterministic ophaned mint", __func__);
-
+    return error("%s: failed to archive deterministic ophaned mint", __func__);
 
   LogPrint(ClubLog::ZERO, "%s: archived pubcoinhash %s\n", __func__, meta.hashPubcoin.GetHex());
   return true;
@@ -50,7 +49,7 @@ bool CZeroTracker::Archive(CMintMeta& meta) {
 bool CZeroTracker::UnArchive(const uint256& hashPubcoin) {
   CDeterministicMint dMint;
   if (!gWalletDB.UnarchiveDeterministicMint(hashPubcoin, dMint))
-      return error("%s: failed to unarchive deterministic mint", __func__);
+    return error("%s: failed to unarchive deterministic mint", __func__);
   Add(dMint, false);
 
   LogPrint(ClubLog::ZERO, "%s: unarchived %s\n", __func__, hashPubcoin.GetHex());
@@ -165,24 +164,23 @@ bool CZeroTracker::HasSerialHash(const uint256& hashSerial) const {
 }
 
 bool CZeroTracker::UpdateState(const CMintMeta& meta) {
+  CDeterministicMint dMint;
+  if (!gWalletDB.ReadDeterministicMint(meta.hashPubcoin, dMint)) {
+    // Check archive just in case
+    if (!meta.isArchived) return error("%s: failed to read deterministic mint from database", __func__);
 
-    CDeterministicMint dMint;
-    if (!gWalletDB.ReadDeterministicMint(meta.hashPubcoin, dMint)) {
-      // Check archive just in case
-      if (!meta.isArchived) return error("%s: failed to read deterministic mint from database", __func__);
+    // Unarchive this mint since it is being requested and updated
+    if (!gWalletDB.UnarchiveDeterministicMint(meta.hashPubcoin, dMint))
+      return error("%s: failed to unarchive deterministic mint from database", __func__);
+  }
 
-      // Unarchive this mint since it is being requested and updated
-      if (!gWalletDB.UnarchiveDeterministicMint(meta.hashPubcoin, dMint))
-        return error("%s: failed to unarchive deterministic mint from database", __func__);
-    }
+  dMint.SetTxHash(meta.txid);
+  dMint.SetHeight(meta.nHeight);
+  dMint.SetUsed(meta.isUsed);
+  dMint.SetDenomination(meta.denom);
 
-    dMint.SetTxHash(meta.txid);
-    dMint.SetHeight(meta.nHeight);
-    dMint.SetUsed(meta.isUsed);
-    dMint.SetDenomination(meta.denom);
-
-    if (!gWalletDB.WriteDeterministicMint(dMint))
-      return error("%s: failed to update deterministic mint when writing to db", __func__);
+  if (!gWalletDB.WriteDeterministicMint(dMint))
+    return error("%s: failed to update deterministic mint when writing to db", __func__);
 
   mapSerialHashes[meta.hashSerial] = meta;
 

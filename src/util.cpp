@@ -14,10 +14,10 @@
 
 #include "util.h"
 
-#include "support/allocators/secure.h"
 #include "chainparamsbase.h"
 #include "random.h"
 #include "serialize.h"
+#include "support/allocators/secure.h"
 #include "sync.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"

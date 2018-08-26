@@ -214,8 +214,7 @@ class CTestNetParams : public CMainParams {
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "club-testnet.seed.fuzzbawls.pw"));
 
     base58Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 87);  // Testnet club addresses start with 'c'
-    base58Prefixes[SCRIPT_ADDRESS] =
-        std::vector<uint8_t>(1, 9);  // Testnet club script addresses start with '4' or '5'
+    base58Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 9);  // Testnet club script addresses start with '4' or '5'
     base58Prefixes[SECRET_KEY] =
         std::vector<uint8_t>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
     // Testnet club BIP32 pubkeys start with 'DRKV'

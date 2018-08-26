@@ -14,8 +14,8 @@
 #include "streams.h"
 #include "sync.h"
 #include "txmempool.h"
-#include "utilstrencodings.h"
 #include "utilsplitstring.h"
+#include "utilstrencodings.h"
 #include "version.h"
 
 #include <boost/dynamic_bitset.hpp>

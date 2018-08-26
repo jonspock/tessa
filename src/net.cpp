@@ -1086,7 +1086,7 @@ void MapPort(bool fUseUPnP) {
       upnp_thread->join();
       delete upnp_thread;
     }
-    //upnp_thread = new boost::thread(std::bind(&TraceThread<void (*)()>, "upnp", &ThreadMapPort));
+    // upnp_thread = new boost::thread(std::bind(&TraceThread<void (*)()>, "upnp", &ThreadMapPort));
     upnp_thread = std::thread(([&] { TraceThread<void (*)()>("upnp", &ThreadMapPort); }));
   } else if (upnp_thread) {
     upnp_thread->interrupt();
@@ -1590,7 +1590,7 @@ void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // Send and receive from sockets, accept connections
   threadGroup.create_thread(std::bind(&TraceThread<void (*)()>, "net", &ThreadSocketHandler));
- 
+
   // Initiate outbound connections from -addnode
   threadGroup.create_thread(std::bind(&TraceThread<void (*)()>, "addcon", &ThreadOpenAddedConnections));
 
