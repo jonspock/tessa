@@ -38,7 +38,7 @@ Instructions: Homebrew
 
 #### Install dependencies using Homebrew
 
-        brew install autoconf automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf qt5 zmq libevent
+        brew install autoconf automake libtool boost miniupnpc pkg-config qt5 zmq libevent
 
 ### Building `clubd`
 
@@ -47,40 +47,13 @@ Instructions: Homebrew
         git clone https://github.com/Club-Project/Club.git
         cd Club
 
-2.  Make the Homebrew OpenSSL headers visible to the configure script  (do ```brew info openssl``` to find out why this is necessary, or if you use Homebrew with installation folders different from the default).
-
-        export LDFLAGS+=-L/usr/local/opt/openssl/lib
-        export CPPFLAGS+=-I/usr/local/opt/openssl/include
-
-3.  Build clubd:
+2.  Build clubd:
 
         ./autogen.sh
-        ./configure --with-gui=qt5
+        mkdir build
+        cd build
+        cmake ..
         make
-
-4.  It is also a good idea to build and run the unit tests:
-
-        make check
-
-5.  (Optional) You can also install clubd to your path:
-
-        make install
-
-Use Qt Creator as IDE
-------------------------
-You can use Qt Creator as IDE, for debugging and for manipulating forms, etc.
-Download Qt Creator from http://www.qt.io/download/. Download the "community edition" and only install Qt Creator (uncheck the rest during the installation process).
-
-1. Make sure you installed everything through homebrew mentioned above
-2. Do a proper ./configure --with-gui=qt5 --enable-debug
-3. In Qt Creator do "New Project" -> Import Project -> Import Existing Project
-4. Enter "club-qt" as project name, enter src/qt as location
-5. Leave the file selection as it is
-6. Confirm the "summary page"
-7. In the "Projects" tab select "Manage Kits..."
-8. Select the default "Desktop" kit and select "Clang (x86 64bit in /usr/bin)" as compiler
-9. Select LLDB as debugger (you might need to set the path to your installtion)
-10. Start debugging with Qt Creator
 
 Creating a release build
 ------------------------
