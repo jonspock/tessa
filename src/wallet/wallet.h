@@ -138,7 +138,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool GetZerocoinKey(const CBigNum& bnSerial, CKey& key);
   bool CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint);
   bool GetMint(const uint256& hashSerial, CZerocoinMint& mint);
-  bool DatabaseMint(CDeterministicMint& dMint);
   bool SetMintUnspent(const CBigNum& bnSerial);
   bool UpdateMint(const CBigNum& bnValue, const int& nHeight, const uint256& txid,
                   const libzerocoin::CoinDenomination& denom);

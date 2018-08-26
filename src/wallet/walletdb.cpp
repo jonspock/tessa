@@ -954,43 +954,6 @@ std::list<CBigNum> CWalletDB::ListSpentCoinsSerial() {
   return listPubCoin;
 }
 
-std::list<CZerocoinMint> CWalletDB::ListArchivedZerocoins() {
-  std::list<CZerocoinMint> listMints;
-  auto pcursor = GetCursor();
-  if (!pcursor) throw runtime_error(std::string(__func__) + " : cannot create DB cursor");
-  unsigned int fFlags = MDB_SET_RANGE;
-  for (;;) {
-    // Read next record
-    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-    if (fFlags == MDB_SET_RANGE) ssKey << make_pair(string("zco"), CBigNum(0));
-    CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-    int ret = ReadAtCursor(pcursor, ssKey, ssValue, fFlags);
-    fFlags = MDB_NEXT;
-    if (ret == MDB_NOTFOUND)
-      break;
-    else if (ret != 0) {
-      cursor_close(pcursor);
-      throw runtime_error(std::string(__func__) + " : error scanning DB");
-    }
-
-    // Unserialize
-    string strType;
-    ssKey >> strType;
-    if (strType != "zco") break;
-
-    uint256 value;
-    ssKey >> value;
-
-    CZerocoinMint mint;
-    ssValue >> mint;
-
-    listMints.push_back(mint);
-  }
-  cursor_close(pcursor);
-
-  return listMints;
-}
-
 std::list<CDeterministicMint> CWalletDB::ListArchivedDeterministicMints() {
   std::list<CDeterministicMint> listMints;
   auto pcursor = GetCursor();

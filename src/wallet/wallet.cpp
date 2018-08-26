@@ -3403,10 +3403,6 @@ bool CWallet::SetMintUnspent(const CBigNum& bnSerial) {
   return true;
 }
 
-bool CWallet::DatabaseMint(CDeterministicMint& dMint) {
-  zkpTracker->Add(dMint, true);
-  return true;
-}
 //----- HD Stuff ------------
 
 CPubKey CWallet::GenerateNewHDMasterKey() {

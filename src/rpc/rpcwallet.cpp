@@ -2896,20 +2896,9 @@ UniValue getarchivedzerocoin(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked();
 
-  list<CZerocoinMint> listMints = gWalletDB.ListArchivedZerocoins();
   list<CDeterministicMint> listDMints = gWalletDB.ListArchivedDeterministicMints();
 
   UniValue arrRet(UniValue::VARR);
-  for (const CZerocoinMint& mint : listMints) {
-    UniValue objMint(UniValue::VOBJ);
-    objMint.push_back(Pair("txid", mint.GetTxHash().GetHex()));
-    objMint.push_back(Pair("denomination", ValueFromAmount(mint.GetDenominationAsAmount())));
-    objMint.push_back(Pair("serial", mint.GetSerialNumber().GetHex()));
-    objMint.push_back(Pair("randomness", mint.GetRandomness().GetHex()));
-    objMint.push_back(Pair("pubcoin", mint.GetValue().GetHex()));
-    arrRet.push_back(objMint);
-  }
-
   for (const CDeterministicMint& dMint : listDMints) {
     UniValue objDMint(UniValue::VOBJ);
     objDMint.push_back(Pair("txid", dMint.GetTxHash().GetHex()));

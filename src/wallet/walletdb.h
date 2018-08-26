@@ -178,11 +178,9 @@ class CWalletDB : public CDB {
   bool ArchiveMintOrphan(const CZerocoinMint& zerocoinMint);
   bool ArchiveDeterministicOrphan(const CDeterministicMint& dMint);
   bool UnarchiveDeterministicMint(const uint256& hashPubcoin, CDeterministicMint& dMint);
-  std::list<CZerocoinMint> ListMintedCoins();
   std::list<CDeterministicMint> ListDeterministicMints();
   std::list<CZerocoinSpend> ListSpentCoins();
   std::list<CBigNum> ListSpentCoinsSerial();
-  std::list<CZerocoinMint> ListArchivedZerocoins();
   std::list<CDeterministicMint> ListArchivedDeterministicMints();
   bool WriteZerocoinSpendSerialEntry(const CZerocoinSpend& zerocoinSpend);
   bool EraseZerocoinSpendSerialEntry(const CBigNum& serialEntry);
