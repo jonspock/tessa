@@ -11,7 +11,7 @@
  **/
 
 // Copyright (c) 2018 The PIVX developer
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The Tessacoin developers
 #include "PrivateCoin.h"
 #include "Commit.h"
 #include "Commitment.h"

@@ -9,8 +9,8 @@
 /// \copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
 ///  license    This project is released under the MIT license.
 // Copyright (c) 2018 The PIVX developer
-// Copyright (c) 2018 The ClubChain developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The Tessacoin developers
+// Copyright (c) 2018 The Tessacoin developers
 
 #include "ParamGeneration.h"
 #include "hash.h"

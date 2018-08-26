@@ -5,9 +5,9 @@ SET(PROJECT_NAME_SHORT   "ClubQt")
 SET(PROJECT_NAME_LONG    "CMake Club Qt project")
 SET(PROJECT_DESCRIPTION  "CMake build system template for Qt based projects")
 SET(PROJECT_COPYRIGHT    "Copyright (C) 2018 ClubChain Developers")
-SET(PROJECT_CONTACT      "jonspock@protonmail.com")
-SET(PROJECT_VENDOR       "Jon Spock")
-SET(ORG_WEBSITE          "http://Clubchain.org")
+SET(PROJECT_CONTACT      "tessacoin@protonmail.com")
+SET(PROJECT_VENDOR       "Tessa Coin")
+SET(ORG_WEBSITE          "http://tessacoin.org")
 
 # Configuring build type
 IF(NOT CMAKE_BUILD_TYPE)

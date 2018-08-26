@@ -10,7 +10,7 @@
  *  license    This project is released under the MIT license.
  **/
 // Copyright (c) 2018 The PIVX developer
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The Tessacoin developers
 
 #include "CommitmentProofOfKnowledge.h"
 #include "IntegerMod.h"
