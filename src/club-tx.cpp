@@ -19,8 +19,6 @@
 #include "utilstrencodings.h"
 #include <univalue.h>
 
-#include <stdio.h>
-
 using namespace std;
 
 static bool fCreateBlank;

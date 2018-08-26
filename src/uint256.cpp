@@ -4,11 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <uint256.h>
-
 #include <utilstrencodings.h>
-
-#include <stdio.h>
-#include <string.h>
 
 template <unsigned int BITS> base_blob<BITS>::base_blob(const std::vector<uint8_t>& vch) {
   assert(vch.size() == sizeof(data));

@@ -9,13 +9,13 @@
 #include "chainparamsbase.h"
 #include "compat.h"
 #include "netbase.h"
-#include "rpc/rpcprotocol.h"  // For HTTP status codes
+#include "rpc/protocol.h"  // For HTTP status codes
 #include "sync.h"
 #include "ui_interface.h"
 #include "util.h"
 
 #include <cstring>
-#include <stdio.h>
+#include <cstdio>
 #include <stdlib.h>
 
 #include <signal.h>

@@ -234,16 +234,16 @@ SET(SERVER_A
   )
 
 SET(RPC
-	./src/rpc/rpcprotocol.cpp
-	./src/rpc/rpcblockchain.cpp
-	./src/rpc/rpcclient.cpp
-	./src/rpc/rpcdump.cpp
-	./src/rpc/rpcmining.cpp
-	./src/rpc/rpcmisc.cpp
-	./src/rpc/rpcnet.cpp
-	./src/rpc/rpcrawtransaction.cpp
-	./src/rpc/rpcserver.cpp
-	./src/rpc/rpcwallet.cpp
+	./src/rpc/protocol.cpp
+	./src/rpc/blockchain.cpp
+	./src/rpc/client.cpp
+	./src/rpc/dump.cpp
+	./src/rpc/mining.cpp
+	./src/rpc/misc.cpp
+	./src/rpc/net.cpp
+	./src/rpc/rawtransaction.cpp
+	./src/rpc/server.cpp
+	./src/rpc/wallet.cpp
 	)
 
 

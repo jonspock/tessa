@@ -13,14 +13,12 @@
 #include "init.h"
 #include "main.h"
 #include "noui.h"
-#include "rpc/rpcserver.h"
+#include "rpc/server.h"
 #include "scheduler.h"
 #include "ui_interface.h"
 #include "util.h"
 
 #include <boost/thread.hpp>
-
-#include <stdio.h>
 
 /* Introduction text for doxygen: */
 

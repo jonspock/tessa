@@ -12,8 +12,8 @@
 #include "guiutil.h"
 #include "main.h"
 #include "peertablemodel.h"
-#include "rpc/rpcclient.h"
-#include "rpc/rpcserver.h"
+#include "rpc/client.h"
+#include "rpc/server.h"
 #include "ui_rpcconsole.h"
 #include "util.h"
 

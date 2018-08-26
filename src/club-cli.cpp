@@ -8,13 +8,12 @@
 
 #include "chainparamsbase.h"
 #include "clientversion.h"
-#include "rpc/rpcclient.h"
-#include "rpc/rpcprotocol.h"
+#include "rpc/client.h"
+#include "rpc/protocol.h"
 #include "util.h"
 #include "utilstrencodings.h"
 
 #include "fs.h"
-#include <stdio.h>
 
 #include <event2/buffer.h>
 #include <event2/event.h>

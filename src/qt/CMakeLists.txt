@@ -126,7 +126,7 @@ QT5_WRAP_UI( UI_HEADERS ${GUI_FORMS})
 
 SET(QT_FILES
 	../script/standard.cpp
-	../rpc/rpcclient.cpp
+	../rpc/client.cpp
 	multisenddialog.cpp
 	multisigdialog.cpp
 	bantablemodel.cpp
@@ -194,7 +194,7 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	ADD_LIBRARY(qt_stuff ${QT_FILES} ${UI_HEADERS})
 else()
-	ADD_LIBRARY(qt_stuff ${QT_FILES} ../rpc/rpcclient.cpp ${UI_HEADERS})
+	ADD_LIBRARY(qt_stuff ${QT_FILES} ../rpc/client.cpp ${UI_HEADERS})
 endif()
 
 set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)

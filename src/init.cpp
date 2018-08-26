@@ -26,7 +26,7 @@
 #include "miner.h"
 #include "net.h"
 #include "reverse_iterate.h"
-#include "rpc/rpcserver.h"
+#include "rpc/server.h"
 #include "scheduler.h"
 #include "script/standard.h"
 #include "spork.h"
@@ -44,8 +44,7 @@
 #include "wallet/walletdb.h"
 
 #include <fstream>
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdint>
 
 #ifndef WIN32
 #include <signal.h>

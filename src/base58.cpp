@@ -15,8 +15,7 @@
 #include <boost/variant/static_visitor.hpp>
 #include <iomanip>
 #include <sstream>
-#include <stdint.h>
-#include <string.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
