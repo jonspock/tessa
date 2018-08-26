@@ -72,11 +72,11 @@ template <typename WorkItem> class WorkQueue {
    public:
     WorkQueue& wq;
     ThreadCounter(WorkQueue& w) : wq(w) {
-      boost::lock_guard<boost::mutex> lock(wq.cs);
+      std::lock_guard<std::mutex> lock(wq.cs);
       wq.numThreads += 1;
     }
     ~ThreadCounter() {
-      boost::lock_guard<boost::mutex> lock(wq.cs);
+      std::lock_guard<std::mutex> lock(wq.cs);
       wq.numThreads -= 1;
       wq.cond.notify_all();
     }
@@ -95,7 +95,7 @@ template <typename WorkItem> class WorkQueue {
   }
   /** Enqueue a work item */
   bool Enqueue(WorkItem* item) {
-    boost::unique_lock<boost::mutex> lock(cs);
+    std::unique_lock<std::mutex> lock(cs);
     if (queue.size() >= maxDepth) { return false; }
     queue.push_back(item);
     cond.notify_one();
@@ -107,7 +107,7 @@ template <typename WorkItem> class WorkQueue {
     while (running) {
       WorkItem* i = 0;
       {
-        boost::unique_lock<boost::mutex> lock(cs);
+        std::unique_lock<std::mutex> lock(cs);
         while (running && queue.empty()) cond.wait(lock);
         if (!running) break;
         i = queue.front();
@@ -119,19 +119,19 @@ template <typename WorkItem> class WorkQueue {
   }
   /** Interrupt and exit loops */
   void Interrupt() {
-    boost::unique_lock<boost::mutex> lock(cs);
+    std::unique_lock<std::mutex> lock(cs);
     running = false;
     cond.notify_all();
   }
   /** Wait for worker threads to exit */
   void WaitExit() {
-    boost::unique_lock<boost::mutex> lock(cs);
+    std::unique_lock<std::mutex> lock(cs);
     while (numThreads > 0) cond.wait(lock);
   }
 
   /** Return current depth of queue */
   size_t Depth() {
-    boost::unique_lock<boost::mutex> lock(cs);
+    std::unique_lock<std::mutex> lock(cs);
     return queue.size();
   }
 };
