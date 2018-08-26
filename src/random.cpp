@@ -4,24 +4,17 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "random.h"
-#include "bignum.h"
-#include "rand_bignum.h"
 #include "support/cleanse.h"
-#include <sodium/core.h>
-#include <sodium/randombytes.h>
 #include <cstdlib>
 #include <limits>
-#include <thread>
+#include <sodium/core.h>
+#include <sodium/randombytes.h>
 
 void GetRandBytes(std::vector<uint8_t> &buf) { randombytes_buf(buf.data(), buf.size()); }
 
-void GetRandBytes(uint8_t *out, int num) {
-  randombytes_buf(out, num);
-}
+void GetRandBytes(uint8_t *out, int num) { randombytes_buf(out, num); }
 
-void GetStrongRandBytes(uint8_t *out, int num) {
-  randombytes_buf(out, num);
-}
+void GetStrongRandBytes(uint8_t *out, int num) { randombytes_buf(out, num); }
 
 uint64_t GetRand(uint64_t nMax) {
   if (nMax == 0) { return 0; }
@@ -74,45 +67,4 @@ FastRandomContext::FastRandomContext(bool fDeterministic)
   if (!fDeterministic) { return; }
   uint256 seed;
   rng.SetKey(seed.begin(), 32);
-}
-
-/** Generates a cryptographically secure random number between zero and range exclusive
- * i.e. 0 < returned number < range
- * @param range The upper bound on the number.
- * @return
- */
-CBigNum randBignum(const CBigNum &range) {
-  size_t size = (mpz_sizeinbase(range.bn, 2) + CHAR_BIT - 1) / CHAR_BIT;
-  std::vector<unsigned char> buf(size);
-
-  randombytes_buf(&buf, size);
-  CBigNum ret(buf);
-  if (ret < 0) mpz_neg(ret.bn, ret.bn);
-  return ret;
-}
-
-/** Generates a cryptographically secure random k-bit number
- * @param k The bit length of the number.
- * @return
- */
-CBigNum RandKBitBigum(const uint32_t k) {
-  std::vector<unsigned char> buf((k + 7) / 8);
-
-  randombytes_buf(&buf, (k + 7) / 8);
-  CBigNum ret(buf);
-  if (ret < 0) mpz_neg(ret.bn, ret.bn);
-  return ret;
-}
-
-/**
- * Generates a random (safe) prime of numBits bits
- * @param numBits the number of bits
- * @param safe true for a safe prime
- * @return the prime
- */
-CBigNum generatePrime(const unsigned int numBits, bool safe) {
-  CBigNum rand = RandKBitBigum(numBits);
-  CBigNum prime;
-  mpz_nextprime(prime.bn, rand.bn);
-  return prime;
 }

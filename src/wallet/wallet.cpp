@@ -1262,8 +1262,6 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
   std::shuffle(vCoins.begin(), vCoins.end(), g);
 #endif
 
-#warning "Refactoring done here - need to test"
-
   vValue.clear();
   nTotalLower = 0;
   for (const COutput& output : vCoins) {

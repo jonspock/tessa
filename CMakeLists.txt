@@ -189,6 +189,7 @@ add_custom_target(
   )
 
 SET(LIB_RAND
+  ./src/rand_bignum.cpp
   ./src/random.cpp)
 
 

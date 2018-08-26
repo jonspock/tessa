@@ -109,7 +109,7 @@ bool AppInit(int argc, char* argv[]) {
     bool fCommandLine = false;
     for (int i = 1; i < argc; i++) {
       std::string arv = argv[i];
-      if (!IsSwitchChar(argv[i][0]) && !(arv.substr(0,5) == "club:")) fCommandLine = true;
+      if (!IsSwitchChar(argv[i][0]) && !(arv.substr(0, 5) == "club:")) fCommandLine = true;
     }
     if (fCommandLine) {
       fprintf(stderr,
