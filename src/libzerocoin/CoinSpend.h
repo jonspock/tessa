@@ -93,22 +93,21 @@ class CoinSpend {
 
   bool Verify(const Accumulator& a) const;
   ADD_SERIALIZE_METHODS
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(denomination);
     READWRITE(ptxHash);
     READWRITE(accChecksum);
     READWRITE(accCommitmentToCoinValue);
     READWRITE(serialCommitmentToCoinValue);
     READWRITE(coinSerialNumber);
-    READWRITE(accumulatorPoK);  // this shouldn't be needed
-    READWRITE(serialNumberSoK); // this shouldn't be needed
-    READWRITE(commitmentPoK); // this shouldn't be needed
+    READWRITE(accumulatorPoK);   // this shouldn't be needed
+    READWRITE(serialNumberSoK);  // this shouldn't be needed
+    READWRITE(commitmentPoK);    // this shouldn't be needed
 
-    READWRITE(version); // COMPATIBILITY with Original code
-    READWRITE(pubkey);  
+    READWRITE(version);  // COMPATIBILITY with Original code
+    READWRITE(pubkey);
     READWRITE(vchSig);
-    READWRITE(spendType); // COMPATIBILITY with Original code
+    READWRITE(spendType);  // COMPATIBILITY with Original code
   }
 
  private:
@@ -128,7 +127,6 @@ class CoinSpend {
   // Compatibility
   uint8_t version;
   SpendType spendType;
-  
 };
 
 } /* namespace libzerocoin */

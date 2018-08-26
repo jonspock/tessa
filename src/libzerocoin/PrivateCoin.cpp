@@ -13,8 +13,8 @@
 // Copyright (c) 2018 The PIVX developer
 // Copyright (c) 2018 The ClubChain developers
 #include "PrivateCoin.h"
-#include "Commitment.h"
 #include "Commit.h"
+#include "Commitment.h"
 #include "Denominations.h"
 #include "IntegerMod.h"
 #include "ModulusType.h"
@@ -26,12 +26,11 @@ using namespace std;
 
 namespace libzerocoin {
 
-bool IsValidCoinValue(const ZerocoinParams* params,
-                      const IntegerMod<COIN_COMMITMENT_MODULUS>& C) {
-  return (C >= params->accumulatorParams.minCoinValue) &&
-    (C <= params->accumulatorParams.maxCoinValue) && C.isPrime(ZEROCOIN_MINT_PRIME_PARAM);
+bool IsValidCoinValue(const ZerocoinParams* params, const IntegerMod<COIN_COMMITMENT_MODULUS>& C) {
+  return (C >= params->accumulatorParams.minCoinValue) && (C <= params->accumulatorParams.maxCoinValue) &&
+         C.isPrime(ZEROCOIN_MINT_PRIME_PARAM);
 }
-  
+
 bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey& key, CBigNum& bnSerial) {
   // Generate a new key pair, which also has a 256-bit pubkey hash that qualifies as a serial #
   // This builds off of Tim Ruffing's work on libzerocoin, but has a different implementation
@@ -50,9 +49,7 @@ bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey&
   return true;
 }
 
-PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p) {
-    assert(p);
-}
+PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p) { assert(p); }
 
 PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum Serial,
                          const CBigNum Randomness)
@@ -88,8 +85,8 @@ PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomin
 CBigNum PrivateCoin::CoinFromSeed(const uint512& seedZerocoin) {
   CBigNum bnRandomness;
   CBigNum bnSerial;
-  CoinDenomination denomination = CoinDenomination::ZQ_ONE; // Not used
-  
+  CoinDenomination denomination = CoinDenomination::ZQ_ONE;  // Not used
+
   // convert state seed into a seed for the private key
   uint256 nSeedPrivKey = seedZerocoin.trim256();
   const IntegerMod<COIN_COMMITMENT_MODULUS> g(this->params->coinCommitmentGroup.g);

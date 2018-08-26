@@ -53,8 +53,7 @@ class IntegerGroupParams {
   CBigNum groupOrder;
 
   ADD_SERIALIZE_METHODS
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(initialized);
     READWRITE(g);
     READWRITE(h);

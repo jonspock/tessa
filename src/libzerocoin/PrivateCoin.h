@@ -60,8 +60,7 @@ class PrivateCoin {
   bool IsValid();
 
   ADD_SERIALIZE_METHODS
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(publicCoin);
     READWRITE(randomness);
     READWRITE(serialNumber);
@@ -80,7 +79,6 @@ class PrivateCoin {
   CBigNum serialNumber;
   uint8_t version = 1;
   CPrivKey privkey;
-
 };
 
 } /* namespace libzerocoin */

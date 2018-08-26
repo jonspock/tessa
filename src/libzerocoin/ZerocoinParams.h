@@ -23,7 +23,7 @@ namespace libzerocoin {
 
 class ZerocoinParams {
  public:
-  /** @brief Construct the set of Zerocoin parameters 
+  /** @brief Construct the set of Zerocoin parameters
    * @param securityLevel    A security level expressed in symmetric bits (default 80)
    *
    * Allocates and derives a set of Zerocoin parameters from
@@ -71,8 +71,7 @@ class ZerocoinParams {
   uint32_t zkp_hash_len;
 
   ADD_SERIALIZE_METHODS
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(initialized);
     READWRITE(accumulatorParams);
     READWRITE(coinCommitmentGroup);
@@ -83,6 +82,5 @@ class ZerocoinParams {
 };
 
 extern ZerocoinParams* gpZerocoinParams;
-    
 
 } /* namespace libzerocoin */

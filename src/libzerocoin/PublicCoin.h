@@ -23,8 +23,7 @@ namespace libzerocoin {
  */
 class PublicCoin {
  public:
-  PublicCoin() {
-    denomination = ZQ_ERROR; }  // Assume this will get set by another method later
+  PublicCoin() { denomination = ZQ_ERROR; }  // Assume this will get set by another method later
 
   /**Generates a public coin
    *
@@ -50,13 +49,12 @@ class PublicCoin {
   }
   bool validate() const {
     ZerocoinParams* p = gpZerocoinParams;
-    return (p->accumulatorParams.minCoinValue < value) && (value <= p->accumulatorParams.maxCoinValue)
-      && value.isPrime(p->zkp_iterations);
+    return (p->accumulatorParams.minCoinValue < value) && (value <= p->accumulatorParams.maxCoinValue) &&
+           value.isPrime(p->zkp_iterations);
   }
 
   ADD_SERIALIZE_METHODS
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(value);
     READWRITE(denomination);
   }

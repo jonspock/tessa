@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "rand_bignum.h"
 #include "Commitment.h"
+#include "rand_bignum.h"
 
 namespace libzerocoin {
 

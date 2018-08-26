@@ -50,7 +50,7 @@ class Accumulator {
               int iterations = ZEROCOIN_DEFAULT_SECURITYLEVEL);
   Accumulator(const ZerocoinParams* p, const CoinDenomination d);
   Accumulator(const ZerocoinParams* p, const CoinDenomination d, Bignum bnValue);
-    
+
   /**
    * Accumulate a coin into the accumulator. Validates
    * the coin prior to accumulation.
@@ -88,8 +88,7 @@ class Accumulator {
   Accumulator& operator+=(const PublicCoin& c);
   bool operator==(const Accumulator rhs) const;
   ADD_SERIALIZE_METHODS
-  template <typename Stream, typename Operation>
-  inline void SerializationOp(Stream& s, Operation ser_action) {
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     READWRITE(value);
     READWRITE(denomination);
   }

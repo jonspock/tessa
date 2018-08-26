@@ -11,12 +11,11 @@
 #include "ModulusType.h"
 #include "ParamGeneration.h"
 
-
 namespace libzerocoin {
 
 ZerocoinParams ZCParamsDec(ZEROCOIN_DEFAULT_SECURITYLEVEL);
 ZerocoinParams* gpZerocoinParams = &ZCParamsDec;
-    
+
 ZerocoinParams::ZerocoinParams(uint32_t securityLevel) {
   this->zkp_hash_len = securityLevel;
   this->zkp_iterations = securityLevel;

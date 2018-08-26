@@ -15,8 +15,8 @@
 
 #include "SerialNumberSignatureOfKnowledge.h"
 #include "IntegerMod.h"
-#include <streams.h>
 #include "rand_bignum.h"
+#include <streams.h>
 
 using namespace std;
 
@@ -65,7 +65,6 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const Zerocoi
 
     // use a random 256 bit seed that expands to 1024 bit for v[i]
     while (true) {
-        
       uint256 hashRand = randBignum(CBigNum(~arith_uint256(0))).getuint256();
       CBigNum bnExpanded = SeedTo1024(hashRand);
 
