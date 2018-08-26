@@ -82,6 +82,14 @@ void AddAccumulatorChecksum(const uint32_t nChecksum, const CBigNum& bnValue) {
 
 void DatabaseChecksums(AccumulatorMap& mapAccumulators) {
   arith_uint256 nCheckpoint = 0;
+    //
+  {
+        CBigNum bnValue = mapAccumulators.GetValue(CoinDenomination::ZQ_ONE);
+        uint32_t nCheckSum = GetChecksum(bnValue);
+        LogPrint(ClubLog::ZERO, "%s : checksum:%d\n", __func__, nCheckSum);
+   }
+    
+
   for (auto& denom : zerocoinDenomList) {
     CBigNum bnValue = mapAccumulators.GetValue(denom);
     uint32_t nCheckSum = GetChecksum(bnValue);
@@ -204,6 +212,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
   // set the accumulators to last checkpoint value
   int nHeightCheckpoint;
   mapAccumulators.Reset();
+  LogPrint(ClubLog::ZERO,"%s Reseting MapAccumulators\n",__func__);
   if (!InitializeAccumulators(nHeight, nHeightCheckpoint, mapAccumulators))
     return error("%s: failed to initialize accumulators", __func__);
 
@@ -234,7 +243,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
       return error("%s: failed to get zerocoin mintlist from block %d", __func__, pindex->nHeight);
 
     nTotalMintsFound += listPubcoins.size();
-    LogPrint(ClubLog::ZERO, "%s found %d mints\n", __func__, listPubcoins.size());
+    LogPrint(ClubLog::ZERO, "%s found %d mints at height %d\n", __func__, listPubcoins.size(),pindex->nHeight);
 
     // add the pubcoins to accumulator
     for (const PublicCoin& pubcoin : listPubcoins) {

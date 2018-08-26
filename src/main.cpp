@@ -1701,9 +1701,8 @@ bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
     }
   }
 
-  for (auto& denom : zerocoinDenomList)
-    LogPrint(ClubLog::ZERO, "%s coins for denomination %d pubcoin %s\n", __func__, denom,
-             pindex->mapZerocoinSupply.at(denom));
+ // for (auto& denom : zerocoinDenomList)
+ //   LogPrint(ClubLog::ZERO, "%s coins for denomination %d pubcoin %s\n", __func__, denom, pindex->mapZerocoinSupply.at(denom));
 
   return true;
 }

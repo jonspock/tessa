@@ -16,7 +16,7 @@
 #include "crypto/hashargon2d.h"
 
 uint256 CBlockHeader::GetHash() const {
-#ifdef POWSHA256
+#ifndef POWARGON
   return Hash(BEGIN(nHeaderVersion), END(nAccumulatorCheckpoint));
 #else
   return HashArgon2d(BEGIN(nHeaderVersion), END(nAccumulatorCheckpoint));
