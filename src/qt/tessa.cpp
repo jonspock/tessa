@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "club-config.h"
+#include "tessa-config.h"
 #endif
 
 #include "bitcoingui.h"
@@ -69,7 +69,7 @@ static void InitMessage(const std::string& message) { LogPrintf("init message: %
 /*
    Translate string to current locale using Qt.
  */
-static std::string Translate(const char* psz) { return QCoreApplication::translate("club-core", psz).toStdString(); }
+static std::string Translate(const char* psz) { return QCoreApplication::translate("tessa-core", psz).toStdString(); }
 
 static QString GetLangTerritory() {
   QSettings settings;
@@ -113,10 +113,10 @@ static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTrans
   if (qtTranslator.load("qt_" + lang_territory, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
     QApplication::installTranslator(&qtTranslator);
 
-  // Load e.g. bitcoin_de.qm (shortcut "de" needs to be defined in club.qrc)
+  // Load e.g. bitcoin_de.qm (shortcut "de" needs to be defined in tessa.qrc)
   if (translatorBase.load(lang, ":/translations/")) QApplication::installTranslator(&translatorBase);
 
-  // Load e.g. bitcoin_de_DE.qm (shortcut "de_DE" needs to be defined in club.qrc)
+  // Load e.g. bitcoin_de_DE.qm (shortcut "de_DE" needs to be defined in tessa.qrc)
   if (translator.load(lang_territory, ":/translations/")) QApplication::installTranslator(&translator);
 }
 
@@ -210,7 +210,7 @@ class BitcoinApplication : public QApplication {
   void startThread();
 };
 
-#include "club.moc"
+#include "tessa.moc"
 
 BitcoinCore::BitcoinCore() : QObject() {}
 
@@ -439,8 +439,8 @@ int main(int argc, char* argv[]) {
 
 /// 2. Basic Qt initialization (not dependent on parameters or configuration)
 
-  Q_INIT_RESOURCE(club_locale);
-  Q_INIT_RESOURCE(club);
+  Q_INIT_RESOURCE(tessa_locale);
+  Q_INIT_RESOURCE(tessa);
 
   BitcoinApplication app(argc, argv);
   // Generate high-dpi pixmaps
@@ -483,7 +483,7 @@ int main(int argc, char* argv[]) {
   // User language is set up: pick a data directory
   if (!Intro::pickDataDirectory()) return 0;
 
-  /// 6. Determine availability of data directory and parse club.conf
+  /// 6. Determine availability of data directory and parse tessa.conf
   /// - Do not call GetDataDir(true) before this step finishes
   if (!fs::is_directory(GetDataDir(false))) {
     QMessageBox::critical(0, QObject::tr("Club Core"),

@@ -1,5 +1,5 @@
 # Copyright (c) 2017 The Bitcoin developers
-# Copyright (c) 2018 The ClubChain developers
+# Copyright (c) 2018 The TessaCoin developers
 #
 # This generates config.h which provides numerous defines
 # about the state of the plateform we are building on.
@@ -8,14 +8,14 @@ include(CheckIncludeFiles)
 include(CheckSymbolExists)
 
 # Package informations
-set(PACKAGE_NAME "Club")
+set(PACKAGE_NAME "Tessa")
 
 option(CLIENT_VERSION_IS_RELEASE "Build a release version" OFF)
 
 # Copyright
 set(COPYRIGHT_YEAR 2018)
 set(COPYRIGHT_HOLDERS "The %s developers")
-set(COPYRIGHT_HOLDERS_SUBSTITUTION ClubChain)
+set(COPYRIGHT_HOLDERS_SUBSTITUTION TessaCoin)
 string(REPLACE "%s" ${COPYRIGHT_HOLDERS_SUBSTITUTION} COPYRIGHT_HOLDERS_FINAL ${COPYRIGHT_HOLDERS})
 
 # Endianness
@@ -104,14 +104,6 @@ check_builtin_exist(__builtin_clzll HAVE_DECL___BUILTIN_CLZLL)
 # Various system libraries
 check_symbol_exists(strnlen "string.h" HAVE_DECL_STRNLEN)
 
-# OpenSSL functionality
-include(BrewHelper)
-find_brew_prefix(OPENSSL_ROOT_DIR openssl)
-find_package(OpenSSL REQUIRED)
-set(CMAKE_REQUIRED_INCLUDES ${OPENSSL_CRYPTO_INCLUDES})
-set(CMAKE_REQUIRED_LIBRARIES ${OPENSSL_CRYPTO_LIBRARY})
-check_symbol_exists(EVP_MD_CTX_new "openssl/evp.h" HAVE_DECL_EVP_MD_CTX_NEW)
-
 # Activate wallet
 set(ENABLE_WALLET ${BUILD_BITCOIN_WALLET})
 
@@ -119,4 +111,4 @@ set(ENABLE_WALLET ${BUILD_BITCOIN_WALLET})
 set(ENABLE_ZMQ ${BUILD_BITCOIN_ZMQ})
 
 # Generate the config
-configure_file(club-config.h.in club-config.h ESCAPE_QUOTES)
+configure_file(tessa-config.h.in tessa-config.h ESCAPE_QUOTES)

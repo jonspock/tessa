@@ -9,7 +9,7 @@
 #pragma once
 
 #if defined(HAVE_CONFIG_H)
-#include "club-config.h"
+#include "tessa-config.h"
 #endif
 
 #include "main_constants.h"

@@ -1,10 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
 # Project Info
-SET(PROJECT_NAME_SHORT   "ClubQt")
-SET(PROJECT_NAME_LONG    "CMake Club Qt project")
+SET(PROJECT_NAME_SHORT   "TessaQt")
+SET(PROJECT_NAME_LONG    "CMake Tessa Qt project")
 SET(PROJECT_DESCRIPTION  "CMake build system template for Qt based projects")
-SET(PROJECT_COPYRIGHT    "Copyright (C) 2018 ClubChain Developers")
+SET(PROJECT_COPYRIGHT    "Copyright (C) 2018 TessaChain Developers")
 SET(PROJECT_CONTACT      "tessacoin@protonmail.com")
 SET(PROJECT_VENDOR       "Tessa Coin")
 SET(ORG_WEBSITE          "http://tessacoin.org")
@@ -202,8 +202,8 @@ set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
 SET(QT_TRANSLATIONS_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_en.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/club_en_US.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/tessa_en.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/tessa_en_US.ts
 	)
 
 get_filename_component(QM_FILES_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/locale" ABSOLUTE)
@@ -212,22 +212,22 @@ set_source_files_properties(${QT_TRANSLATIONS_FILES} PROPERTIES OUTPUT_LOCATION 
 QT5_ADD_TRANSLATION( QM ${QT_TRANSLATIONS_FILES} )
 add_custom_target (translations_target DEPENDS ${QM}) 
 
-QT5_ADD_RESOURCES(QRC_RESOURCE club.qrc)
-QT5_ADD_RESOURCES(QRC_LOCALE_RESOURCE club_locale.qrc)
+QT5_ADD_RESOURCES(QRC_RESOURCE tessa.qrc)
+QT5_ADD_RESOURCES(QRC_LOCALE_RESOURCE tessa_locale.qrc)
 
-add_executable(club-qt club.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} ${GUI_FORM_HEADERS})
-add_dependencies(club-qt translations_target)
-set_property(TARGET club-qt PROPERTY CXX_STANDARD 11)
+add_executable(tessa-qt tessa.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} ${GUI_FORM_HEADERS})
+add_dependencies(tessa-qt translations_target)
+set_property(TARGET tessa-qt PROPERTY CXX_STANDARD 11)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  # ORIG TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff db_cxx db secp256k1 bitcoin_crypto zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} qrencode miniupnpc /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a pthread "-framework Cocoa")
+  # ORIG TARGET_LINK_LIBRARIES(tessa-qt coin qt_stuff mac_stuff db_cxx db secp256k1 bitcoin_crypto zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} qrencode miniupnpc /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a pthread "-framework Cocoa")
 
 # STATIC LINK SPECIFIC FOR MAC-DEPLOY TARGET
   
-## Ref  TARGET_LINK_LIBRARIES(club-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a /usr/local/lib/libqrencode.a /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
-  TARGET_LINK_LIBRARIES(club-qt ${LIBS_LIST} qt_stuff mac_stuff ${Qt5_LIBRARIES} qrencode /usr/local/lib/libzmq.a "-framework Cocoa")
+## Ref  TARGET_LINK_LIBRARIES(tessa-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a /usr/local/lib/libqrencode.a /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
+  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff mac_stuff ${Qt5_LIBRARIES} qrencode /usr/local/lib/libzmq.a "-framework Cocoa")
 else()
-	TARGET_LINK_LIBRARIES(club-qt coin qt_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} miniupnpc qrencode event event_pthreads pthread )
+	TARGET_LINK_LIBRARIES(tessa-qt coin qt_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb rand ${Boost_LIBRARIES} ${ANL} miniupnpc qrencode event event_pthreads pthread )
 endif()
 
 #############################################################
@@ -254,14 +254,14 @@ IF(APPLE)
     # Libraries are bundled directly
     SET(CPACK_COMPONENT_LIBRARIES_HIDDEN TRUE)
     # Bundle Properties
-    SET(MACOSX_BUNDLE_BUNDLE_NAME club-qt)
+    SET(MACOSX_BUNDLE_BUNDLE_NAME tessa-qt)
     SET(MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION})
     SET(MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION})
     SET(MACOSX_BUNDLE_LONG_VERSION_STRING "Version ${PROJECT_VERSION}")
 ENDIF(APPLE)
 
-SET(CPACK_PACKAGE_EXECUTABLES "club-qt" "club-qt")
+SET(CPACK_PACKAGE_EXECUTABLES "tessa-qt" "tessa-qt")
 INCLUDE(CPack)
 
 
-#INSTALL(TARGETS club-qt DESTINATION bin)
+#INSTALL(TARGETS tessa-qt DESTINATION bin)

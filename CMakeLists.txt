@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
-project(CLUB VERSION 0.9.0.0)
+project(TESSA VERSION 0.9.0.0)
 
 
 # Add path for custom modules
@@ -48,7 +48,7 @@ ELSE(GIT)
   SET(PATCH_OUT "0")
 ENDIF(GIT)
 
-SET(CLUB_VERSION_PATCH ${PATCH_OUT})
+SET(TESSA_VERSION_PATCH ${PATCH_OUT})
 
 
 if(CMAKE_CXX_FLAGS_RELEASE MATCHES DNDEBUG)
@@ -67,10 +67,10 @@ if (POLICY CMP0048)
 endif()
 
 # Project Version - check later
-SET(CLUB_VERSION_MAJOR "0")
-SET(CLUB_VERSION_MINOR "9")
-SET(CLUB_VERSION_REVISION "0")
-SET(CLUB_VERSION_BUILD "0")
+SET(TESSA_VERSION_MAJOR "0")
+SET(TESSA_VERSION_MINOR "9")
+SET(TESSA_VERSION_REVISION "0")
+SET(TESSA_VERSION_BUILD "0")
 
 set(ROCKSDB_VER "5.14.2")
 
@@ -133,8 +133,8 @@ else()
 	)
 endif()
 
-# run configure if club_config.h doesn't exist, For Linux add "--with-incompatible-bdb"
-if (EXISTS	"${CMAKE_CURRENT_BINARY_DIR}/src/club-config.h")
+# run configure if tessa_config.h doesn't exist, For Linux add "--with-incompatible-bdb"
+if (EXISTS	"${CMAKE_CURRENT_BINARY_DIR}/src/tessa-config.h")
 else()	
 	IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	  execute_process(
@@ -429,18 +429,18 @@ target_link_libraries(rand sodium ${Boost_LIBRARIES} event pthread gmp)
 link_directories(${LMDB_ROOT_DIR}/lib)
 link_directories(${ROCKSDB_ROOT_DIR}/lib)
 
-add_executable(club-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/club-cli.cpp)
-add_executable(clubd ${CMAKE_CURRENT_SOURCE_DIR}/src/clubd.cpp)
+add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
+add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
 
 
 SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
 
-target_link_libraries(club-cli coin zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
+target_link_libraries(tessa-cli coin zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	target_link_libraries(clubd ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )
+	target_link_libraries(tessad ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )
 else()
-	target_link_libraries(clubd coin ${LIBS_LIST})
+	target_link_libraries(tessad coin ${LIBS_LIST})
 endif()
 
 #	miniupnpc pthread)

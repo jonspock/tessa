@@ -6,7 +6,7 @@
 #define BITCOIN_COMPAT_ENDIAN_H
 
 #if defined(HAVE_CONFIG_H)
-#include "club-config.h"
+#include "tessa-config.h"
 #endif
 
 #include <cstdint>
