@@ -116,13 +116,13 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   // Zerocoin additions
   bool CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransaction& txNew,
-                                     std::vector<CDeterministicMint>& vDMints, CReserveKey* reservekey, int64_t& nFeeRet,
-                                     std::string& strFailReason, const CCoinControl* coinControl = nullptr,
-                                     const bool isZCSpendChange = false);
+                                     std::vector<CDeterministicMint>& vDMints, CReserveKey* reservekey,
+                                     int64_t& nFeeRet, std::string& strFailReason,
+                                     const CCoinControl* coinControl = nullptr, const bool isZCSpendChange = false);
   bool CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel, CWalletTx& wtxNew, CReserveKey& reserveKey,
                                       CZerocoinSpendReceipt& receipt, std::vector<CZerocoinMint>& vSelectedMints,
-                                      std::vector<CDeterministicMint>& vNewMints, bool fMintChange, bool fMinimizeChange,
-                                      CBitcoinAddress* address = nullptr);
+                                      std::vector<CDeterministicMint>& vNewMints, bool fMintChange,
+                                      bool fMinimizeChange, CBitcoinAddress* address = nullptr);
   bool MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
                   CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType,
                   CBlockIndex* pindexCheckpoint = nullptr);
@@ -169,8 +169,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   CHDChain hdChain;
 
   /* HD derive new child key (on internal or external chain) */
-  void DeriveNewChildKey(CWalletDB &walletdb, CKeyMetadata &metadata,
-                         CKey &secret, bool internal = false);
+  void DeriveNewChildKey(CWalletDB& walletdb, CKeyMetadata& metadata, CKey& secret, bool internal = false);
 
   std::unique_ptr<CZeroTracker> zkpTracker;
 
@@ -304,7 +303,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   //! Adds a key to the store, and saves it to disk.
   bool AddKeyPubKey(const CKey& key, const CPubKey& pubkey);
-  bool AddKeyPubKeyWithDB(CWalletDB &walletdb, const CKey &key, const CPubKey &pubkey);
+  bool AddKeyPubKeyWithDB(CWalletDB& walletdb, const CKey& key, const CPubKey& pubkey);
   //! Adds a key to the store, without saving it to disk (used by LoadWallet)
   bool LoadKey(const CKey& key, const CPubKey& pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
   //! Load metadata (used by LoadWallet)
@@ -486,23 +485,21 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   CWallet* CreateWalletFromFile(const std::string walletFile);
 
-  
   /* Set the HD chain model (chain child index counters) */
-  bool SetHDChain(const CHDChain &chain, bool memonly);
-  const CHDChain &GetHDChain() { return hdChain; }
-  
+  bool SetHDChain(const CHDChain& chain, bool memonly);
+  const CHDChain& GetHDChain() { return hdChain; }
+
   /* Returns true if HD is enabled */
   bool IsHDEnabled();
-  
+
   /* Generates a new HD master key (will not be activated) */
   CPubKey GenerateNewHDMasterKey();
-  uint256 GetMasterKeySeed(); // returns HDMasterKey as uint256 for ZKP
+  uint256 GetMasterKeySeed();  // returns HDMasterKey as uint256 for ZKP
   bool SetHDMasterKeyFromSeed(const uint256 seed);
 
-  
   /* Set the current HD master key (will reset the chain child index counters)
    */
-  bool SetHDMasterKey(const CPubKey &key);
+  bool SetHDMasterKey(const CPubKey& key);
 
   //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
   int GetVersion() {

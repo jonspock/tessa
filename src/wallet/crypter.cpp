@@ -107,8 +107,8 @@ static bool EncryptSecret(const CKeyingMaterial &vMasterKey, const CKeyingMateri
   return cKeyCrypter.Encrypt(*((const CKeyingMaterial *)&vchPlaintext), vchCiphertext);
 }
 
-bool DecryptSecret(const CKeyingMaterial &vMasterKey, const std::vector<uint8_t> &vchCiphertext,
-                   const uint256 &nIV, CKeyingMaterial &vchPlaintext) {
+bool DecryptSecret(const CKeyingMaterial &vMasterKey, const std::vector<uint8_t> &vchCiphertext, const uint256 &nIV,
+                   CKeyingMaterial &vchPlaintext) {
   CCrypter cKeyCrypter;
   std::vector<uint8_t> chIV(WALLET_CRYPTO_IV_SIZE);
   memcpy(&chIV[0], &nIV, WALLET_CRYPTO_IV_SIZE);
@@ -187,7 +187,8 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vMasterKeyIn) {
     } else {
       // First time this wallet has been unlocked with dZkp. Get HD MasterKey for ZKP
       uint256 seed = pwalletMain->GetMasterKeySeed();
-      //LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,Hash(seed.begin(), seed.end()).GetHex());
+      // LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n",
+      // __func__,Hash(seed.begin(), seed.end()).GetHex());
       pwalletMain->zwalletMain->SetMasterSeed(seed, true);
       pwalletMain->zwalletMain->GenerateZMintPool();
     }

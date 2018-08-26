@@ -9,17 +9,17 @@
 #include "main.h"
 #include "primitives/deterministicmint.h"
 #include "txdb.h"
+#include "uint512.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
-#include "uint512.h"
 #include "zerochain.h"
 
 using namespace std;
 
 #ifdef DEBUG
-const int ZMINTS_TO_ADD=1;
+const int ZMINTS_TO_ADD = 1;
 #else
-const int ZMINTS_TO_ADD=20;
+const int ZMINTS_TO_ADD = 20;
 #endif
 
 CZeroWallet::CZeroWallet() {
@@ -41,7 +41,8 @@ CZeroWallet::CZeroWallet() {
     key.MakeNewKey(true);
     seed = key.GetPrivKey_256();
     seedMaster = seed;
-    LogPrint(ClubLog::ZERO, "%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__, Hash(seed.begin(), seed.end()).GetHex());
+    LogPrint(ClubLog::ZERO, "%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,
+             Hash(seed.begin(), seed.end()).GetHex());
   } else if (!pwalletMain->GetDeterministicSeed(hashSeed, seed)) {
     LogPrintf("%s: failed to get deterministic seed for hashseed %s\n", __func__, hashSeed.GetHex());
     return;
@@ -96,7 +97,7 @@ void CZeroWallet::GenerateZMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
   bool fFound;
 
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
-  LogPrint(ClubLog::ZERO, "%s : n=%d nStop=%d, diff = %d\n", __func__, n, nStop - 1, nStop-n);
+  LogPrint(ClubLog::ZERO, "%s : n=%d nStop=%d, diff = %d\n", __func__, n, nStop - 1, nStop - n);
   int64_t nTime_ref = GetTimeMillis();
   for (uint32_t i = n; i < nStop; ++i) {
     if (ShutdownRequested()) return;
@@ -121,7 +122,8 @@ void CZeroWallet::GenerateZMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
     mintPool.Add(bnValue, i);
     gWalletDB.WriteMintPoolPair(hashSeed, GetPubCoinHash(bnValue), i);
     int64_t now = GetTimeMillis();
-    LogPrint(ClubLog::ZERO, "%s : %s count=%d, time total= %d (ms), this coin time = %d (ms)\n", __func__, bnValue.GetHex().substr(0, 6), i, now-nTime_ref,now-nTime_delta);
+    LogPrint(ClubLog::ZERO, "%s : %s count=%d, time total= %d (ms), this coin time = %d (ms)\n", __func__,
+             bnValue.GetHex().substr(0, 6), i, now - nTime_ref, now - nTime_delta);
   }
 }
 

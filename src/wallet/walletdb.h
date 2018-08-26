@@ -16,8 +16,8 @@
 #include "primitives/zerocoin.h"
 #include "zerotracker.h"
 
-#include <list>
 #include <cstdint>
+#include <list>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,36 +39,33 @@ class uint256;
 /** Error statuses for the wallet database */
 enum DBErrors { DB_LOAD_OK, DB_CORRUPT, DB_NONCRITICAL_ERROR, DB_TOO_NEW, DB_LOAD_FAIL, DB_NEED_REWRITE };
 
-
 /* simple HD chain data model */
 class CHDChain {
-public:
-    uint32_t nExternalChainCounter;
-    uint32_t nInternalChainCounter;
-    //!< master key hash160
-    CKeyID masterKeyID;
+ public:
+  uint32_t nExternalChainCounter;
+  uint32_t nInternalChainCounter;
+  //!< master key hash160
+  CKeyID masterKeyID;
 
-    static const int CURRENT_VERSION = 1;
-    int nVersion;
+  static const int CURRENT_VERSION = 1;
+  int nVersion;
 
-    CHDChain() { SetNull(); }
-    ADD_SERIALIZE_METHODS
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream &s, Operation ser_action) {
-        READWRITE(this->nVersion);
-        READWRITE(nExternalChainCounter);
-        READWRITE(masterKeyID);
-        READWRITE(nInternalChainCounter);
-    }
+  CHDChain() { SetNull(); }
+  ADD_SERIALIZE_METHODS
+  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
+    READWRITE(this->nVersion);
+    READWRITE(nExternalChainCounter);
+    READWRITE(masterKeyID);
+    READWRITE(nInternalChainCounter);
+  }
 
-    void SetNull() {
-        nVersion = CHDChain::CURRENT_VERSION;
-        nExternalChainCounter = 0;
-        nInternalChainCounter = 0;
-        masterKeyID.SetNull();
-    }
+  void SetNull() {
+    nVersion = CHDChain::CURRENT_VERSION;
+    nExternalChainCounter = 0;
+    nInternalChainCounter = 0;
+    masterKeyID.SetNull();
+  }
 };
-
 
 class CKeyMetadata {
  public:
@@ -80,7 +77,6 @@ class CKeyMetadata {
   // Id of the HD masterkey used to derive this key.
   CKeyID hdMasterKeyID;
 
-  
   CKeyMetadata() { SetNull(); }
   CKeyMetadata(int64_t nCreateTime_) {
     SetNull();
@@ -154,7 +150,7 @@ class CWalletDB : public CDB {
   bool WriteMinVersion(int nVersion);
 
   //! write the hdchain model (external chain child index counter)
-  bool WriteHDChain(const CHDChain &chain);
+  bool WriteHDChain(const CHDChain& chain);
 
   /// This writes directly to the database, and will not update the CWallet's cached accounting entries!
   /// Use wallet.AddAccountingEntry instead, to write *and* update its caches.
@@ -196,7 +192,7 @@ class CWalletDB : public CDB {
   bool WriteZKPSeed(const uint256& hashSeed, const std::vector<uint8_t>& seed);
   bool ReadZKPSeed(const uint256& hashSeed, std::vector<uint8_t>& seed);
   bool EraseZKPSeed();
- 
+
   bool WriteZKPCount(const uint32_t& nCount);
   bool ReadZKPCount(uint32_t& nCount);
   std::map<uint256, std::vector<std::pair<uint256, uint32_t> > > MapMintPool();

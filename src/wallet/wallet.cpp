@@ -36,10 +36,9 @@
 #include "libzerocoin/PublicCoin.h"
 #include "primitives/deterministicmint.h"
 #include "zerowallet.h"
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 #include <random>
-
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
@@ -644,8 +643,8 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet) {
     }
 
     //// debug print
-   // LogPrintf("AddToWallet %s  %s%s\n", wtxIn.GetHash().ToString(), (fInsertedNew ? "new" : ""),
-     //         (fUpdated ? "update" : ""));
+    // LogPrintf("AddToWallet %s  %s%s\n", wtxIn.GetHash().ToString(), (fInsertedNew ? "new" : ""),
+    //         (fUpdated ? "update" : ""));
 
     // Write to disk
     if (fInsertedNew || fUpdated)
@@ -1261,7 +1260,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
   std::random_device rd;
   std::mt19937 g(rd());
   std::shuffle(vCoins.begin(), vCoins.end(), g);
-#endif   
+#endif
 
 #warning "Refactoring done here - need to test"
 
@@ -3213,7 +3212,6 @@ bool IsMintInChain(const uint256& hashPubcoin, uint256& txid, int& nHeight) {
   return true;
 }
 
-
 string CWallet::MintZerocoinFromOutPoint(CAmount nValue, CWalletTx& wtxNew, vector<CDeterministicMint>& vDMints,
                                          const vector<COutPoint> vOutpts) {
   CCoinControl* coinControl = new CCoinControl();
@@ -3363,10 +3361,10 @@ bool CWallet::GetMint(const uint256& hashSerial, CZerocoinMint& mint) {
   if (!zkpTracker->HasSerialHash(hashSerial))
     return error("%s: serialhash %s is not in tracker", __func__, hashSerial.GetHex());
   CMintMeta meta = zkpTracker->Get(hashSerial);
-    CDeterministicMint dMint;
-    if (!gWalletDB.ReadDeterministicMint(meta.hashPubcoin, dMint))
-      return error("%s: failed to read deterministic mint", __func__);
-    if (!zwalletMain->RegenerateMint(dMint, mint)) return error("%s: failed to generate mint", __func__);
+  CDeterministicMint dMint;
+  if (!gWalletDB.ReadDeterministicMint(meta.hashPubcoin, dMint))
+    return error("%s: failed to read deterministic mint", __func__);
+  if (!zwalletMain->RegenerateMint(dMint, mint)) return error("%s: failed to generate mint", __func__);
   return true;
 }
 
@@ -3648,7 +3646,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile) {
   LogPrintf("mapAddressBook.size() = %u\n", walletInstance->mapAddressBook.size());
 
 #else
-    CWallet* walletInstance = new CWallet;
+  CWallet* walletInstance = new CWallet;
 #endif
-    return walletInstance;
+  return walletInstance;
 }

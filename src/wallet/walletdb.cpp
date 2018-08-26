@@ -547,7 +547,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
         return false;
       }
     }
-    
+
   } catch (...) { return false; }
   return true;
 }
@@ -725,9 +725,7 @@ bool CWalletDB::EraseDestData(const std::string& address, const std::string& key
   return Erase(std::make_pair(std::string("destdata"), std::make_pair(address, key)));
 }
 
-bool CWalletDB::WriteHDChain(const CHDChain &chain) {
-  return Write(std::string("hdchain"), chain);
-}
+bool CWalletDB::WriteHDChain(const CHDChain& chain) { return Write(std::string("hdchain"), chain); }
 
 bool CWalletDB::WriteZerocoinSpendSerialEntry(const CZerocoinSpend& zerocoinSpend) {
   return Write(make_pair(string("zcserial"), zerocoinSpend.GetSerial()), zerocoinSpend, true);
@@ -753,7 +751,6 @@ bool CWalletDB::ReadDeterministicMint(const uint256& hashPubcoin, CDeterministic
 bool CWalletDB::EraseDeterministicMint(const uint256& hashPubcoin) {
   return Erase(make_pair(string("dzkp"), hashPubcoin));
 }
-
 
 bool CWalletDB::ArchiveMintOrphan(const CZerocoinMint& zerocoinMint) {
   CDataStream ss(SER_GETHASH);
