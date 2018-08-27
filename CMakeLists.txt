@@ -177,7 +177,7 @@ SET(COMMON_A
 	)
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h.in")
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h @ONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h.in clientversion.h @ONLY)
 else()
   message(WARNING "Using Versions defined in clientversion.h - is it up to date?")
 endif()
@@ -185,7 +185,7 @@ endif()
     
 add_custom_target(
   buildHeader
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/share/genbuild.sh ${CMAKE_CURRENT_SOURCE_DIR}/src/obj/build.h ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/share/genbuild.sh ${CMAKE_CURRENT_SOURCE_DIR}/src/build.h ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 SET(LIB_RAND
@@ -374,7 +374,9 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/forms
-  # For config file
+  # For clientversion.h file
+  ${CMAKE_CURRENT_BINARY_DIR}
+  # For config file tessa-config.h
   ${CMAKE_CURRENT_BINARY_DIR}/src
   )
 

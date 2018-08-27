@@ -5,8 +5,8 @@
 // Need?
 #include "main.h"
 
-#ifdef HAVE_BUILD_INFO
-#include "build.h"
+#if defined(HAVE_CONFIG_H)
+#include "tessa-config.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -18,7 +18,7 @@ string GetWarnings(string strFor) {
   string strStatusBar;
   string strRPC;
 
-  if (!IS_RELEASE)
+  if (!CLIENT_VERSION_IS_RELEASE)
     strStatusBar =
         _("This is a pre-release test build - use at your own risk - do not use for staking or merchant applications!");
 
