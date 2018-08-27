@@ -27,7 +27,7 @@
  * \section intro_sec Introduction
  *
  * This is the developer documentation of the reference client for an experimental new digital currency called Club
- * (http://www.club.org), which enables instant payments to anyone, anywhere in the world. Club uses peer-to-peer
+ * (http://www.tessa.org), which enables instant payments to anyone, anywhere in the world. Club uses peer-to-peer
  * technology to operate with no central authority: managing transactions and issuing money are carried out collectively
  * by the network.
  *
@@ -66,7 +66,7 @@ bool AppInit(int argc, char* argv[]) {
   //
   // Parameters
   //
-  // If Qt is used, parameters/club.conf are parsed in qt/club.cpp's main()
+  // If Qt is used, parameters/tessa.conf are parsed in qt/club.cpp's main()
   ParseParameters(argc, argv);
 
   // Process help and version before taking care about datadir
@@ -77,7 +77,7 @@ bool AppInit(int argc, char* argv[]) {
       strUsage += LicenseInfo();
     } else {
       strUsage +=
-          "\n" + _("Usage:") + "\n" + "  clubd [options]                     " + _("Start Club Core Daemon") + "\n";
+          "\n" + _("Usage:") + "\n" + "  tessad [options]                     " + _("Start Club Core Daemon") + "\n";
 
       strUsage += "\n" + HelpMessage(HMM_BITCOIND);
     }
@@ -107,11 +107,11 @@ bool AppInit(int argc, char* argv[]) {
     bool fCommandLine = false;
     for (int i = 1; i < argc; i++) {
       std::string arv = argv[i];
-      if (!IsSwitchChar(argv[i][0]) && !(arv.substr(0, 5) == "club:")) fCommandLine = true;
+      if (!IsSwitchChar(argv[i][0]) && !(arv.substr(0, 5) == "tessa:")) fCommandLine = true;
     }
     if (fCommandLine) {
       fprintf(stderr,
-              "Error: There is no RPC client functionality in clubd anymore. Use the club-cli utility instead.\n");
+              "Error: There is no RPC client functionality in tessad anymore. Use the club-cli utility instead.\n");
       exit(1);
     }
 #ifndef WIN32
@@ -159,7 +159,7 @@ bool AppInit(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
   SetupEnvironment();
 
-  // Connect clubd signal handlers
+  // Connect tessad signal handlers
   noui_connect();
 
   return (AppInit(argc, argv) ? 0 : 1);

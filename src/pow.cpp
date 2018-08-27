@@ -18,7 +18,7 @@
 #include <cmath>
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock) {
-  /* current difficulty formula, club - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
+  /* current difficulty formula, tessa - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
   const CBlockIndex* BlockLastSolved = pindexLast;
   const CBlockIndex* BlockReading = pindexLast;
   int64_t nActualTimespan = 0;

@@ -155,7 +155,7 @@ static std::string FormatException(std::exception* pex, const char* pszThread) {
   char pszModule[MAX_PATH] = "";
   GetModuleFileNameA(nullptr, pszModule, sizeof(pszModule));
 #else
-  const char* pszModule = "club";
+  const char* pszModule = "tessa";
 #endif
   if (pex)
     return strprintf("EXCEPTION: %s       \n%s       \n%s in %s       \n", typeid(*pex).name(), pex->what(), pszModule,
@@ -172,13 +172,13 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread) {
 }
 
 fs::path GetDefaultDataDir() {
-// Windows < Vista: C:\Documents and Settings\Username\Application Data\Club
-// Windows >= Vista: C:\Users\Username\AppData\Roaming\Club
-// Mac: ~/Library/Application Support/Club
-// Unix: ~/.club
+// Windows < Vista: C:\Documents and Settings\Username\Application Data\Tessa
+// Windows >= Vista: C:\Users\Username\AppData\Roaming\Tessa
+// Mac: ~/Library/Application Support/Tessa
+// Unix: ~/.tessa
 #ifdef WIN32
   // Windows
-  return GetSpecialFolderPath(CSIDL_APPDATA) / "Club";
+  return GetSpecialFolderPath(CSIDL_APPDATA) / "Tessa";
 #else
   fs::path pathRet;
   char* pszHome = getenv("HOME");
@@ -190,10 +190,10 @@ fs::path GetDefaultDataDir() {
   // Mac
   pathRet /= "Library/Application Support";
   TryCreateDirectory(pathRet);
-  return pathRet / "Club";
+  return pathRet / "Tessa";
 #else
   // Unix
-  return pathRet / ".club";
+  return pathRet / ".tessa";
 #endif
 #endif
 }
@@ -233,7 +233,7 @@ void ClearDatadirCache() {
 }
 
 fs::path GetConfigFile() {
-  fs::path pathConfigFile(GetArg("-conf", "club.conf"));
+  fs::path pathConfigFile(GetArg("-conf", "tessa.conf"));
   if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
 
   return pathConfigFile;
@@ -243,7 +243,7 @@ void ReadConfigFile() { gArgs.ReadConfigFile(); }
 
 #ifndef WIN32
 fs::path GetPidFile() {
-  fs::path pathPidFile(GetArg("-pid", "clubd.pid"));
+  fs::path pathPidFile(GetArg("-pid", "tessad.pid"));
   if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
   return pathPidFile;
 }

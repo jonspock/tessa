@@ -509,7 +509,7 @@ int nMintableLastCheck = 0;
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
   LogPrintf("ClubMiner started\n");
   SetThreadPriority(THREAD_PRIORITY_LOWEST);
-  RenameThread("club-miner");
+  RenameThread("tessa-miner");
 
   // Each thread has its own key and counter
   CReserveKey reservekey(pwallet);

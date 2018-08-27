@@ -32,7 +32,7 @@ std::string HelpMessageCli() {
   string strUsage;
   strUsage += HelpMessageGroup(_("Options:"));
   strUsage += HelpMessageOpt("-?", _("This help message"));
-  strUsage += HelpMessageOpt("-conf=<file>", strprintf(_("Specify configuration file (default: %s)"), "club.conf"));
+  strUsage += HelpMessageOpt("-conf=<file>", strprintf(_("Specify configuration file (default: %s)"), "tessa.conf"));
   strUsage += HelpMessageOpt("-datadir=<dir>", _("Specify data directory"));
   strUsage += HelpMessageOpt("-testnet", _("Use the test network"));
   strUsage += HelpMessageOpt("-regtest",
@@ -73,9 +73,9 @@ static bool AppInitRPC(int argc, char* argv[]) {
   if (argc < 2 || gArgs.IsArgSet("-?") || gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version")) {
     std::string strUsage = _("Club Core RPC client version") + " " + FormatFullVersion() + "\n";
     if (!gArgs.IsArgSet("-version")) {
-      strUsage += "\n" + _("Usage:") + "\n" + "  club-cli [options] <command> [params]  " +
-                  _("Send command to Club Core") + "\n" + "  club-cli [options] help                " +
-                  _("List commands") + "\n" + "  club-cli [options] help <command>      " +
+      strUsage += "\n" + _("Usage:") + "\n" + "  tessa-cli [options] <command> [params]  " +
+                  _("Send command to Club Core") + "\n" + "  tessa-cli [options] help                " +
+                  _("List commands") + "\n" + "  tessa-cli [options] help <command>      " +
                   _("Get help for a command") + "\n";
 
       strUsage += "\n" + HelpMessageCli();

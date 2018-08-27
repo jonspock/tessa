@@ -12,7 +12,7 @@
 
 /**
  * Name of client reported in the 'version' message. Report the same name
- * for both clubd and club-qt, to make it harder for attackers to
+ * for both tessad and club-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
 const std::string CLIENT_NAME("Club Core");

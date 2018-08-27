@@ -141,7 +141,7 @@ class CMainParams : public CChainParams {
     // assert(hashGenesisBlock == uint256("0x00000c7c73d8ce604178dae13f0fc6ec0be3275614366d44b1b4b5c6e238c60c"));
     assert(genesis.hashMerkleRoot == uint256S("0x62d496378e5834989dd9594cfc168dbb76f84a39bbda18286cddc7d1d1589f4f"));
 
-    // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "club.seed.fuzzbawls.pw"));     // Primary DNS Seeder from
+    // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "tessa.seed.fuzzbawls.pw"));     // Primary DNS Seeder from
     // Fuzzbawls
 
     base58Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 28);  // Start with "C"
@@ -211,17 +211,17 @@ class CTestNetParams : public CMainParams {
 
     vFixedSeeds.clear();
     vSeeds.clear();
-    // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "club-testnet.seed.fuzzbawls.pw"));
+    // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "tessa-testnet.seed.fuzzbawls.pw"));
 
-    base58Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 87);  // Testnet club addresses start with 'c'
-    base58Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 9);  // Testnet club script addresses start with '4' or '5'
+    base58Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 87);  // Testnet tessa addresses start with 'c'
+    base58Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 9);  // Testnet tessa script addresses start with '4' or '5'
     base58Prefixes[SECRET_KEY] =
         std::vector<uint8_t>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
-    // Testnet club BIP32 pubkeys start with 'DRKV'
+    // Testnet tessa BIP32 pubkeys start with 'DRKV'
     base58Prefixes[EXT_PUBLIC_KEY] = {0x3a, 0x80, 0x61, 0xa0};
-    // Testnet club BIP32 prvkeys start with 'DRKP'
+    // Testnet tessa BIP32 prvkeys start with 'DRKP'
     base58Prefixes[EXT_SECRET_KEY] = {0x3a, 0x80, 0x58, 0x37};
-    // Testnet club BIP44 coin type is '1' (All coin's testnet default)
+    // Testnet tessa BIP44 coin type is '1' (All coin's testnet default)
     base58Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x01};
 
     fAllowMinDifficultyBlocks = true;

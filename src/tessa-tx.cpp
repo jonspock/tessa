@@ -42,9 +42,9 @@ static bool AppInitRawTx(int argc, char* argv[]) {
   if (argc < 2 || mapArgs.count("-?") || mapArgs.count("-help")) {
     // First part of help message is specific to this utility
     std::string strUsage =
-        _("Club Core club-tx utility version") + " " + FormatFullVersion() + "\n\n" + _("Usage:") + "\n" +
-        "  club-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded club transaction") + "\n" +
-        "  club-tx [options] -create [commands]   " + _("Create hex-encoded club transaction") + "\n" + "\n";
+        _("Club Core tessa-tx utility version") + " " + FormatFullVersion() + "\n\n" + _("Usage:") + "\n" +
+        "  tessa-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded club transaction") + "\n" +
+        "  tessa-tx [options] -create [commands]   " + _("Create hex-encoded club transaction") + "\n" + "\n";
 
     fprintf(stdout, "%s", strUsage.c_str());
 
@@ -494,7 +494,7 @@ static int CommandLineRawTx(int argc, char* argv[]) {
       // require at least one param
       if (argc < 2) throw runtime_error("too few parameters");
 
-      // param: hex-encoded club transaction
+      // param: hex-encoded tessa transaction
       string strHexTx(argv[1]);
       if (strHexTx == "-")  // "-" implies standard input
         strHexTx = readStdin();

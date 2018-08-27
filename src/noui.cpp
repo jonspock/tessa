@@ -43,7 +43,7 @@ static bool noui_ThreadSafeMessageBox(const std::string& message, const std::str
 static void noui_InitMessage(const std::string& message) { LogPrintf("init message: %s\n", message); }
 
 void noui_connect() {
-  // Connect clubd signal handlers
+  // Connect tessad signal handlers
   uiInterface.ThreadSafeMessageBox.connect(noui_ThreadSafeMessageBox);
   uiInterface.InitMessage.connect(noui_InitMessage);
 }
