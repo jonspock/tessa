@@ -13,6 +13,7 @@
 #include <functional>
 #include <map>
 #include <chrono>
+#include <condition_variable>
 //
 // Simple class for background tasks that should be run
 // periodically or once "after a while"
