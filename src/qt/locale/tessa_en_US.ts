@@ -62,12 +62,12 @@
         <translation>Receiving addresses</translation>
     </message>
     <message>
-        <source>These are your Club addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>These are your Club addresses for sending payments. Always check the amount and the receiving address before sending coins.</translation>
+        <source>These are your Tessa addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>These are your Tessa addresses for sending payments. Always check the amount and the receiving address before sending coins.</translation>
     </message>
     <message>
-        <source>These are your Club addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>These are your Club addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</translation>
+        <source>These are your Tessa addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>These are your Tessa addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -176,16 +176,16 @@
         <translation>Confirm wallet encryption</translation>
     </message>
     <message>
-        <source>Club will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Clubs from being stolen by malware infecting your computer.</source>
-        <translation>Club will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Clubs from being stolen by malware infecting your computer.</translation>
+        <source>Tessa will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Tessas from being stolen by malware infecting your computer.</source>
+        <translation>Tessa will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Tessas from being stolen by malware infecting your computer.</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
         <translation>Are you sure you wish to encrypt your wallet?</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR Club&lt;/b&gt;!</source>
-        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR Club&lt;/b&gt;!</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR Tessa&lt;/b&gt;!</source>
+        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR Tessa&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Wallet encrypted</source>
@@ -439,12 +439,12 @@
         <translation>Tabs toolbar</translation>
     </message>
     <message>
-        <source>Club Core</source>
-        <translation>Club Core</translation>
+        <source>Tessa Core</source>
+        <translation>Tessa Core</translation>
     </message>
     <message>
-        <source>Send coins to a Club address</source>
-        <translation>Send coins to a Club address</translation>
+        <source>Send coins to a Tessa address</source>
+        <translation>Send coins to a Tessa address</translation>
     </message>
     <message>
         <source>Request payments (generates QR codes and pivx: URIs)</source>
@@ -459,24 +459,24 @@
         <translation>Browse masternodes</translation>
     </message>
     <message>
-        <source>&amp;About Club Core</source>
-        <translation>&amp;About Club Core</translation>
+        <source>&amp;About Tessa Core</source>
+        <translation>&amp;About Tessa Core</translation>
     </message>
     <message>
-        <source>Show information about Club Core</source>
-        <translation>Show information about Club Core</translation>
+        <source>Show information about Tessa Core</source>
+        <translation>Show information about Tessa Core</translation>
     </message>
     <message>
-        <source>Modify configuration options for Club</source>
-        <translation>Modify configuration options for Club</translation>
+        <source>Modify configuration options for Tessa</source>
+        <translation>Modify configuration options for Tessa</translation>
     </message>
     <message>
-        <source>Sign messages with your Club addresses to prove you own them</source>
-        <translation>Sign messages with your Club addresses to prove you own them</translation>
+        <source>Sign messages with your Tessa addresses to prove you own them</source>
+        <translation>Sign messages with your Tessa addresses to prove you own them</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Club addresses</source>
-        <translation>Verify messages to ensure they were signed with specified Club addresses</translation>
+        <source>Verify messages to ensure they were signed with specified Tessa addresses</source>
+        <translation>Verify messages to ensure they were signed with specified Tessa addresses</translation>
     </message>
     <message>
         <source>Encrypt and decrypt private keys using a passphrase</source>
@@ -503,8 +503,8 @@
         <translation>Open Masternode configuration file</translation>
     </message>
     <message>
-        <source>Open a Club: URI or payment request</source>
-        <translation>Open a Club: URI or payment request</translation>
+        <source>Open a Tessa: URI or payment request</source>
+        <translation>Open a Tessa: URI or payment request</translation>
     </message>
     <message>
         <source>&amp;Blockchain explorer</source>
@@ -515,16 +515,16 @@
         <translation>Block explorer window</translation>
     </message>
     <message>
-        <source>Show the Club Core help message to get a list with possible Club command-line options</source>
-        <translation>Show the Club Core help message to get a list with possible Club command-line options</translation>
+        <source>Show the Tessa Core help message to get a list with possible Tessa command-line options</source>
+        <translation>Show the Tessa Core help message to get a list with possible Tessa command-line options</translation>
     </message>
     <message>
-        <source>Club Core client</source>
-        <translation>Club Core client</translation>
+        <source>Tessa Core client</source>
+        <translation>Tessa Core client</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to Club network</source>
-        <translation><numerusform>%n active connection(s) to Club network</numerusform><numerusform>%n active connection(s) to Club network</numerusform></translation>
+        <source>%n active connection(s) to Tessa network</source>
+        <translation><numerusform>%n active connection(s) to Tessa network</numerusform><numerusform>%n active connection(s) to Tessa network</numerusform></translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
@@ -971,8 +971,8 @@ Address: %4
         <translation>Edit sending address</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid Club address.</source>
-        <translation>The entered address "%1" is not a valid Club address.</translation>
+        <source>The entered address "%1" is not a valid Tessa address.</source>
+        <translation>The entered address "%1" is not a valid Tessa address.</translation>
     </message>
     <message>
         <source>The entered address "%1" is already in the address book.</source>
@@ -1017,16 +1017,16 @@ Address: %4
         <translation>version</translation>
     </message>
     <message>
-        <source>Club Core</source>
-        <translation>Club Core</translation>
+        <source>Tessa Core</source>
+        <translation>Tessa Core</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
         <translation>(%1-bit)</translation>
     </message>
     <message>
-        <source>About Club Core</source>
-        <translation>About Club Core</translation>
+        <source>About Tessa Core</source>
+        <translation>About Tessa Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1072,16 +1072,16 @@ Address: %4
         <translation>Welcome</translation>
     </message>
     <message>
-        <source>Welcome to Club Core.</source>
-        <translation>Welcome to Club Core.</translation>
+        <source>Welcome to Tessa Core.</source>
+        <translation>Welcome to Tessa Core.</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where Club Core will store its data.</source>
-        <translation>As this is the first time the program is launched, you can choose where Club Core will store its data.</translation>
+        <source>As this is the first time the program is launched, you can choose where Tessa Core will store its data.</source>
+        <translation>As this is the first time the program is launched, you can choose where Tessa Core will store its data.</translation>
     </message>
     <message>
-        <source>Club Core will download and store a copy of the Club block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>Club Core will download and store a copy of the Club block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</translation>
+        <source>Tessa Core will download and store a copy of the Tessa block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation>Tessa Core will download and store a copy of the Tessa block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1092,8 +1092,8 @@ Address: %4
         <translation>Use a custom data directory:</translation>
     </message>
     <message>
-        <source>Club Core</source>
-        <translation>Club Core</translation>
+        <source>Tessa Core</source>
+        <translation>Tessa Core</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -1234,12 +1234,12 @@ Address: %4
         <translation>Enter Address to Send to</translation>
     </message>
     <message>
-        <source>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other Club addresses after it matures.
-To Add: enter percentage to give and Club address to add to the MultiSend vector.
+        <source>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other Tessa addresses after it matures.
+To Add: enter percentage to give and Tessa address to add to the MultiSend vector.
 To Delete: Enter address to delete and press delete.
 MultiSend will not be activated unless you have clicked Activate</source>
-        <translation>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other Club addresses after it matures.
-To Add: enter percentage to give and Club address to add to the MultiSend vector.
+        <translation>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other Tessa addresses after it matures.
+To Add: enter percentage to give and Tessa address to add to the MultiSend vector.
 To Delete: Enter address to delete and press delete.
 MultiSend will not be activated unless you have clicked Activate</translation>
     </message>
@@ -1377,48 +1377,48 @@ Please check the address and try again.</translation>
         <translation>Please select a privacy level.</translation>
     </message>
     <message>
-        <source>Use 2 separate masternodes to mix funds up to 10000 Club</source>
-        <translation>Use 2 separate masternodes to mix funds up to 10000 Club</translation>
+        <source>Use 2 separate masternodes to mix funds up to 10000 Tessa</source>
+        <translation>Use 2 separate masternodes to mix funds up to 10000 Tessa</translation>
     </message>
     <message>
-        <source>Use 8 separate masternodes to mix funds up to 10000 Club</source>
-        <translation>Use 8 separate masternodes to mix funds up to 10000 Club</translation>
+        <source>Use 8 separate masternodes to mix funds up to 10000 Tessa</source>
+        <translation>Use 8 separate masternodes to mix funds up to 10000 Tessa</translation>
     </message>
     <message>
         <source>Use 16 separate masternodes</source>
         <translation>Use 16 separate masternodes</translation>
     </message>
     <message>
-        <source>This option is the quickest and will cost about ~0.025 Club to anonymize 10000 Club</source>
-        <translation>This option is the quickest and will cost about ~0.025 Club to anonymize 10000 Club</translation>
+        <source>This option is the quickest and will cost about ~0.025 Tessa to anonymize 10000 Tessa</source>
+        <translation>This option is the quickest and will cost about ~0.025 Tessa to anonymize 10000 Tessa</translation>
     </message>
     <message>
-        <source>This option is moderately fast and will cost about 0.05 Club to anonymize 10000 Club</source>
-        <translation>This option is moderately fast and will cost about 0.05 Club to anonymize 10000 Club</translation>
+        <source>This option is moderately fast and will cost about 0.05 Tessa to anonymize 10000 Tessa</source>
+        <translation>This option is moderately fast and will cost about 0.05 Tessa to anonymize 10000 Tessa</translation>
     </message>
     <message>
         <source>This is the slowest and most secure option. Using maximum anonymity will cost</source>
         <translation>This is the slowest and most secure option. Using maximum anonymity will cost</translation>
     </message>
     <message>
-        <source>0.1 Club per 10000 Club you anonymize.</source>
-        <translation>0.1 Club per 10000 Club you anonymize.</translation>
+        <source>0.1 Tessa per 10000 Tessa you anonymize.</source>
+        <translation>0.1 Tessa per 10000 Tessa you anonymize.</translation>
     </message>
     <message>
         <source>Obfuscation Configuration</source>
         <translation>Obfuscation Configuration</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening Club's configuration screen.</source>
-        <translation>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening Club's configuration screen.</translation>
+        <source>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening Tessa's configuration screen.</source>
+        <translation>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening Tessa's configuration screen.</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening Club's configuration screen.</source>
-        <translation>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening Club's configuration screen.</translation>
+        <source>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening Tessa's configuration screen.</source>
+        <translation>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening Tessa's configuration screen.</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening Club's configuration screen.</source>
-        <translation>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening Club's configuration screen.</translation>
+        <source>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening Tessa's configuration screen.</source>
+        <translation>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening Tessa's configuration screen.</translation>
     </message>
 </context>
 <context>
@@ -1479,8 +1479,8 @@ Please check the address and try again.</translation>
         <translation>If you disable the spending of unconfirmed change, the change from a transaction&lt;br/&gt;cannot be used until that transaction has at least one confirmation.&lt;br/&gt;This also affects how your balance is computed.</translation>
     </message>
     <message>
-        <source>Automatically open the Club client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automatically open the Club client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
+        <source>Automatically open the Tessa client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Automatically open the Tessa client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
     </message>
     <message>
         <source>Accept connections from outside</source>
@@ -1499,12 +1499,12 @@ Please check the address and try again.</translation>
         <translation>Expert</translation>
     </message>
     <message>
-        <source>Automatically start Club after logging in to the system.</source>
-        <translation>Automatically start Club after logging in to the system.</translation>
+        <source>Automatically start Tessa after logging in to the system.</source>
+        <translation>Automatically start Tessa after logging in to the system.</translation>
     </message>
     <message>
-        <source>&amp;Start Club on system login</source>
-        <translation>&amp;Start Club on system login</translation>
+        <source>&amp;Start Tessa on system login</source>
+        <translation>&amp;Start Tessa on system login</translation>
     </message>
     <message>
         <source>This setting determines the amount of individual masternodes that an input will be anonymized through.&lt;br/&gt;More rounds of anonymization gives a higher degree of privacy, but also costs more in fees.</source>
@@ -1519,8 +1519,8 @@ Please check the address and try again.</translation>
         <translation>This amount acts as a threshold to turn off Obfuscation once it's reached.</translation>
     </message>
     <message>
-        <source>Amount of Club to keep anonymized</source>
-        <translation>Amount of Club to keep anonymized</translation>
+        <source>Amount of Tessa to keep anonymized</source>
+        <translation>Amount of Tessa to keep anonymized</translation>
     </message>
     <message>
         <source>Whether to show coin control features or not.</source>
@@ -1547,8 +1547,8 @@ Please check the address and try again.</translation>
         <translation>&amp;Network</translation>
     </message>
     <message>
-        <source>The user interface language can be set here. This setting will take effect after restarting Club.</source>
-        <translation>The user interface language can be set here. This setting will take effect after restarting Club.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting Tessa.</source>
+        <translation>The user interface language can be set here. This setting will take effect after restarting Tessa.</translation>
     </message>
     <message>
         <source>Language missing or translation incomplete? Help contributing translations here:
@@ -1561,8 +1561,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Map port using &amp;UPnP</translation>
     </message>
     <message>
-        <source>Connect to the Club network through a SOCKS5 proxy.</source>
-        <translation>Connect to the Club network through a SOCKS5 proxy.</translation>
+        <source>Connect to the Tessa network through a SOCKS5 proxy.</source>
+        <translation>Connect to the Tessa network through a SOCKS5 proxy.</translation>
     </message>
     <message>
         <source>Proxy &amp;IP:</source>
@@ -1716,8 +1716,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Balances</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Club network after a connection is established, but this process has not completed yet.</source>
-        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the Club network after a connection is established, but this process has not completed yet.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Tessa network after a connection is established, but this process has not completed yet.</source>
+        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the Tessa network after a connection is established, but this process has not completed yet.</translation>
     </message>
     <message>
         <source>Unconfirmed transactions to watch-only addresses</source>
@@ -1760,8 +1760,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Obfuscation Balance:</translation>
     </message>
     <message>
-        <source>0 Club / 0 Rounds</source>
-        <translation>0 Club / 0 Rounds</translation>
+        <source>0 Tessa / 0 Rounds</source>
+        <translation>0 Tessa / 0 Rounds</translation>
     </message>
     <message>
         <source>Enabled/Disabled</source>
@@ -1929,8 +1929,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Cannot start pivx: click-to-pay handler</translation>
     </message>
     <message>
-        <source>URI cannot be parsed! This can be caused by an invalid Club address or malformed URI parameters.</source>
-        <translation>URI cannot be parsed! This can be caused by an invalid Club address or malformed URI parameters.</translation>
+        <source>URI cannot be parsed! This can be caused by an invalid Tessa address or malformed URI parameters.</source>
+        <translation>URI cannot be parsed! This can be caused by an invalid Tessa address or malformed URI parameters.</translation>
     </message>
     <message>
         <source>Payment request file cannot be read! This can be caused by an invalid payment request file.</source>
@@ -2015,8 +2015,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Amount</translation>
     </message>
     <message>
-        <source>Enter a Club address (e.g. %1)</source>
-        <translation>Enter a Club address (e.g. %1)</translation>
+        <source>Enter a Tessa address (e.g. %1)</source>
+        <translation>Enter a Tessa address (e.g. %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -2149,8 +2149,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Block chain</translation>
     </message>
     <message>
-        <source>Open the Club debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Open the Club debug log file from the current data directory. This can take a few seconds for large log files.</translation>
+        <source>Open the Tessa debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Open the Tessa debug log file from the current data directory. This can take a few seconds for large log files.</translation>
     </message>
     <message>
         <source>Number of Masternodes</source>
@@ -2317,8 +2317,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Out:</translation>
     </message>
     <message>
-        <source>Welcome to the Club RPC console.</source>
-        <translation>Welcome to the Club RPC console.</translation>
+        <source>Welcome to the Tessa RPC console.</source>
+        <translation>Welcome to the Tessa RPC console.</translation>
     </message>
     <message>
         <source>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</source>
@@ -2388,12 +2388,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>An optional label to associate with the new receiving address.</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Club network.</source>
-        <translation>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Club network.</translation>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Tessa network.</source>
+        <translation>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Tessa network.</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the Club network.</source>
-        <translation>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the Club network.</translation>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the Tessa network.</source>
+        <translation>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the Tessa network.</translation>
     </message>
     <message>
         <source>Use this form to request payments. All fields are &lt;b&gt;optional&lt;/b&gt;.</source>
@@ -2625,8 +2625,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>UTXO Size:</translation>
     </message>
     <message>
-        <source>0 Club</source>
-        <translation>0 Club</translation>
+        <source>0 Tessa</source>
+        <translation>0 Tessa</translation>
     </message>
     <message>
         <source>Transaction Fee:</source>
@@ -2673,16 +2673,16 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Confirmation time:</translation>
     </message>
     <message>
-        <source>If the custom fee is set to 1000 uClubs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uClubs in fee,&lt;br /&gt;while "at least" pays 1000 uClubs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
-        <translation>If the custom fee is set to 1000 uClubs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uClubs in fee,&lt;br /&gt;while "at least" pays 1000 uClubs. For transactions bigger than a kilobyte both pay by kilobyte.</translation>
+        <source>If the custom fee is set to 1000 uTessas and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uTessas in fee,&lt;br /&gt;while "at least" pays 1000 uTessas. For transactions bigger than a kilobyte both pay by kilobyte.</source>
+        <translation>If the custom fee is set to 1000 uTessas and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uTessas in fee,&lt;br /&gt;while "at least" pays 1000 uTessas. For transactions bigger than a kilobyte both pay by kilobyte.</translation>
     </message>
     <message>
-        <source>If the custom fee is set to 1000 uClubs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uClubs in fee,&lt;br /&gt;while "total at least" pays 1000 uClubs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
-        <translation>If the custom fee is set to 1000 uClubs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uClubs in fee,&lt;br /&gt;while "total at least" pays 1000 uClubs. For transactions bigger than a kilobyte both pay by kilobyte.</translation>
+        <source>If the custom fee is set to 1000 uTessas and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uTessas in fee,&lt;br /&gt;while "total at least" pays 1000 uTessas. For transactions bigger than a kilobyte both pay by kilobyte.</source>
+        <translation>If the custom fee is set to 1000 uTessas and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uTessas in fee,&lt;br /&gt;while "total at least" pays 1000 uTessas. For transactions bigger than a kilobyte both pay by kilobyte.</translation>
     </message>
     <message>
-        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for Club transactions than the network can process.</source>
-        <translation>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for Club transactions than the network can process.</translation>
+        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for Tessa transactions than the network can process.</source>
+        <translation>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for Tessa transactions than the network can process.</translation>
     </message>
     <message>
         <source>normal</source>
@@ -2785,8 +2785,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>anonymous funds</translation>
     </message>
     <message>
-        <source>Warning: Invalid Club address</source>
-        <translation>Warning: Invalid Club address</translation>
+        <source>Warning: Invalid Tessa address</source>
+        <translation>Warning: Invalid Tessa address</translation>
     </message>
     <message>
         <source>any available funds (not recommended)</source>
@@ -2892,8 +2892,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Pay &amp;To:</translation>
     </message>
     <message>
-        <source>The Club address to send the payment to</source>
-        <translation>The Club address to send the payment to</translation>
+        <source>The Tessa address to send the payment to</source>
+        <translation>The Tessa address to send the payment to</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -2932,8 +2932,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Message:</translation>
     </message>
     <message>
-        <source>A message that was attached to the Club: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Club network.</source>
-        <translation>A message that was attached to the Club: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Club network.</translation>
+        <source>A message that was attached to the Tessa: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Tessa network.</source>
+        <translation>A message that was attached to the Tessa: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Tessa network.</translation>
     </message>
     <message>
         <source>This is an unverified payment request.</source>
@@ -2959,8 +2959,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Club Core is shutting down...</source>
-        <translation>Club Core is shutting down...</translation>
+        <source>Tessa Core is shutting down...</source>
+        <translation>Tessa Core is shutting down...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
@@ -2982,8 +2982,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>You can sign messages with your addresses to prove you own them. Be careful not to sign anything vague, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</translation>
     </message>
     <message>
-        <source>The Club address to sign the message with</source>
-        <translation>The Club address to sign the message with</translation>
+        <source>The Tessa address to sign the message with</source>
+        <translation>The Tessa address to sign the message with</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -3014,16 +3014,16 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Copy the current signature to the system clipboard</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Club address</source>
-        <translation>Sign the message to prove you own this Club address</translation>
+        <source>Sign the message to prove you own this Tessa address</source>
+        <translation>Sign the message to prove you own this Tessa address</translation>
     </message>
     <message>
-        <source>The Club address the message was signed with</source>
-        <translation>The Club address the message was signed with</translation>
+        <source>The Tessa address the message was signed with</source>
+        <translation>The Tessa address the message was signed with</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified Club address</source>
-        <translation>Verify the message to ensure it was signed with the specified Club address</translation>
+        <source>Verify the message to ensure it was signed with the specified Tessa address</source>
+        <translation>Verify the message to ensure it was signed with the specified Tessa address</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -3109,8 +3109,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Club Core</source>
-        <translation>Club Core</translation>
+        <source>Tessa Core</source>
+        <translation>Tessa Core</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -3125,8 +3125,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>The Dash Core developers</translation>
     </message>
     <message>
-        <source>The Club Core developers</source>
-        <translation>The Club Core developers</translation>
+        <source>The Tessa Core developers</source>
+        <translation>The Tessa Core developers</translation>
     </message>
     <message>
         <source>[testnet]</source>
@@ -3673,8 +3673,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Send Coins</translation>
     </message>
     <message>
-        <source>SwiftTX doesn't support sending values that high yet. Transactions are currently limited to %1 Club.</source>
-        <translation>SwiftTX doesn't support sending values that high yet. Transactions are currently limited to %1 Club.</translation>
+        <source>SwiftTX doesn't support sending values that high yet. Transactions are currently limited to %1 Tessa.</source>
+        <translation>SwiftTX doesn't support sending values that high yet. Transactions are currently limited to %1 Tessa.</translation>
     </message>
 </context>
 <context>
@@ -3743,8 +3743,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Bind to given address to listen for JSON-RPC connections. Use [host]:port notation for IPv6. This option can be specified multiple times (default: bind to all interfaces)</translation>
     </message>
     <message>
-        <source>Cannot obtain a lock on data directory %s. Club Core is probably already running.</source>
-        <translation>Cannot obtain a lock on data directory %s. Club Core is probably already running.</translation>
+        <source>Cannot obtain a lock on data directory %s. Tessa Core is probably already running.</source>
+        <translation>Cannot obtain a lock on data directory %s. Tessa Core is probably already running.</translation>
     </message>
     <message>
         <source>Change automatic finalized budget voting behavior. mode=auto: Vote for only exact finalized budget match to my generated budget. (string, default: auto)</source>
@@ -3763,8 +3763,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup</translation>
     </message>
     <message>
-        <source>Disable all Club specific functionality (Masternodes, Obfuscation, SwiftTX, Budgeting) (0-1, default: %u)</source>
-        <translation>Disable all Club specific functionality (Masternodes, Obfuscation, SwiftTX, Budgeting) (0-1, default: %u)</translation>
+        <source>Disable all Tessa specific functionality (Masternodes, Obfuscation, SwiftTX, Budgeting) (0-1, default: %u)</source>
+        <translation>Disable all Tessa specific functionality (Masternodes, Obfuscation, SwiftTX, Budgeting) (0-1, default: %u)</translation>
     </message>
     <message>
         <source>Distributed under the MIT software license, see the accompanying file COPYING or &lt;http://www.opensource.org/licenses/mit-license.php&gt;.</source>
@@ -3807,12 +3807,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Execute command when the best block changes (%s in cmd is replaced by block hash)</translation>
     </message>
     <message>
-        <source>Fees (in Club/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
-        <translation>Fees (in Club/Kb) smaller than this are considered zero fee for relaying (default: %s)</translation>
+        <source>Fees (in Tessa/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
+        <translation>Fees (in Tessa/Kb) smaller than this are considered zero fee for relaying (default: %s)</translation>
     </message>
     <message>
-        <source>Fees (in Club/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
-        <translation>Fees (in Club/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</translation>
+        <source>Fees (in Tessa/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
+        <translation>Fees (in Tessa/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</translation>
     </message>
     <message>
         <source>Flush database activity from memory pool to disk log every &lt;n&gt; megabytes (default: %u)</source>
@@ -3924,7 +3924,7 @@ rpcpassword=%s
 The username and password MUST NOT be the same.
 If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
+for example: alertnotify=echo %%s | mail -s "Tessa Alert" admin@foo.com
 </source>
         <translation>To use pivxd, or the -server option to pivx-qt, you must set an rpcpassword in the configuration file:
 %s
@@ -3935,24 +3935,24 @@ rpcpassword=%s
 The username and password MUST NOT be the same.
 If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
+for example: alertnotify=echo %%s | mail -s "Tessa Alert" admin@foo.com
 </translation>
     </message>
     <message>
-        <source>Unable to bind to %s on this computer. Club Core is probably already running.</source>
-        <translation>Unable to bind to %s on this computer. Club Core is probably already running.</translation>
+        <source>Unable to bind to %s on this computer. Tessa Core is probably already running.</source>
+        <translation>Unable to bind to %s on this computer. Tessa Core is probably already running.</translation>
     </message>
     <message>
         <source>Unable to locate enough Obfuscation denominated funds for this transaction.</source>
         <translation>Unable to locate enough Obfuscation denominated funds for this transaction.</translation>
     </message>
     <message>
-        <source>Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal 10000 Club.</source>
-        <translation>Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal 10000 Club.</translation>
+        <source>Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal 10000 Tessa.</source>
+        <translation>Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal 10000 Tessa.</translation>
     </message>
     <message>
-        <source>Unable to locate enough funds for this transaction that are not equal 10000 Club.</source>
-        <translation>Unable to locate enough funds for this transaction that are not equal 10000 Club.</translation>
+        <source>Unable to locate enough funds for this transaction that are not equal 10000 Tessa.</source>
+        <translation>Unable to locate enough funds for this transaction that are not equal 10000 Tessa.</translation>
     </message>
     <message>
         <source>Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: %s)</source>
@@ -3967,8 +3967,8 @@ for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
         <translation>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</translation>
     </message>
     <message>
-        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Club Core will not work properly.</source>
-        <translation>Warning: Please check that your computer's date and time are correct! If your clock is wrong Club Core will not work properly.</translation>
+        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Tessa Core will not work properly.</source>
+        <translation>Warning: Please check that your computer's date and time are correct! If your clock is wrong Tessa Core will not work properly.</translation>
     </message>
     <message>
         <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
@@ -4115,8 +4115,8 @@ for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
         <translation>Copyright (C) 2014-%i The Dash Core Developers</translation>
     </message>
     <message>
-        <source>Copyright (C) 2015-%i The Club Core Developers</source>
-        <translation>Copyright (C) 2015-%i The Club Core Developers</translation>
+        <source>Copyright (C) 2015-%i The Tessa Core Developers</source>
+        <translation>Copyright (C) 2015-%i The Tessa Core Developers</translation>
     </message>
     <message>
         <source>Corrupted block database detected</source>
@@ -4187,8 +4187,8 @@ for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
         <translation>Error loading wallet.dat: Wallet corrupted</translation>
     </message>
     <message>
-        <source>Error loading wallet.dat: Wallet requires newer version of Club Core</source>
-        <translation>Error loading wallet.dat: Wallet requires newer version of Club Core</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of Tessa Core</source>
+        <translation>Error loading wallet.dat: Wallet requires newer version of Tessa Core</translation>
     </message>
     <message>
         <source>Error opening block database</source>
@@ -4239,8 +4239,8 @@ for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
         <translation>Failed to read block</translation>
     </message>
     <message>
-        <source>Fee (in Club/kB) to add to transactions you send (default: %s)</source>
-        <translation>Fee (in Club/kB) to add to transactions you send (default: %s)</translation>
+        <source>Fee (in Tessa/kB) to add to transactions you send (default: %s)</source>
+        <translation>Fee (in Tessa/kB) to add to transactions you send (default: %s)</translation>
     </message>
     <message>
         <source>Finalizing transaction.</source>
@@ -4299,8 +4299,8 @@ for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
         <translation>Information</translation>
     </message>
     <message>
-        <source>Initialization sanity check failed. Club Core is shutting down.</source>
-        <translation>Initialization sanity check failed. Club Core is shutting down.</translation>
+        <source>Initialization sanity check failed. Tessa Core is shutting down.</source>
+        <translation>Initialization sanity check failed. Tessa Core is shutting down.</translation>
     </message>
     <message>
         <source>Input is not valid.</source>
@@ -4411,8 +4411,8 @@ for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
         <translation>Enable staking functionality (0-1, default: %u)</translation>
     </message>
     <message>
-        <source>Keep N Club anonymized (default: %u)</source>
-        <translation>Keep N Club anonymized (default: %u)</translation>
+        <source>Keep N Tessa anonymized (default: %u)</source>
+        <translation>Keep N Tessa anonymized (default: %u)</translation>
     </message>
     <message>
         <source>Keep at most &lt;n&gt; unconnectable transactions in memory (default: %u)</source>
@@ -4919,8 +4919,8 @@ for example: alertnotify=echo %%s | mail -s "Club Alert" admin@foo.com
         <translation>Wallet is locked.</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart Club Core to complete</source>
-        <translation>Wallet needed to be rewritten: restart Club Core to complete</translation>
+        <source>Wallet needed to be rewritten: restart Tessa Core to complete</source>
+        <translation>Wallet needed to be rewritten: restart Tessa Core to complete</translation>
     </message>
     <message>
         <source>Wallet options:</source>

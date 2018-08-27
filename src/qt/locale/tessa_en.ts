@@ -80,12 +80,12 @@
     </message>
     <message>
         <location line="+7"/>
-        <source>These are your Club addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <source>These are your Tessa addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>These are your Club addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <source>These are your Tessa addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -221,7 +221,7 @@
     </message>
     <message>
         <location line="+9"/>
-        <source>Club will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Clubs from being stolen by malware infecting your computer.</source>
+        <source>Tessa will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Tessas from being stolen by malware infecting your computer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -231,7 +231,7 @@
     </message>
     <message>
         <location line="+0"/>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR Club&lt;/b&gt;!</source>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR Tessa&lt;/b&gt;!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -350,7 +350,7 @@
     </message>
     <message>
         <location line="+11"/>
-        <source>Privacy Actions for zClub</source>
+        <source>Privacy Actions for zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -620,12 +620,12 @@
     <message>
         <location line="-444"/>
         <location line="+923"/>
-        <source>Club Core</source>
+        <source>Tessa Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-723"/>
-        <source>Send coins to a Club address</source>
+        <source>Send coins to a Tessa address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -640,27 +640,27 @@
     </message>
     <message>
         <location line="+31"/>
-        <source>&amp;About Club Core</source>
+        <source>&amp;About Tessa Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Show information about Club Core</source>
+        <source>Show information about Tessa Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
-        <source>Modify configuration options for Club</source>
+        <source>Modify configuration options for Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+16"/>
-        <source>Sign messages with your Club addresses to prove you own them</source>
+        <source>Sign messages with your Tessa addresses to prove you own them</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Verify messages to ensure they were signed with specified Club addresses</source>
+        <source>Verify messages to ensure they were signed with specified Tessa addresses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -685,7 +685,7 @@
     </message>
     <message>
         <location line="+17"/>
-        <source>Open a Club: URI or payment request</source>
+        <source>Open a Tessa: URI or payment request</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -700,17 +700,17 @@
     </message>
     <message>
         <location line="+4"/>
-        <source>Show the Club Core help message to get a list with possible Club command-line options</source>
+        <source>Show the Tessa Core help message to get a list with possible Tessa command-line options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+230"/>
-        <source>Club Core client</source>
+        <source>Tessa Core client</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
         <location line="+212"/>
-        <source>%n active connection(s) to Club network</source>
+        <source>%n active connection(s) to Tessa network</source>
         <translation type="unfinished">
             <numerusform></numerusform>
             <numerusform></numerusform>
@@ -1285,7 +1285,7 @@ Address: %4
     </message>
     <message>
         <location line="+67"/>
-        <source>The entered address &quot;%1&quot; is not a valid Club address.</source>
+        <source>The entered address &quot;%1&quot; is not a valid Tessa address.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1341,7 +1341,7 @@ Address: %4
     </message>
     <message>
         <location line="+0"/>
-        <source>Club Core</source>
+        <source>Tessa Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1352,7 +1352,7 @@ Address: %4
     </message>
     <message>
         <location line="+4"/>
-        <source>About Club Core</source>
+        <source>About Tessa Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1410,17 +1410,17 @@ Address: %4
     </message>
     <message>
         <location line="+9"/>
-        <source>Welcome to Club Core.</source>
+        <source>Welcome to Tessa Core.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+26"/>
-        <source>As this is the first time the program is launched, you can choose where Club Core will store its data.</source>
+        <source>As this is the first time the program is launched, you can choose where Tessa Core will store its data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
-        <source>Club Core will download and store a copy of the Club block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <source>Tessa Core will download and store a copy of the Tessa block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1435,7 +1435,7 @@ Address: %4
     </message>
     <message>
         <location filename="../intro.cpp" line="+77"/>
-        <source>Club Core</source>
+        <source>Tessa Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1483,8 +1483,8 @@ Address: %4
     </message>
     <message>
         <location line="-106"/>
-        <source>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other Club addresses after it matures.
-To Add: enter percentage to give and Club address to add to the MultiSend vector.
+        <source>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other Tessa addresses after it matures.
+To Add: enter percentage to give and Tessa address to add to the MultiSend vector.
 To Delete: Enter address to delete and press delete.
 MultiSend will not be activated unless you have clicked Activate</source>
         <translation type="unfinished"></translation>
@@ -1760,7 +1760,7 @@ Please be patient after clicking import.</source>
     </message>
     <message>
         <location line="+13"/>
-        <source>Add destinations to send Club to</source>
+        <source>Add destinations to send Tessa to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1883,12 +1883,12 @@ Please be patient after clicking import.</source>
     </message>
     <message>
         <location line="+13"/>
-        <source>Use 2 separate masternodes to mix funds up to 10000 Club</source>
+        <source>Use 2 separate masternodes to mix funds up to 10000 Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
-        <source>Use 8 separate masternodes to mix funds up to 10000 Club</source>
+        <source>Use 8 separate masternodes to mix funds up to 10000 Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1898,12 +1898,12 @@ Please be patient after clicking import.</source>
     </message>
     <message>
         <location line="+13"/>
-        <source>This option is the quickest and will cost about ~0.025 Club to anonymize 10000 Club</source>
+        <source>This option is the quickest and will cost about ~0.025 Tessa to anonymize 10000 Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
-        <source>This option is moderately fast and will cost about 0.05 Club to anonymize 10000 Club</source>
+        <source>This option is moderately fast and will cost about 0.05 Tessa to anonymize 10000 Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1913,7 +1913,7 @@ Please be patient after clicking import.</source>
     </message>
     <message>
         <location line="+13"/>
-        <source>0.1 Club per 10000 Club you anonymize.</source>
+        <source>0.1 Tessa per 10000 Tessa you anonymize.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1925,17 +1925,17 @@ Please be patient after clicking import.</source>
     </message>
     <message>
         <location line="-27"/>
-        <source>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening Club&apos;s configuration screen.</source>
+        <source>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening Tessa&apos;s configuration screen.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+14"/>
-        <source>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening Club&apos;s configuration screen.</source>
+        <source>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening Tessa&apos;s configuration screen.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+14"/>
-        <source>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening Club&apos;s configuration screen.</source>
+        <source>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening Tessa&apos;s configuration screen.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2011,7 +2011,7 @@ Please be patient after clicking import.</source>
     </message>
     <message>
         <location line="+33"/>
-        <source>Automatically open the Club client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <source>Automatically open the Tessa client port on the router. This only works when your router supports UPnP and it is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2036,12 +2036,12 @@ Please be patient after clicking import.</source>
     </message>
     <message>
         <location line="-210"/>
-        <source>Automatically start Club after logging in to the system.</source>
+        <source>Automatically start Tessa after logging in to the system.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>&amp;Start Club on system login</source>
+        <source>&amp;Start Tessa on system login</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2071,7 +2071,7 @@ Please be patient after clicking import.</source>
     </message>
     <message>
         <location line="+192"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting Club.</source>
+        <source>The user interface language can be set here. This setting will take effect after restarting Tessa.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2087,7 +2087,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</source>
     </message>
     <message>
         <location line="-169"/>
-        <source>Enable automatic minting of Club units to zClub</source>
+        <source>Enable automatic minting of Tessa units to zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2097,18 +2097,18 @@ https://www.transifex.com/pivx-project/pivx-project-translations</source>
     </message>
     <message>
         <location line="+9"/>
-        <source>Percentage of incoming Club which get automatically converted to ZKP via Zerocoin Protocol (min: 10%)</source>
+        <source>Percentage of incoming Tessa which get automatically converted to ZKP via Zerocoin Protocol (min: 10%)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Percentage of autominted zClub</source>
+        <source>Percentage of autominted zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+30"/>
         <location line="+16"/>
-        <source>Wait with automatic conversion to Zerocoin until enough Club for this denomination is available</source>
+        <source>Wait with automatic conversion to Zerocoin until enough Tessa for this denomination is available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2123,7 +2123,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</source>
     </message>
     <message>
         <location line="+98"/>
-        <source>Connect to the Club network through a SOCKS5 proxy.</source>
+        <source>Connect to the Tessa network through a SOCKS5 proxy.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2322,7 +2322,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</source>
     </message>
     <message>
         <location line="+71"/>
-        <source>Club Balance</source>
+        <source>Tessa Balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2354,12 +2354,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</source>
     <message>
         <location line="+16"/>
         <location line="+19"/>
-        <source>Your current Club balance, unconfirmed and immature transactions included</source>
+        <source>Your current Tessa balance, unconfirmed and immature transactions included</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+96"/>
-        <source>zClub Balance</source>
+        <source>zTessa Balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2381,7 +2381,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
     <message>
         <location line="-725"/>
         <location line="+852"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Club network after a connection is established, but this process has not completed yet.</source>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Tessa network after a connection is established, but this process has not completed yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2439,7 +2439,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
     <message>
         <location line="+191"/>
         <location line="+19"/>
-        <source>Locked Club collaterals. These are excluded from ZKP minting.</source>
+        <source>Locked Tessa collaterals. These are excluded from ZKP minting.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2471,7 +2471,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
     </message>
     <message>
         <location line="+105"/>
-        <source>Current percentage of zClub.
+        <source>Current percentage of zTessa.
 If AutoMint is enabled this percentage will settle around the configured AutoMint percentage (default = 10%).
 </source>
         <translation type="unfinished"></translation>
@@ -2534,7 +2534,7 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
     </message>
     <message>
         <location line="+114"/>
-        <source>URI cannot be parsed! This can be caused by an invalid Club address or malformed URI parameters.</source>
+        <source>URI cannot be parsed! This can be caused by an invalid Tessa address or malformed URI parameters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2642,7 +2642,7 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
     </message>
     <message>
         <location line="+10"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Club network after a connection is established, but this process has not completed yet.</source>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Tessa network after a connection is established, but this process has not completed yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2662,7 +2662,7 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
     <message>
         <location line="-371"/>
         <location line="+651"/>
-        <source>zClub</source>
+        <source>zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2677,7 +2677,7 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
     </message>
     <message>
         <location line="+19"/>
-        <source>0.000 000 00 Club</source>
+        <source>0.000 000 00 Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2728,17 +2728,17 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
     <message>
         <location line="+182"/>
         <location line="+52"/>
-        <source>Enter an amount of Piv to convert to zClub</source>
+        <source>Enter an amount of Piv to convert to zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+301"/>
-        <source>zClub Control</source>
+        <source>zTessa Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>zClub Selected:</source>
+        <source>zTessa Selected:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2778,7 +2778,7 @@ To enable AutoMint change &apos;enablezeromint=0&apos; to &apos;enablezeromint=1
         <location line="+16"/>
         <source>Available (mature and spendable) ZKP for spending
 
-zClub are mature when they have more than 20 confirmations AND more than 2 mints of the same denomination after them were minted</source>
+zTessa are mature when they have more than 20 confirmations AND more than 2 mints of the same denomination after them were minted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2793,7 +2793,7 @@ zClub are mature when they have more than 20 confirmations AND more than 2 mints
         <location line="+31"/>
         <location line="+31"/>
         <location line="+31"/>
-        <source>0 zClub</source>
+        <source>0 zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2818,7 +2818,7 @@ zClub are mature when they have more than 20 confirmations AND more than 2 mints
     </message>
     <message>
         <location line="+27"/>
-        <source>The Club address to send the payment to. Creates local payment to yourself when empty.</source>
+        <source>The Tessa address to send the payment to. Creates local payment to yourself when empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2884,7 +2884,7 @@ zClub are mature when they have more than 20 confirmations AND more than 2 mints
     <message>
         <location line="+68"/>
         <location line="+38"/>
-        <source>Total Balance including unconfirmed and immature zClub</source>
+        <source>Total Balance including unconfirmed and immature zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2924,7 +2924,7 @@ To change the status (restart required):
 - disable: add &apos;enablezeromint=0&apos; to pivx.conf
 
 To change the percentage (no restart required):
-- menu Settings-&gt;Options-&gt;Percentage of autominted zClub
+- menu Settings-&gt;Options-&gt;Percentage of autominted zTessa
 
 </source>
         <translation type="unfinished"></translation>
@@ -3158,12 +3158,12 @@ To change the percentage (no restart required):
     </message>
     <message>
         <location line="+442"/>
-        <source>zClub Spend #: </source>
+        <source>zTessa Spend #: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+16"/>
-        <source>zClub Mint</source>
+        <source>zTessa Mint</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3184,13 +3184,13 @@ To change the percentage (no restart required):
     <message>
         <location line="+10"/>
         <location line="+4"/>
-        <source>zClub is currently disabled due to maintenance.</source>
+        <source>zTessa is currently disabled due to maintenance.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-637"/>
         <location line="+111"/>
-        <source>zClub is currently undergoing maintenance.</source>
+        <source>zTessa is currently undergoing maintenance.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3343,7 +3343,7 @@ Please be patient...</source>
     </message>
     <message>
         <location line="+4"/>
-        <source>Invalid Club Address</source>
+        <source>Invalid Tessa Address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3397,7 +3397,7 @@ Please be patient...</source>
     <message>
         <location line="-31"/>
         <location line="+32"/>
-        <source>Failed to spend zClub</source>
+        <source>Failed to spend zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3431,7 +3431,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     <message numerus="yes">
         <location line="+335"/>
         <source>PrivacyDialog</source>
-        <comment>Enter an amount of Club to convert to zClub</comment>
+        <comment>Enter an amount of Tessa to convert to zTessa</comment>
         <translation type="unfinished">
             <numerusform></numerusform>
             <numerusform></numerusform>
@@ -3487,7 +3487,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location filename="../guiutil.cpp" line="+113"/>
-        <source>Enter a Club address (e.g. %1)</source>
+        <source>Enter a Tessa address (e.g. %1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3690,7 +3690,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+79"/>
-        <source>Open the Club debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <source>Open the Tessa debug log file from the current data directory. This can take a few seconds for large log files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3957,7 +3957,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="-36"/>
-        <source>Welcome to the Club RPC console.</source>
+        <source>Welcome to the Tessa RPC console.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4121,7 +4121,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="-37"/>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Club network.</source>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Tessa network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4131,7 +4131,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+124"/>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the Club network.</source>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the Tessa network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4419,7 +4419,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+7"/>
-        <source>0 Club</source>
+        <source>0 Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4489,18 +4489,18 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+907"/>
-        <source>If the custom fee is set to 1000 uClubs and the transaction is only 250 bytes, then &quot;per kilobyte&quot; only pays 250 uClubs in fee,&lt;br /&gt;while &quot;at least&quot; pays 1000 uClubs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
+        <source>If the custom fee is set to 1000 uTessas and the transaction is only 250 bytes, then &quot;per kilobyte&quot; only pays 250 uTessas in fee,&lt;br /&gt;while &quot;at least&quot; pays 1000 uTessas. For transactions bigger than a kilobyte both pay by kilobyte.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+16"/>
-        <source>If the custom fee is set to 1000 uClubs and the transaction is only 250 bytes, then &quot;per kilobyte&quot; only pays 250 uClubs in fee,&lt;br /&gt;while &quot;total at least&quot; pays 1000 uClubs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
+        <source>If the custom fee is set to 1000 uTessas and the transaction is only 250 bytes, then &quot;per kilobyte&quot; only pays 250 uTessas in fee,&lt;br /&gt;while &quot;total at least&quot; pays 1000 uTessas. For transactions bigger than a kilobyte both pay by kilobyte.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+33"/>
         <location line="+13"/>
-        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for Club transactions than the network can process.</source>
+        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for Tessa transactions than the network can process.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4560,7 +4560,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+35"/>
-        <source>Anonymized Club</source>
+        <source>Anonymized Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4620,7 +4620,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+629"/>
-        <source>Warning: Invalid Club address</source>
+        <source>Warning: Invalid Tessa address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4754,7 +4754,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+18"/>
-        <source>The Club address to send the payment to</source>
+        <source>The Tessa address to send the payment to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4808,7 +4808,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+10"/>
-        <source>A message that was attached to the Club: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Club network.</source>
+        <source>A message that was attached to the Tessa: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Tessa network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4843,7 +4843,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     <name>ShutdownWindow</name>
     <message>
         <location filename="../utilitydialog.cpp" line="+75"/>
-        <source>Club Core is shutting down...</source>
+        <source>Tessa Core is shutting down...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4871,7 +4871,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+15"/>
-        <source>The Club address to sign the message with</source>
+        <source>The Tessa address to sign the message with</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4913,17 +4913,17 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+18"/>
-        <source>Sign the message to prove you own this Club address</source>
+        <source>Sign the message to prove you own this Tessa address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+103"/>
-        <source>The Club address the message was signed with</source>
+        <source>The Tessa address the message was signed with</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+34"/>
-        <source>Verify the message to ensure it was signed with the specified Club address</source>
+        <source>Verify the message to ensure it was signed with the specified Tessa address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5038,7 +5038,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     <name>SplashScreen</name>
     <message>
         <location filename="../splashscreen.cpp" line="+36"/>
-        <source>Club Core</source>
+        <source>Tessa Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5058,7 +5058,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+1"/>
-        <source>The Club Core developers</source>
+        <source>The Tessa Core developers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5430,12 +5430,12 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+7"/>
-        <source>Club Stake</source>
+        <source>Tessa Stake</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>zClub Stake</source>
+        <source>zTessa Stake</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5460,17 +5460,17 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+4"/>
-        <source>Converted Club to zClub</source>
+        <source>Converted Tessa to zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Spent zClub</source>
+        <source>Spent zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Received Club from zClub</source>
+        <source>Received Tessa from zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5480,17 +5480,17 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+2"/>
-        <source>Converted ZKP to Club</source>
+        <source>Converted ZKP to Tessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+56"/>
-        <source>Anonymous (zClub Transaction)</source>
+        <source>Anonymous (zTessa Transaction)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Anonymous (zClub Stake)</source>
+        <source>Anonymous (zTessa Stake)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5749,12 +5749,12 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="-280"/>
-        <source>Received Club from zClub</source>
+        <source>Received Tessa from zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Zerocoin Spend, Change in zClub</source>
+        <source>Zerocoin Spend, Change in zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5801,7 +5801,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     <message>
         <location line="-18"/>
         <location line="+9"/>
-        <source>SwiftX doesn&apos;t support sending values that high yet. Transactions are currently limited to %1 Club.</source>
+        <source>SwiftX doesn&apos;t support sending values that high yet. Transactions are currently limited to %1 Tessa.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5858,7 +5858,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="-7"/>
-        <source>zClub</source>
+        <source>zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5906,7 +5906,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+2"/>
-        <source>Cannot obtain a lock on data directory %s. Club Core is probably already running.</source>
+        <source>Cannot obtain a lock on data directory %s. Tessa Core is probably already running.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5946,7 +5946,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+3"/>
-        <source>Enable or disable staking functionality for Club inputs (0-1, default: %u)</source>
+        <source>Enable or disable staking functionality for Tessa inputs (0-1, default: %u)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5996,12 +5996,12 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+8"/>
-        <source>Fees (in Club/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
+        <source>Fees (in Tessa/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Fees (in Club/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
+        <source>Fees (in Tessa/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6126,7 +6126,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+4"/>
-        <source>Unable to bind to %s on this computer. Club Core is probably already running.</source>
+        <source>Unable to bind to %s on this computer. Tessa Core is probably already running.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6136,12 +6136,12 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+2"/>
-        <source>Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal 10000 Club.</source>
+        <source>Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal 10000 Tessa.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Unable to locate enough funds for this transaction that are not equal 10000 Club.</source>
+        <source>Unable to locate enough funds for this transaction that are not equal 10000 Tessa.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6161,7 +6161,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Club Core will not work properly.</source>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Tessa Core will not work properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6351,7 +6351,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+1"/>
-        <source>Copyright (C) 2015-%i The Club Core Developers</source>
+        <source>Copyright (C) 2015-%i The Tessa Core Developers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6461,7 +6461,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+1"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of Club Core</source>
+        <source>Error loading wallet.dat: Wallet requires newer version of Tessa Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6531,7 +6531,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+4"/>
-        <source>Fee (in Club/kB) to add to transactions you send (default: %s)</source>
+        <source>Fee (in Tessa/kB) to add to transactions you send (default: %s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6606,7 +6606,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+1"/>
-        <source>Initialization sanity check failed. Club Core is shutting down.</source>
+        <source>Initialization sanity check failed. Tessa Core is shutting down.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6696,7 +6696,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+9"/>
-        <source>Reindex the Club and ZKP money supply statistics</source>
+        <source>Reindex the Tessa and ZKP money supply statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6743,7 +6743,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+38"/>
-        <source>Disable all Club specific functionality (Masternodes, Zerocoin, SwiftX, Budgeting) (0-1, default: %u)</source>
+        <source>Disable all Tessa specific functionality (Masternodes, Zerocoin, SwiftX, Budgeting) (0-1, default: %u)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7598,7 +7598,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+1"/>
-        <source>Value is below the smallest available denomination (= 1) of zClub</source>
+        <source>Value is below the smallest available denomination (= 1) of zTessa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7633,7 +7633,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+1"/>
-        <source>Wallet needed to be rewritten: restart Club Core to complete</source>
+        <source>Wallet needed to be rewritten: restart Tessa Core to complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

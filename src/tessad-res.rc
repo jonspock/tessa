@@ -16,8 +16,8 @@ BEGIN
     BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
-            VALUE "CompanyName",        "Club"
-            VALUE "FileDescription",    "clubd (OSS daemon/client for Club)"
+            VALUE "CompanyName",        "Tessa"
+            VALUE "FileDescription",    "clubd (OSS daemon/client for Tessa)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "clubd"
             VALUE "LegalCopyright",     COPYRIGHT_STR

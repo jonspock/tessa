@@ -1,4 +1,4 @@
-# Copyright 2018 ClubChain Developers
+# Copyright 2018 TessaCoin Developers
 # See LICENSE file or http://opensource.org/licenses/MIT for terms
 
 cmake_minimum_required(VERSION 2.8)

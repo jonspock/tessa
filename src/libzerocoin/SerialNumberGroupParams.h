@@ -1,5 +1,5 @@
 // Copyright (c) 2018 The PIVX developer
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The TessaCoin developers
 #pragma once
 
 #include "bignum.h"

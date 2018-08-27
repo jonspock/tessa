@@ -10,7 +10,7 @@
  *  license    This project is released under the MIT license.
  **/
 // Copyright (c) 2018 The PIVX developer
-// x Copyright (c) 2018 The ClubChain developers
+// x Copyright (c) 2018 The TessaCoin developers
 #pragma once
 
 #include "Accumulator.h"

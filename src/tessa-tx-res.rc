@@ -16,8 +16,8 @@ BEGIN
     BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
-            VALUE "CompanyName",        "Club"
-            VALUE "FileDescription",    "club-tx (CLI Club transaction editor utility)"
+            VALUE "CompanyName",        "Tessa"
+            VALUE "FileDescription",    "club-tx (CLI Tessa transaction editor utility)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "club-tx"
             VALUE "LegalCopyright",     COPYRIGHT_STR
