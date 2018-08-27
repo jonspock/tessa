@@ -52,7 +52,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
     if (wtx.IsZerocoinSpend() && (fZSpendFromMe || wallet->zkpTracker->HasMintTx(hash))) {
       // ZKP stake reward - not valid
     } else if (isminetype mine = wallet->IsMine(wtx.vout[1])) {
-      // Club stake reward
+      // Tessa stake reward
       sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
       sub.type = TransactionRecord::StakeMint;
       sub.address = CBitcoinAddress(address).ToString();
@@ -131,7 +131,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
         sub.credit = txout.nValue;
         sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
         if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address)) {
-          // Received by Club Address
+          // Received by Tessa Address
           sub.type = TransactionRecord::RecvWithAddress;
           sub.address = CBitcoinAddress(address).ToString();
         } else {
@@ -209,7 +209,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
           // This is most likely only going to happen when resyncing deterministic wallet without the knowledge of the
           // private keys that the change was sent to. Do not display a "sent to" here.
           if (wtx.IsZerocoinMint()) continue;
-          // Sent to Club Address
+          // Sent to Tessa Address
           sub.type = TransactionRecord::SendToAddress;
           sub.address = CBitcoinAddress(address).ToString();
         } else if (txout.IsZerocoinMint()) {

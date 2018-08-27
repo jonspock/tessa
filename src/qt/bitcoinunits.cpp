@@ -16,17 +16,17 @@ BitcoinUnits::BitcoinUnits(QObject* parent) : QAbstractListModel(parent), unitli
 
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits() {
   QList<BitcoinUnits::Unit> unitlist;
-  unitlist.append(Club);
-  unitlist.append(mClub);
-  unitlist.append(uClub);
+  unitlist.append(Tessa);
+  unitlist.append(mTessa);
+  unitlist.append(uTessa);
   return unitlist;
 }
 
 bool BitcoinUnits::valid(int unit) {
   switch (unit) {
-    case Club:
-    case mClub:
-    case uClub:
+    case Tessa:
+    case mTessa:
+    case uTessa:
       return true;
     default:
       return false;
@@ -35,12 +35,12 @@ bool BitcoinUnits::valid(int unit) {
 
 QString BitcoinUnits::id(int unit) {
   switch (unit) {
-    case Club:
-      return QString("Club");
-    case mClub:
-      return QString("mClub");
-    case uClub:
-      return QString::fromUtf8("uClub");
+    case Tessa:
+      return QString("Tessa");
+    case mTessa:
+      return QString("mTessa");
+    case uTessa:
+      return QString::fromUtf8("uTessa");
     default:
       return QString("???");
   }
@@ -49,23 +49,23 @@ QString BitcoinUnits::id(int unit) {
 QString BitcoinUnits::name(int unit) {
   if (Params().NetworkID() == CBaseChainParams::MAIN) {
     switch (unit) {
-      case Club:
-        return QString("Club");
-      case mClub:
-        return QString("mClub");
-      case uClub:
-        return QString::fromUtf8("μClub");
+      case Tessa:
+        return QString("Tessa");
+      case mTessa:
+        return QString("mTessa");
+      case uTessa:
+        return QString::fromUtf8("μTessa");
       default:
         return QString("???");
     }
   } else {
     switch (unit) {
-      case Club:
-        return QString("tClub");
-      case mClub:
-        return QString("mtClub");
-      case uClub:
-        return QString::fromUtf8("μtClub");
+      case Tessa:
+        return QString("tTessa");
+      case mTessa:
+        return QString("mtTessa");
+      case uTessa:
+        return QString::fromUtf8("μtTessa");
       default:
         return QString("???");
     }
@@ -75,23 +75,23 @@ QString BitcoinUnits::name(int unit) {
 QString BitcoinUnits::description(int unit) {
   if (Params().NetworkID() == CBaseChainParams::MAIN) {
     switch (unit) {
-      case Club:
-        return QString("Club");
-      case mClub:
-        return QString("Milli-Club (1 / 1" THIN_SP_UTF8 "000)");
-      case uClub:
-        return QString("Micro-Club (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+      case Tessa:
+        return QString("Tessa");
+      case mTessa:
+        return QString("Milli-Tessa (1 / 1" THIN_SP_UTF8 "000)");
+      case uTessa:
+        return QString("Micro-Tessa (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
       default:
         return QString("???");
     }
   } else {
     switch (unit) {
-      case Club:
-        return QString("TestClubs");
-      case mClub:
-        return QString("Milli-TestClub (1 / 1" THIN_SP_UTF8 "000)");
-      case uClub:
-        return QString("Micro-TestClub (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+      case Tessa:
+        return QString("TestTessas");
+      case mTessa:
+        return QString("Milli-TestTessa (1 / 1" THIN_SP_UTF8 "000)");
+      case uTessa:
+        return QString("Micro-TestTessa (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
       default:
         return QString("???");
     }
@@ -100,11 +100,11 @@ QString BitcoinUnits::description(int unit) {
 
 qint64 BitcoinUnits::factor(int unit) {
   switch (unit) {
-    case Club:
+    case Tessa:
       return 100000000;
-    case mClub:
+    case mTessa:
       return 100000;
-    case uClub:
+    case uTessa:
       return 100;
     default:
       return 100000000;
@@ -113,11 +113,11 @@ qint64 BitcoinUnits::factor(int unit) {
 
 int BitcoinUnits::decimals(int unit) {
   switch (unit) {
-    case Club:
+    case Tessa:
       return 8;
-    case mClub:
+    case mTessa:
       return 5;
-    case uClub:
+    case uTessa:
       return 2;
     default:
       return 0;

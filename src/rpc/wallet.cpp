@@ -77,7 +77,7 @@ UniValue getnewaddress(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 1)
     throw runtime_error(
         "getnewaddress ( \"account\" )\n"
-        "\nReturns a new Club address for receiving payments.\n"
+        "\nReturns a new Tessa address for receiving payments.\n"
         "If 'account' is specified (recommended), it is added to the address book \n"
         "so payments received with the address will be credited to 'account'.\n"
 
@@ -145,7 +145,7 @@ UniValue getaccountaddress(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 1)
     throw runtime_error(
         "getaccountaddress \"account\"\n"
-        "\nReturns the current Club address for receiving payments to this account.\n"
+        "\nReturns the current Tessa address for receiving payments to this account.\n"
 
         "\nArguments:\n"
         "1. \"account\"       (string, required) The account name for the address. It can also be set to the empty "
@@ -174,7 +174,7 @@ UniValue getrawchangeaddress(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 1)
     throw runtime_error(
         "getrawchangeaddress\n"
-        "\nReturns a new Club address, for receiving change.\n"
+        "\nReturns a new Tessa address, for receiving change.\n"
         "This is for use with raw transactions, NOT normal use.\n"
 
         "\nResult:\n"
@@ -216,7 +216,7 @@ UniValue setaccount(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   CBitcoinAddress address(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
+  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
 
   string strAccount;
   if (params.size() > 1) strAccount = AccountFromValue(params[1]);
@@ -254,7 +254,7 @@ UniValue getaccount(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   CBitcoinAddress address(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
+  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
 
   string strAccount;
   map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(address.Get());
@@ -307,7 +307,7 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
     throw JSONRPCError(RPC_WALLET_ERROR, strError);
   }
 
-  // Parse Club address
+  // Parse Tessa address
   CScript scriptPubKey = GetScriptForDestination(address);
 
   // Create and send the transaction
@@ -340,7 +340,7 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp) {
 
         "\nArguments:\n"
         "1. \"clubaddress\"  (string, required) The club address to send to.\n"
-        "2. \"amount\"      (numeric, required) The amount in Club to send. eg 0.1\n"
+        "2. \"amount\"      (numeric, required) The amount in Tessa to send. eg 0.1\n"
         "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
         "                             This is not part of the transaction, just kept in your wallet.\n"
         "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
@@ -359,7 +359,7 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   CBitcoinAddress address(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
+  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
 
   // Amount
   CAmount nAmount = AmountFromValue(params[1]);
@@ -388,7 +388,7 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp) {
 
         "\nArguments:\n"
         "1. \"clubaddress\"  (string, required) The club address to send to.\n"
-        "2. \"amount\"      (numeric, required) The amount in Club to send. eg 0.1\n"
+        "2. \"amount\"      (numeric, required) The amount in Tessa to send. eg 0.1\n"
         "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
         "                             This is not part of the transaction, just kept in your wallet.\n"
         "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
@@ -407,7 +407,7 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   CBitcoinAddress address(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
+  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
 
   // Amount
   CAmount nAmount = AmountFromValue(params[1]);
@@ -439,7 +439,7 @@ UniValue listaddressgroupings(const UniValue& params, bool fHelp) {
         "  [\n"
         "    [\n"
         "      \"clubaddress\",     (string) The club address\n"
-        "      amount,                 (numeric) The amount in Club\n"
+        "      amount,                 (numeric) The amount in Tessa\n"
         "      \"account\"             (string, optional) The account\n"
         "    ]\n"
         "    ,...\n"
@@ -533,7 +533,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
         "times.\n"
 
         "\nResult:\n"
-        "amount   (numeric) The total amount in Club received at this address.\n"
+        "amount   (numeric) The total amount in Tessa received at this address.\n"
 
         "\nExamples:\n"
         "\nThe amount from transactions with at least 1 confirmation\n" +
@@ -548,7 +548,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
 
   // club address
   CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
+  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
   CScript scriptPubKey = GetScriptForDestination(address.Get());
   if (!IsMine(*pwalletMain, scriptPubKey)) return (double)0.0;
 
@@ -584,7 +584,7 @@ UniValue getreceivedbyaccount(const UniValue& params, bool fHelp) {
         "times.\n"
 
         "\nResult:\n"
-        "amount              (numeric) The total amount in Club received for this account.\n"
+        "amount              (numeric) The total amount in Tessa received for this account.\n"
 
         "\nExamples:\n"
         "\nAmount received by the default account with at least 1 confirmation\n" +
@@ -666,7 +666,7 @@ UniValue getbalance(const UniValue& params, bool fHelp) {
         "'importaddress')\n"
 
         "\nResult:\n"
-        "amount              (numeric) The total amount in Club received for this account.\n"
+        "amount              (numeric) The total amount in Tessa received for this account.\n"
 
         "\nExamples:\n"
         "\nThe total amount in the server across all accounts\n" +
@@ -749,9 +749,9 @@ UniValue movecmd(const UniValue& params, bool fHelp) {
         "true|false           (boolean) true if successfull.\n"
 
         "\nExamples:\n"
-        "\nMove 0.01 Club from the default account to the account named tabby\n" +
+        "\nMove 0.01 Tessa from the default account to the account named tabby\n" +
         HelpExampleCli("move", "\"\" \"tabby\" 0.01") +
-        "\nMove 0.01 Club from timotei to akiko with a comment and funds have 6 confirmations\n" +
+        "\nMove 0.01 Tessa from timotei to akiko with a comment and funds have 6 confirmations\n" +
         HelpExampleCli("move", "\"timotei\" \"akiko\" 0.01 6 \"happy birthday!\"") + "\nAs a json rpc call\n" +
         HelpExampleRpc("move", "\"timotei\", \"akiko\", 0.01, 6, \"happy birthday!\""));
 
@@ -802,7 +802,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp) {
         "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default "
         "account using \"\".\n"
         "2. \"toclubaddress\"  (string, required) The club address to send funds to.\n"
-        "3. amount                (numeric, required) The amount in Club. (transaction fee is added on top).\n"
+        "3. amount                (numeric, required) The amount in Tessa. (transaction fee is added on top).\n"
         "4. minconf               (numeric, optional, default=1) Only use funds with at least this many "
         "confirmations.\n"
         "5. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
@@ -817,7 +817,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp) {
         "\"transactionid\"        (string) The transaction id.\n"
 
         "\nExamples:\n"
-        "\nSend 0.01 Club from the default account to the address, must have at least 1 confirmation\n" +
+        "\nSend 0.01 Tessa from the default account to the address, must have at least 1 confirmation\n" +
         HelpExampleCli("sendfrom", "\"\" \"DMJRSsuU9zfyrvxVaAEFQqK4MxZg6vgeS6\" 0.01") +
         "\nSend 0.01 from the tabby account to the given address, funds must have at least 6 confirmations\n" +
         HelpExampleCli("sendfrom",
@@ -830,7 +830,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp) {
 
   string strAccount = AccountFromValue(params[0]);
   CBitcoinAddress address(params[1].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
+  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
   CAmount nAmount = AmountFromValue(params[2]);
   int nMinDepth = 1;
   if (params.size() > 3) nMinDepth = params[3].get_int();
@@ -866,7 +866,7 @@ UniValue sendmany(const UniValue& params, bool fHelp) {
         "account\n"
         "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
         "    {\n"
-        "      \"address\":amount   (numeric) The club address is the key, the numeric amount in Club is the value\n"
+        "      \"address\":amount   (numeric) The club address is the key, the numeric amount in Tessa is the value\n"
         "      ,...\n"
         "    }\n"
         "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many "
@@ -914,7 +914,7 @@ UniValue sendmany(const UniValue& params, bool fHelp) {
   vector<string> keys = sendTo.getKeys();
   for (const string& name_ : keys) {
     CBitcoinAddress address(name_);
-    if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Club address: ") + name_);
+    if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + name_);
 
     if (setAddress.count(address))
       throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + name_);
@@ -953,7 +953,7 @@ UniValue addmultisigaddress(const UniValue& params, bool fHelp) {
     throw runtime_error(
         "addmultisigaddress nrequired [\"key\",...] ( \"account\" )\n"
         "\nAdd a nrequired-to-sign multisignature address to the wallet.\n"
-        "Each key is a Club address or hex-encoded public key.\n"
+        "Each key is a Tessa address or hex-encoded public key.\n"
         "If 'account' is specified, assign address to that account.\n"
 
         "\nArguments:\n"
@@ -1130,7 +1130,7 @@ UniValue listreceivedbyaddress(const UniValue& params, bool fHelp) {
         "    \"address\" : \"receivingaddress\",  (string) The receiving address\n"
         "    \"account\" : \"accountname\",       (string) The account of the receiving address. The default account "
         "is \"\".\n"
-        "    \"amount\" : x.xxx,                  (numeric) The total amount in Club received by the address\n"
+        "    \"amount\" : x.xxx,                  (numeric) The total amount in Tessa received by the address\n"
         "    \"confirmations\" : n                (numeric) The number of confirmations of the most recent transaction "
         "included\n"
         "    \"bcconfirmations\" : n              (numeric) The number of blockchain confirmations of the most recent "
@@ -1296,13 +1296,13 @@ UniValue listtransactions(const UniValue& params, bool fHelp) {
         "                                                transaction id or block. 'send' and 'receive' transactions "
         "are \n"
         "                                                associated with an address, transaction id and block details\n"
-        "    \"amount\": x.xxx,          (numeric) The amount in Club. This is negative for the 'send' category, and "
+        "    \"amount\": x.xxx,          (numeric) The amount in Tessa. This is negative for the 'send' category, and "
         "for the\n"
         "                                         'move' category for moves outbound. It is positive for the 'receive' "
         "category,\n"
         "                                         and for the 'move' category for inbound funds.\n"
         "    \"vout\" : n,               (numeric) the vout value\n"
-        "    \"fee\": x.xxx,             (numeric) The amount of the fee in Club. This is negative and only available "
+        "    \"fee\": x.xxx,             (numeric) The amount of the fee in Tessa. This is negative and only available "
         "for the \n"
         "                                         'send' category of transactions.\n"
         "    \"confirmations\": n,       (numeric) The number of confirmations for the transaction. Available for "
@@ -1483,12 +1483,12 @@ UniValue listsinceblock(const UniValue& params, bool fHelp) {
         "transactions (category = move).\n"
         "    \"category\":\"send|receive\",     (string) The transaction category. 'send' has negative amounts, "
         "'receive' has positive amounts.\n"
-        "    \"amount\": x.xxx,          (numeric) The amount in Club. This is negative for the 'send' category, and "
+        "    \"amount\": x.xxx,          (numeric) The amount in Tessa. This is negative for the 'send' category, and "
         "for the 'move' category for moves \n"
         "                                          outbound. It is positive for the 'receive' category, and for the "
         "'move' category for inbound funds.\n"
         "    \"vout\" : n,               (numeric) the vout value\n"
-        "    \"fee\": x.xxx,             (numeric) The amount of the fee in Club. This is negative and only available "
+        "    \"fee\": x.xxx,             (numeric) The amount of the fee in Tessa. This is negative and only available "
         "for the 'send' category of transactions.\n"
         "    \"confirmations\": n,       (numeric) The number of confirmations for the transaction. Available for "
         "'send' and 'receive' category of transactions.\n"
@@ -1572,7 +1572,7 @@ UniValue gettransaction(const UniValue& params, bool fHelp) {
 
         "\nResult:\n"
         "{\n"
-        "  \"amount\" : x.xxx,        (numeric) The transaction amount in Club\n"
+        "  \"amount\" : x.xxx,        (numeric) The transaction amount in Tessa\n"
         "  \"confirmations\" : n,     (numeric) The number of confirmations\n"
         "  \"bcconfirmations\" : n,   (numeric) The number of blockchain confirmations\n"
         "  \"blockhash\" : \"hash\",  (string) The block hash\n"
@@ -1587,7 +1587,7 @@ UniValue gettransaction(const UniValue& params, bool fHelp) {
         "the default account.\n"
         "      \"address\" : \"clubaddress\",   (string) The club address involved in the transaction\n"
         "      \"category\" : \"send|receive\",    (string) The category, either 'send' or 'receive'\n"
-        "      \"amount\" : x.xxx                  (numeric) The amount in Club\n"
+        "      \"amount\" : x.xxx                  (numeric) The amount in Tessa\n"
         "      \"vout\" : n,                       (numeric) the vout value\n"
         "    }\n"
         "    ,...\n"
@@ -1677,7 +1677,7 @@ UniValue walletpassphrase(const UniValue& params, bool fHelp) {
     throw runtime_error(
         "walletpassphrase \"passphrase\" timeout ( anonymizeonly )\n"
         "\nStores the wallet decryption key in memory for 'timeout' seconds.\n"
-        "This is needed prior to performing transactions related to private keys such as sending Clubs\n"
+        "This is needed prior to performing transactions related to private keys such as sending Tessas\n"
 
         "\nArguments:\n"
         "1. \"passphrase\"     (string, required) The wallet passphrase\n"
@@ -1824,7 +1824,7 @@ UniValue encryptwallet(const UniValue& params, bool fHelp) {
         "\nExamples:\n"
         "\nEncrypt you wallet\n" +
         HelpExampleCli("encryptwallet", "\"my pass phrase\"") +
-        "\nNow set the passphrase to use the wallet, such as for signing or sending Clubs\n" +
+        "\nNow set the passphrase to use the wallet, such as for signing or sending Tessas\n" +
         HelpExampleCli("walletpassphrase", "\"my pass phrase\"") + "\nNow we can so something like sign\n" +
         HelpExampleCli("signmessage", "\"clubaddress\" \"test message\"") +
         "\nNow lock the wallet again by removing the passphrase\n" + HelpExampleCli("walletlock", "") +
@@ -1865,7 +1865,7 @@ UniValue lockunspent(const UniValue& params, bool fHelp) {
         "lockunspent unlock [{\"txid\":\"txid\",\"vout\":n},...]\n"
         "\nUpdates list of temporarily unspendable outputs.\n"
         "Temporarily lock (unlock=false) or unlock (unlock=true) specified transaction outputs.\n"
-        "A locked transaction output will not be chosen by automatic coin selection, when spending Clubs.\n"
+        "A locked transaction output will not be chosen by automatic coin selection, when spending Tessas.\n"
         "Locks are stored in memory only. Nodes start with zero locked outputs, and the locked output list\n"
         "is always cleared (by virtue of process exit) when a node stops or fails.\n"
         "Also see the listunspent call\n"
@@ -1999,7 +1999,7 @@ UniValue settxfee(const UniValue& params, bool fHelp) {
         "\nSet the transaction fee per kB.\n"
 
         "\nArguments:\n"
-        "1. amount         (numeric, required) The transaction fee in Club/kB rounded to the nearest 0.00000001\n"
+        "1. amount         (numeric, required) The transaction fee in Tessa/kB rounded to the nearest 0.00000001\n"
 
         "\nResult\n"
         "true|false        (boolean) Returns true if successful\n"
@@ -2024,7 +2024,7 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp) {
         "\nResult:\n"
         "{\n"
         "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
-        "  \"balance\": xxxxxxx,         (numeric) the total Club balance of the wallet\n"
+        "  \"balance\": xxxxxxx,         (numeric) the total Tessa balance of the wallet\n"
         "  \"txcount\": xxxxxxx,         (numeric) the total number of transactions in the wallet\n"
         "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated "
         "key in the key pool\n"
@@ -2160,7 +2160,7 @@ UniValue autocombinerewards(const UniValue& params, bool fHelp) {
     throw runtime_error(
         "autocombinerewards enable ( threshold )\n"
         "\nWallet will automatically monitor for any coins with value below the threshold amount, and combine them if "
-        "they reside with the same Club address\n"
+        "they reside with the same Tessa address\n"
         "When autocombinerewards runs it will create a transaction, and therefore will be subject to transaction "
         "fees.\n"
 
@@ -2343,7 +2343,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
         "The MultiSend transaction is sent when the staked coins mature (100 confirmations)\n"
         "****************************************************************\n"
         "TO CREATE OR ADD TO THE MULTISEND VECTOR:\n"
-        "multisend <Club Address> <percent>\n"
+        "multisend <Tessa Address> <percent>\n"
         "This will add a new address to the MultiSend vector\n"
         "Percent is a whole number 1 to 100.\n"
         "****************************************************************\n"
@@ -2360,7 +2360,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
   // if the user is entering a new MultiSend item
   string strAddress = params[0].get_str();
   CBitcoinAddress address(strAddress);
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
+  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
   if (std::stoi(params[1].get_str()) < 0)
     throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid percentage");
   if (pwalletMain->IsLocked())
@@ -2533,7 +2533,7 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
         "\n"
 
         "\nArguments:\n"
-        "1. amount      (numeric, required) Enter an amount of Club to convert to zkp\n"
+        "1. amount      (numeric, required) Enter an amount of Tessa to convert to zkp\n"
         "2. utxos       (string, optional) A json array of objects.\n"
         "                   Each object needs the txid (string) and vout (numeric)\n"
         "  [\n"
@@ -2634,7 +2634,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 5 || params.size() < 4)
     throw runtime_error(
         "spendzerocoin amount mintchange minimizechange securitylevel ( \"address\" )\n"
-        "\nSpend ZKP to a Club address.\n" +
+        "\nSpend ZKP to a Tessa address.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
@@ -2666,8 +2666,8 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
         "  ],\n"
         "  \"outputs\": [                 (array) JSON array of output objects.\n"
         "    {\n"
-        "      \"value\": amount,         (numeric) Value in Club.\n"
-        "      \"address\": \"xxx\"         (string) Club address or \"zerocoinmint\" for reminted change.\n"
+        "      \"value\": amount,         (numeric) Value in Tessa.\n"
+        "      \"address\": \"xxx\"         (string) Tessa address or \"zerocoinmint\" for reminted change.\n"
         "    }\n"
         "    ,...\n"
         "  ]\n"
@@ -2692,7 +2692,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
     // Destination address was supplied as params[4]. Optional parameters MUST be at the end
     // to avoid type confusion from the JSON interpreter
     address = CBitcoinAddress(params[4].get_str());
-    if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Club address");
+    if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
   }
 
   CWalletTx wtx;

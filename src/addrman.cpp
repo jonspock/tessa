@@ -217,7 +217,7 @@ void CAddrMan::Good_(const CService& addr, int64_t nTime) {
   // TODO: maybe re-add the node, but for now, just bail out
   if (nUBucket == -1) return;
 
-  LogPrint(ClubLog::ADDRMAN, "Moving %s to tried\n", addr.ToString());
+  LogPrint(TessaLog::ADDRMAN, "Moving %s to tried\n", addr.ToString());
 
   // move nId to the tried tables
   MakeTried(info, nId);

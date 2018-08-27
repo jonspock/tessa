@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2017-2018 The PIVX developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The TessaChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -126,7 +126,7 @@ class WalletView : public QStackedWidget {
   /** Show progress dialog e.g. for rescan */
   void showProgress(const QString& title, int nProgress);
 
-  /** Update selected Club amount from transactionview */
+  /** Update selected Tessa amount from transactionview */
   void trxAmount(QString amount);
 
  signals:

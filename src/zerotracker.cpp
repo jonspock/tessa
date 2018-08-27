@@ -42,7 +42,7 @@ bool CZeroTracker::Archive(CMintMeta& meta) {
   if (!gWalletDB.ArchiveDeterministicOrphan(dMint))
     return error("%s: failed to archive deterministic ophaned mint", __func__);
 
-  LogPrint(ClubLog::ZERO, "%s: archived pubcoinhash %s\n", __func__, meta.hashPubcoin.GetHex());
+  LogPrint(TessaLog::ZERO, "%s: archived pubcoinhash %s\n", __func__, meta.hashPubcoin.GetHex());
   return true;
 }
 
@@ -52,7 +52,7 @@ bool CZeroTracker::UnArchive(const uint256& hashPubcoin) {
     return error("%s: failed to unarchive deterministic mint", __func__);
   Add(dMint, false);
 
-  LogPrint(ClubLog::ZERO, "%s: unarchived %s\n", __func__, hashPubcoin.GetHex());
+  LogPrint(TessaLog::ZERO, "%s: unarchived %s\n", __func__, hashPubcoin.GetHex());
   return true;
 }
 
@@ -105,11 +105,11 @@ CAmount CZeroTracker::GetBalance(bool fConfirmedOnly, bool fUnconfirmedOnly) con
   }
   /* (Too verbose)
 for (auto& denom : libzerocoin::zerocoinDenomList) {
-  LogPrint(ClubLog::ZERO, "%s My coins for denomination %d pubcoin %s\n", __func__, denom,
+  LogPrint(TessaLog::ZERO, "%s My coins for denomination %d pubcoin %s\n", __func__, denom,
            myZerocoinSupply.at(denom));
 }
 
-  LogPrint(ClubLog::ZERO, "Total value of coins %d\n", nTotal);
+  LogPrint(TessaLog::ZERO, "Total value of coins %d\n", nTotal);
 */
   if (nTotal < 0) nTotal = 0;  // Sanity never hurts
 
@@ -252,7 +252,7 @@ bool CZeroTracker::UpdateStatusInternal(const std::set<uint256>& setMempool, CMi
     if (!setMempool.count(txidPendingSpend) || isConfirmedSpend) {
       RemovePending(txidPendingSpend);
       isPendingSpend = false;
-      LogPrint(ClubLog::ZERO, "%s : Pending txid %s removed because not in mempool\n", __func__,
+      LogPrint(TessaLog::ZERO, "%s : Pending txid %s removed because not in mempool\n", __func__,
                txidPendingSpend.GetHex());
     }
   }
@@ -299,7 +299,7 @@ bool CZeroTracker::UpdateStatusInternal(const std::set<uint256>& setMempool, CMi
 
     // Check that the mint has correct used status
     if (mint.isUsed != isUsed) {
-      LogPrint(ClubLog::ZERO, "%s : Set mint %s isUsed to %d\n", __func__, mint.hashPubcoin.GetHex(), isUsed);
+      LogPrint(TessaLog::ZERO, "%s : Set mint %s isUsed to %d\n", __func__, mint.hashPubcoin.GetHex(), isUsed);
       mint.isUsed = isUsed;
       return true;
     }
@@ -312,7 +312,7 @@ std::set<CMintMeta> CZeroTracker::ListMints(bool fUnusedOnly, bool fMatureOnly, 
   if (fUpdateStatus) {
     std::list<CDeterministicMint> listDeterministicDB = gWalletDB.ListDeterministicMints();
     for (auto& dMint : listDeterministicDB) Add(dMint);
-    LogPrint(ClubLog::ZERO, "%s: added %d dzkp from DB\n", __func__, listDeterministicDB.size());
+    LogPrint(TessaLog::ZERO, "%s: added %d dzkp from DB\n", __func__, listDeterministicDB.size());
   }
 
   std::vector<CMintMeta> vOverWrite;

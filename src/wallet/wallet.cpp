@@ -799,7 +799,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
 
         for (auto& m : listMints) {
           if (IsMyMint(m.GetValue())) {
-            LogPrint(ClubLog::ZERO, "%s: found mint\n", __func__);
+            LogPrint(TessaLog::ZERO, "%s: found mint\n", __func__);
             pwalletMain->UpdateMint(m.GetValue(), pindex->nHeight, m.GetTxHash(), m.GetDenomination());
 
             // Add the transaction to the wallet
@@ -1178,7 +1178,7 @@ static void ApproximateBestSubset(vector<pair<CAmount, pair<const CWalletTx*, un
 
 bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInputs, CAmount nTargetAmount) {
   LOCK(cs_main);
-  // Add Club
+  // Add Tessa
   vector<COutput> vCoins;
   AvailableCoins(vCoins, true, nullptr, false, STAKABLE_COINS);
   CAmount nAmountSelected = 0;
@@ -1217,7 +1217,7 @@ bool CWallet::MintableCoins() {
   CAmount nBalance = GetBalance();
   CAmount nZkpBalance = GetZerocoinBalance(false);
 
-  // Regular Club
+  // Regular Tessa
   if (nBalance > 0) {
     if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
       return error("%s : invalid reserve balance amount", __func__);
@@ -1716,7 +1716,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
   }
   if (!fKernelFound) return false;
 
-  // Sign for Club
+  // Sign for Tessa
   int nIn = 0;
   if (!txNew.vin[0].scriptSig.IsZerocoinSpend()) {
     for (CTxIn txIn : txNew.vin) {
@@ -2737,7 +2737,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
     txNew.vout.push_back(outMint);
 
     // store as CZerocoinMint for later use
-    LogPrint(ClubLog::ZERO, "%s: new mint %s\n", __func__, dMint.ToString());
+    LogPrint(TessaLog::ZERO, "%s: new mint %s\n", __func__, dMint.ToString());
     vDMints.emplace_back(dMint);
   }
 
@@ -2766,7 +2766,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
   }
 
   // any change that is less than 0.0100000 will be ignored and given as an extra fee
-  // also assume that a zerocoinspend that is minting the change will not have any change that goes to Club
+  // also assume that a zerocoinspend that is minting the change will not have any change that goes to Tessa
   CAmount nChange = nValueIn - nTotalValue;  // Fee already accounted for in nTotalValue
   if (nChange > 1 * CENT && !isZCSpendChange) {
     // Fill a vout to ourself using the largest contributing address
@@ -2860,7 +2860,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
     serializedCoinSpend << spend;
     std::vector<uint8_t> data(serializedCoinSpend.begin(), serializedCoinSpend.end());
 
-    // Add the coin spend into a Club transaction
+    // Add the coin spend into a Tessa transaction
     newTxIn.scriptSig = CScript() << OP_ZEROCOINSPEND << data.size();
     newTxIn.scriptSig.insert(newTxIn.scriptSig.end(), data.begin(), data.end());
     newTxIn.prevout.SetNull();

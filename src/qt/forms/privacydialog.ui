@@ -191,7 +191,7 @@
                         <item>
                          <widget class="QLabel" name="labelZKPSyncStatus">
                           <property name="toolTip">
-                           <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Club network after a connection is established, but this process has not completed yet.</string>
+                           <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Tessa network after a connection is established, but this process has not completed yet.</string>
                           </property>
                           <property name="styleSheet">
                            <string notr="true">QLabel { color: red; }</string>
@@ -307,7 +307,7 @@
                            <string>Enter an amount of Piv to convert to ZKP</string>
                           </property>
                           <property name="text">
-                           <string>0.000 000 00 Club</string>
+                           <string>0.000 000 00 Tessa</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -483,7 +483,7 @@
                              <enum>Qt::ActionsContextMenu</enum>
                             </property>
                             <property name="text">
-                             <string notr="true">0.00 Club</string>
+                             <string notr="true">0.00 Tessa</string>
                             </property>
                             <property name="textInteractionFlags">
                              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -827,7 +827,7 @@ ZKP are mature when they have more than 20 confirmations AND more than 2 mints o
                              </size>
                             </property>
                             <property name="toolTip">
-                             <string>The Club address to send the payment to. Creates local payment to yourself when empty.</string>
+                             <string>The Tessa address to send the payment to. Creates local payment to yourself when empty.</string>
                             </property>
                            </widget>
                           </item>
@@ -2037,7 +2037,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
          <enum>Qt::ActionsContextMenu</enum>
         </property>
         <property name="text">
-         <string notr="true">0.000 000 00 Club</string>
+         <string notr="true">0.000 000 00 Tessa</string>
         </property>
         <property name="textInteractionFlags">
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -2119,7 +2119,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
            <enum>Qt::ActionsContextMenu</enum>
           </property>
           <property name="text">
-           <string notr="true">0.00 Club</string>
+           <string notr="true">0.00 Tessa</string>
           </property>
           <property name="textInteractionFlags">
            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -2341,7 +2341,7 @@ Immature: confirmed, but less than 1 mint of the same denomination after it was 
          <enum>Qt::ActionsContextMenu</enum>
         </property>
         <property name="text">
-         <string notr="true">0.000 000 00 Club</string>
+         <string notr="true">0.000 000 00 Tessa</string>
         </property>
         <property name="textInteractionFlags">
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>

@@ -713,7 +713,7 @@ DBErrors CWalletDB::ZapWalletTx(CWallet* pwallet, vector<CWalletTx>& vWtx) {
 }
 
 void NotifyBacked(const CWallet& wallet, bool fSuccess, string strMessage) {
-  LogPrint(ClubLog::NONE, strMessage.data());
+  LogPrint(TessaLog::NONE, strMessage.data());
   wallet.NotifyWalletBacked(fSuccess, strMessage);
 }
 

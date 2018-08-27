@@ -78,7 +78,7 @@
 using namespace std;
 ArgsManager gArgs;
 
-// Club only features
+// Tessa only features
 /** Spork enforcement enabled time */
 bool fSucessfullyLoaded = false;
 string strMiscWarning;

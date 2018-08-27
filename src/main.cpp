@@ -53,7 +53,7 @@ using namespace std;
 using namespace libzerocoin;
 
 #if defined(NDEBUG)
-#error "Club cannot be compiled without assertions."
+#error "Tessa cannot be compiled without assertions."
 #endif
 
 /**
@@ -106,7 +106,7 @@ static void CheckBlockIndex();
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 #warning "Change strMessageMagic string"
-const string strMessageMagic = "ClubChain Signed Message:\n";
+const string strMessageMagic = "TessaChain Signed Message:\n";
 
 // Internal stuff
 namespace {
@@ -456,7 +456,7 @@ bool AddOrphanTx(const CTransaction& tx, NodeId peer) {
   // at most 500 megabytes of orphans:
   unsigned int sz = tx.GetSerializeSize();
   if (sz > 5000) {
-    LogPrint(ClubLog::MEMPOOL, "ignoring large orphan tx (size: %u, hash: %s)\n", sz, hash.ToString());
+    LogPrint(TessaLog::MEMPOOL, "ignoring large orphan tx (size: %u, hash: %s)\n", sz, hash.ToString());
     return false;
   }
 
@@ -464,7 +464,7 @@ bool AddOrphanTx(const CTransaction& tx, NodeId peer) {
   mapOrphanTransactions[hash].fromPeer = peer;
   for (const CTxIn& txin : tx.vin) mapOrphanTransactionsByPrev[txin.prevout.hash].insert(hash);
 
-  LogPrint(ClubLog::MEMPOOL, "stored orphan tx %s (mapsz %u prevsz %u)\n", hash.ToString(),
+  LogPrint(TessaLog::MEMPOOL, "stored orphan tx %s (mapsz %u prevsz %u)\n", hash.ToString(),
            mapOrphanTransactions.size(), mapOrphanTransactionsByPrev.size());
   return true;
 }
@@ -491,7 +491,7 @@ void EraseOrphansFor(NodeId peer) {
       ++nErased;
     }
   }
-  if (nErased > 0) LogPrint(ClubLog::MEMPOOL, "Erased %d orphan tx from peer %d\n", nErased, peer);
+  if (nErased > 0) LogPrint(TessaLog::MEMPOOL, "Erased %d orphan tx from peer %d\n", nErased, peer);
 }
 
 unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans) {
@@ -1002,7 +1002,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         if (dFreeCount >= GetArg("-limitfreerelay", 30) * 10 * 1000)
           return state.DoS(0, error("AcceptToMemoryPool : free transaction rejected by rate limiter"),
                            REJECT_INSUFFICIENTFEE, "rate limited free transaction");
-        LogPrint(ClubLog::MEMPOOL, "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
+        LogPrint(TessaLog::MEMPOOL, "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
         dFreeCount += nSize;
       }
     }
@@ -1177,7 +1177,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
         if (dFreeCount >= GetArg("-limitfreerelay", 30) * 10 * 1000)
           return state.DoS(0, error("AcceptableInputs : free transaction rejected by rate limiter"),
                            REJECT_INSUFFICIENTFEE, "rate limited free transaction");
-        LogPrint(ClubLog::MEMPOOL, "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
+        LogPrint(TessaLog::MEMPOOL, "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
         dFreeCount += nSize;
       }
     }
@@ -1462,7 +1462,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
     const CTransaction& tx = block.vtx[i];
 
     /** UNDO ZEROCOIN DATABASING
-     * note we only undo zerocoin databasing in the following statement, value to and from Club
+     * note we only undo zerocoin databasing in the following statement, value to and from Tessa
      * addresses should still be handled by the typical bitcoin based undo code
      * */
     if (tx.ContainsZerocoins()) {
@@ -1604,7 +1604,7 @@ void ThreadScriptCheck() {
 }
 
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError) {
-  // Club: recalculate Accumulator Checkpoints that failed to database properly
+  // Tessa: recalculate Accumulator Checkpoints that failed to database properly
   if (!listMissingCheckpoints.empty() && chainActive.Height() >= Params().Zerocoin_StartHeight()) {
     LogPrintf("%s : finding missing checkpoints\n", __func__);
 
@@ -1702,7 +1702,7 @@ bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
   }
 
   // for (auto& denom : zerocoinDenomList)
-  //   LogPrint(ClubLog::ZERO, "%s coins for denomination %d pubcoin %s\n", __func__, denom,
+  //   LogPrint(TessaLog::ZERO, "%s coins for denomination %d pubcoin %s\n", __func__, denom,
   //   pindex->mapZerocoinSupply.at(denom));
 
   return true;
@@ -1896,7 +1896,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime1 = GetTimeMicros();
   nTimeConnect += nTime1 - nTimeStart;
-  LogPrint(ClubLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n",
+  LogPrint(TessaLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n",
            (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(),
            nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
@@ -1924,7 +1924,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   if (!control.Wait()) return state.DoS(100, false);
   int64_t nTime2 = GetTimeMicros();
   nTimeVerify += nTime2 - nTimeStart;
-  LogPrint(ClubLog::BENCH, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1,
+  LogPrint(TessaLog::BENCH, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1,
            0.001 * (nTime2 - nTimeStart), nInputs <= 1 ? 0 : 0.001 * (nTime2 - nTimeStart) / (nInputs - 1),
            nTimeVerify * 0.000001);
 
@@ -1995,7 +1995,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime3 = GetTimeMicros();
   nTimeIndex += nTime3 - nTime2;
-  LogPrint(ClubLog::BENCH, "    - Index writing: %.2fms [%.2fs]\n", 0.001 * (nTime3 - nTime2), nTimeIndex * 0.000001);
+  LogPrint(TessaLog::BENCH, "    - Index writing: %.2fms [%.2fs]\n", 0.001 * (nTime3 - nTime2), nTimeIndex * 0.000001);
 
   // Watch for changes to the previous coinbase transaction.
   static uint256 hashPrevBestCoinBase;
@@ -2004,7 +2004,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime4 = GetTimeMicros();
   nTimeCallbacks += nTime4 - nTime3;
-  LogPrint(ClubLog::BENCH, "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
+  LogPrint(TessaLog::BENCH, "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
 
   // Remove zerocoinspends from the pending map
   for (const uint256& txid : vSpendsInBlock) {
@@ -2118,7 +2118,7 @@ bool static DisconnectTip(CValidationState& state) {
       return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
     assert(view.Flush());
   }
-  LogPrint(ClubLog::BENCH, "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
+  LogPrint(TessaLog::BENCH, "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
   // Write the chain state to disk, if necessary.
   if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS)) return false;
   // Resurrect mempool transactions from the disconnected block.
@@ -2167,7 +2167,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   int64_t nTime2 = GetTimeMicros();
   nTimeReadFromDisk += nTime2 - nTime1;
   int64_t nTime3;
-  LogPrint(ClubLog::BENCH, "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001,
+  LogPrint(TessaLog::BENCH, "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001,
            nTimeReadFromDisk * 0.000001);
   {
     CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
@@ -2180,13 +2180,13 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     mapBlockSource.erase(inv.hash);
     nTime3 = GetTimeMicros();
     nTimeConnectTotal += nTime3 - nTime2;
-    LogPrint(ClubLog::BENCH, "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001,
+    LogPrint(TessaLog::BENCH, "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001,
              nTimeConnectTotal * 0.000001);
     assert(view.Flush());
   }
   int64_t nTime4 = GetTimeMicros();
   nTimeFlush += nTime4 - nTime3;
-  LogPrint(ClubLog::BENCH, "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
+  LogPrint(TessaLog::BENCH, "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
 
   // Write the chain state to disk, if necessary. Always write to disk if this is the first of a new file.
   FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
@@ -2195,7 +2195,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   if (!FlushStateToDisk(state, flushMode)) return false;
   int64_t nTime5 = GetTimeMicros();
   nTimeChainState += nTime5 - nTime4;
-  LogPrint(ClubLog::BENCH, "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001,
+  LogPrint(TessaLog::BENCH, "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001,
            nTimeChainState * 0.000001);
 
   // Remove conflicting transactions from the mempool.
@@ -2213,9 +2213,9 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   int64_t nTime6 = GetTimeMicros();
   nTimePostConnect += nTime6 - nTime5;
   nTimeTotal += nTime6 - nTime1;
-  LogPrint(ClubLog::BENCH, "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001,
+  LogPrint(TessaLog::BENCH, "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001,
            nTimePostConnect * 0.000001);
-  LogPrint(ClubLog::BENCH, "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
+  LogPrint(TessaLog::BENCH, "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
   return true;
 }
 
@@ -2783,7 +2783,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     return state.DoS(100, error("CheckBlock() : CheckBlockHeader failed"), REJECT_INVALID, "bad-header", true);
 
   // Check timestamp
-  LogPrint(ClubLog::NONE, "%s: block=%s  is proof of stake=%d\n", __func__, block.GetHash().ToString().c_str(),
+  LogPrint(TessaLog::NONE, "%s: block=%s  is proof of stake=%d\n", __func__, block.GetHash().ToString().c_str(),
            block.IsProofOfStake());
   if (block.GetBlockTime() >
       GetAdjustedTime() + (block.IsProofOfStake() ? 180 : 7200))  // 3 minute future drift for PoS
@@ -3443,7 +3443,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp) {
         // detect out of order blocks, and store them for later
         uint256 hash = block.GetHash();
         if (hash != Params().HashGenesisBlock() && mapBlockIndex.find(block.hashPrevBlock) == mapBlockIndex.end()) {
-          LogPrint(ClubLog::REINDEX, "%s: Out of order block %s, parent %s not known\n", __func__, hash.ToString(),
+          LogPrint(TessaLog::REINDEX, "%s: Out of order block %s, parent %s not known\n", __func__, hash.ToString(),
                    block.hashPrevBlock.ToString());
           if (dbp) mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
           continue;
@@ -3810,7 +3810,7 @@ void static ProcessGetData(CNode* pfrom) {
 
 bool fRequestedSporksIDB = false;
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived) {
-  LogPrint(ClubLog::NET, "received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
+  LogPrint(TessaLog::NET, "received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
   if (gArgs.IsArgSet("-dropmessagestest") && GetRand(atoi(gArgs.GetArg("-dropmessagestest", "0").c_str()) == 0)) {
     LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
     return true;
@@ -3826,7 +3826,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       return false;
     }
 
-    // Club: We use certain sporks during IBD, so check to see if they are
+    // Tessa: We use certain sporks during IBD, so check to see if they are
     // available. If not, ask the first peer connected for them.
     bool fMissingSporks = !pSporkDB->SporkExists(SporkID::SPORK_PROTOCOL_ENFORCEMENT);
     if (fMissingSporks || !fRequestedSporksIDB) {
@@ -4003,7 +4003,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       pfrom->AddInventoryKnown(inv);
 
       bool fAlreadyHave = AlreadyHave(inv);
-      LogPrint(ClubLog::NET, "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom->id);
+      LogPrint(TessaLog::NET, "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom->id);
 
       if (!fAlreadyHave && !fImporting && !fReindex && inv.type != MSG_BLOCK) pfrom->AskFor(inv);
 
@@ -4012,7 +4012,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (!fAlreadyHave && !fImporting && !fReindex && !mapBlocksInFlight.count(inv.hash)) {
           // Add this to the list of blocks to request
           vToFetch.push_back(inv);
-          LogPrint(ClubLog::NET, "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash.ToString(),
+          LogPrint(TessaLog::NET, "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash.ToString(),
                    pfrom->id);
         }
       }
@@ -4038,10 +4038,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       return error("message getdata size() = %u", vInv.size());
     }
 
-    if (vInv.size() != 1) LogPrint(ClubLog::NET, "received getdata (%u invsz) peer=%d\n", vInv.size(), pfrom->id);
+    if (vInv.size() != 1) LogPrint(TessaLog::NET, "received getdata (%u invsz) peer=%d\n", vInv.size(), pfrom->id);
 
     if ((vInv.size() > 0) || (vInv.size() == 1))
-      LogPrint(ClubLog::NET, "received getdata for: %s peer=%d\n", vInv[0].ToString(), pfrom->id);
+      LogPrint(TessaLog::NET, "received getdata for: %s peer=%d\n", vInv[0].ToString(), pfrom->id);
 
     pfrom->vRecvGetData.insert(pfrom->vRecvGetData.end(), vInv.begin(), vInv.end());
     ProcessGetData(pfrom);
@@ -4060,18 +4060,18 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     // Send the rest of the chain
     if (pindex) pindex = chainActive.Next(pindex);
     int nLimit = 500;
-    LogPrint(ClubLog::NET, "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1),
+    LogPrint(TessaLog::NET, "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1),
              hashStop == uint256() ? "end" : hashStop.ToString(), nLimit, pfrom->id);
     for (; pindex; pindex = chainActive.Next(pindex)) {
       if (pindex->GetBlockHash() == hashStop) {
-        LogPrint(ClubLog::NET, "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
+        LogPrint(TessaLog::NET, "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
         break;
       }
       pfrom->PushInventory(CInv(MSG_BLOCK, pindex->GetBlockHash()));
       if (--nLimit <= 0) {
         // When this block is requested, we'll send an inv that'll make them
         // getblocks the next batch of inventory.
-        LogPrint(ClubLog::NET, "  getblocks stopping at limit %d %s\n", pindex->nHeight,
+        LogPrint(TessaLog::NET, "  getblocks stopping at limit %d %s\n", pindex->nHeight,
                  pindex->GetBlockHash().ToString());
         pfrom->hashContinue = pindex->GetBlockHash();
         break;
@@ -4139,7 +4139,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       RelayTransaction(tx);
       vWorkQueue.push_back(inv.hash);
 
-      LogPrint(ClubLog::MEMPOOL, "AcceptToMemoryPool: peer=%d %s : accepted %s (poolsz %u)\n", pfrom->id,
+      LogPrint(TessaLog::MEMPOOL, "AcceptToMemoryPool: peer=%d %s : accepted %s (poolsz %u)\n", pfrom->id,
                pfrom->cleanSubVer, tx.GetHash().ToString(), mempool.mapTx.size());
 
       // Recursively process any orphan transactions that depended on this one
@@ -4159,7 +4159,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
           if (setMisbehaving.count(fromPeer)) continue;
           if (AcceptToMemoryPool(mempool, stateDummy, orphanTx, true, &fMissingInputs2)) {
-            LogPrint(ClubLog::MEMPOOL, "   accepted orphan tx %s\n", orphanHash.ToString());
+            LogPrint(TessaLog::MEMPOOL, "   accepted orphan tx %s\n", orphanHash.ToString());
             RelayTransaction(orphanTx);
             vWorkQueue.push_back(orphanHash);
             vEraseQueue.push_back(orphanHash);
@@ -4169,11 +4169,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
               // Punish peer that gave us an invalid orphan tx
               Misbehaving(fromPeer, nDos);
               setMisbehaving.insert(fromPeer);
-              LogPrint(ClubLog::MEMPOOL, "   invalid orphan tx %s\n", orphanHash.ToString());
+              LogPrint(TessaLog::MEMPOOL, "   invalid orphan tx %s\n", orphanHash.ToString());
             }
             // Has inputs but not accepted to mempool
             // Probably non-standard or insufficient fee/priority
-            LogPrint(ClubLog::MEMPOOL, "   removed orphan tx %s\n", orphanHash.ToString());
+            LogPrint(TessaLog::MEMPOOL, "   removed orphan tx %s\n", orphanHash.ToString());
             vEraseQueue.push_back(orphanHash);
           }
           mempool.check(pcoinsTip);
@@ -4186,7 +4186,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       // Presstab: ZCoin has a bunch of code commented out here. Is this something that should have more going on?
       // Also there is nothing that handles fMissingZerocoinInputs. Does there need to be?
       RelayTransaction(tx);
-      LogPrint(ClubLog::MEMPOOL, "AcceptToMemoryPool: Zerocoinspend peer=%d %s : accepted %s (poolsz %u)\n", pfrom->id,
+      LogPrint(TessaLog::MEMPOOL, "AcceptToMemoryPool: Zerocoinspend peer=%d %s : accepted %s (poolsz %u)\n", pfrom->id,
                pfrom->cleanSubVer, tx.GetHash().ToString(), mempool.mapTx.size());
     } else if (fMissingInputs) {
       AddOrphanTx(tx, pfrom->GetId());
@@ -4195,7 +4195,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       unsigned int nMaxOrphanTx =
           (unsigned int)std::max((int64_t)0, GetArg("-maxorphantx", DEFAULT_MAX_ORPHAN_TRANSACTIONS));
       unsigned int nEvicted = LimitOrphanTxSize(nMaxOrphanTx);
-      if (nEvicted > 0) LogPrint(ClubLog::MEMPOOL, "mapOrphan overflow, removed %u tx\n", nEvicted);
+      if (nEvicted > 0) LogPrint(TessaLog::MEMPOOL, "mapOrphan overflow, removed %u tx\n", nEvicted);
     } else if (pfrom->fWhitelisted) {
       // Always relay transactions received from whitelisted peers, even
       // if they are already in the mempool (allowing the node to function
@@ -4211,7 +4211,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     int nDoS = 0;
     if (state.IsInvalid(nDoS)) {
-      LogPrint(ClubLog::MEMPOOL, "%s from peer=%d %s was not accepted into the memory pool: %s\n",
+      LogPrint(TessaLog::MEMPOOL, "%s from peer=%d %s was not accepted into the memory pool: %s\n",
                tx.GetHash().ToString(), pfrom->id, pfrom->cleanSubVer, state.GetRejectReason());
       pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
                          state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.hash);
@@ -4284,7 +4284,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     vRecv >> block;
     uint256 hashBlock = block.GetHash();
     CInv inv(MSG_BLOCK, hashBlock);
-    LogPrint(ClubLog::NET, "received block %s peer=%d\n", inv.hash.ToString(), pfrom->id);
+    LogPrint(TessaLog::NET, "received block %s peer=%d\n", inv.hash.ToString(), pfrom->id);
 
     // sometimes we will be sent their most recent block and its not the one we want, in that case tell where we are
     if (!mapBlockIndex.count(block.hashPrevBlock)) {
@@ -4316,7 +4316,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         // disconnect this node if its old protocol version
         pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand);
       } else {
-        LogPrint(ClubLog::NET, "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__,
+        LogPrint(TessaLog::NET, "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__,
                  block.GetHash().GetHex());
       }
     }
@@ -4412,7 +4412,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
     if (!(sProblem.empty())) {
-      LogPrint(ClubLog::NET, "pong peer=%d %s: %s, %x expected, %x received, %u bytes\n", pfrom->id, pfrom->cleanSubVer,
+      LogPrint(TessaLog::NET, "pong peer=%d %s: %s, %x expected, %x received, %u bytes\n", pfrom->id, pfrom->cleanSubVer,
                sProblem, pfrom->nPingNonceSent, nonce, nAvail);
     }
     if (bPingFinished) { pfrom->nPingNonceSent = 0; }
@@ -4486,10 +4486,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
           vRecv >> hash;
           ss << ": hash " << hash.ToString();
         }
-        LogPrint(ClubLog::NET, "Reject %s\n", SanitizeString(ss.str()));
+        LogPrint(TessaLog::NET, "Reject %s\n", SanitizeString(ss.str()));
       } catch (std::ios_base::failure& e) {
         // Avoid feedback loops by preventing reject messages from triggering a new reject message.
-        LogPrint(ClubLog::NET, "Unparseable reject message received\n");
+        LogPrint(TessaLog::NET, "Unparseable reject message received\n");
       }
     }
   } else {
@@ -4708,7 +4708,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
         state.fSyncStarted = true;
         nSyncStarted++;
         // CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
-        // LogPrint(ClubLog::NET, "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight,
+        // LogPrint(TessaLog::NET, "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight,
         // pto->id, pto->nStartingHeight); pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart),
         // uint256(0));
         pto->PushMessage("getblocks", chainActive.GetLocator(chainActive.Tip()), uint256());
@@ -4799,7 +4799,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
       if (state.nBlocksInFlight == 0 && staller != -1) {
         if (State(staller)->nStallingSince == 0) {
           State(staller)->nStallingSince = nNow;
-          LogPrint(ClubLog::NET, "Stall started peer=%d\n", staller);
+          LogPrint(TessaLog::NET, "Stall started peer=%d\n", staller);
         }
       }
     }
@@ -4810,7 +4810,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
     while (!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow) {
       const CInv& inv = (*pto->mapAskFor.begin()).second;
       if (!AlreadyHave(inv)) {
-        LogPrint(ClubLog::NET, "Requesting %s peer=%d\n", inv.ToString(), pto->id);
+        LogPrint(TessaLog::NET, "Requesting %s peer=%d\n", inv.ToString(), pto->id);
         vGetData.push_back(inv);
         if (vGetData.size() >= 1000) {
           pto->PushMessage("getdata", vGetData);

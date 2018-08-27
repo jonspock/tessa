@@ -312,7 +312,7 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
   pubkeys.resize(keys.size());
   for (unsigned int i = 0; i < keys.size(); i++) {
     const std::string& ks = keys[i].get_str();
-    // Case 1: Club address and we have full public key:
+    // Case 1: Tessa address and we have full public key:
     CBitcoinAddress address(ks);
     if (pwalletMain && address.IsValid()) {
       CKeyID keyID;

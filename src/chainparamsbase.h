@@ -1,6 +1,6 @@
 // Copyright (c) 2014 The Bitcoin developers
 // Copyright (c) 2017 The PIVX developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The TessaChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,7 +12,7 @@
 
 /**
  * CBaseChainParams defines the base parameters (shared between club-cli and clubd)
- * of a given instance of the Club system.
+ * of a given instance of the Tessa system.
  */
 class CBaseChainParams {
  public:

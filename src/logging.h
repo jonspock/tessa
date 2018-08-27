@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
 // Copyright (c) 2017-2018 The Bitcoin developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The TessaChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,7 +21,7 @@ static const bool DEFAULT_LOGTIMESTAMPS = true;
 
 extern bool fLogIPs;
 
-namespace ClubLog {
+namespace TessaLog {
 
 enum LogFlags : uint32_t {
     NONE = 0,
@@ -98,12 +98,12 @@ public:
     bool DefaultShrinkDebugFile() const;
 };
 
-} // namespace ClubLog
+} // namespace TessaLog
 
-ClubLog::Logger &GetLogger();
+TessaLog::Logger &GetLogger();
 
 /** Return true if log accepts specified category */
-static inline bool LogAcceptCategory(ClubLog::LogFlags category) {
+static inline bool LogAcceptCategory(TessaLog::LogFlags category) {
     return GetLogger().WillLogCategory(category);
 }
 
@@ -111,7 +111,7 @@ static inline bool LogAcceptCategory(ClubLog::LogFlags category) {
 std::string ListLogCategories();
 
 /** Return true if str parses as a log category and set the flag */
-bool GetLogCategory(ClubLog::LogFlags &flag, const std::string &str);
+bool GetLogCategory(TessaLog::LogFlags &flag, const std::string &str);
 
 #define LogPrint(category, ...)                                                \
     do {                                                                       \

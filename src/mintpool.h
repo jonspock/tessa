@@ -1,10 +1,10 @@
 // Copyright (c) 2017-2018 The PIVX developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The TessaChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_MINTPOOL_H
-#define Club_MINTPOOL_H
+#ifndef Tessa_MINTPOOL_H
+#define Tessa_MINTPOOL_H
 
 #include <list>
 #include <map>
@@ -50,4 +50,4 @@ class CMintPool : public std::map<uint256, uint32_t>  // pubcoin hash, count
   uint32_t CountOfLastGenerated() { return nCountLastGenerated; }
 };
 
-#endif  // Club_MINTPOOL_H
+#endif  // Tessa_MINTPOOL_H

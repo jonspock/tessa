@@ -34,7 +34,7 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// ClubMiner
+// TessaMiner
 //
 
 //
@@ -473,7 +473,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
   {
     LOCK(cs_main);
     if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-      return error("ClubMiner : generated block is stale");
+      return error("TessaMiner : generated block is stale");
   }
 
   // Remove key from key pool
@@ -492,7 +492,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
   CValidationState state;
   if (!ProcessNewBlock(state, nullptr, pblock)) {
     // if (pblock->IsZerocoinStake()) pwalletMain->zkpTracker->RemovePending(pblock->vtx[1].GetHash());
-    return error("ClubMiner : ProcessNewBlock, block not accepted");
+    return error("TessaMiner : ProcessNewBlock, block not accepted");
   }
 
   for (CNode* node : vNodes) { node->PushInventory(CInv(MSG_BLOCK, pblock->GetHash())); }
@@ -507,7 +507,7 @@ int nMintableLastCheck = 0;
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
-  LogPrintf("ClubMiner started\n");
+  LogPrintf("TessaMiner started\n");
   SetThreadPriority(THREAD_PRIORITY_LOWEST);
   RenameThread("tessa-miner");
 
@@ -592,7 +592,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
       continue;
     }
 
-    LogPrintf("Running ClubMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+    LogPrintf("Running TessaMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
               ::GetSerializeSize(*pblock));
 
     //

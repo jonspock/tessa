@@ -206,11 +206,11 @@ UniValue stop(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 1)
     throw runtime_error(
         "stop\n"
-        "\nStop Club server.");
+        "\nStop Tessa server.");
   // Event loop will exit after current HTTP requests have been handled, so
   // this reply will get back to the client.
   StartShutdown();
-  return "Club server stopping";
+  return "Tessa server stopping";
 }
 
 /**
@@ -289,7 +289,7 @@ static const CRPCCommand vRPCCommands[] = {
     {"hidden", "reconsiderblock", &reconsiderblock, true, true, false},
     {"hidden", "setmocktime", &setmocktime, true, false, false},
 
-    /* Club features */
+    /* Tessa features */
     {"club", "spork", &spork, true, true, false},
 
     /* Wallet */
@@ -374,20 +374,20 @@ const CRPCCommand* CRPCTable::operator[](const std::string& name) const {
 }
 
 bool StartRPC() {
-  LogPrint(ClubLog::RPC, "Starting RPC\n");
+  LogPrint(TessaLog::RPC, "Starting RPC\n");
   fRPCRunning = true;
   g_rpcSignals.Started();
   return true;
 }
 
 void InterruptRPC() {
-  LogPrint(ClubLog::RPC, "Interrupting RPC\n");
+  LogPrint(TessaLog::RPC, "Interrupting RPC\n");
   // Interrupt e.g. running longpolls
   fRPCRunning = false;
 }
 
 void StopRPC() {
-  LogPrint(ClubLog::RPC, "Stopping RPC\n");
+  LogPrint(TessaLog::RPC, "Stopping RPC\n");
   deadlineTimers.clear();
   g_rpcSignals.Stopped();
 }
@@ -424,7 +424,7 @@ void JSONRequest::parse(const UniValue& valRequest) {
   if (valMethod.isNull()) throw JSONRPCError(RPC_INVALID_REQUEST, "Missing method");
   if (!valMethod.isStr()) throw JSONRPCError(RPC_INVALID_REQUEST, "Method must be a string");
   strMethod = valMethod.get_str();
-  if (strMethod != "getblocktemplate") LogPrint(ClubLog::RPC, "ThreadRPCServer method=%s\n", SanitizeString(strMethod));
+  if (strMethod != "getblocktemplate") LogPrint(TessaLog::RPC, "ThreadRPCServer method=%s\n", SanitizeString(strMethod));
 
   // Parse params
   UniValue valParams = find_value(request, "params");
@@ -505,7 +505,7 @@ void RPCRunLater(const std::string& name, std::function<void(void)> func, int64_
   if (timerInterfaces.empty()) throw JSONRPCError(RPC_INTERNAL_ERROR, "No timer handler registered for RPC");
   deadlineTimers.erase(name);
   RPCTimerInterface* timerInterface = timerInterfaces[0];
-  LogPrint(ClubLog::RPC, "queue run of timer %s in %i seconds (using %s)\n", name, nSeconds, timerInterface->Name());
+  LogPrint(TessaLog::RPC, "queue run of timer %s in %i seconds (using %s)\n", name, nSeconds, timerInterface->Name());
   deadlineTimers.insert(
       std::make_pair(name, std::unique_ptr<RPCTimerBase>(timerInterface->NewTimer(func, nSeconds * 1000))));
 }

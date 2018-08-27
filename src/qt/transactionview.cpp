@@ -94,7 +94,7 @@ TransactionView::TransactionView(QWidget* parent)
   typeWidget->addItem(tr("Mined"), TransactionFilterProxy::TYPE(TransactionRecord::Generated));
   typeWidget->addItem(tr("Minted"), TransactionFilterProxy::TYPE(TransactionRecord::StakeMint) |
                                         TransactionFilterProxy::TYPE(TransactionRecord::StakeZKP));
-  typeWidget->addItem(tr("Received Club from ZKP"),
+  typeWidget->addItem(tr("Received Tessa from ZKP"),
                       TransactionFilterProxy::TYPE(TransactionRecord::RecvFromZerocoinSpend));
   typeWidget->addItem(tr("Zerocoin Mint"), TransactionFilterProxy::TYPE(TransactionRecord::ZerocoinMint));
   typeWidget->addItem(tr("Zerocoin Spend"), TransactionFilterProxy::TYPE(TransactionRecord::ZerocoinSpend));

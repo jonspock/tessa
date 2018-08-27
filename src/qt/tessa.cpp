@@ -124,13 +124,13 @@ static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTrans
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg) {
   Q_UNUSED(context);
   if (type == QtDebugMsg) {
-    LogPrint(ClubLog::QT, "GUI: %s\n", msg.toStdString());
+    LogPrint(TessaLog::QT, "GUI: %s\n", msg.toStdString());
   } else {
     LogPrintf("GUI: %s\n", msg.toStdString());
   }
 }
 
-/** Class encapsulating Club Core startup and shutdown.
+/** Class encapsulating Tessa Core startup and shutdown.
  * Allows running startup and shutdown in a different thread from the UI thread.
  */
 class BitcoinCore : public QObject {
@@ -159,7 +159,7 @@ class BitcoinCore : public QObject {
   void handleRunawayException(std::exception* e);
 };
 
-/** Main Club application object */
+/** Main Tessa application object */
 class BitcoinApplication : public QApplication {
   Q_OBJECT
  public:
@@ -392,7 +392,7 @@ void BitcoinApplication::initializeResult(int retval) {
     emit splashFinished(window);
 
     // Now that initialization/startup is done, process any command-line
-    // Club: URIs or payment requests:
+    // Tessa: URIs or payment requests:
     /*
     if (pwalletMain) {
       connect(paymentServer, SIGNAL(receivedPaymentRequest(SendCoinsRecipient)), window,
@@ -416,7 +416,7 @@ void BitcoinApplication::shutdownResult(int retval) {
 
 void BitcoinApplication::handleRunawayException(const QString& message) {
   QMessageBox::critical(0, "Runaway exception",
-                        BitcoinGUI::tr("A fatal error occurred. Club can no longer continue safely and will quit.") +
+                        BitcoinGUI::tr("A fatal error occurred. Tessa can no longer continue safely and will quit.") +
                             QString("\n\n") + message);
   ::exit(1);
 }
@@ -486,7 +486,7 @@ int main(int argc, char* argv[]) {
   /// 6. Determine availability of data directory and parse tessa.conf
   /// - Do not call GetDataDir(true) before this step finishes
   if (!fs::is_directory(GetDataDir(false))) {
-    QMessageBox::critical(0, QObject::tr("Club Core"),
+    QMessageBox::critical(0, QObject::tr("Tessa Core"),
                           QObject::tr("Error: Specified data directory \"%1\" does not exist.")
                               .arg(QString::fromStdString(gArgs.GetArg("-datadir", ""))));
     return 1;
@@ -495,7 +495,7 @@ int main(int argc, char* argv[]) {
     ReadConfigFile();
   } catch (std::exception& e) {
     QMessageBox::critical(
-        0, QObject::tr("Club Core"),
+        0, QObject::tr("Tessa Core"),
         QObject::tr("Error: Cannot parse configuration file: %1. Only use key=value syntax.").arg(e.what()));
     return 0;
   }
@@ -508,7 +508,7 @@ int main(int argc, char* argv[]) {
 
   // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
   if (!SelectParamsFromCommandLine()) {
-    QMessageBox::critical(0, QObject::tr("Club Core"),
+    QMessageBox::critical(0, QObject::tr("Tessa Core"),
                           QObject::tr("Error: Invalid combination of -regtest and -testnet."));
     return 1;
   }
@@ -554,7 +554,7 @@ int main(int argc, char* argv[]) {
     app.createWindow(networkStyle.data());
     app.requestInitialize();
 #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
-    WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Club Core didn't yet exit safely..."),
+    WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Tessa Core didn't yet exit safely..."),
                                                     (HWND)app.getMainWinId());
 #endif
     app.exec();

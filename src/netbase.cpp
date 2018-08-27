@@ -315,7 +315,7 @@ bool static Socks5(string strDest, int port, const ProxyCredentials* auth, SOCKE
       CloseSocket(hSocket);
       return error("Error sending authentication to proxy");
     }
-    LogPrint(ClubLog::PROXY, "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
+    LogPrint(TessaLog::PROXY, "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
     char pchRetA[2];
     if (!InterruptibleRecv(pchRetA, 2, SOCKS5_RECV_TIMEOUT, hSocket)) {
       CloseSocket(hSocket);
@@ -449,7 +449,7 @@ bool static ConnectSocketDirectly(const CService& addrConnect, SOCKET& hSocketRe
       FD_SET(hSocket, &fdset);
       int nRet = select(hSocket + 1, nullptr, &fdset, nullptr, &timeout);
       if (nRet == 0) {
-        LogPrint(ClubLog::NET, "connection to %s timeout\n", addrConnect.ToString());
+        LogPrint(TessaLog::NET, "connection to %s timeout\n", addrConnect.ToString());
         CloseSocket(hSocket);
         return false;
       }

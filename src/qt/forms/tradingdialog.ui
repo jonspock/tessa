@@ -181,7 +181,7 @@
       <string>Asks</string>
      </property>
     </widget>
-    <widget class="QLabel" name="ClubSupply">
+    <widget class="QLabel" name="TessaSupply">
      <property name="geometry">
       <rect>
        <x>540</x>
@@ -197,7 +197,7 @@
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="ClubDemand">
+    <widget class="QLabel" name="TessaDemand">
      <property name="geometry">
       <rect>
        <x>160</x>
@@ -432,7 +432,7 @@
     <attribute name="title">
      <string>Buy</string>
     </attribute>
-    <widget class="QPushButton" name="BuyClub">
+    <widget class="QPushButton" name="BuyTessa">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -442,7 +442,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Buy Club</string>
+      <string>Buy Tessa</string>
      </property>
      <property name="icon">
       <iconset resource="../pivx.qrc">
@@ -512,7 +512,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Club</string>
+      <string>Tessa</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
@@ -1704,10 +1704,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Club</string>
+      <string>Tessa</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="UnitsInputClub">
+    <widget class="QLineEdit" name="UnitsInputTessa">
      <property name="geometry">
       <rect>
        <x>310</x>
@@ -1741,7 +1741,7 @@
       </font>
      </property>
     </widget>
-    <widget class="QPushButton" name="SellClubBTN">
+    <widget class="QPushButton" name="SellTessaBTN">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -1751,7 +1751,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Sell Club</string>
+      <string>Sell Tessa</string>
      </property>
      <property name="icon">
       <iconset resource="../pivx">
@@ -1777,12 +1777,12 @@
          </font>
         </property>
         <property name="text">
-         <string>Club Available:</string>
+         <string>Tessa Available:</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="ClubAvailableLabel">
+       <widget class="QLabel" name="TessaAvailableLabel">
         <property name="palette">
          <palette>
           <active>
@@ -2213,7 +2213,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="labelClub">
+       <widget class="QLabel" name="labelTessa">
         <property name="font">
          <font>
           <weight>75</weight>
@@ -2221,7 +2221,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Club</string>
+         <string>Tessa</string>
         </property>
        </widget>
       </item>
@@ -2733,7 +2733,7 @@
       <string>TextLabel</string>
      </property>
     </widget>
-    <widget class="QLabel" name="ClubBalanceLabel">
+    <widget class="QLabel" name="TessaBalanceLabel">
      <property name="geometry">
       <rect>
        <x>150</x>
@@ -2762,7 +2762,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Club Balance:</string>
+      <string>Tessa Balance:</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_12">
@@ -2784,7 +2784,7 @@
       <string>BTC Balance:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="ClubAvailableLabel_2">
+    <widget class="QLabel" name="TessaAvailableLabel_2">
      <property name="geometry">
       <rect>
        <x>150</x>
@@ -2813,7 +2813,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Club Available:</string>
+      <string>Tessa Available:</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_14">
@@ -2832,10 +2832,10 @@
       </font>
      </property>
      <property name="text">
-      <string>Club Pending:</string>
+      <string>Tessa Pending:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="ClubPendingLabel">
+    <widget class="QLabel" name="TessaPendingLabel">
      <property name="geometry">
       <rect>
        <x>150</x>
@@ -2928,7 +2928,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Bittrex Club Deposit Address:</string>
+      <string>Bittrex Tessa Deposit Address:</string>
      </property>
     </widget>
     <widget class="QPushButton" name="GenDepositBTN">
@@ -2941,7 +2941,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Generate Club Deposit Address</string>
+      <string>Generate Tessa Deposit Address</string>
      </property>
      <property name="icon">
       <iconset resource="../pivx.qrc">
@@ -3155,7 +3155,7 @@
        <string notr="true">border: 1px solid #61696c;margin-left:4px;</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnConvertClub">
+     <widget class="QPushButton" name="btnConvertTessa">
       <property name="geometry">
        <rect>
         <x>260</x>

@@ -139,10 +139,10 @@ void listSpends(const std::vector<CZerocoinMint>& vSelectedMints) {
 
   CAmount nTotal = 0;
   for (auto& denom : libzerocoin::zerocoinDenomList) {
-    LogPrint(ClubLog::ZERO, "%s %d coins for denomination %d used\n", __func__, mapZerocoinSupply.at(denom), denom);
+    LogPrint(TessaLog::ZERO, "%s %d coins for denomination %d used\n", __func__, mapZerocoinSupply.at(denom), denom);
     nTotal += libzerocoin::ZerocoinDenominationToAmount(denom);
   }
-  // LogPrint(ClubLog::ZERO, "Total value of coins %d\n", nTotal);
+  // LogPrint(TessaLog::ZERO, "Total value of coins %d\n", nTotal);
 }
 
 // -------------------------------------------------------------------------------------------------------
@@ -388,11 +388,11 @@ std::vector<CMintMeta> SelectMintsFromList(const CAmount nValueTarget, CAmount& 
   // calculate the change needed and the map of coins used
   nCoinsReturned = calculateChange(nMaxNumberOfSpends, fMinimizeChange, nValueTarget, mapOfDenomsHeld, mapOfDenomsUsed);
   if (nCoinsReturned == 0) {
-    LogPrint(ClubLog::ZERO, "%s: Problem getting change (TBD) or Too many spends %d\n", __func__, nValueTarget);
+    LogPrint(TessaLog::ZERO, "%s: Problem getting change (TBD) or Too many spends %d\n", __func__, nValueTarget);
     vSelectedMints.clear();
   } else {
     vSelectedMints = getSpends(listMints, mapOfDenomsUsed, nSelectedValue);
-    LogPrint(ClubLog::ZERO, "%s: %d coins in change for %d\n", __func__, nCoinsReturned, nValueTarget);
+    LogPrint(TessaLog::ZERO, "%s: %d coins in change for %d\n", __func__, nCoinsReturned, nValueTarget);
   }
   return vSelectedMints;
 }

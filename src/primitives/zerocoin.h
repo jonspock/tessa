@@ -1,10 +1,10 @@
 // Copyright (c) 2017-2018 The PIVX developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The TessaChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef Club_ZEROCOIN_H
-#define Club_ZEROCOIN_H
+#ifndef Tessa_ZEROCOIN_H
+#define Tessa_ZEROCOIN_H
 
 #include "key.h"
 #include "libzerocoin/Denominations.h"
@@ -219,4 +219,4 @@ class CZerocoinSpendReceipt {
   int GetNeededSpends();
 };
 
-#endif  // Club_ZEROCOIN_H
+#endif  // Tessa_ZEROCOIN_H

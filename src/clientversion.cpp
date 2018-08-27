@@ -15,7 +15,7 @@
  * for both tessad and club-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Club Core");
+const std::string CLIENT_NAME("Tessa Core");
 
 /**
  * Client version number

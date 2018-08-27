@@ -53,7 +53,7 @@ void OptionsModel::Init() {
   fMinimizeOnClose = settings.value("fMinimizeOnClose").toBool();
 
   // Display
-  if (!settings.contains("nDisplayUnit")) settings.setValue("nDisplayUnit", BitcoinUnits::Club);
+  if (!settings.contains("nDisplayUnit")) settings.setValue("nDisplayUnit", BitcoinUnits::Tessa);
   nDisplayUnit = settings.value("nDisplayUnit").toInt();
 
   if (!settings.contains("strThirdPartyTxUrls")) settings.setValue("strThirdPartyTxUrls", "");

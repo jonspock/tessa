@@ -116,7 +116,7 @@ class CBlockAverage {
     else
       throw runtime_error("Corrupt priority value in estimates file.");
     if (feeSamples.size() + prioritySamples.size() > 0)
-      LogPrint(ClubLog::ESTIMATEFEE, "Read %d fee samples and %d priority samples\n", feeSamples.size(),
+      LogPrint(TessaLog::ESTIMATEFEE, "Read %d fee samples and %d priority samples\n", feeSamples.size(),
                prioritySamples.size());
   }
 };
@@ -153,7 +153,7 @@ class CMinerPolicyEstimator {
       // priority insufficient to get confirmed:
       // don't know why they got confirmed.
     }
-    LogPrint(ClubLog::ESTIMATEFEE, "Seen TX confirm: %s : %g priority, took %d blocks\n", assignedTo, dPriority,
+    LogPrint(TessaLog::ESTIMATEFEE, "Seen TX confirm: %s : %g priority, took %d blocks\n", assignedTo, dPriority,
              nBlocksAgo);
   }
 
@@ -212,7 +212,7 @@ class CMinerPolicyEstimator {
 
     for (size_t i = 0; i < history.size(); i++) {
       if (history[i].PrioritySamples() > 0)
-        LogPrint(ClubLog::ESTIMATEFEE, "estimates: for confirming within %d blocks based on %d samples, prio=%g\n", i,
+        LogPrint(TessaLog::ESTIMATEFEE, "estimates: for confirming within %d blocks based on %d samples, prio=%g\n", i,
                  history[i].PrioritySamples(), estimatePriority(i + 1));
     }
   }
@@ -440,7 +440,7 @@ void CTxMemPool::clear() {
 void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
   if (!fSanityCheck) return;
 
-  LogPrint(ClubLog::MEMPOOL, "Checking mempool with %u transactions and %u inputs\n", (unsigned int)mapTx.size(),
+  LogPrint(TessaLog::MEMPOOL, "Checking mempool with %u transactions and %u inputs\n", (unsigned int)mapTx.size(),
            (unsigned int)mapNextTx.size());
 
   uint64_t checkTotal = 0;

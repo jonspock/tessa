@@ -152,7 +152,7 @@ void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMin
     meta.txid = txHash;
     meta.nHeight = mapBlockIndex[hashBlock]->nHeight;
     meta.isUsed = fSpent;
-    LogPrint(ClubLog::ZERO, "%s: found updates for pubcoinhash = %s\n", __func__, meta.hashPubcoin.GetHex());
+    LogPrint(TessaLog::ZERO, "%s: found updates for pubcoinhash = %s\n", __func__, meta.hashPubcoin.GetHex());
 
     vMintsToUpdate.push_back(meta);
   }
@@ -201,7 +201,7 @@ std::string ReindexZerocoinDB() {
 
   CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
   while (pindex) {
-    if (pindex->nHeight % 1000 == 0) LogPrint(ClubLog::ZERO, "Reindexing zerocoin : block %d...\n", pindex->nHeight);
+    if (pindex->nHeight % 1000 == 0) LogPrint(TessaLog::ZERO, "Reindexing zerocoin : block %d...\n", pindex->nHeight);
 
     CBlock block;
     if (!ReadBlockFromDisk(block, pindex)) { return _("Reindexing zerocoin failed"); }
@@ -264,7 +264,7 @@ bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CV
   publicZerocoin.setvch(vchZeroMint);
 
   libzerocoin::CoinDenomination denomination = libzerocoin::AmountToZerocoinDenomination(txout.nValue);
-  LogPrint(ClubLog::ZERO, "%s ZCPRINT denomination %d pubcoin %s\n", __func__, denomination, publicZerocoin.GetHex());
+  LogPrint(TessaLog::ZERO, "%s ZCPRINT denomination %d pubcoin %s\n", __func__, denomination, publicZerocoin.GetHex());
   if (denomination == libzerocoin::ZQ_ERROR)
     return state.DoS(100, error("TxOutToPublicCoin : txout.nValue is not correct"));
 

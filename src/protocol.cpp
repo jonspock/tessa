@@ -107,7 +107,7 @@ CInv::CInv(const std::string& strType, const uint256& hashIn) {
       break;
     }
   }
-  if (i == ARRAYLEN(ppszTypeName)) LogPrint(ClubLog::NET, "CInv::CInv(string, uint256) : unknown type '%s'", strType);
+  if (i == ARRAYLEN(ppszTypeName)) LogPrint(TessaLog::NET, "CInv::CInv(string, uint256) : unknown type '%s'", strType);
   hash = hashIn;
 }
 
@@ -119,7 +119,7 @@ bool CInv::IsMasterNodeType() const { return (type >= 6); }
 
 const char* CInv::GetCommand() const {
   if (!IsKnownType()) {
-    LogPrint(ClubLog::NET, "CInv::GetCommand() : type=%d unknown type", type);
+    LogPrint(TessaLog::NET, "CInv::GetCommand() : type=%d unknown type", type);
     return "UNKNOWN";
   }
 

@@ -280,7 +280,7 @@ bool static Bind(const CService& addr, unsigned int flags) {
 
 void OnRPCStopped() {
   cvBlockChange.notify_all();
-  LogPrint(ClubLog::RPC, "RPC stopped.\n");
+  LogPrint(TessaLog::RPC, "RPC stopped.\n");
 }
 
 void OnRPCPreCommand(const CRPCCommand& cmd) {
@@ -425,7 +425,7 @@ std::string HelpMessage(HelpMessageMode mode) {
       strUsage += HelpMessageOpt(
           "-mintxfee=<amt>",
           strprintf(
-              _("Fees (in Club/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
+              _("Fees (in Tessa/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
               FormatMoney(CWallet::minTxFee.GetFeePerK())));
     strUsage +=
         HelpMessageOpt("-rescan", _("Rescan the block chain for missing wallet transactions") + " " + _("on startup"));
@@ -525,7 +525,7 @@ std::string HelpMessage(HelpMessageMode mode) {
   }
   strUsage += HelpMessageOpt(
       "-minrelaytxfee=<amt>",
-      strprintf(_("Fees (in Club/Kb) smaller than this are considered zero fee for relaying (default: %s)"),
+      strprintf(_("Fees (in Tessa/Kb) smaller than this are considered zero fee for relaying (default: %s)"),
                 FormatMoney(::minRelayTxFee.GetFeePerK())));
   strUsage += HelpMessageOpt(
       "-printtoconsole", strprintf(_("Send trace/debug info to console instead of debug.log file (default: %u)"), 0));
@@ -544,13 +544,13 @@ std::string HelpMessage(HelpMessageMode mode) {
       HelpMessageOpt("-shrinkdebugfile", _("Shrink debug.log file on client startup (default: 1 when no -debug)"));
   strUsage += HelpMessageOpt("-testnet", _("Use the test network"));
   strUsage += HelpMessageOpt("-litemode=<n>",
-                             strprintf(_("Disable all Club specific functionality (Zerocoin) (0-1, default: %u)"), 0));
+                             strprintf(_("Disable all Tessa specific functionality (Zerocoin) (0-1, default: %u)"), 0));
 
   if (!fDisableWallet) {
     strUsage += HelpMessageGroup(_("Staking options:"));
     strUsage += HelpMessageOpt("-staking=<n>", strprintf(_("Enable staking functionality (0-1, default: %u)"), 1));
     strUsage += HelpMessageOpt(
-        "-stake=<n>", strprintf(_("Enable or disable staking functionality for Club inputs (0-1, default: %u)"), 1));
+        "-stake=<n>", strprintf(_("Enable or disable staking functionality for Tessa inputs (0-1, default: %u)"), 1));
     strUsage += HelpMessageOpt("-reservebalance=<amt>",
                                _("Keep the specified amount available for spending at all times (default: 0)"));
     if (GetBoolArg("-help-debug", false)) {
@@ -618,7 +618,7 @@ std::string LicenseInfo() {
   return FormatParagraph(strprintf(_("Copyright (C) 2009-%i The Bitcoin Core Developers"), COPYRIGHT_YEAR)) + "\n" +
          "\n" + FormatParagraph(strprintf(_("Copyright (C) 2014-%i The Dash Core Developers"), COPYRIGHT_YEAR)) + "\n" +
          "\n" + FormatParagraph(strprintf(_("Copyright (C) 2015-%i The PIVX Core Developers"), COPYRIGHT_YEAR)) + "\n" +
-         "\n" + FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Club Core Developers"), COPYRIGHT_YEAR)) + "\n" +
+         "\n" + FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Tessa Core Developers"), COPYRIGHT_YEAR)) + "\n" +
          "\n" + FormatParagraph(_("This is experimental software.")) + "\n" + "\n" +
          FormatParagraph(_("Distributed under the MIT software license, see the accompanying file COPYING or "
                            "<http://www.opensource.org/licenses/mit-license.php>.")) +
@@ -713,7 +713,7 @@ void ThreadImport(std::vector<fs::path> vImportFiles) {
 }
 
 /** Sanity checks
- *  Ensure that Club is running in a usable environment with all
+ *  Ensure that Tessa is running in a usable environment with all
  *  necessary library support.
  */
 bool InitSanityCheck(void) {
@@ -740,7 +740,7 @@ bool AppInitServers(boost::thread_group& threadGroup) {
 }
 
 void InitLogging() {
-  ClubLog::Logger& logger = GetLogger();
+  TessaLog::Logger& logger = GetLogger();
   logger.fPrintToConsole = gArgs.GetBoolArg("-printtoconsole", false);
   logger.fLogTimestamps = gArgs.GetBoolArg("-logtimestamps", DEFAULT_LOGTIMESTAMPS);
   logger.fLogTimeMicros = gArgs.GetBoolArg("-logtimemicros", DEFAULT_LOGTIMEMICROS);
@@ -883,7 +883,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     const std::vector<std::string>& categories = gArgs.GetArgs("-debug");
     if (find(categories.begin(), categories.end(), std::string("0")) == categories.end()) {
       for (const auto& cat : categories) {
-        ClubLog::LogFlags flag;
+        TessaLog::LogFlags flag;
         if (!GetLogCategory(flag, cat)) {
           InitWarning(strprintf(_("Unsupported logging category %s=%s."), "-debug", cat));
         }
@@ -981,7 +981,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   globalVerifyHandle.reset(new ECCVerifyHandle());
 
   // Sanity check
-  if (!InitSanityCheck()) return InitError(_("Initialization sanity check failed. Club Core is shutting down."));
+  if (!InitSanityCheck()) return InitError(_("Initialization sanity check failed. Tessa Core is shutting down."));
 
   std::string strDataDir = GetDataDir().string();
   if (!fDisableWallet) {
@@ -989,7 +989,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     if (strWalletDir != fs::basename(strWalletDir) + fs::extension(strWalletDir))
       return InitError(strprintf(_("Wallet %s resides outside data directory %s"), strWalletDir, strDataDir));
   }
-  // Make sure only a single Club process is using the data directory.
+  // Make sure only a single Tessa process is using the data directory.
   fs::path pathLockFile = GetDataDir() / ".lock";
   FILE* file = fopen(pathLockFile.string().c_str(), "a");  // empty lock file; created if it doesn't exist.
   if (file) fclose(file);
@@ -998,13 +998,13 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // Wait maximum 10 seconds if an old wallet is still running. Avoids lockup during restart
   if (!lock.timed_lock(boost::get_system_time() + boost::posix_time::seconds(10)))
     return InitError(
-        strprintf(_("Cannot obtain a lock on data directory %s. Club Core is probably already running."), strDataDir));
+        strprintf(_("Cannot obtain a lock on data directory %s. Tessa Core is probably already running."), strDataDir));
 
 #ifndef WIN32
   CreatePidFile(GetPidFile(), getpid());
 #endif
 
-  ClubLog::Logger& logger = GetLogger();
+  TessaLog::Logger& logger = GetLogger();
 
   bool default_shrinkdebugfile = logger.DefaultShrinkDebugFile();
   if (gArgs.GetBoolArg("-shrinkdebugfile", default_shrinkdebugfile)) {
@@ -1018,7 +1018,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (!logger.fLogTimestamps) { LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime())); }
 
   LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-  LogPrintf("Club version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
+  LogPrintf("Tessa version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
   // LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
   // LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
   if (!logger.fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
@@ -1285,7 +1285,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // ********************************************************* Step 7: load block chain
 
-  // Club: Load Accumulator Checkpoints according to network (main/test/regtest)
+  // Tessa: Load Accumulator Checkpoints according to network (main/test/regtest)
   AccumulatorCheckpoints::LoadCheckpoints(Params().NetworkIDString());
 
   fReindex = GetBoolArg("-reindex", false);
@@ -1345,7 +1345,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
         delete zerocoinDB;
         delete pSporkDB;
 
-        // Club specific: zerocoin and spork DB's
+        // Tessa specific: zerocoin and spork DB's
         zerocoinDB = new CZerocoinDB(0, false, fReindex);
         pSporkDB = new CSporkDB(0, false, false);
 
@@ -1356,7 +1356,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
         if (fReindex) pblocktree->WriteReindexing(true);
 
-        // Club: load previous sessions sporks if we have them.
+        // Tessa: load previous sessions sporks if we have them.
         uiInterface.InitMessage(_("Loading sporks..."));
         gSporkManager.LoadSporksFromDB();
 
@@ -1405,7 +1405,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
           }
         }
 
-        // Club: recalculate Accumulator Checkpoints that failed to database properly
+        // Tessa: recalculate Accumulator Checkpoints that failed to database properly
         if (!listAccCheckpointsNoDB.empty()) {
           uiInterface.InitMessage(_("Calculating missing accumulators..."));
           LogPrintf("%s : finding missing checkpoints\n", __func__);
@@ -1506,9 +1506,9 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
               " or address book entries might be missing or incorrect."));
         InitWarning(msg);
       } else if (nLoadWalletRet == DB_TOO_NEW)
-        strErrors << _("Error loading wallet.dat: Wallet requires newer version of Club Core") << "\n";
+        strErrors << _("Error loading wallet.dat: Wallet requires newer version of Tessa Core") << "\n";
       else if (nLoadWalletRet == DB_NEED_REWRITE) {
-        strErrors << _("Wallet needed to be rewritten: restart Club Core to complete") << "\n";
+        strErrors << _("Wallet needed to be rewritten: restart Tessa Core to complete") << "\n";
         LogPrintf("%s", strErrors.str());
         return InitError(strErrors.str());
       } else

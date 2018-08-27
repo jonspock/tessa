@@ -28,7 +28,7 @@ class CSporkManager;
 
 CSporkManager gSporkManager;
 
-// Club: on startup load spork values from previous session if they exist in the sporkDB
+// Tessa: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB() {
   for (unsigned int i = 0; i < sporkList.size(); ++i) {
     // Since not all spork IDs are in use, we have to exclude undefined IDs
@@ -39,7 +39,7 @@ void CSporkManager::LoadSporksFromDB() {
     // attempt to read spork from sporkDB
     CSporkMessage spork;
     if (!pSporkDB->ReadSpork(sporkID, spork)) {
-      LogPrint(ClubLog::SPORK, "%s : no previous value for %s found in database\n", __func__, strSpork);
+      LogPrint(TessaLog::SPORK, "%s : no previous value for %s found in database\n", __func__, strSpork);
       continue;
     }
 
@@ -49,10 +49,10 @@ void CSporkManager::LoadSporksFromDB() {
     std::time_t result = spork.nValue;
     // If SPORK Value is greater than 1,000,000 assume it's actually a Date and then convert to a more readable format
     if (spork.nValue > 1000000) {
-      LogPrint(ClubLog::SPORK, "%s : loaded spork %s with value %d : %s", __func__,
+      LogPrint(TessaLog::SPORK, "%s : loaded spork %s with value %d : %s", __func__,
                gSporkManager.GetSporkNameByID(sporkID), spork.nValue, std::ctime(&result));
     } else {
-      LogPrint(ClubLog::SPORK, "%s : loaded spork %s with value %d\n", __func__,
+      LogPrint(TessaLog::SPORK, "%s : loaded spork %s with value %d\n", __func__,
                gSporkManager.GetSporkNameByID(sporkID), spork.nValue);
     }
   }
@@ -61,7 +61,7 @@ void CSporkManager::LoadSporksFromDB() {
 void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv) {
   //    if (fLiteMode) return 0;
   if (strCommand == "spork") {
-    // LogPrint(ClubLog::SPORK,"ProcessSpork::spork\n");
+    // LogPrint(TessaLog::SPORK,"ProcessSpork::spork\n");
     CDataStream vMsg(vRecv);
     CSporkMessage spork;
     vRecv >> spork;
@@ -77,20 +77,20 @@ void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStr
     if (mapSporksActive.count(spork.nSporkID)) {
       if (mapSporksActive[spork.nSporkID].nTimeSigned >= spork.nTimeSigned) {
         if (gArgs.IsArgSet("-debug"))
-          LogPrint(ClubLog::SPORK, "%s : seen %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
+          LogPrint(TessaLog::SPORK, "%s : seen %s block %d \n", __func__, hash.ToString(), chainActive.Tip()->nHeight);
         return;
       } else {
         if (gArgs.IsArgSet("-debug"))
-          LogPrint(ClubLog::SPORK, "%s : got updated spork %s block %d \n", __func__, hash.ToString(),
+          LogPrint(TessaLog::SPORK, "%s : got updated spork %s block %d \n", __func__, hash.ToString(),
                    chainActive.Tip()->nHeight);
       }
     }
 
-    LogPrint(ClubLog::SPORK, "%s : new %s ID %d Time %d bestHeight %d\n", __func__, hash.ToString(), spork.nSporkID,
+    LogPrint(TessaLog::SPORK, "%s : new %s ID %d Time %d bestHeight %d\n", __func__, hash.ToString(), spork.nSporkID,
              spork.nValue, chainActive.Tip()->nHeight);
 
     if (!CheckSignature(spork, true)) {
-      LogPrint(ClubLog::SPORK, "%s : Invalid Signature\n", __func__);
+      LogPrint(TessaLog::SPORK, "%s : Invalid Signature\n", __func__);
       Misbehaving(pfrom->GetId(), 100);
       return;
     }
@@ -99,7 +99,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStr
     mapSporksActive[spork.nSporkID] = spork;
     Relay(spork);
 
-    // Club: add to spork database.
+    // Tessa: add to spork database.
     pSporkDB->WriteSpork(id, spork);
   }
 
@@ -132,7 +132,7 @@ void CSporkManager::ReprocessBlocks(int nBlocks) {
         LOCK(cs_main);
 
         CBlockIndex* pindex = (*mi).second;
-        LogPrint(ClubLog::SPORK, "ReprocessBlocks - %s\n", (*it).first.ToString());
+        LogPrint(TessaLog::SPORK, "ReprocessBlocks - %s\n", (*it).first.ToString());
 
         CValidationState state;
         ReconsiderBlock(state, pindex);
@@ -159,7 +159,7 @@ bool CSporkManager::VerifyMessage(CPubKey pubkey, vector<uint8_t>& vchSig, std::
   if (!pubkey2.RecoverCompact(ss.GetHash(), vchSig)) return false;
 
   if (gArgs.IsArgSet("-debug") && pubkey2.GetID() != pubkey.GetID())
-    LogPrint(ClubLog::SPORK, "VerifyMessage -- keys don't match: %s %s\n", pubkey2.GetID().ToString(),
+    LogPrint(TessaLog::SPORK, "VerifyMessage -- keys don't match: %s %s\n", pubkey2.GetID().ToString(),
              pubkey.GetID().ToString());
 
   return (pubkey2.GetID() == pubkey.GetID());
@@ -206,17 +206,17 @@ bool CSporkManager::Sign(CSporkMessage& spork) {
   CPubKey pubkey2;
 
   if (!SetKey(strMasterPrivKey, key2, pubkey2)) {
-    LogPrint(ClubLog::SPORK, "Sign - ERROR: Invalid Spork Key\n");
+    LogPrint(TessaLog::SPORK, "Sign - ERROR: Invalid Spork Key\n");
     return false;
   }
 
   if (!SignMessage(strMessage, spork.vchSig, key2)) {
-    LogPrint(ClubLog::SPORK, "Sign - Spork Sign message failed");
+    LogPrint(TessaLog::SPORK, "Sign - Spork Sign message failed");
     return false;
   }
 
   if (!VerifyMessage(pubkey2, spork.vchSig, strMessage)) {
-    LogPrint(ClubLog::SPORK, "Sign - Verify Spork message failed");
+    LogPrint(TessaLog::SPORK, "Sign - Verify Spork message failed");
     return false;
   }
 
@@ -253,7 +253,7 @@ bool CSporkManager::SetPrivKey(std::string strPrivKey) {
   Sign(msg);
 
   bool ok = (CheckSignature(msg, true));
-  if (ok) LogPrint(ClubLog::SPORK, "CSporkManager::SetPrivKey - Successfully initialized as spork signer\n");
+  if (ok) LogPrint(TessaLog::SPORK, "CSporkManager::SetPrivKey - Successfully initialized as spork signer\n");
   return ok;
 }
 

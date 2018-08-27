@@ -13,7 +13,7 @@
 
 using namespace std;
 
-//! Club Stake
+//! Tessa Stake
 bool CStake::SetInput(CTransaction txPrev, unsigned int n) {
   this->txFrom = txPrev;
   this->nPosition = n;
@@ -78,7 +78,7 @@ bool CStake::GetModifier(uint64_t& nStakeModifier) {
 }
 
 CDataStream CStake::GetUniqueness() {
-  // The unique identifier for a Club stake is the outpoint
+  // The unique identifier for a Tessa stake is the outpoint
   CDataStream ss(SER_NETWORK, 0);
   ss << nPosition << txFrom.GetHash();
   return ss;

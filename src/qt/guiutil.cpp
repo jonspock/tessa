@@ -87,7 +87,7 @@ void setupAddressWidget(QValidatedLineEdit* widget, QWidget* parent) {
   widget->setFont(bitcoinAddressFont());
   // We don't want translators to use own addresses in translations
   // and this is the only place, where this address is supplied.
-  widget->setPlaceholderText(QObject::tr("Enter a Club address (e.g. %1)").arg("D7VFR83SQbiezrW72hjcWJtcfip5krte2Z"));
+  widget->setPlaceholderText(QObject::tr("Enter a Tessa address (e.g. %1)").arg("D7VFR83SQbiezrW72hjcWJtcfip5krte2Z"));
   widget->setValidator(new BitcoinAddressEntryValidator(parent));
   widget->setCheckValidator(new BitcoinAddressCheckValidator(parent));
 }
@@ -101,7 +101,7 @@ void setupAmountWidget(QLineEdit* widget, QWidget* parent) {
 }
 
 bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out) {
-  // return if URI is not valid or is no Club: URI
+  // return if URI is not valid or is no Tessa: URI
   if (!uri.isValid() || uri.scheme() != QString(URI_SCHEME)) return false;
 
   SendCoinsRecipient rv;
@@ -128,7 +128,7 @@ bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out) {
       fShouldReturnFalse = false;
     } else if (i->first == "amount") {
       if (!i->second.isEmpty()) {
-        if (!BitcoinUnits::parse(BitcoinUnits::Club, i->second, &rv.amount)) { return false; }
+        if (!BitcoinUnits::parse(BitcoinUnits::Tessa, i->second, &rv.amount)) { return false; }
       }
       fShouldReturnFalse = false;
     }
@@ -157,7 +157,7 @@ QString formatBitcoinURI(const SendCoinsRecipient& info) {
 
   if (info.amount) {
     ret += QString("?amount=%1")
-               .arg(BitcoinUnits::format(BitcoinUnits::Club, info.amount, false, BitcoinUnits::separatorNever));
+               .arg(BitcoinUnits::format(BitcoinUnits::Tessa, info.amount, false, BitcoinUnits::separatorNever));
     paramCount++;
   }
 
@@ -483,10 +483,10 @@ bool DHMSTableWidgetItem::operator<(QTableWidgetItem const& item) const {
 }
 
 #ifdef WIN32
-fs::path static StartupShortcutPath() { return GetSpecialFolderPath(CSIDL_STARTUP) / "Club.lnk"; }
+fs::path static StartupShortcutPath() { return GetSpecialFolderPath(CSIDL_STARTUP) / "Tessa.lnk"; }
 
 bool GetStartOnSystemStartup() {
-  // check for Club.lnk
+  // check for Tessa.lnk
   return fs::exists(StartupShortcutPath());
 }
 
@@ -585,7 +585,7 @@ bool SetStartOnSystemStartup(bool fAutoStart) {
     // Write a club.desktop file to the autostart directory:
     optionFile << "[Desktop Entry]\n";
     optionFile << "Type=Application\n";
-    optionFile << "Name=Club\n";
+    optionFile << "Name=Tessa\n";
     optionFile << "Exec=" << pszExePath << " -min\n";
     optionFile << "Terminal=false\n";
     optionFile << "Hidden=false\n";

@@ -39,7 +39,7 @@ static const char UNUSED *club_strings[] = {
                       "Calculated accumulator checkpoint is not what is recorded by block index"),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
-                      "Cannot obtain a lock on data directory %s. Club Core is probably already "
+                      "Cannot obtain a lock on data directory %s. Tessa Core is probably already "
                       "running."),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
@@ -63,7 +63,7 @@ static const char UNUSED *club_strings[] = {
                       "blockchain database and reindex them (0-1, default: %u)"),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
-                      "Disable all Club specific functionality (Zerocoin) (0-1, default: %u)"),
+                      "Disable all Tessa specific functionality (Zerocoin) (0-1, default: %u)"),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
                       "Distributed under the MIT software license, see the accompanying file "
@@ -74,7 +74,7 @@ static const char UNUSED *club_strings[] = {
                       "default: %u)"),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
-                      "Enable or disable staking functionality for Club inputs (0-1, default: %u)"),
+                      "Enable or disable staking functionality for Tessa inputs (0-1, default: %u)"),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
                       "Enable or disable staking functionality for ZKP inputs (0-1, default: %u)"),
@@ -128,11 +128,11 @@ static const char UNUSED *club_strings[] = {
                       "Failed to find coin set amongst held coins with less than maxNumber of Spends"),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
-                      "Fees (in Club/Kb) smaller than this are considered zero fee for relaying "
+                      "Fees (in Tessa/Kb) smaller than this are considered zero fee for relaying "
                       "(default: %s)"),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
-                      "Fees (in Club/Kb) smaller than this are considered zero fee for transaction "
+                      "Fees (in Tessa/Kb) smaller than this are considered zero fee for transaction "
                       "creation (default: %s)"),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
@@ -248,18 +248,18 @@ static const char UNUSED *club_strings[] = {
                       "written by Eric Young and UPnP software written by Thomas Bernard."),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
-                      "Unable to bind to %s on this computer. Club Core is probably already running."),
+                      "Unable to bind to %s on this computer. Tessa Core is probably already running."),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
                       "Unable to locate enough Obfuscation denominated funds for this transaction."),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
                       "Unable to locate enough Obfuscation non-denominated funds for this "
-                      "transaction that are not equal 10000 Club."),
+                      "transaction that are not equal 10000 Tessa."),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
                       "Unable to locate enough funds for this transaction that are not equal 10000 "
-                      "Club."),
+                      "Tessa."),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
                       "Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: "
@@ -275,7 +275,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
                       "Warning: Please check that your computer's date and time are correct! If "
-                      "your clock is wrong Club Core will not work properly."),
+                      "your clock is wrong Tessa Core will not work properly."),
     QT_TRANSLATE_NOOP("tessa-core",
                       ""
                       "Warning: The network does not appear to fully agree! Some miners appear to "
@@ -333,7 +333,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("tessa-core", "Connection options:"),
     QT_TRANSLATE_NOOP("tessa-core", "Copyright (C) 2009-%i The Bitcoin Core Developers"),
     QT_TRANSLATE_NOOP("tessa-core", "Copyright (C) 2014-%i The Dash Core Developers"),
-    QT_TRANSLATE_NOOP("tessa-core", "Copyright (C) 2015-%i The Club Core Developers"),
+    QT_TRANSLATE_NOOP("tessa-core", "Copyright (C) 2015-%i The Tessa Core Developers"),
     QT_TRANSLATE_NOOP("tessa-core", "Corrupted block database detected"),
     QT_TRANSLATE_NOOP("tessa-core", "Debugging/Testing options:"),
     QT_TRANSLATE_NOOP("tessa-core", "Delete blockchain folders and resync from scratch"),
@@ -357,7 +357,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("tessa-core", "Error loading block database"),
     QT_TRANSLATE_NOOP("tessa-core", "Error loading wallet.dat"),
     QT_TRANSLATE_NOOP("tessa-core", "Error loading wallet.dat: Wallet corrupted"),
-    QT_TRANSLATE_NOOP("tessa-core", "Error loading wallet.dat: Wallet requires newer version of Club Core"),
+    QT_TRANSLATE_NOOP("tessa-core", "Error loading wallet.dat: Wallet requires newer version of Tessa Core"),
     QT_TRANSLATE_NOOP("tessa-core", "Error opening block database"),
     QT_TRANSLATE_NOOP("tessa-core", "Error reading from database, shutting down."),
     QT_TRANSLATE_NOOP("tessa-core", "Error recovering public key."),
@@ -379,7 +379,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("tessa-core", "Failed to select a zerocoin"),
     QT_TRANSLATE_NOOP("tessa-core", "Failed to wipe zerocoinDB"),
     QT_TRANSLATE_NOOP("tessa-core", "Failed to write coin serial number into wallet"),
-    QT_TRANSLATE_NOOP("tessa-core", "Fee (in Club/kB) to add to transactions you send (default: %s)"),
+    QT_TRANSLATE_NOOP("tessa-core", "Fee (in Tessa/kB) to add to transactions you send (default: %s)"),
     QT_TRANSLATE_NOOP("tessa-core", "Finalizing transaction."),
     QT_TRANSLATE_NOOP("tessa-core", "Force safe mode (default: %u)"),
     QT_TRANSLATE_NOOP("tessa-core", "Found enough users, signing ( waiting %s )"),
@@ -394,7 +394,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("tessa-core", "Incompatible version."),
     QT_TRANSLATE_NOOP("tessa-core", "Incorrect or no genesis block found. Wrong datadir for network?"),
     QT_TRANSLATE_NOOP("tessa-core", "Information"),
-    QT_TRANSLATE_NOOP("tessa-core", "Initialization sanity check failed. Club Core is shutting down."),
+    QT_TRANSLATE_NOOP("tessa-core", "Initialization sanity check failed. Tessa Core is shutting down."),
     QT_TRANSLATE_NOOP("tessa-core", "Input is not valid."),
     QT_TRANSLATE_NOOP("tessa-core", "Insufficient funds"),
     QT_TRANSLATE_NOOP("tessa-core", "Insufficient funds."),
@@ -457,7 +457,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("tessa-core", "Randomly fuzz 1 of every <n> network messages"),
     QT_TRANSLATE_NOOP("tessa-core", "Rebuild block chain index from current blk000??.dat files"),
     QT_TRANSLATE_NOOP("tessa-core", "Receive and display P2P network alerts (default: %u)"),
-    QT_TRANSLATE_NOOP("tessa-core", "Reindex the Club and ZKP money supply statistics"),
+    QT_TRANSLATE_NOOP("tessa-core", "Reindex the Tessa and ZKP money supply statistics"),
     QT_TRANSLATE_NOOP("tessa-core", "Reindex the accumulator database"),
     QT_TRANSLATE_NOOP("tessa-core", "Reindexing zerocoin database..."),
     QT_TRANSLATE_NOOP("tessa-core", "Reindexing zerocoin failed"),
@@ -543,7 +543,7 @@ static const char UNUSED *club_strings[] = {
     QT_TRANSLATE_NOOP("tessa-core", "Version 1 ZKP require a security level of 100 to successfully spend."),
     QT_TRANSLATE_NOOP("tessa-core", "Wallet %s resides outside data directory %s"),
     QT_TRANSLATE_NOOP("tessa-core", "Wallet is locked."),
-    QT_TRANSLATE_NOOP("tessa-core", "Wallet needed to be rewritten: restart Club Core to complete"),
+    QT_TRANSLATE_NOOP("tessa-core", "Wallet needed to be rewritten: restart Tessa Core to complete"),
     QT_TRANSLATE_NOOP("tessa-core", "Wallet options:"),
     QT_TRANSLATE_NOOP("tessa-core", "Wallet window title"),
     QT_TRANSLATE_NOOP("tessa-core", "Warning"),

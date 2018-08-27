@@ -71,10 +71,10 @@ static bool AppInitRPC(int argc, char* argv[]) {
   //
   ParseParameters(argc, argv);
   if (argc < 2 || gArgs.IsArgSet("-?") || gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version")) {
-    std::string strUsage = _("Club Core RPC client version") + " " + FormatFullVersion() + "\n";
+    std::string strUsage = _("Tessa Core RPC client version") + " " + FormatFullVersion() + "\n";
     if (!gArgs.IsArgSet("-version")) {
       strUsage += "\n" + _("Usage:") + "\n" + "  tessa-cli [options] <command> [params]  " +
-                  _("Send command to Club Core") + "\n" + "  tessa-cli [options] help                " +
+                  _("Send command to Tessa Core") + "\n" + "  tessa-cli [options] help                " +
                   _("List commands") + "\n" + "  tessa-cli [options] help <command>      " +
                   _("Get help for a command") + "\n";
 

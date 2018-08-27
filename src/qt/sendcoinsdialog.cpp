@@ -63,7 +63,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent)
   connect(ui->splitBlockLineEdit, SIGNAL(textChanged(const QString&)), this,
           SLOT(splitBlockLineEditChanged(const QString&)));
 
-  // Club specific
+  // Tessa specific
   QSettings settings;
 
   // Coin Control: clipboard actions
@@ -218,7 +218,7 @@ void SendCoinsDialog::on_sendButton_clicked() {
   // will call relock
   WalletModel::EncryptionStatus encStatus = model->getEncryptionStatus();
   if (encStatus == model->Locked || encStatus == model->UnlockedForAnonymizationOnly) {
-    WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Send_Club, true));
+    WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::Send_Tessa, true));
     if (!ctx.isValid()) {
       // Unlock wallet was cancelled
       fNewRecipientAllowed = true;
@@ -634,7 +634,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text) {
       ui->labelCoinControlChangeLabel->setText("");
     } else if (!addr.IsValid())  // Invalid address
     {
-      ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Club address"));
+      ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Tessa address"));
     } else  // Valid address
     {
       CPubKey pubkey;

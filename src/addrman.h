@@ -1,7 +1,7 @@
 // Copyright (c) 2012 Pieter Wuille
 // Copyright (c) 2012-2014 The Bitcoin developers
 // Copyright (c) 2017 The PIVX developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The TessaChain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -396,7 +396,7 @@ class CAddrMan {
       }
     }
     if (nLost + nLostUnk > 0) {
-      LogPrint(ClubLog::ADDRMAN, "addrman lost %i new and %i tried addresses due to collisions\n", nLostUnk, nLost);
+      LogPrint(TessaLog::ADDRMAN, "addrman lost %i new and %i tried addresses due to collisions\n", nLostUnk, nLost);
     }
 
     Check();
@@ -447,7 +447,7 @@ class CAddrMan {
       Check();
     }
     if (fRet)
-      LogPrint(ClubLog::ADDRMAN, "Added %s from %s: %i tried, %i new\n", addr.ToStringIPPort(), source.ToString(),
+      LogPrint(TessaLog::ADDRMAN, "Added %s from %s: %i tried, %i new\n", addr.ToStringIPPort(), source.ToString(),
                nTried, nNew);
     return fRet;
   }
@@ -463,7 +463,7 @@ class CAddrMan {
       Check();
     }
     if (nAdd)
-      LogPrint(ClubLog::ADDRMAN, "Added %i addresses from %s: %i tried, %i new\n", nAdd, source.ToString(), nTried,
+      LogPrint(TessaLog::ADDRMAN, "Added %i addresses from %s: %i tried, %i new\n", nAdd, source.ToString(), nTried,
                nNew);
     return nAdd > 0;
   }

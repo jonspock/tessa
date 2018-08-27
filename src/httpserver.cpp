@@ -189,7 +189,7 @@ static bool InitHTTPAllowList() {
   }
   std::string strAllowed;
   for (const CSubNet& subnet : rpc_allow_subnets) strAllowed += subnet.ToString() + " ";
-  LogPrint(ClubLog::HTTP, "Allowing HTTP connections from: %s\n", strAllowed);
+  LogPrint(TessaLog::HTTP, "Allowing HTTP connections from: %s\n", strAllowed);
   return true;
 }
 
@@ -217,7 +217,7 @@ static std::string RequestMethodString(HTTPRequest::RequestMethod m) {
 static void http_request_cb(struct evhttp_request* req, void* arg) {
   std::unique_ptr<HTTPRequest> hreq(new HTTPRequest(req));
 
-  LogPrint(ClubLog::HTTP, "Received a %s request for %s from %s\n", RequestMethodString(hreq->GetRequestMethod()),
+  LogPrint(TessaLog::HTTP, "Received a %s request for %s from %s\n", RequestMethodString(hreq->GetRequestMethod()),
            hreq->GetURI(), hreq->GetPeer().ToString());
 
   // Early address-based allow check
@@ -264,16 +264,16 @@ static void http_request_cb(struct evhttp_request* req, void* arg) {
 
 /** Callback to reject HTTP requests after shutdown. */
 static void http_reject_request_cb(struct evhttp_request* req, void*) {
-  LogPrint(ClubLog::HTTP, "Rejecting request while shutting down\n");
+  LogPrint(TessaLog::HTTP, "Rejecting request while shutting down\n");
   evhttp_send_error(req, HTTP_SERVUNAVAIL, nullptr);
 }
 /** Event dispatcher thread */
 static void ThreadHTTP(struct event_base* base, struct evhttp* http) {
   RenameThread("bitcoin-http");
-  LogPrint(ClubLog::HTTP, "Entering http event loop\n");
+  LogPrint(TessaLog::HTTP, "Entering http event loop\n");
   event_base_dispatch(base);
   // Event loop will be interrupted by InterruptHTTPServer()
-  LogPrint(ClubLog::HTTP, "Exited http event loop\n");
+  LogPrint(TessaLog::HTTP, "Exited http event loop\n");
 }
 
 /** Bind HTTP server to specified addresses */
@@ -305,7 +305,7 @@ static bool HTTPBindAddresses(struct evhttp* http) {
 
   // Bind addresses
   for (std::vector<std::pair<std::string, uint16_t> >::iterator i = endpoints.begin(); i != endpoints.end(); ++i) {
-    LogPrint(ClubLog::HTTP, "Binding RPC on address %s port %i\n", i->first, i->second);
+    LogPrint(TessaLog::HTTP, "Binding RPC on address %s port %i\n", i->first, i->second);
     evhttp_bound_socket* bind_handle =
         evhttp_bind_socket_with_handle(http, i->first.empty() ? nullptr : i->first.c_str(), i->second);
     if (bind_handle) {
@@ -332,7 +332,7 @@ static void libevent_log_cb(int severity, const char* msg) {
   if (severity >= EVENT_LOG_WARN)  // Log warn messages and higher without debug category
     LogPrintf("libevent: %s\n", msg);
   else
-    LogPrint(ClubLog::LIBEVENT, "libevent: %s\n", msg);
+    LogPrint(TessaLog::LIBEVENT, "libevent: %s\n", msg);
 }
 
 bool InitHTTPServer() {
@@ -352,7 +352,7 @@ bool InitHTTPServer() {
 #if LIBEVENT_VERSION_NUMBER >= 0x02010100
   // If -debug=libevent, set full libevent debugging.
   // Otherwise, disable all libevent debugging.
-  if (LogAcceptCategory(ClubLog::LIBEVENT))
+  if (LogAcceptCategory(TessaLog::LIBEVENT))
     event_enable_debug_logging(EVENT_DBG_ALL);
   else
     event_enable_debug_logging(EVENT_DBG_NONE);
@@ -389,7 +389,7 @@ bool InitHTTPServer() {
     return false;
   }
 
-  LogPrint(ClubLog::HTTP, "Initialized HTTP server\n");
+  LogPrint(TessaLog::HTTP, "Initialized HTTP server\n");
   int workQueueDepth = std::max((long)GetArg("-rpcworkqueue", DEFAULT_HTTP_WORKQUEUE), 1L);
   LogPrintf("HTTP: creating work queue of depth %d\n", workQueueDepth);
 
@@ -402,7 +402,7 @@ bool InitHTTPServer() {
 boost::thread threadHTTP;
 
 bool StartHTTPServer() {
-  LogPrint(ClubLog::HTTP, "Starting HTTP server\n");
+  LogPrint(TessaLog::HTTP, "Starting HTTP server\n");
   int rpcThreads = std::max((long)GetArg("-rpcthreads", DEFAULT_HTTP_THREADS), 1L);
   LogPrintf("HTTP: starting %d worker threads\n", rpcThreads);
   threadHTTP = boost::thread(std::bind(&ThreadHTTP, eventBase, eventHTTP));
@@ -412,7 +412,7 @@ bool StartHTTPServer() {
 }
 
 void InterruptHTTPServer() {
-  LogPrint(ClubLog::HTTP, "Interrupting HTTP server\n");
+  LogPrint(TessaLog::HTTP, "Interrupting HTTP server\n");
   if (eventHTTP) {
     for (evhttp_bound_socket* socket : boundSockets) { evhttp_del_accept_socket(eventHTTP, socket); }
     evhttp_set_gencb(eventHTTP, http_reject_request_cb, nullptr);
@@ -421,15 +421,15 @@ void InterruptHTTPServer() {
 }
 
 void StopHTTPServer() {
-  LogPrint(ClubLog::HTTP, "Stopping HTTP server\n");
+  LogPrint(TessaLog::HTTP, "Stopping HTTP server\n");
   if (workQueue) {
-    LogPrint(ClubLog::HTTP, "Waiting for HTTP worker threads to exit\n");
+    LogPrint(TessaLog::HTTP, "Waiting for HTTP worker threads to exit\n");
     workQueue->WaitExit();
     delete workQueue;
   }
   MilliSleep(500);  // Avoid race condition while the last HTTP-thread is exiting
   if (eventBase) {
-    LogPrint(ClubLog::HTTP, "Waiting for HTTP event thread to exit\n");
+    LogPrint(TessaLog::HTTP, "Waiting for HTTP event thread to exit\n");
     // Give event loop a few seconds to exit (to send back last RPC responses), then break it
     // Before this was solved with event_base_loopexit, but that didn't work as expected in
     // at least libevent 2.0.21 and always introduced a delay. In libevent
@@ -450,7 +450,7 @@ void StopHTTPServer() {
     event_base_free(eventBase);
     eventBase = 0;
   }
-  LogPrint(ClubLog::HTTP, "Stopped HTTP server\n");
+  LogPrint(TessaLog::HTTP, "Stopped HTTP server\n");
 }
 
 struct event_base* EventBase() {
@@ -574,7 +574,7 @@ HTTPRequest::RequestMethod HTTPRequest::GetRequestMethod() {
 }
 
 void RegisterHTTPHandler(const std::string& prefix, bool exactMatch, const HTTPRequestHandler& handler) {
-  LogPrint(ClubLog::HTTP, "Registering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
+  LogPrint(TessaLog::HTTP, "Registering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
   pathHandlers.push_back(HTTPPathHandler(prefix, exactMatch, handler));
 }
 
@@ -584,7 +584,7 @@ void UnregisterHTTPHandler(const std::string& prefix, bool exactMatch) {
   for (; i != iend; ++i)
     if (i->prefix == prefix && i->exactMatch == exactMatch) break;
   if (i != iend) {
-    LogPrint(ClubLog::HTTP, "Unregistering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
+    LogPrint(TessaLog::HTTP, "Unregistering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
     pathHandlers.erase(i);
   }
 }

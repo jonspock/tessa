@@ -58,7 +58,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
   }
   if (!hashBlock.IsNull()) BatchWriteHashBestChain(batch, hashBlock);
 
-  LogPrint(ClubLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n",
+  LogPrint(TessaLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n",
            (unsigned int)changed, (unsigned int)count);
   return db.WriteBatch(batch);
 }
@@ -264,7 +264,7 @@ bool CZerocoinDB::WriteCoinMintBatch(const std::vector<std::pair<libzerocoin::Pu
     ++count;
   }
 
-  LogPrint(ClubLog::ZERO, "Writing %u coin mints to db.\n", (unsigned int)count);
+  LogPrint(TessaLog::ZERO, "Writing %u coin mints to db.\n", (unsigned int)count);
   return WriteBatch(batch, true);
 }
 
@@ -298,7 +298,7 @@ bnSerial; uint256 hash = Hash(ss.begin(), ss.end()); batch.Write(make_pair('s', 
         ++count;
     }
 
-    LogPrint(ClubLog::ZERO, "Writing %u coin spends to db.\n", (unsigned int)count);
+    LogPrint(TessaLog::ZERO, "Writing %u coin spends to db.\n", (unsigned int)count);
     return WriteBatch(batch, true);
  }
 */
@@ -369,6 +369,6 @@ bool CZerocoinDB::ReadAccumulatorValue(const uint32_t& nChecksum, CBigNum& bnVal
 }
 
 bool CZerocoinDB::EraseAccumulatorValue(const uint32_t& nChecksum) {
-  LogPrint(ClubLog::ZERO, "%s : checksum:%d\n", __func__, nChecksum);
+  LogPrint(TessaLog::ZERO, "%s : checksum:%d\n", __func__, nChecksum);
   return Erase(make_pair('2', nChecksum));
 }

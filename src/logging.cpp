@@ -26,8 +26,8 @@ bool fLogIPs = DEFAULT_LOGIPS;
  * This method of initialization was originally introduced in
  * ee3374234c60aba2cc4c5cd5cac1c0aefc2d817c.
  */
-ClubLog::Logger &GetLogger() {
-    static ClubLog::Logger *const logger = new ClubLog::Logger();
+TessaLog::Logger &GetLogger() {
+    static TessaLog::Logger *const logger = new TessaLog::Logger();
     return *logger;
 }
 
@@ -35,7 +35,7 @@ static int FileWriteStr(const std::string &str, FILE *fp) {
     return fwrite(str.data(), 1, str.size(), fp);
 }
 
-void ClubLog::Logger::OpenDebugLog() {
+void TessaLog::Logger::OpenDebugLog() {
     std::lock_guard<std::mutex> scoped_lock(mutexDebugLog);
 
     assert(fileout == nullptr);
@@ -53,41 +53,41 @@ void ClubLog::Logger::OpenDebugLog() {
 }
 
 struct CLogCategoryDesc {
-    ClubLog::LogFlags flag;
+    TessaLog::LogFlags flag;
     std::string category;
 };
 
 const CLogCategoryDesc LogCategories[] = {
-    {ClubLog::NONE, "0"},
-    {ClubLog::NET, "net"},
-    {ClubLog::TOR, "tor"},
-    {ClubLog::MEMPOOL, "mempool"},
-    {ClubLog::HTTP, "http"},
-    {ClubLog::BENCH, "bench"},
-    {ClubLog::ZMQ, "zmq"},
-    {ClubLog::DB, "db"},
-    {ClubLog::RPC, "rpc"},
-    {ClubLog::ESTIMATEFEE, "estimatefee"},
-    {ClubLog::ADDRMAN, "addrman"},
-    {ClubLog::SELECTCOINS, "selectcoins"},
-    {ClubLog::REINDEX, "reindex"},
-    {ClubLog::CMPCTBLOCK, "cmpctblock"},
-    {ClubLog::RAND, "rand"},
-    {ClubLog::PRUNE, "prune"},
-    {ClubLog::PROXY, "proxy"},
-    {ClubLog::MEMPOOLREJ, "mempoolrej"},
-    {ClubLog::LIBEVENT, "libevent"},
-    {ClubLog::COINDB, "coindb"},
-    {ClubLog::QT, "qt"},
-    {ClubLog::LEVELDB, "leveldb"},
-    {ClubLog::ZERO, "zero"},
-    {ClubLog::ALL, "1"},
-    {ClubLog::ALL, "all"},
+    {TessaLog::NONE, "0"},
+    {TessaLog::NET, "net"},
+    {TessaLog::TOR, "tor"},
+    {TessaLog::MEMPOOL, "mempool"},
+    {TessaLog::HTTP, "http"},
+    {TessaLog::BENCH, "bench"},
+    {TessaLog::ZMQ, "zmq"},
+    {TessaLog::DB, "db"},
+    {TessaLog::RPC, "rpc"},
+    {TessaLog::ESTIMATEFEE, "estimatefee"},
+    {TessaLog::ADDRMAN, "addrman"},
+    {TessaLog::SELECTCOINS, "selectcoins"},
+    {TessaLog::REINDEX, "reindex"},
+    {TessaLog::CMPCTBLOCK, "cmpctblock"},
+    {TessaLog::RAND, "rand"},
+    {TessaLog::PRUNE, "prune"},
+    {TessaLog::PROXY, "proxy"},
+    {TessaLog::MEMPOOLREJ, "mempoolrej"},
+    {TessaLog::LIBEVENT, "libevent"},
+    {TessaLog::COINDB, "coindb"},
+    {TessaLog::QT, "qt"},
+    {TessaLog::LEVELDB, "leveldb"},
+    {TessaLog::ZERO, "zero"},
+    {TessaLog::ALL, "1"},
+    {TessaLog::ALL, "all"},
 };
 
-bool GetLogCategory(ClubLog::LogFlags &flag, const std::string &str) {
+bool GetLogCategory(TessaLog::LogFlags &flag, const std::string &str) {
     if (str == "") {
-        flag = ClubLog::ALL;
+        flag = TessaLog::ALL;
         return true;
     }
     for (const CLogCategoryDesc &category_desc : LogCategories) {
@@ -104,8 +104,8 @@ std::string ListLogCategories() {
     int outcount = 0;
     for (const CLogCategoryDesc &category_desc : LogCategories) {
         // Omit the special cases.
-        if (category_desc.flag != ClubLog::NONE &&
-            category_desc.flag != ClubLog::ALL) {
+        if (category_desc.flag != TessaLog::NONE &&
+            category_desc.flag != TessaLog::ALL) {
             if (outcount != 0) ret += ", ";
             ret += category_desc.category;
             outcount++;
@@ -114,13 +114,13 @@ std::string ListLogCategories() {
     return ret;
 }
 
-ClubLog::Logger::~Logger() {
+TessaLog::Logger::~Logger() {
     if (fileout) {
         fclose(fileout);
     }
 }
 
-std::string ClubLog::Logger::LogTimestampStr(const std::string &str) {
+std::string TessaLog::Logger::LogTimestampStr(const std::string &str) {
     std::string strStamped;
 
     if (!fLogTimestamps) return str;
@@ -143,7 +143,7 @@ std::string ClubLog::Logger::LogTimestampStr(const std::string &str) {
     return strStamped;
 }
 
-int ClubLog::Logger::LogPrintStr(const std::string &str) {
+int TessaLog::Logger::LogPrintStr(const std::string &str) {
     // Returns total number of characters written.
     int ret = 0;
 
@@ -177,7 +177,7 @@ int ClubLog::Logger::LogPrintStr(const std::string &str) {
     return ret;
 }
 
-void ClubLog::Logger::ShrinkDebugFile() {
+void TessaLog::Logger::ShrinkDebugFile() {
     // Amount of debug.log to save at end when shrinking (must fit in memory)
     constexpr size_t RECENT_DEBUG_HISTORY_SIZE = 10 * 1000000;
     // Scroll debug.log if it's getting too big.
@@ -202,19 +202,19 @@ void ClubLog::Logger::ShrinkDebugFile() {
         fclose(file);
 }
 
-void ClubLog::Logger::EnableCategory(LogFlags category) {
+void TessaLog::Logger::EnableCategory(LogFlags category) {
     logCategories |= category;
 }
 
-void ClubLog::Logger::DisableCategory(LogFlags category) {
+void TessaLog::Logger::DisableCategory(LogFlags category) {
     logCategories &= ~category;
 }
 
-bool ClubLog::Logger::WillLogCategory(LogFlags category) const {
+bool TessaLog::Logger::WillLogCategory(LogFlags category) const {
     return (logCategories.load(std::memory_order_relaxed) & category) != 0;
 }
 
-bool ClubLog::Logger::DefaultShrinkDebugFile() const {
-    return logCategories != ClubLog::NONE;
+bool TessaLog::Logger::DefaultShrinkDebugFile() const {
+    return logCategories != TessaLog::NONE;
 }
 // clang-format on

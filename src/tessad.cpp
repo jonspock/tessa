@@ -26,8 +26,8 @@
  *
  * \section intro_sec Introduction
  *
- * This is the developer documentation of the reference client for an experimental new digital currency called Club
- * (http://www.tessa.org), which enables instant payments to anyone, anywhere in the world. Club uses peer-to-peer
+ * This is the developer documentation of the reference client for an experimental new digital currency called Tessa
+ * (http://www.tessa.org), which enables instant payments to anyone, anywhere in the world. Tessa uses peer-to-peer
  * technology to operate with no central authority: managing transactions and issuing money are carried out collectively
  * by the network.
  *
@@ -71,13 +71,13 @@ bool AppInit(int argc, char* argv[]) {
 
   // Process help and version before taking care about datadir
   if (gArgs.IsArgSet("-?") || gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version")) {
-    std::string strUsage = _("Club Core Daemon") + " " + _("version") + " " + FormatFullVersion() + "\n";
+    std::string strUsage = _("Tessa Core Daemon") + " " + _("version") + " " + FormatFullVersion() + "\n";
 
     if (gArgs.IsArgSet("-version")) {
       strUsage += LicenseInfo();
     } else {
       strUsage +=
-          "\n" + _("Usage:") + "\n" + "  tessad [options]                     " + _("Start Club Core Daemon") + "\n";
+          "\n" + _("Usage:") + "\n" + "  tessad [options]                     " + _("Start Tessa Core Daemon") + "\n";
 
       strUsage += "\n" + HelpMessage(HMM_BITCOIND);
     }
@@ -117,7 +117,7 @@ bool AppInit(int argc, char* argv[]) {
 #ifndef WIN32
     fDaemon = GetBoolArg("-daemon", false);
     if (fDaemon) {
-      fprintf(stdout, "Club server starting\n");
+      fprintf(stdout, "Tessa server starting\n");
 
       // Daemonize
       pid_t pid = fork();

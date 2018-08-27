@@ -158,7 +158,7 @@ static bool InitRPCAuthentication() {
 }
 
 bool StartHTTPRPC() {
-  LogPrint(ClubLog::RPC, "Starting HTTP RPC server\n");
+  LogPrint(TessaLog::RPC, "Starting HTTP RPC server\n");
   if (!InitRPCAuthentication()) return false;
 
   RegisterHTTPHandler("/", true, HTTPReq_JSONRPC);
@@ -169,10 +169,10 @@ bool StartHTTPRPC() {
   return true;
 }
 
-void InterruptHTTPRPC() { LogPrint(ClubLog::RPC, "Interrupting HTTP RPC server\n"); }
+void InterruptHTTPRPC() { LogPrint(TessaLog::RPC, "Interrupting HTTP RPC server\n"); }
 
 void StopHTTPRPC() {
-  LogPrint(ClubLog::RPC, "Stopping HTTP RPC server\n");
+  LogPrint(TessaLog::RPC, "Stopping HTTP RPC server\n");
   UnregisterHTTPHandler("/", true);
   if (httpRPCTimerInterface) {
     RPCUnregisterTimerInterface(httpRPCTimerInterface);

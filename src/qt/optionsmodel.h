@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Copyright (c) 2017-2018 The PIVX developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The TessaChain developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -48,7 +48,7 @@ class OptionsModel : public QAbstractListModel {
     ZeromintPercentage,   // int
     ZeromintPrefDenom,    // int
     HideZeroBalances,     // bool
-    AnonymizeClubAmount,  // int
+    AnonymizeTessaAmount,  // int
     Listen,               // bool
     StakeSplitThreshold,  // int
     OptionIDRowCount,
@@ -99,7 +99,7 @@ class OptionsModel : public QAbstractListModel {
   void zeromintEnableChanged(bool);
   void zeromintPercentageChanged(int);
   void preferredDenomChanged(int);
-  void anonymizeClubAmountChanged(int);
+  void anonymizeTessaAmountChanged(int);
   void coinControlFeaturesChanged(bool);
   void hideZeroBalancesChanged(bool);
 };

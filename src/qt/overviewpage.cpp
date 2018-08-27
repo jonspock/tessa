@@ -34,7 +34,7 @@ extern CWallet* pwalletMain;
 class TxViewDelegate : public QAbstractItemDelegate {
   Q_OBJECT
  public:
-  TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::Club) {}
+  TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::Tessa) {}
 
   inline void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
     painter->save();
@@ -152,7 +152,7 @@ void OverviewPage::handleTransactionClicked(const QModelIndex& index) {
 
 OverviewPage::~OverviewPage() { delete ui; }
 
-void OverviewPage::getPercentage(CAmount nUnlockedBalance, CAmount nZerocoinBalance, QString& sClubPercentage,
+void OverviewPage::getPercentage(CAmount nUnlockedBalance, CAmount nZerocoinBalance, QString& sTessaPercentage,
                                  QString& sZKPPercentage) {
   int nPrecision = 2;
   double dzPercentage = 0.0;
@@ -170,7 +170,7 @@ void OverviewPage::getPercentage(CAmount nUnlockedBalance, CAmount nZerocoinBala
   double dPercentage = 100.0 - dzPercentage;
 
   sZKPPercentage = "(" + QLocale(QLocale::system()).toString(dzPercentage, 'f', nPrecision) + " %)";
-  sClubPercentage = "(" + QLocale(QLocale::system()).toString(dPercentage, 'f', nPrecision) + " %)";
+  sTessaPercentage = "(" + QLocale(QLocale::system()).toString(dPercentage, 'f', nPrecision) + " %)";
 }
 
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
@@ -193,7 +193,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     nLockedBalance = pwalletMain->GetLockedCoins();
     nWatchOnlyLockedBalance = pwalletMain->GetLockedWatchOnlyBalance();
   }
-  // Club Balance
+  // Tessa Balance
   CAmount nTotalBalance = balance + unconfirmedBalance;
   CAmount pivAvailableBalance = balance - immatureBalance - nLockedBalance;
   CAmount nTotalWatchBalance = watchOnlyBalance + watchUnconfBalance + watchImmatureBalance;
@@ -209,7 +209,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   CAmount sumTotalBalance = nTotalBalance + zerocoinBalance;
   CAmount nAvailableWatchBalance = watchOnlyBalance - watchImmatureBalance - nWatchOnlyLockedBalance;
  
-  // Club labels
+  // Tessa labels
   ui->labelBalance->setText(
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, pivAvailableBalance, false, BitcoinUnits::separatorAlways));
   ui->labelUnconfirmed->setText(
@@ -250,7 +250,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, sumTotalBalance, false, BitcoinUnits::separatorAlways));
 
   // Percentage labels
-  ui->labelClubPercent->setText(sPercentage);
+  ui->labelTessaPercent->setText(sPercentage);
   ui->labelZKPPercent->setText(szPercentage);
 
   // Only show most balances if they are non-zero for the sake of simplicity
@@ -259,24 +259,24 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   bool showSumAvailable = settingShowAllBalances || sumTotalBalance != availableTotalBalance;
   ui->labelBalanceTextz->setVisible(showSumAvailable);
   ui->labelBalancez->setVisible(showSumAvailable);
-  bool showClubAvailable = settingShowAllBalances || pivAvailableBalance != nTotalBalance;
-  bool showWatchOnlyClubAvailable = watchOnlyBalance != nTotalWatchBalance;
-  bool showClubPending = settingShowAllBalances || unconfirmedBalance != 0;
-  bool showWatchOnlyClubPending = watchUnconfBalance != 0;
-  bool showClubLocked = settingShowAllBalances || nLockedBalance != 0;
-  bool showWatchOnlyClubLocked = nWatchOnlyLockedBalance != 0;
+  bool showTessaAvailable = settingShowAllBalances || pivAvailableBalance != nTotalBalance;
+  bool showWatchOnlyTessaAvailable = watchOnlyBalance != nTotalWatchBalance;
+  bool showTessaPending = settingShowAllBalances || unconfirmedBalance != 0;
+  bool showWatchOnlyTessaPending = watchUnconfBalance != 0;
+  bool showTessaLocked = settingShowAllBalances || nLockedBalance != 0;
+  bool showWatchOnlyTessaLocked = nWatchOnlyLockedBalance != 0;
   bool showImmature = settingShowAllBalances || immatureBalance != 0;
   bool showWatchOnlyImmature = watchImmatureBalance != 0;
   bool showWatchOnly = nTotalWatchBalance != 0;
-  ui->labelBalance->setVisible(showClubAvailable || showWatchOnlyClubAvailable);
-  ui->labelBalanceText->setVisible(showClubAvailable || showWatchOnlyClubAvailable);
-  ui->labelWatchAvailable->setVisible(showClubAvailable && showWatchOnly);
-  ui->labelUnconfirmed->setVisible(showClubPending || showWatchOnlyClubPending);
-  ui->labelPendingText->setVisible(showClubPending || showWatchOnlyClubPending);
-  ui->labelWatchPending->setVisible(showClubPending && showWatchOnly);
-  ui->labelLockedBalance->setVisible(showClubLocked || showWatchOnlyClubLocked);
-  ui->labelLockedBalanceText->setVisible(showClubLocked || showWatchOnlyClubLocked);
-  ui->labelWatchLocked->setVisible(showClubLocked && showWatchOnly);
+  ui->labelBalance->setVisible(showTessaAvailable || showWatchOnlyTessaAvailable);
+  ui->labelBalanceText->setVisible(showTessaAvailable || showWatchOnlyTessaAvailable);
+  ui->labelWatchAvailable->setVisible(showTessaAvailable && showWatchOnly);
+  ui->labelUnconfirmed->setVisible(showTessaPending || showWatchOnlyTessaPending);
+  ui->labelPendingText->setVisible(showTessaPending || showWatchOnlyTessaPending);
+  ui->labelWatchPending->setVisible(showTessaPending && showWatchOnly);
+  ui->labelLockedBalance->setVisible(showTessaLocked || showWatchOnlyTessaLocked);
+  ui->labelLockedBalanceText->setVisible(showTessaLocked || showWatchOnlyTessaLocked);
+  ui->labelWatchLocked->setVisible(showTessaLocked && showWatchOnly);
   ui->labelImmature->setVisible(
       showImmature ||
       showWatchOnlyImmature);  // for symmetry reasons also show immature label when the watch-only one is shown
@@ -292,7 +292,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   ui->labelzBalanceImmature->setVisible(showZKPImmature);
   ui->labelzBalanceImmatureText->setVisible(showZKPImmature);
   bool showPercentages = !(zerocoinBalance == 0 && nTotalBalance == 0);
-  ui->labelClubPercent->setVisible(showPercentages);
+  ui->labelTessaPercent->setVisible(showPercentages);
   ui->labelZKPPercent->setVisible(showPercentages);
 }
 
@@ -348,7 +348,7 @@ void OverviewPage::setWalletModel(WalletModel* model) {
     connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
   }
 
-  // update the display unit, to not use the default ("Club")
+  // update the display unit, to not use the default ("Tessa")
   updateDisplayUnit();
 }
 
