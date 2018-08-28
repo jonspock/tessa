@@ -123,8 +123,8 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(CMAKE_CXX_STANDARD 17)
   add_compiler_flag(-Wrange-loop-analysis)
   # For 17 we need BOOST_NO_AUTO_PTR defined for boost
-	add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
-#	add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
+#	add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
+	add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
 else()
   set(CMAKE_CXX_STANDARD 11)
 	add_definitions("-Wno-cpp -Wno-unused-function")
@@ -444,9 +444,9 @@ add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
 add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
 
 
-SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
+SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
 
-target_link_libraries(tessa-cli coin zerocoin lmdb rocksdb rand ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
+target_link_libraries(tessa-cli coin zerocoin lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(tessad ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )
