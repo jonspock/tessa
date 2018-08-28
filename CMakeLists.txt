@@ -48,6 +48,15 @@ ELSE(GIT)
   SET(PATCH_OUT "0")
 ENDIF(GIT)
 
+IF(GIT)
+  EXECUTE_PROCESS(
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${GIT} describe
+    OUTPUT_VARIABLE GD_OUT OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  MESSAGE(STATUS "For ${GIT} describe : Got ${GD_OUT}")
+ENDIF(GIT)
+
 SET(TESSA_VERSION_PATCH ${PATCH_OUT})
 
 
@@ -89,7 +98,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     endif()
 endif()
 
-add_definitions("-DHAVE_BUILD_INFO -DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
+add_definitions("-DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
 
 # Enable warning
 include(AddCompilerFlags)
@@ -114,8 +123,8 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(CMAKE_CXX_STANDARD 17)
   add_compiler_flag(-Wrange-loop-analysis)
   # For 17 we need BOOST_NO_AUTO_PTR defined for boost
-	# add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
-	add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
+	add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
+#	add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
 else()
   set(CMAKE_CXX_STANDARD 11)
 	add_definitions("-Wno-cpp -Wno-unused-function")
@@ -146,7 +155,11 @@ else()
 		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure --with-unsupported-ssl --enable-module-recovery
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
-	endif()
+endif()
+	  execute_process(
+		COMMAND make
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
+		)
 endif()
 
 

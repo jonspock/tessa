@@ -266,7 +266,6 @@ RPCConsole::RPCConsole(QWidget* parent)
   connect(ui->btn_resync, SIGNAL(clicked()), this, SLOT(walletResync()));
 
   // set library version labels
-  ui->openSSLVersion->setText("...");
   if (!fDisableWallet) {
     std::string strPathCustom = GetArg("-backuppath", "");
     std::string strZKPPathCustom = GetArg("-zkpbackuppath", "");
@@ -290,11 +289,8 @@ RPCConsole::RPCConsole(QWidget* parent)
       ui->wallet_custombackupthreshold->setVisible(true);
     }
 
-    //ui->berkeleyDBVersion->setText(DbEnv::version(0, 0, 0));
     ui->wallet_path->setText(
         QString::fromStdString(GetDataDir().string() + QDir::separator().toLatin1() + GetArg("-wallet", "wallet.dat")));
-  } else {
-    ui->berkeleyDBVersion->hide();
   }
   // Register RPC timer interface
   rpcTimerInterface = new QtRPCTimerInterface();

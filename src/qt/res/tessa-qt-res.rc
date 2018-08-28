@@ -23,7 +23,6 @@ BEGIN
             VALUE "FileDescription",    "Tessa Core (OSS GUI client for Tessa)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "tessa-qt"
-            VALUE "LegalCopyright",     COPYRIGHT_STR
             VALUE "LegalTrademarks1",   "Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
             VALUE "OriginalFilename",   "tessa-qt.exe"
             VALUE "ProductName",        "Tessa Core"
