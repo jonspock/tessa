@@ -4,26 +4,39 @@ Tessa Core integration/staging repository
 [![Build Status](https://travis-ci.org/Tessa-Project/Tessa.svg?branch=master)](https://travis-ci.org/Tessa-Project/Tessa) [![GitHub version](https://badge.fury.io/gh/Tessa-Project%2FTessa.svg)](https://badge.fury.io/gh/Tessa-Project%2FTessa)
 
 Tessa is an open source crypto-currency focused on fast private transactions with low transaction fees & environmental footprint.
-- Anonymized transactions using the [_Zerocoin Protocol_]
+- Anonymized transactions using the Zerocoin Protocol
 
 Forked from PIVX SHA 732fa37 - May 16, 2018, with many changes & files from other projects such Bitcoin, Bitcoin-abc, etc
 
 ### Main code upgrades
 
-Removal of zerocoin based staking
-Removal of masternodes
-Removal of Instant transactions
-HD-Wallet for both main coin and zerocoin
-LMDB lightweight db for main wallet (removing Berkeley DB dependancy)
-Remove requirement for openssl
-Uses libsodium for randomization/crypto libraries
-GMP for numerics (replacing openssl)
-PoW phase uses either Argon2D or SHA256 (To be decided)
-Various options removed such as Multisig GUI. Protocol buffers and related BIP 38
-Various upgrades from Bitcoin/Bitcoin-ABC, such as logging,hd wallets,wrapping boost filesystem, etc
-Uses CMake for builds
-Reduced dependencies on Boost
-Rocksdb to replace leveldB (experimental)
+- Removal of zerocoin based staking
+
+- Removal of masternodes
+
+- Removal of Instant transactions
+
+- HD-Wallet for both main coin and zerocoin
+
+- LMDB lightweight db for main wallet (removing Berkeley DB dependancy)
+
+- Remove requirement for openssl
+
+- Uses libsodium for randomization/crypto libraries
+
+- GMP for numerics (replacing openssl)
+
+- PoW phase uses either Argon2D or SHA256 (To be decided)
+
+- Various options removed such as Multisig GUI. Protocol buffers and related BIP 38
+
+- Various upgrades from Bitcoin/Bitcoin-ABC, such as logging,hd wallets,wrapping boost filesystem, etc
+
+- Uses CMake for builds
+
+- Reduced dependencies on Boost
+
+- Rocksdb to replace leveldB (experimental)
 
 
 ### Coin Specs
