@@ -1,6 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 project(TESSA VERSION 0.9.0.0)
 
+include(CheckSymbolExists)
 
 # Add path for custom modules
 set(CMAKE_MODULE_PATH
@@ -123,8 +124,13 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(CMAKE_CXX_STANDARD 17)
   add_compiler_flag(-Wrange-loop-analysis)
   # For 17 we need BOOST_NO_AUTO_PTR defined for boost
-#	add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
-	add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
+  check_symbol_exists(BOOST_NO_AUTO_PTR "sync.h" BOOST_NO_AUTO_PTR)
+  if (BOOST_NO_AUTO_PTR)
+	  add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
+  else()
+    message(STATUS "Explicitly adding define for BOOST_NO_AUTO_PTR")
+	  add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
+  endif()
 else()
   set(CMAKE_CXX_STANDARD 11)
 	add_definitions("-Wno-cpp -Wno-unused-function")
@@ -443,6 +449,39 @@ link_directories(${ROCKSDB_ROOT_DIR}/lib)
 add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
 add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
 
+set(WORD 64 CACHE INTEGER "")
+set(TIMER "CYCLE" CACHE STRING "")
+set(CHECK "off" CACHE STRING "")
+set(VERBS "off" CACHE STRING "")
+set(ALLOC "AUTO" CACHE STRING "")
+set(SHLIB "OFF" CACHE STRING "")
+
+set(FP_PRIME 381 CACHE INTEGER "")
+
+IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(DSEED "UDEV" CACHE STRING "")
+  set(STBIN "OFF" CACHE STRING "")
+  set(FP_QNRES "off" CACHE STRING "")
+ELSE()
+  set(DSEED "DEV" CACHE STRING "")
+  set(STBIN "OFF" CACHE STRING "")
+  set(FP_QNRES "on" CACHE STRING "")
+ENDIF()
+
+set(FP_METHD "INTEG;INTEG;INTEG;MONTY;LOWER;SLIDE" CACHE STRING "")
+set(COMP "-O3 -funroll-loops -fomit-frame-pointer -march=native -mtune=native" CACHE STRING "")
+set(FP_PMERS "off" CACHE STRING "")
+set(FPX_METHD "INTEG;INTEG;LAZYR" CACHE STRING "")
+set(EP_PLAIN "off" CACHE STRING "")
+set(EP_SUPER "off" CACHE STRING "")
+# Disable relic tests and benchmarks
+set(TESTS 0 CACHE INTEGER "")
+set(BENCH 0 CACHE INTEGER "")
+
+set(PP_EXT "LAZYR" CACHE STRING "")
+set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
+
+add_subdirectory(src/relic)
 
 SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
 

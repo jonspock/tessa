@@ -374,13 +374,11 @@ void BitcoinApplication::initializeResult(int retval) {
 
     if (pwalletMain) {
       walletModel = new WalletModel(pwalletMain, optionsModel);
+    
+      MilliSleep(5000);
 
       window->addWallet(BitcoinGUI::DEFAULT_WALLET, walletModel);
       window->setCurrentWallet(BitcoinGUI::DEFAULT_WALLET);
-      /*
-      connect(walletModel, SIGNAL(coinsSent(CWallet*, SendCoinsRecipient, QByteArray)), paymentServer,
-              SLOT(fetchPaymentACK(CWallet*, const SendCoinsRecipient&, QByteArray)));
-      */
     }
 
     // If -min option passed, start window minimized.
@@ -390,19 +388,6 @@ void BitcoinApplication::initializeResult(int retval) {
       window->show();
     }
     emit splashFinished(window);
-
-    // Now that initialization/startup is done, process any command-line
-    // Tessa: URIs or payment requests:
-    /*
-    if (pwalletMain) {
-      connect(paymentServer, SIGNAL(receivedPaymentRequest(SendCoinsRecipient)), window,
-              SLOT(handlePaymentRequest(SendCoinsRecipient)));
-      connect(window, SIGNAL(receivedURI(QString)), paymentServer, SLOT(handleURIOrFile(QString)));
-      connect(paymentServer, SIGNAL(message(QString, QString, unsigned int)), window,
-              SLOT(message(QString, QString, unsigned int)));
-      QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
-    }
-    */
 
   } else {
     quit();  // Exit main loop

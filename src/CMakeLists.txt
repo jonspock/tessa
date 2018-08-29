@@ -110,5 +110,6 @@ set(ENABLE_WALLET ${BUILD_BITCOIN_WALLET})
 # Activate ZeroMQ
 set(ENABLE_ZMQ ${BUILD_BITCOIN_ZMQ})
 
+
 # Generate the config
 configure_file(tessa-config.h.in tessa-config.h ESCAPE_QUOTES)
