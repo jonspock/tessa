@@ -8,7 +8,7 @@
 #ifndef BITCOIN_SCRIPT_SIGN_H
 #define BITCOIN_SCRIPT_SIGN_H
 
-#include "key.h"
+#include "ecdsa/key.h"
 #include "keystore.h"
 #include "script/interpreter.h"
 #include "script/standard.h"

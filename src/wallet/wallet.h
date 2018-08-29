@@ -14,7 +14,7 @@
 
 #include "account.h"
 #include "addressbookdata.h"
-#include "key.h"
+#include "ecdsa/key.h"
 #include "keypool.h"
 #include "keystore.h"
 #include "main_functions.h"

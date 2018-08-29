@@ -9,7 +9,7 @@
 #ifndef BITCOIN_SCRIPT_SCRIPT_H
 #define BITCOIN_SCRIPT_SCRIPT_H
 
-#include "pubkey.h"
+#include "ecdsa/pubkey.h"
 #include <cassert>
 #include <climits>
 #include <limits>

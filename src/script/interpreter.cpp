@@ -11,7 +11,7 @@
 #include "crypto/sha1.h"
 #include "crypto/sha256.h"
 #include "primitives/transaction.h"
-#include "pubkey.h"
+#include "ecdsa/pubkey.h"
 #include "script/script.h"
 #include "uint256.h"
 

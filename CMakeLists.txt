@@ -168,6 +168,11 @@ endif()
 		)
 endif()
 
+SET(ECDSA
+  ./src/ecdsa/key.cpp
+  ./src/ecdsa/pubkey.cpp
+  )
+
 
 SET(COMMON_A
   ./src/support/cleanse.cpp
@@ -179,10 +184,8 @@ SET(COMMON_A
 	./src/stakeinput.cpp
 	./src/mintpool.cpp
 	./src/protocol.cpp
-	./src/pubkey.cpp
 	./src/netbase.cpp
 	./src/keystore.cpp
-	./src/key.cpp
 	./src/hash.cpp
 	./src/core_write.cpp
 	./src/core_read.cpp
@@ -268,7 +271,6 @@ SET(RPC
 
 SET(CONSENSUS
 	./src/utilstrencodings.cpp
-	./src/pubkey.cpp
 	./src/uint256.cpp
 	./src/hash.cpp
 )	
@@ -423,11 +425,12 @@ source_group("Uni" FILES ${UNI_SOURCES})
 source_group("Zmq" FILES ${ZMQ_SOURCES})
 source_group("Primitives" FILES ${PRIM})
 source_group("CommonA" FILES ${COMMON_A})
+source_group("ECDSA" FILES ${ECDSA})
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${ECDSA} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ELSE()
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${ECDSA} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 ENDIF()
 
 add_dependencies(coin buildHeader)

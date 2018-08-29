@@ -21,7 +21,7 @@
 #include "fs.h"
 #include "httprpc.h"
 #include "httpserver.h"
-#include "key.h"
+#include "ecdsa/key.h"
 #include "main.h"
 #include "miner.h"
 #include "net.h"

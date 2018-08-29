@@ -1,5 +1,5 @@
 #pragma once
-#include "pubkey.h"
+#include "ecdsa/pubkey.h"
 #include "serialize.h"
 
 /** A key pool entry */

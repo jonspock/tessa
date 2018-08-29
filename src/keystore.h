@@ -7,8 +7,8 @@
 #ifndef BITCOIN_KEYSTORE_H
 #define BITCOIN_KEYSTORE_H
 
-#include "key.h"
-#include "pubkey.h"
+#include "ecdsa/key.h"
+#include "ecdsa/pubkey.h"
 #include "sync.h"
 
 class CScript;

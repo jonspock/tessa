@@ -7,7 +7,8 @@
 #pragma once
 
 #include "base58.h"
-#include "key.h"
+#include "ecdsa/key.h"
+#include "ecdsa/pubkey.h"
 #include "main.h"
 #include "net.h"
 #include "protocol.h"

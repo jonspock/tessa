@@ -18,7 +18,7 @@
 #include "Denominations.h"
 #include "IntegerMod.h"
 #include "ModulusType.h"
-#include "pubkey.h"
+#include "ecdsa/pubkey.h"
 #include "uint512.h"
 #include <stdexcept>
 

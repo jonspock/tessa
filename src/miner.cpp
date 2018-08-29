@@ -10,7 +10,7 @@
 #include "amount.h"
 #include "hash.h"
 #include "init.h"
-#include "key.h"
+#include "ecdsa/key.h"
 #include "main.h"
 #include "net.h"
 #include "pow.h"

@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #pragma once
 
-#include "key.h"
+#include "ecdsa/key.h"
 #include "keystore.h"
 #include "primitives/block.h"
 

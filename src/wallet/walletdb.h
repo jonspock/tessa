@@ -9,7 +9,7 @@
 #include "amount.h"
 #include "db.h"
 #include "fs.h"
-#include "key.h"
+#include "ecdsa/key.h"
 #include "keystore.h"
 #include "libzerocoin/Accumulator.h"
 #include "libzerocoin/Denominations.h"

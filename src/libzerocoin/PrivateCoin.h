@@ -17,7 +17,7 @@
 #include "ZerocoinParams.h"
 #include "amount.h"
 #include "bignum.h"
-#include "key.h"
+#include "ecdsa/key.h"
 #include "util.h"
 
 namespace libzerocoin {
