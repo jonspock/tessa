@@ -15,6 +15,7 @@
 #include "util.h"
 
 using namespace std;
+using namespace ecdsa;
 
 // Public SporkKey
 

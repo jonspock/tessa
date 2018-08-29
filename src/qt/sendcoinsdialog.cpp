@@ -30,6 +30,8 @@
 #include <QSettings>
 #include <QTextDocument>
 
+using namespace ecdsa;
+
 SendCoinsDialog::SendCoinsDialog(QWidget* parent)
     : QDialog(parent),
       ui(new Ui::SendCoinsDialog),

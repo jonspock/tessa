@@ -19,7 +19,7 @@
 #include "accumulatormap.h"
 #include "accumulators.h"
 #include "addrman.h"
-#include "blocksignature.h"
+#include "ecdsa/blocksignature.h"
 #include "chainparams.h"
 #include "checkpoints.h"
 #include "checkqueue.h"

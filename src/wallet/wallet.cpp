@@ -46,6 +46,7 @@
 #define KEY_RES_SIZE 200
 
 using namespace std;
+using namespace ecdsa;
 
 // Only used in this file
 enum ZerocoinSpendStatus {

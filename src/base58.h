@@ -109,7 +109,7 @@ class CBase58Data {
  */
 class CBitcoinAddress : public CBase58Data {
  public:
-  bool Set(const CKeyID& id);
+  bool Set(const ecdsa::CKeyID& id);
   bool Set(const CScriptID& id);
   bool Set(const CTxDestination& dest);
   bool IsValid() const;
@@ -121,7 +121,7 @@ class CBitcoinAddress : public CBase58Data {
   CBitcoinAddress(const char* pszAddress) { SetString(pszAddress); }
 
   CTxDestination Get() const;
-  bool GetKeyID(CKeyID& keyID) const;
+  bool GetKeyID(ecdsa::CKeyID& keyID) const;
   bool IsScript() const;
 };
 
@@ -130,13 +130,13 @@ class CBitcoinAddress : public CBase58Data {
  */
 class CBitcoinSecret : public CBase58Data {
  public:
-  void SetKey(const CKey& vchSecret);
-  CKey GetKey();
+  void SetKey(const ecdsa::CKey& vchSecret);
+  ecdsa::CKey GetKey();
   bool IsValid() const;
   bool SetString(const char* pszSecret);
   bool SetString(const std::string& strSecret);
 
-  CBitcoinSecret(const CKey& vchSecret) { SetKey(vchSecret); }
+  CBitcoinSecret(const ecdsa::CKey& vchSecret) { SetKey(vchSecret); }
   CBitcoinSecret() {}
 };
 
@@ -159,5 +159,5 @@ template <typename K, int Size, CChainParams::Base58Type Type> class CBitcoinExt
   CBitcoinExtKeyBase() {}
 };
 
-typedef CBitcoinExtKeyBase<CExtKey, 74, CChainParams::EXT_SECRET_KEY> CBitcoinExtKey;
-typedef CBitcoinExtKeyBase<CExtPubKey, 74, CChainParams::EXT_PUBLIC_KEY> CBitcoinExtPubKey;
+typedef CBitcoinExtKeyBase<ecdsa::CExtKey, 74, CChainParams::EXT_SECRET_KEY> CBitcoinExtKey;
+typedef CBitcoinExtKeyBase<ecdsa::CExtPubKey, 74, CChainParams::EXT_PUBLIC_KEY> CBitcoinExtPubKey;

@@ -26,6 +26,7 @@
 #include <univalue.h>
 
 using namespace std;
+using namespace ecdsa;
 
 void EnsureWalletIsUnlocked(bool fAllowAnonOnly);
 

@@ -21,17 +21,18 @@
 #include "logging.h"
 #include "tinyformat.h"
 #include "utiltime.h"
+#include "sync.h"
 
 #include <exception>
 #include <map>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 #include <boost/thread/exceptions.hpp>
 
-#include "sync.h"
-#include <unordered_set>
+
 
 // Tessa only features
 

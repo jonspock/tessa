@@ -13,6 +13,7 @@
 #include "utilstrencodings.h"
 
 using namespace std;
+using namespace ecdsa;
 
 typedef vector<uint8_t> valtype;
 

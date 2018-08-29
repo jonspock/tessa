@@ -17,6 +17,8 @@
 #include <QDebug>
 #include <QFont>
 
+using namespace ecdsa;
+
 const QString AddressTableModel::Send = "S";
 const QString AddressTableModel::Receive = "R";
 const QString AddressTableModel::Zerocoin = "X";

@@ -23,6 +23,7 @@
 #include <stdexcept>
 
 using namespace std;
+using namespace ecdsa;
 
 namespace libzerocoin {
 

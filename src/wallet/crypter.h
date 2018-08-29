@@ -143,17 +143,17 @@ class CCryptoKeyStore : public CBasicKeyStore {
 
   bool Lock();
 
-  virtual bool AddCryptedKey(const CPubKey &vchPubKey, const std::vector<uint8_t> &vchCryptedSecret);
-  bool AddKeyPubKey(const CKey &key, const CPubKey &pubkey) override;
-  bool HaveKey(const CKeyID &address) const override {
+  virtual bool AddCryptedKey(const ecdsa::CPubKey &vchPubKey, const std::vector<uint8_t> &vchCryptedSecret);
+  bool AddKeyPubKey(const ecdsa::CKey &key, const ecdsa::CPubKey &pubkey) override;
+  bool HaveKey(const ecdsa::CKeyID &address) const override {
     LOCK(cs_KeyStore);
     if (!IsCrypted()) { return CBasicKeyStore::HaveKey(address); }
 
     return mapCryptedKeys.count(address) > 0;
   }
-  bool GetKey(const CKeyID &address, CKey &keyOut) const override;
-  bool GetPubKey(const CKeyID &address, CPubKey &vchPubKeyOut) const override;
-  void GetKeys(std::set<CKeyID> &setAddress) const override {
+  bool GetKey(const ecdsa::CKeyID &address, ecdsa::CKey &keyOut) const override;
+  bool GetPubKey(const ecdsa::CKeyID &address, ecdsa::CPubKey &vchPubKeyOut) const override;
+  void GetKeys(std::set<ecdsa::CKeyID> &setAddress) const override {
     if (!IsCrypted()) {
       CBasicKeyStore::GetKeys(setAddress);
       return;

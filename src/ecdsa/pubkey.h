@@ -5,8 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_PUBKEY_H
-#define BITCOIN_PUBKEY_H
+#pragma once
 
 #include "hash.h"
 #include "serialize.h"
@@ -14,6 +13,8 @@
 
 #include <stdexcept>
 #include <vector>
+
+namespace ecdsa {
 
 const unsigned int BIP32_EXTKEY_SIZE = 74;
 
@@ -196,6 +197,9 @@ struct CExtPubKey {
   }
 };
 
+} // end namespace ecdsa
+
+  
 /** Users of this module must hold an ECCVerifyHandle. The constructor and
  *  destructor of these are not allowed to run in parallel, though. */
 class ECCVerifyHandle {
@@ -206,4 +210,3 @@ class ECCVerifyHandle {
   ~ECCVerifyHandle();
 };
 
-#endif  // PIVX_PUBKEY_H

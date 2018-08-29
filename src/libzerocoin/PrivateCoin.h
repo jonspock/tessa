@@ -22,7 +22,7 @@
 
 namespace libzerocoin {
 
-bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey& key, CBigNum& bnSerial);
+bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, ecdsa::CKey& key, CBigNum& bnSerial);
 
 /**
  * A private coin. As the name implies, the content
@@ -48,14 +48,14 @@ class PrivateCoin {
   const CBigNum& getSerialNumber() const { return this->serialNumber; }
   const CBigNum& getRandomness() const { return this->randomness; }
   const uint8_t& getVersion() const { return this->version; }
-  const CPrivKey& getPrivKey() const { return this->privkey; }
-  CPubKey getPubKey() const;
+  const ecdsa::CPrivKey& getPrivKey() const { return this->privkey; }
+  ecdsa::CPubKey getPubKey() const;
 
   void setPublicCoin(PublicCoin p) { publicCoin = p; }
   void setRandomness(Bignum n) { randomness = n; }
   void setSerialNumber(Bignum n) { serialNumber = n; }
   void setVersion(uint8_t nVersion) { this->version = nVersion; }
-  void setPrivKey(const CPrivKey& privkey) { this->privkey = privkey; }
+  void setPrivKey(const ecdsa::CPrivKey& privkey) { this->privkey = privkey; }
   bool sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
   bool IsValid();
 
@@ -78,7 +78,7 @@ class PrivateCoin {
   CBigNum randomness;
   CBigNum serialNumber;
   uint8_t version = 1;
-  CPrivKey privkey;
+  ecdsa::CPrivKey privkey;
 };
 
 } /* namespace libzerocoin */

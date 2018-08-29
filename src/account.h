@@ -8,6 +8,7 @@
 
 #pragma once
 #include "streams.h"
+#include "ecdsa/pubkey.h"
 #include "wallet/wallet_functions.h"
 
 /**
@@ -16,11 +17,11 @@
  */
 class CAccount {
  public:
-  CPubKey vchPubKey;
+  ecdsa::CPubKey vchPubKey;
 
   CAccount() { SetNull(); }
 
-  void SetNull() { vchPubKey = CPubKey(); }
+  void SetNull() { vchPubKey = ecdsa::CPubKey(); }
 
   ADD_SERIALIZE_METHODS
 

@@ -6,10 +6,10 @@
 class CKeyPool {
  public:
   int64_t nTime;
-  CPubKey vchPubKey;
+  ecdsa::CPubKey vchPubKey;
 
   CKeyPool();
-  CKeyPool(const CPubKey& vchPubKeyIn);
+  CKeyPool(const ecdsa::CPubKey& vchPubKeyIn);
 
   ADD_SERIALIZE_METHODS
 

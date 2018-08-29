@@ -16,9 +16,7 @@
 #include <map>
 #include <cstdint>
 #include <string>
-
 #include <functional>
-
 #include <univalue.h>
 
 class CRPCCommand;

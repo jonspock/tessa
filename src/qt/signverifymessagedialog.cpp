@@ -90,7 +90,7 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
                                 tr("Please check the address and try again."));
     return;
   }
-  CKeyID keyID;
+  ecdsa::CKeyID keyID;
   if (!addr.GetKeyID(keyID)) {
     ui->addressIn_SM->setValid(false);
     ui->statusLabel_SM->setStyleSheet("QLabel { color: red; }");
@@ -106,7 +106,7 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
     return;
   }
 
-  CKey key;
+  ecdsa::CKey key;
   if (!pwalletMain->GetKey(keyID, key)) {
     ui->statusLabel_SM->setStyleSheet("QLabel { color: red; }");
     ui->statusLabel_SM->setText(tr("Private key for the entered address is not available."));
@@ -159,7 +159,7 @@ void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
                                 tr("Please check the address and try again."));
     return;
   }
-  CKeyID keyID;
+  ecdsa::CKeyID keyID;
   if (!addr.GetKeyID(keyID)) {
     ui->addressIn_VM->setValid(false);
     ui->statusLabel_VM->setStyleSheet("QLabel { color: red; }");
@@ -183,7 +183,7 @@ void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
   ss << strMessageMagic;
   ss << ui->messageIn_VM->document()->toPlainText().toStdString();
 
-  CPubKey pubkey;
+  ecdsa::CPubKey pubkey;
   if (!pubkey.RecoverCompact(Hash(ss.begin(), ss.end()), vchSig)) {
     ui->signatureIn_VM->setValid(false);
     ui->statusLabel_VM->setStyleSheet("QLabel { color: red; }");

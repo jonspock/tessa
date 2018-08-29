@@ -12,6 +12,8 @@
 #include "util.h"
 #include "wallet/crypter.h"
 
+using namespace ecdsa;
+
 bool CKeyStore::GetPubKey(const CKeyID& address, CPubKey& vchPubKeyOut) const {
   CKey key;
   if (!GetKey(address, key)) return false;

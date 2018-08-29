@@ -17,6 +17,7 @@
 #include "wallet/wallet.h"
 
 using namespace std;
+using namespace ecdsa;
 
 int CCrypter::BytesToKeySHA512AES(const std::vector<uint8_t> &chSalt, const SecureString &strKeyData, int count,
                                   uint8_t *key, uint8_t *iv) const {

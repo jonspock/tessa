@@ -15,8 +15,8 @@ using namespace std;
 
 typedef vector<uint8_t> valtype;
 
-bool Sign1(const CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet) {
-  CKey key;
+bool Sign1(const ecdsa::CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet) {
+  ecdsa::CKey key;
   if (!keystore.GetKey(address, key)) return false;
 
   vector<uint8_t> vchSig;
@@ -33,7 +33,7 @@ bool SignN(const vector<valtype>& multisigdata, const CKeyStore& keystore, uint2
   int nRequired = multisigdata.front()[0];
   for (unsigned int i = 1; i < multisigdata.size() - 1 && nSigned < nRequired; i++) {
     const valtype& pubkey = multisigdata[i];
-    CKeyID keyID = CPubKey(pubkey).GetID();
+    ecdsa::CKeyID keyID = ecdsa::CPubKey(pubkey).GetID();
     if (Sign1(keyID, keystore, hash, nHashType, scriptSigRet)) ++nSigned;
   }
   return nSigned == nRequired;
@@ -55,7 +55,7 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
     return false;
   }
 
-  CKeyID keyID;
+  ecdsa::CKeyID keyID;
   switch (whichTypeRet) {
     case TX_NONSTANDARD:
     case TX_NULL_DATA: {
@@ -65,19 +65,19 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
     case TX_ZEROCOINMINT:
       return false;
     case TX_PUBKEY:
-      keyID = CPubKey(vSolutions[0]).GetID();
+      keyID = ecdsa::CPubKey(vSolutions[0]).GetID();
       if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet)) {
         LogPrintf("*** Sign1 failed \n");
         return false;
       }
       return true;
     case TX_PUBKEYHASH:
-      keyID = CKeyID(uint160(vSolutions[0]));
+      keyID = ecdsa::CKeyID(uint160(vSolutions[0]));
       if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet)) {
         LogPrintf("*** solver failed to sign \n");
         return false;
       } else {
-        CPubKey vch;
+        ecdsa::CPubKey vch;
         keystore.GetPubKey(keyID, vch);
         scriptSigRet << ToByteVector(vch);
       }

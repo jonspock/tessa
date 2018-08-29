@@ -10,12 +10,12 @@
 
 #include "script/interpreter.h"
 #include "uint256.h"
+#include "ecdsa/key.h"
 
 #include <boost/variant.hpp>
 
 #include <stdint.h>
 
-class CKeyID;
 class CScript;
 
 /** A reference to a CScript: the Hash160 of its serialization (see script.h) */
@@ -77,7 +77,7 @@ class CNoDestination {
  *  * CScriptID: TX_SCRIPTHASH destination
  *  A CTxDestination is the internal data type encoded in a CBitcoinAddress
  */
-typedef boost::variant<CNoDestination, CKeyID, CScriptID> CTxDestination;
+typedef boost::variant<CNoDestination, ecdsa::CKeyID, CScriptID> CTxDestination;
 
 const char* GetTxnOutputType(txnouttype t);
 
@@ -89,7 +89,7 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::
                          int& nRequiredRet);
 
 CScript GetScriptForDestination(const CTxDestination& dest);
-CScript GetScriptForRawPubKey(const CPubKey &pubkey);
-CScript GetScriptForMultisig(int nRequired, const std::vector<CPubKey>& keys);
+CScript GetScriptForRawPubKey(const ecdsa::CPubKey &pubkey);
+CScript GetScriptForMultisig(int nRequired, const std::vector<ecdsa::CPubKey>& keys);
 
 #endif  // BITCOIN_SCRIPT_STANDARD_H

@@ -27,7 +27,7 @@
 
 #include <univalue.h>
 
-using namespace boost;
+using namespace ecdsa;
 using namespace std;
 
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, UniValue& out, bool fIncludeHex) {

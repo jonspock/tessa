@@ -118,7 +118,7 @@ class CoinSpend {
   CBigNum accCommitmentToCoinValue;
   CBigNum serialCommitmentToCoinValue;
   CBigNum coinSerialNumber;
-  CPubKey pubkey;
+  ecdsa::CPubKey pubkey;
   std::vector<uint8_t> vchSig;
   AccumulatorProofOfKnowledge accumulatorPoK;
   SerialNumberSignatureOfKnowledge serialNumberSoK;

@@ -23,7 +23,7 @@
 #include "wallet/wallet.h"
 
 #include "accumulators.h"
-#include "blocksignature.h"
+#include "ecdsa/blocksignature.h"
 #include "spork.h"
 #include "validationinterface.h"
 
@@ -31,6 +31,7 @@
 #include <boost/thread.hpp>
 
 using namespace std;
+using namespace ecdsa;
 
 //////////////////////////////////////////////////////////////////////////////
 //

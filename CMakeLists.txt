@@ -171,6 +171,7 @@ endif()
 SET(ECDSA
   ./src/ecdsa/key.cpp
   ./src/ecdsa/pubkey.cpp
+  ./src/ecdsa/blocksignature.cpp
   )
 
 
@@ -316,9 +317,8 @@ SET(PRIM
   )
 
 SET(SOURCES
-  # temp
-  	./src/main_hdr.cpp
-	  ./src/compat/strnlen.cpp
+#  	./src/main_hdr.cpp
+  ./src/compat/strnlen.cpp
 	./src/compat/glibcxx_compat.cpp
 	./src/compat/glibc_sanity.cpp
 	./src/kernel.cpp
@@ -339,7 +339,6 @@ SET(SOURCES
 	./src/zerotracker.cpp
   ./src/httprpc.cpp
   ./src/httpserver.cpp
-  ./src/blocksignature.cpp
   ./src/validationinterface.cpp
 	)
 
@@ -355,9 +354,9 @@ SET(UNI_SOURCES
   ./src/univalue/lib/univalue.cpp
   )
 
-SET(SCH_SOURCES
-  ./src/scheduler.cpp
-  )
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  SET(SCH_SOURCES ./src/scheduler.cpp)
+endif()
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
@@ -416,6 +415,9 @@ source_group("WalletHeaders" FILES ${WALLET_HEADERS})
 file(GLOB RPC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/rpc/*.h )
 source_group("RpcHeaders" FILES ${RPC_HEADERS})
 
+file(GLOB ECDSA_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/ecdsa/*.h )
+source_group("EcdasHeaders" FILES ${ECDSA_HEADERS})
+
 source_group("Wallet" FILES ${WALLET})
 source_group("Rpc" FILES ${RPC})
 source_group("Crypt" FILES ${CONSENSUS_CRYPTO})
@@ -425,13 +427,11 @@ source_group("Uni" FILES ${UNI_SOURCES})
 source_group("Zmq" FILES ${ZMQ_SOURCES})
 source_group("Primitives" FILES ${PRIM})
 source_group("CommonA" FILES ${COMMON_A})
-source_group("ECDSA" FILES ${ECDSA})
+source_group("Ecdsa" FILES ${ECDSA})
 
-IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${ECDSA} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
-ELSE()
-  add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A} ${ECDSA} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
-ENDIF()
+add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${ECDSA_HEADERS}
+  ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
+  ${ECDSA} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 
 add_dependencies(coin buildHeader)
 

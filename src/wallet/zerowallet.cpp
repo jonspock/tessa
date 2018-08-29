@@ -15,6 +15,7 @@
 #include "zerochain.h"
 
 using namespace std;
+using namespace ecdsa;
 
 #ifdef DEBUG
 const int ZMINTS_TO_ADD = 1;

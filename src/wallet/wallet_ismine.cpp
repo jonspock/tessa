@@ -19,7 +19,7 @@ typedef vector<uint8_t> valtype;
 unsigned int HaveKeys(const vector<valtype>& pubkeys, const CKeyStore& keystore) {
   unsigned int nResult = 0;
   for (const valtype& pubkey : pubkeys) {
-    CKeyID keyID = CPubKey(pubkey).GetID();
+    ecdsa::CKeyID keyID = ecdsa::CPubKey(pubkey).GetID();
     if (keystore.HaveKey(keyID)) ++nResult;
   }
   return nResult;
@@ -43,18 +43,18 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey) {
     return ISMINE_NO;
   }
 
-  CKeyID keyID;
+  ecdsa::CKeyID keyID;
   switch (whichType) {
     case TX_NONSTANDARD:
     case TX_NULL_DATA:
       break;
     case TX_ZEROCOINMINT:
     case TX_PUBKEY:
-      keyID = CPubKey(vSolutions[0]).GetID();
+      keyID = ecdsa::CPubKey(vSolutions[0]).GetID();
       if (keystore.HaveKey(keyID)) return ISMINE_SPENDABLE;
       break;
     case TX_PUBKEYHASH:
-      keyID = CKeyID(uint160(vSolutions[0]));
+      keyID = ecdsa::CKeyID(uint160(vSolutions[0]));
       if (keystore.HaveKey(keyID)) return ISMINE_SPENDABLE;
       break;
     case TX_SCRIPTHASH: {

@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-class CPubKey;
+#include "ecdsa/pubkey.h"
 class CScript;
 class CTransaction;
 class uint256;
@@ -88,7 +88,7 @@ class TransactionSignatureChecker : public BaseSignatureChecker {
   unsigned int nIn;
 
  protected:
-  virtual bool VerifySignature(const std::vector<uint8_t>& vchSig, const CPubKey& vchPubKey,
+  virtual bool VerifySignature(const std::vector<uint8_t>& vchSig, const ecdsa::CPubKey& vchPubKey,
                                const uint256& sighash) const;
 
  public:

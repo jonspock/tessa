@@ -8,6 +8,6 @@
 #include "keystore.h"
 #include "primitives/block.h"
 
-bool SignBlockWithKey(CBlock& block, const CKey& key);
+bool SignBlockWithKey(CBlock& block, const ecdsa::CKey& key);
 bool SignBlock(CBlock& block, const CKeyStore& keystore);
 bool CheckBlockSignature(const CBlock& block);

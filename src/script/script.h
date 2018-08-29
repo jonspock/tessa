@@ -397,7 +397,7 @@ class CScript : public std::vector<uint8_t> {
     return *this;
   }
 
-  CScript& operator<<(const CPubKey& key) {
+  CScript& operator<<(const ecdsa::CPubKey& key) {
     std::vector<uint8_t> vchKey = key.Raw();
     return (*this) << vchKey;
   }

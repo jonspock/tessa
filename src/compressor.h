@@ -11,9 +11,9 @@
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "serialize.h"
+#include "ecdsa/key.h"
+#include "ecdsa/pubkey.h"
 
-class CKeyID;
-class CPubKey;
 class CScriptID;
 
 /** Compact serializer for scripts.
@@ -47,9 +47,9 @@ class CScriptCompressor {
    * whether the public key is valid (as invalid ones cannot be represented in compressed
    * form).
    */
-  bool IsToKeyID(CKeyID& hash) const;
+  bool IsToKeyID(ecdsa::CKeyID& hash) const;
   bool IsToScriptID(CScriptID& hash) const;
-  bool IsToPubKey(CPubKey& pubkey) const;
+  bool IsToPubKey(ecdsa::CPubKey& pubkey) const;
 
   bool Compress(std::vector<uint8_t>& out) const;
   unsigned int GetSpecialSize(unsigned int nSize) const;

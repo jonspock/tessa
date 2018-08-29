@@ -7,11 +7,13 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
+#include "ecdsa/key.h"
+#include <string>
 
 /** Private key that includes an expiration date in case it never gets used. */
 class CWalletKey {
  public:
-  CPrivKey vchPrivKey;
+  ecdsa::CPrivKey vchPrivKey;
   int64_t nTimeCreated;
   int64_t nTimeExpires;
   std::string strComment;

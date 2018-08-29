@@ -32,6 +32,8 @@
 #include <QTreeWidgetItem>
 
 using namespace std;
+using namespace ecdsa;
+
 QList<CAmount> CoinControlDialog::payAmounts;
 int CoinControlDialog::nSplitBlockDummy;
 CCoinControl* CoinControlDialog::coinControl = new CCoinControl();

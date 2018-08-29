@@ -16,6 +16,7 @@
 #include "uint256.h"
 
 using namespace std;
+using namespace ecdsa;
 
 typedef vector<uint8_t> valtype;
 

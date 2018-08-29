@@ -29,6 +29,7 @@
 #include <QTimer>
 
 using namespace std;
+using namespace ecdsa;
 
 WalletModel::WalletModel(CWallet* wallet, OptionsModel* optionsModel, QObject* parent)
     : QObject(parent),

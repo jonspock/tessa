@@ -3,12 +3,14 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "blocksignature.h"
-#include "main.h"
+#include "ecdsa/blocksignature.h"
+#include "script/standard.h"
+#include "util.h"
+
+using namespace ecdsa;
 
 bool SignBlockWithKey(CBlock& block, const CKey& key) {
   if (!key.Sign(block.GetHash(), block.vchBlockSig)) return error("%s: failed to sign block hash with key", __func__);
-
   return true;
 }
 
@@ -21,7 +23,6 @@ bool GetKeyIDFromUTXO(const CTxOut& txout, CKeyID& keyID) {
   } else if (whichType == TX_PUBKEYHASH) {
     keyID = CKeyID(uint160(vSolutions[0]));
   }
-
   return true;
 }
 
@@ -41,13 +42,11 @@ bool SignBlock(CBlock& block, const CKeyStore& keystore) {
 
   CKey key;
   if (!keystore.GetKey(keyID, key)) return error("%s: failed to get key from keystore", __func__);
-
   return SignBlockWithKey(block, key);
 }
 
 bool CheckBlockSignature(const CBlock& block) {
   if (block.IsProofOfWork()) return block.vchBlockSig.empty();
-
   if (block.vchBlockSig.empty()) return error("%s: vchBlockSig is empty!", __func__);
 
   /** Each block is signed by the private key of the input that is staked. This must be a normal UTXO
@@ -64,6 +63,5 @@ bool CheckBlockSignature(const CBlock& block) {
   }
 
   if (!pubkey.IsValid()) return error("%s: invalid pubkey %s", __func__, pubkey.GetHex());
-
   return pubkey.Verify(block.GetHash(), block.vchBlockSig);
 }

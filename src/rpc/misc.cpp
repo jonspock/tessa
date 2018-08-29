@@ -24,8 +24,9 @@
 
 #include <univalue.h>
 
-using namespace boost;
+//using namespace boost;
 using namespace std;
+using namespace ecdsa;
 
 /**
  * @note Do not add or change anything in the information returned by this

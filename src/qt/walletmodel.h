@@ -13,6 +13,7 @@
 
 #include "support/allocators/secure.h"
 #include "wallet/wallet.h"
+#include "ecdsa/key.h"
 
 #include <map>
 #include <vector>
@@ -26,10 +27,8 @@ class TransactionTableModel;
 class WalletModelTransaction;
 
 class CCoinControl;
-class CKeyID;
 class COutPoint;
 class COutput;
-class CPubKey;
 class CWallet;
 class uint256;
 
@@ -127,10 +126,10 @@ class WalletModel : public QObject {
   CAmount getWatchUnconfirmedBalance() const;
   CAmount getWatchImmatureBalance() const;
   EncryptionStatus getEncryptionStatus() const;
-  CKey generateNewKey() const;  // for temporary paper wallet key generation
+  ecdsa::CKey generateNewKey() const;  // for temporary paper wallet key generation
   bool setAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose);
-  void encryptKey(const CKey key, const std::string& pwd, const std::string& slt, std::vector<unsigned char>& crypted);
-  void decryptKey(const std::vector<unsigned char>& crypted, const std::string& slt, const std::string& pwd, CKey& key);
+  void encryptKey(const ecdsa::CKey key, const std::string& pwd, const std::string& slt, std::vector<unsigned char>& crypted);
+  void decryptKey(const std::vector<unsigned char>& crypted, const std::string& slt, const std::string& pwd, ecdsa::CKey& key);
   void emitBalanceChanged();  // Force update of UI-elements even when no values have changed
 
   // Check address for validity
@@ -182,7 +181,7 @@ class WalletModel : public QObject {
 
   UnlockContext requestUnlock(AskPassphraseDialog::Context context, bool relock = false);
 
-  bool getPubKey(const CKeyID& address, CPubKey& vchPubKeyOut) const;
+  bool getPubKey(const ecdsa::CKeyID& address, ecdsa::CPubKey& vchPubKeyOut) const;
   bool isMine(CBitcoinAddress address);
   void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
   bool isSpent(const COutPoint& outpoint) const;

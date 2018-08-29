@@ -24,6 +24,7 @@
 #include <fstream>
 
 using namespace std;
+using namespace ecdsa;
 
 static uint64_t nAccountingEntryNumber = 0;
 

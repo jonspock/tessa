@@ -5,8 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_KEY_H
-#define BITCOIN_KEY_H
+#pragma once
 
 #include "support/allocators/secure.h"
 #include "pubkey.h"
@@ -16,6 +15,8 @@
 #include <stdexcept>
 #include <vector>
 
+namespace ecdsa {
+  
 class CPubKey;
 
 struct CExtPubKey;
@@ -162,6 +163,8 @@ struct CExtKey {
   void SetMaster(const uint8_t* seed, unsigned int nSeedLen);
 };
 
+} // end namespace ecdsa
+
 /** Initialize the elliptic curve support. May not be called twice without calling ECC_Stop first. */
 void ECC_Start(void);
 
@@ -170,5 +173,3 @@ void ECC_Stop(void);
 
 /** Check that required EC support is available at runtime. */
 bool ECC_InitSanityCheck(void);
-
-#endif  // PIVX_KEY_H

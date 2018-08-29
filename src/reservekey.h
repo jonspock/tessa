@@ -7,15 +7,15 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
+#include "ecdsa/pubkey.h"
 class CWallet;
-class CPubKey;
 
 /** A key allocated from the key pool. */
 class CReserveKey {
  protected:
   CWallet* pwallet;
   int64_t nIndex;
-  CPubKey vchPubKey;
+  ecdsa::CPubKey vchPubKey;
 
  public:
   CReserveKey(CWallet* pwalletIn) {
@@ -26,6 +26,6 @@ class CReserveKey {
   ~CReserveKey() { ReturnKey(); }
 
   void ReturnKey();
-  bool GetReservedKey(CPubKey& pubkey);
+  bool GetReservedKey(ecdsa::CPubKey& pubkey);
   void KeepKey();
 };

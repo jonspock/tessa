@@ -12,6 +12,7 @@
 #include "wallet/wallet.h"
 
 using namespace std;
+using namespace ecdsa;
 
 //! Tessa Stake
 bool CStake::SetInput(CTransaction txPrev, unsigned int n) {
