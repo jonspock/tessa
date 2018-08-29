@@ -482,6 +482,7 @@ set(PP_EXT "LAZYR" CACHE STRING "")
 set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 
 add_subdirectory(src/relic)
+add_subdirectory(src/bls)
 
 SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
 
