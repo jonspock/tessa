@@ -14,17 +14,17 @@
 
 #include <string>
 #include <cstring>
-#include "blssignature.hpp"
-#include "bls.hpp"
+#include "signature.h"
+#include "bls.h"
 
 using std::string;
 using relic::bn_t;
 using relic::fp_t;
 
-BLSSignature BLSSignature::FromBytes(const uint8_t *data) {
+Signature Signature::FromBytes(const uint8_t *data) {
     BLS::AssertInitialized();
-    BLSSignature sigObj = BLSSignature();
-    std::memcpy(sigObj.data, data, BLSSignature::SIGNATURE_SIZE);
+    Signature sigObj = Signature();
+    std::memcpy(sigObj.data, data, Signature::SIGNATURE_SIZE);
     uint8_t uncompressed[SIGNATURE_SIZE + 1];
     std::memcpy(uncompressed + 1, data, SIGNATURE_SIZE);
     if (data[0] & 0x80) {
@@ -37,22 +37,22 @@ BLSSignature BLSSignature::FromBytes(const uint8_t *data) {
     return sigObj;
 }
 
-BLSSignature BLSSignature::FromBytes(const uint8_t *data,
+Signature Signature::FromBytes(const uint8_t *data,
                                      const AggregationInfo &info) {
-    BLSSignature ret = FromBytes(data);
+    Signature ret = FromBytes(data);
     ret.SetAggregationInfo(info);
     return ret;
 }
 
-BLSSignature BLSSignature::FromG2(relic::g2_t* element) {
+Signature Signature::FromG2(relic::g2_t* element) {
     BLS::AssertInitialized();
-    BLSSignature sigObj = BLSSignature();
+    Signature sigObj = Signature();
     relic::g2_copy(sigObj.sig, *element);
     CompressPoint(sigObj.data, element);
     return sigObj;
 }
 
-BLSSignature::BLSSignature(const BLSSignature &signature) {
+Signature::Signature(const Signature &signature) {
     BLS::AssertInitialized();
     relic::g2_t tmp;
     signature.GetPoint(tmp);
@@ -61,31 +61,31 @@ BLSSignature::BLSSignature(const BLSSignature &signature) {
     aggregationInfo = signature.aggregationInfo;
 }
 
-void BLSSignature::GetPoint(relic::g2_t output) const {
+void Signature::GetPoint(relic::g2_t output) const {
     BLS::AssertInitialized();
     *output = *sig;
 }
 
-const AggregationInfo* BLSSignature::GetAggregationInfo() const {
+const AggregationInfo* Signature::GetAggregationInfo() const {
     return &aggregationInfo;
 }
 
-void BLSSignature::SetAggregationInfo(
+void Signature::SetAggregationInfo(
         const AggregationInfo &newAggregationInfo) {
     aggregationInfo = newAggregationInfo;
 }
 
-BLSSignature BLSSignature::DivideBy(std::vector<BLSSignature> const &divisorSigs) const {
+Signature Signature::DivideBy(std::vector<Signature> const &divisorSigs) const {
     relic::bn_t ord;
     g2_get_ord(ord);
 
     std::vector<uint8_t*> messageHashesToRemove;
-    std::vector<BLSPublicKey> pubKeysToRemove;
+    std::vector<CPubKey> pubKeysToRemove;
 
     relic::g2_t prod;
     relic::g2_set_infty(prod);
-    for (const BLSSignature &divisorSig : divisorSigs) {
-        std::vector<BLSPublicKey> pks = divisorSig.GetAggregationInfo()
+    for (const Signature &divisorSig : divisorSigs) {
+        std::vector<CPubKey> pks = divisorSig.GetAggregationInfo()
                 ->GetPubKeys();
         std::vector<uint8_t*> messageHashes = divisorSig.GetAggregationInfo()
                 ->GetMessageHashes();
@@ -133,53 +133,53 @@ BLSSignature BLSSignature::DivideBy(std::vector<BLSSignature> const &divisorSigs
         g2_mul(newSig, newSig, quotient);
         g2_add(prod, prod, newSig);
     }
-    BLSSignature copy = *this;
+    Signature copy = *this;
     g2_add(copy.sig, copy.sig, prod);
     CompressPoint(copy.data, &copy.sig);
     copy.aggregationInfo.RemoveEntries(messageHashesToRemove, pubKeysToRemove);
     return copy;
 }
 
-const uint8_t& BLSSignature::operator[](size_t pos) const {
+const uint8_t& Signature::operator[](size_t pos) const {
     return data[pos];
 }
 
-const uint8_t* BLSSignature::begin() const {
+const uint8_t* Signature::begin() const {
     return data;
 }
 
-const uint8_t* BLSSignature::end() const {
+const uint8_t* Signature::end() const {
     return data + size();
 }
 
-size_t BLSSignature::size() const {
-    return BLSSignature::SIGNATURE_SIZE;
+size_t Signature::size() const {
+    return Signature::SIGNATURE_SIZE;
 }
 
-void BLSSignature::Serialize(uint8_t* buffer) const {
+void Signature::Serialize(uint8_t* buffer) const {
     BLS::AssertInitialized();
-    std::memcpy(buffer, data, BLSSignature::SIGNATURE_SIZE);
+    std::memcpy(buffer, data, Signature::SIGNATURE_SIZE);
 }
 
-bool operator==(BLSSignature const &a, BLSSignature const &b) {
+bool operator==(Signature const &a, Signature const &b) {
     BLS::AssertInitialized();
-    return std::memcmp(a.data, b.data, BLSSignature::SIGNATURE_SIZE) == 0;
+    return std::memcmp(a.data, b.data, Signature::SIGNATURE_SIZE) == 0;
 }
 
-bool operator!=(BLSSignature const &a, BLSSignature const &b) {
+bool operator!=(Signature const &a, Signature const &b) {
     return !(a == b);
 }
 
-bool operator<(BLSSignature const&a,  BLSSignature const&b) {
-    return std::memcmp(a.data, b.data, BLSSignature::SIGNATURE_SIZE) < 0;
+bool operator<(Signature const&a,  Signature const&b) {
+    return std::memcmp(a.data, b.data, Signature::SIGNATURE_SIZE) < 0;
 }
 
-std::ostream &operator<<(std::ostream &os, BLSSignature const &s) {
+std::ostream &operator<<(std::ostream &os, Signature const &s) {
     BLS::AssertInitialized();
-    return os << BLSUtil::HexStr(s.data, BLSSignature::SIGNATURE_SIZE);
+    return os << BLSUtil::HexStr(s.data, Signature::SIGNATURE_SIZE);
 }
 
-BLSSignature& BLSSignature::operator=(const BLSSignature &rhs) {
+Signature& Signature::operator=(const Signature &rhs) {
     BLS::AssertInitialized();
     relic::g2_t tmp;
     rhs.GetPoint(tmp);
@@ -189,9 +189,9 @@ BLSSignature& BLSSignature::operator=(const BLSSignature &rhs) {
     return *this;
 }
 
-void BLSSignature::CompressPoint(uint8_t* result, relic::g2_t* point) {
-    uint8_t buffer[BLSSignature::SIGNATURE_SIZE + 1];
-    g2_write_bin(buffer, BLSSignature::SIGNATURE_SIZE + 1, *point, 1);
+void Signature::CompressPoint(uint8_t* result, relic::g2_t* point) {
+    uint8_t buffer[Signature::SIGNATURE_SIZE + 1];
+    g2_write_bin(buffer, Signature::SIGNATURE_SIZE + 1, *point, 1);
 
     if (buffer[0] == 0x03) {
         buffer[1] |= 0x80;

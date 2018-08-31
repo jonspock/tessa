@@ -15,13 +15,13 @@
 #include <cstring>
 #include <iostream>
 
-#include "bls.hpp"
-#include "blspublickey.hpp"
-#include "blsutil.hpp"
+#include "bls.h"
+#include "pubkey.h"
+#include "blsutil.h"
 
-BLSPublicKey BLSPublicKey::FromBytes(const uint8_t *key) {
+CPubKey CPubKey::FromBytes(const uint8_t *key) {
   BLS::AssertInitialized();
-  BLSPublicKey pk = BLSPublicKey();
+  CPubKey pk = CPubKey();
   std::memcpy(pk.data, key, PUBLIC_KEY_SIZE);
   uint8_t uncompressed[PUBLIC_KEY_SIZE + 1];
   std::memcpy(uncompressed + 1, key, PUBLIC_KEY_SIZE);
@@ -35,15 +35,15 @@ BLSPublicKey BLSPublicKey::FromBytes(const uint8_t *key) {
   return pk;
 }
 
-BLSPublicKey BLSPublicKey::FromG1(const relic::g1_t *pubKey) {
+CPubKey CPubKey::FromG1(const relic::g1_t *pubKey) {
   BLS::AssertInitialized();
-  BLSPublicKey pk = BLSPublicKey();
+  CPubKey pk = CPubKey();
   g1_copy(pk.q, *pubKey);
   CompressPoint(pk.data, &pk.q);
   return pk;
 }
 
-BLSPublicKey::BLSPublicKey(const BLSPublicKey &pubKey) {
+CPubKey::CPubKey(const CPubKey &pubKey) {
   BLS::AssertInitialized();
   relic::g1_t tmp;
   pubKey.GetPoint(tmp);
@@ -51,48 +51,48 @@ BLSPublicKey::BLSPublicKey(const BLSPublicKey &pubKey) {
   CompressPoint(data, &q);
 }
 
-size_t BLSPublicKey::size() const { return PUBLIC_KEY_SIZE; }
+size_t CPubKey::size() const { return PUBLIC_KEY_SIZE; }
 
-const uint8_t *BLSPublicKey::begin() const { return data; }
+const uint8_t *CPubKey::begin() const { return data; }
 
-const uint8_t *BLSPublicKey::end() const { return data + size(); }
+const uint8_t *CPubKey::end() const { return data + size(); }
 
-const uint8_t &BLSPublicKey::operator[](size_t pos) const { return data[pos]; }
+const uint8_t &CPubKey::operator[](size_t pos) const { return data[pos]; }
 
-void BLSPublicKey::Serialize(uint8_t *buffer) const {
+void CPubKey::Serialize(uint8_t *buffer) const {
   BLS::AssertInitialized();
   std::memcpy(buffer, data, PUBLIC_KEY_SIZE);
 }
 
 // Comparator implementation.
-bool operator==(BLSPublicKey const &a, BLSPublicKey const &b) {
+bool operator==(CPubKey const &a, CPubKey const &b) {
   BLS::AssertInitialized();
   return g1_cmp(a.q, b.q) == CMP_EQ;
 }
 
-bool operator!=(BLSPublicKey const &a, BLSPublicKey const &b) { return !(a == b); }
+bool operator!=(CPubKey const &a, CPubKey const &b) { return !(a == b); }
 
-bool operator<(BLSPublicKey const &a, BLSPublicKey const &b) {
-  return std::memcmp(a.data, b.data, BLSPublicKey::PUBLIC_KEY_SIZE) < 0;
+bool operator<(CPubKey const &a, CPubKey const &b) {
+  return std::memcmp(a.data, b.data, CPubKey::PUBLIC_KEY_SIZE) < 0;
 }
 
-std::ostream &operator<<(std::ostream &os, BLSPublicKey const &pk) {
+std::ostream &operator<<(std::ostream &os, CPubKey const &pk) {
   BLS::AssertInitialized();
-  return os << BLSUtil::HexStr(pk.data, BLSPublicKey::PUBLIC_KEY_SIZE);
+  return os << BLSUtil::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
 }
 
-uint32_t BLSPublicKey::GetFingerprint() const {
+uint32_t CPubKey::GetFingerprint() const {
   BLS::AssertInitialized();
-  uint8_t buffer[BLSPublicKey::PUBLIC_KEY_SIZE];
+  uint8_t buffer[CPubKey::PUBLIC_KEY_SIZE];
   uint8_t hash[32];
   Serialize(buffer);
-  BLSUtil::Hash256(hash, buffer, BLSPublicKey::PUBLIC_KEY_SIZE);
+  BLSUtil::Hash256(hash, buffer, CPubKey::PUBLIC_KEY_SIZE);
   return BLSUtil::FourBytesToInt(hash);
 }
 
-void BLSPublicKey::CompressPoint(uint8_t *result, const relic::g1_t *point) {
-  uint8_t buffer[BLSPublicKey::PUBLIC_KEY_SIZE + 1];
-  g1_write_bin(buffer, BLSPublicKey::PUBLIC_KEY_SIZE + 1, *point, 1);
+void CPubKey::CompressPoint(uint8_t *result, const relic::g1_t *point) {
+  uint8_t buffer[CPubKey::PUBLIC_KEY_SIZE + 1];
+  g1_write_bin(buffer, CPubKey::PUBLIC_KEY_SIZE + 1, *point, 1);
 
   if (buffer[0] == 0x03) { buffer[1] |= 0x80; }
   std::memcpy(result, buffer + 1, PUBLIC_KEY_SIZE);

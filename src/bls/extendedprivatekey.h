@@ -14,8 +14,10 @@
 
 #pragma once
 
-#include "blspublickey.hpp"
-#include "chaincode.hpp"
+#include "privkey.h"
+#include "pubkey.h"
+#include "chaincode.h"
+#include "extendedpublickey.h"
 
 namespace relic {
 #include "relic.h"
@@ -33,17 +35,21 @@ chain code. This follows the spec from BIP-0032, with a few changes:
   * ID of a key is SHA256(pk) instead of HASH160(pk)
   * Serialization of extended public key is 93 bytes
 */
-class ExtendedPublicKey {
+class ExtendedPrivateKey {
  public:
-  static const uint32_t VERSION = 1;
+  // version(4) depth(1) parent fingerprint(4) child#(4) cc(32) sk(32)
+  static const uint32_t EXTENDED_PRIVATE_KEY_SIZE = 77;
 
-  // version(4) depth(1) parent fingerprint(4) child#(4) cc(32) pk(48)
-  static const uint32_t EXTENDED_PUBLIC_KEY_SIZE = 93;
+  // Generates a master private key and chain code from a seed
+  static ExtendedPrivateKey FromSeed(const uint8_t* seed, size_t seedLen);
 
-  // Parse public key and chain code from bytes
-  static ExtendedPublicKey FromBytes(const uint8_t *serialized);
+  // Parse private key and chain code from bytes
+  static ExtendedPrivateKey FromBytes(const uint8_t* serialized);
 
-  // Derive a child extended public key, cannot be hardened
+  // Derive a child extEnded private key, hardened if i >= 2^31
+  ExtendedPrivateKey PrivateChild(uint32_t i) const;
+
+  // Derive a child extended public key, hardened if i >= 2^31
   ExtendedPublicKey PublicChild(uint32_t i) const;
 
   uint32_t GetVersion() const;
@@ -52,20 +58,24 @@ class ExtendedPublicKey {
   uint32_t GetChildNumber() const;
 
   ChainCode GetChainCode() const;
-  BLSPublicKey GetPublicKey() const;
+  CPrivKey GetPrivateKey() const;
 
-  // Comparator implementation.
-  friend bool operator==(ExtendedPublicKey const &a, ExtendedPublicKey const &b);
-  friend bool operator!=(ExtendedPublicKey const &a, ExtendedPublicKey const &b);
-  friend std::ostream &operator<<(std::ostream &os, ExtendedPublicKey const &s);
+  CPubKey GetPublicKey() const;
+  ExtendedPublicKey GetExtendedPublicKey() const;
 
-  void Serialize(uint8_t *buffer) const;
+  // Compare to different private key
+  friend bool operator==(const ExtendedPrivateKey& a, const ExtendedPrivateKey& b);
+  friend bool operator!=(const ExtendedPrivateKey& a, const ExtendedPrivateKey& b);
+
+  void Serialize(uint8_t* buffer) const;
+
+  ~ExtendedPrivateKey();
 
  private:
-  // private constructor, force use of static methods
-  explicit ExtendedPublicKey(const uint32_t v, const uint8_t d, const uint32_t pfp, const uint32_t cn,
-                             const ChainCode code, const BLSPublicKey key)
-      : version(v), depth(d), parentFingerprint(pfp), childNumber(cn), chainCode(code), pk(key) {}
+  // Private constructor, force use of static methods
+  explicit ExtendedPrivateKey(const uint32_t v, const uint8_t d, const uint32_t pfp, const uint32_t cn,
+                              const ChainCode code, const CPrivKey key)
+      : version(v), depth(d), parentFingerprint(pfp), childNumber(cn), chainCode(code), sk(key) {}
 
   const uint32_t version;
   const uint8_t depth;
@@ -73,5 +83,6 @@ class ExtendedPublicKey {
   const uint32_t childNumber;
 
   const ChainCode chainCode;
-  const BLSPublicKey pk;
+  const CPrivKey sk;
 };
+

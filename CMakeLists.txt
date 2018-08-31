@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 project(TESSA VERSION 0.9.0.0)
 
 include(CheckSymbolExists)
+include(CheckCXXCompilerFlag)
 
 # Add path for custom modules
 set(CMAKE_MODULE_PATH
@@ -120,8 +121,32 @@ add_compiler_flag(
   -fstack-protector-all
 )
 
-IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+#foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
+#  message("${i}")
+#endforeach()
+
+check_cxx_compiler_flag(-std=c++17 HAVE_FLAG_STD_CXX17)
+check_cxx_compiler_flag(-std=c++14 HAVE_FLAG_STD_CXX14)
+check_cxx_compiler_flag(-std=c++11 HAVE_FLAG_STD_CXX11)
+if (HAVE_FLAG_STD_CXX17)
   set(CMAKE_CXX_STANDARD 17)
+  message(STATUS "Compiler supports C++17")
+else()
+  message(STATUS "Compiler Doesn't support C++17")
+  if (HAVE_FLAG_STD_CXX14)
+    set(CMAKE_CXX_STANDARD 14)
+    message(STATUS "Compiler supports C++14")
+  else()
+    if (HAVE_FLAG_STD_CXX11)
+      set(CMAKE_CXX_STANDARD 11)
+      message(STATUS "Compiler supports C++11")
+    else()
+      message(ERROR "Compile must at least support C++11")
+    endif()
+  endif()
+endif()
+
+IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   add_compiler_flag(-Wrange-loop-analysis)
   # For 17 we need BOOST_NO_AUTO_PTR defined for boost
   check_symbol_exists(BOOST_NO_AUTO_PTR "sync.h" BOOST_NO_AUTO_PTR)
@@ -132,7 +157,6 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	  add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
   endif()
 else()
-  set(CMAKE_CXX_STANDARD 11)
 	add_definitions("-Wno-cpp -Wno-unused-function")
 	set(ANL anl)
 endif()
@@ -168,13 +192,6 @@ endif()
 		)
 endif()
 
-SET(ECDSA
-  ./src/ecdsa/key.cpp
-  ./src/ecdsa/pubkey.cpp
-  ./src/ecdsa/blocksignature.cpp
-  )
-
-
 SET(COMMON_A
   ./src/support/cleanse.cpp
   ./src/support/lockedpool.cpp
@@ -205,9 +222,8 @@ else()
   message(WARNING "Using Versions defined in clientversion.h - is it up to date?")
 endif()
    
-    
-add_custom_target(
-  buildHeader
+# No longer used    
+add_custom_target(buildHeader
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/share/genbuild.sh ${CMAKE_CURRENT_SOURCE_DIR}/src/build.h ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
@@ -415,9 +431,6 @@ source_group("WalletHeaders" FILES ${WALLET_HEADERS})
 file(GLOB RPC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/rpc/*.h )
 source_group("RpcHeaders" FILES ${RPC_HEADERS})
 
-file(GLOB ECDSA_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/ecdsa/*.h )
-source_group("EcdasHeaders" FILES ${ECDSA_HEADERS})
-
 source_group("Wallet" FILES ${WALLET})
 source_group("Rpc" FILES ${RPC})
 source_group("Crypt" FILES ${CONSENSUS_CRYPTO})
@@ -427,13 +440,13 @@ source_group("Uni" FILES ${UNI_SOURCES})
 source_group("Zmq" FILES ${ZMQ_SOURCES})
 source_group("Primitives" FILES ${PRIM})
 source_group("CommonA" FILES ${COMMON_A})
-source_group("Ecdsa" FILES ${ECDSA})
 
-add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${ECDSA_HEADERS}
+add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} 
   ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
-  ${ECDSA} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 
-add_dependencies(coin buildHeader)
+# not used
+#add_dependencies(coin buildHeader)
 
 add_subdirectory(src)
 
@@ -445,6 +458,8 @@ set(SECP256
 	./src/secp256k1/src/gen_context.c
 	)
 add_library(secp256k1 ${SECP256})
+
+add_subdirectory(src/ecdsa)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
 link_directories(${ROCKSDB_ROOT_DIR}/lib)
@@ -487,9 +502,9 @@ set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 add_subdirectory(src/relic)
 add_subdirectory(src/bls)
 
-SET(LIBS_LIST coin secp256k1 gmp zerocoin lmdb rocksdb ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
+SET(LIBS_LIST coin secp256k1 gmp zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
 
-target_link_libraries(tessa-cli coin zerocoin lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
+target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(tessad ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )

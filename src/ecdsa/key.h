@@ -9,6 +9,7 @@
 
 #include "support/allocators/secure.h"
 #include "pubkey.h"
+#include "privkey.h"
 #include "serialize.h"
 #include "uint256.h"
 
@@ -21,14 +22,7 @@ class CPubKey;
 
 struct CExtPubKey;
 
-/**
- * secure_allocator is defined in allocators.h
- * CPrivKey is a serialized private key, with all parameters included
- * (PRIVATE_KEY_SIZE bytes)
- */
-typedef std::vector<uint8_t, secure_allocator<uint8_t> > CPrivKey;
-
-/** An encapsulated private key. */
+// An encapsulated private key.
 class CKey {
  public:
   /**

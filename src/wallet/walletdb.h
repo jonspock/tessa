@@ -115,7 +115,7 @@ class CWalletDB : public CDB {
   bool WriteTx(uint256 hash, const CWalletTx& wtx);
   bool EraseTx(uint256 hash);
 
-  bool WriteKey(const ecdsa::CPubKey& vchPubKey, const ecdsa::CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta);
+  bool WriteKey(const ecdsa::CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta);
   bool WriteCryptedKey(const ecdsa::CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret,
                        const CKeyMetadata& keyMeta);
   bool WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey);

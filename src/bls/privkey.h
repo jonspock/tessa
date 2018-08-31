@@ -14,35 +14,35 @@
 
 #pragma once
 
-#include "blspublickey.hpp"
-#include "blssignature.hpp"
+#include "pubkey.h"
+#include "signature.h"
 
-class BLSPrivateKey {
+class CPrivKey {
  public:
   // Private keys are represented as 32 byte field elements. Note that
   // not all 32 byte integers are valid keys, the private key must be
-  // less than the group order (which is in bls.hpp).
+  // less than the group order (which is in bls.h).
   static const size_t PRIVATE_KEY_SIZE = 32;
 
   // Generates a private key from a seed, similar to HD key generation
   // (hashes the seed), and reduces it mod the group order.
-  static BLSPrivateKey FromSeed(const uint8_t* seed, size_t seedLen);
+  static CPrivKey FromSeed(const uint8_t* seed, size_t seedLen);
 
   // Construct a private key from a bytearray.
-  static BLSPrivateKey FromBytes(const uint8_t* bytes);
+  static CPrivKey FromBytes(const uint8_t* bytes);
 
   // Construct a private key from another private key. Allocates memory in
   // secure heap, and copies keydata.
-  BLSPrivateKey(const BLSPrivateKey& k);
+  CPrivKey(const CPrivKey& k);
 
-  ~BLSPrivateKey();
+  ~CPrivKey();
 
-  BLSPublicKey GetPublicKey() const;
+  CPubKey GetPublicKey() const;
 
   // Compare to different private key
-  friend bool operator==(const BLSPrivateKey& a, const BLSPrivateKey& b);
-  friend bool operator!=(const BLSPrivateKey& a, const BLSPrivateKey& b);
-  BLSPrivateKey& operator=(const BLSPrivateKey& rhs);
+  friend bool operator==(const CPrivKey& a, const CPrivKey& b);
+  friend bool operator!=(const CPrivKey& a, const CPrivKey& b);
+  CPrivKey& operator=(const CPrivKey& rhs);
 
   // Simple read-only vector-like interface.
   size_t size() const;
@@ -55,12 +55,12 @@ class BLSPrivateKey {
   void Serialize(uint8_t* buffer) const;
 
   // Sign a message
-  BLSSignature Sign(uint8_t* msg, size_t len) const;
-  BLSSignature SignPrehashed(uint8_t* hash) const;
+  Signature Sign(uint8_t* msg, size_t len) const;
+  Signature SignPrehashed(uint8_t* hash) const;
 
  private:
   // Don't allow public construction, force static methods
-  BLSPrivateKey() {}
+  CPrivKey() {}
 
   // The actual byte data
   relic::bn_t* keydata;

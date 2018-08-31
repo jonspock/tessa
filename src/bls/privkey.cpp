@@ -14,18 +14,18 @@
 
 #include <string>
 
-#include "bls.hpp"
-#include "blsprivatekey.hpp"
-#include "blsutil.hpp"
+#include "bls.h"
+#include "privkey.h"
+#include "blsutil.h"
 
-BLSPrivateKey BLSPrivateKey::FromSeed(const uint8_t* seed, size_t seedLen) {
+CPrivKey CPrivKey::FromSeed(const uint8_t* seed, size_t seedLen) {
   BLS::AssertInitialized();
 
   // "BLS private key seed" in ascii
   const uint8_t hmacKey[] = {66,  76, 83,  32,  112, 114, 105, 118, 97,  116,
                              101, 32, 107, 101, 121, 32,  115, 101, 101, 100};
 
-  uint8_t* hash = BLSUtil::SecAlloc<uint8_t>(BLSPrivateKey::PRIVATE_KEY_SIZE);
+  uint8_t* hash = BLSUtil::SecAlloc<uint8_t>(CPrivKey::PRIVATE_KEY_SIZE);
 
   // Hash the seed into sk
   relic::md_hmac(hash, seed, seedLen, hmacKey, sizeof(hmacKey));
@@ -37,10 +37,10 @@ BLSPrivateKey BLSPrivateKey::FromSeed(const uint8_t* seed, size_t seedLen) {
   // Make sure private key is less than the curve order
   relic::bn_t* skBn = BLSUtil::SecAlloc<relic::bn_t>(1);
   bn_new(*skBn);
-  bn_read_bin(*skBn, hash, BLSPrivateKey::PRIVATE_KEY_SIZE);
+  bn_read_bin(*skBn, hash, CPrivKey::PRIVATE_KEY_SIZE);
   bn_mod_basic(*skBn, *skBn, order);
 
-  BLSPrivateKey k = BLSPrivateKey();
+  CPrivKey k = CPrivKey();
   k.AllocateKeyData();
   bn_copy(*k.keydata, *skBn);
 
@@ -50,11 +50,11 @@ BLSPrivateKey BLSPrivateKey::FromSeed(const uint8_t* seed, size_t seedLen) {
 }
 
 // Construct a private key from a bytearray.
-BLSPrivateKey BLSPrivateKey::FromBytes(const uint8_t* bytes) {
+CPrivKey CPrivKey::FromBytes(const uint8_t* bytes) {
   BLS::AssertInitialized();
-  BLSPrivateKey k = BLSPrivateKey();
+  CPrivKey k = CPrivKey();
   k.AllocateKeyData();
-  bn_read_bin(*k.keydata, bytes, BLSPrivateKey::PRIVATE_KEY_SIZE);
+  bn_read_bin(*k.keydata, bytes, CPrivKey::PRIVATE_KEY_SIZE);
   relic::bn_t ord;
   bn_new(ord);
   g1_get_ord(ord);
@@ -63,38 +63,38 @@ BLSPrivateKey BLSPrivateKey::FromBytes(const uint8_t* bytes) {
 }
 
 // Construct a private key from another private key.
-BLSPrivateKey::BLSPrivateKey(const BLSPrivateKey& privateKey) {
+CPrivKey::CPrivKey(const CPrivKey& privateKey) {
   BLS::AssertInitialized();
   AllocateKeyData();
   bn_copy(*keydata, *privateKey.GetValue());
 }
 
-BLSPrivateKey::~BLSPrivateKey() {
+CPrivKey::~CPrivKey() {
   BLS::AssertInitialized();
   BLSUtil::SecFree(keydata);
 }
 
-BLSPublicKey BLSPrivateKey::GetPublicKey() const {
+CPubKey CPrivKey::GetPublicKey() const {
   BLS::AssertInitialized();
   relic::g1_t* q = BLSUtil::SecAlloc<relic::g1_t>(1);
   g1_mul_gen(*q, *keydata);
 
-  const BLSPublicKey ret = BLSPublicKey::FromG1(q);
+  const CPubKey ret = CPubKey::FromG1(q);
   BLSUtil::SecFree(*q);
   return ret;
 }
 
-bool operator==(const BLSPrivateKey& a, const BLSPrivateKey& b) {
+bool operator==(const CPrivKey& a, const CPrivKey& b) {
   BLS::AssertInitialized();
   return bn_cmp(*a.keydata, *b.keydata) == CMP_EQ;
 }
 
-bool operator!=(const BLSPrivateKey& a, const BLSPrivateKey& b) {
+bool operator!=(const CPrivKey& a, const CPrivKey& b) {
   BLS::AssertInitialized();
   return !(a == b);
 }
 
-BLSPrivateKey& BLSPrivateKey::operator=(const BLSPrivateKey& rhs) {
+CPrivKey& CPrivKey::operator=(const CPrivKey& rhs) {
   BLS::AssertInitialized();
   BLSUtil::SecFree(keydata);
   AllocateKeyData();
@@ -102,47 +102,47 @@ BLSPrivateKey& BLSPrivateKey::operator=(const BLSPrivateKey& rhs) {
   return *this;
 }
 
-size_t BLSPrivateKey::size() const {
+size_t CPrivKey::size() const {
   BLS::AssertInitialized();
-  return BLSPrivateKey::PRIVATE_KEY_SIZE;
+  return CPrivKey::PRIVATE_KEY_SIZE;
 }
 
-uint8_t* BLSPrivateKey::begin() const {
+uint8_t* CPrivKey::begin() const {
   BLS::AssertInitialized();
   return reinterpret_cast<uint8_t*>((*keydata)->dp);
 }
-uint8_t* BLSPrivateKey::end() const {
+uint8_t* CPrivKey::end() const {
   BLS::AssertInitialized();
   return reinterpret_cast<uint8_t*>((*keydata)->dp) + size();
 }
 
-void BLSPrivateKey::Serialize(uint8_t* buffer) const {
+void CPrivKey::Serialize(uint8_t* buffer) const {
   BLS::AssertInitialized();
-  bn_write_bin(buffer, BLSPrivateKey::PRIVATE_KEY_SIZE, *keydata);
+  bn_write_bin(buffer, CPrivKey::PRIVATE_KEY_SIZE, *keydata);
 }
 
-BLSSignature BLSPrivateKey::Sign(uint8_t* msg, size_t len) const {
+Signature CPrivKey::Sign(uint8_t* msg, size_t len) const {
   BLS::AssertInitialized();
   uint8_t messageHash[BLS::MESSAGE_HASH_LEN];
   BLSUtil::Hash256(messageHash, msg, len);
   return SignPrehashed(messageHash);
 }
 
-BLSSignature BLSPrivateKey::SignPrehashed(uint8_t* messageHash) const {
+Signature CPrivKey::SignPrehashed(uint8_t* messageHash) const {
   BLS::AssertInitialized();
   relic::g2_t sig, point;
 
   g2_map(point, messageHash, BLS::MESSAGE_HASH_LEN, 0);
   g2_mul(sig, point, *keydata);
 
-  BLSSignature ret = BLSSignature::FromG2(&sig);
+  Signature ret = Signature::FromG2(&sig);
 
   ret.SetAggregationInfo(AggregationInfo::FromMsgHash(GetPublicKey(), messageHash));
 
   return ret;
 }
 
-void BLSPrivateKey::AllocateKeyData() {
+void CPrivKey::AllocateKeyData() {
   BLS::AssertInitialized();
   keydata = BLSUtil::SecAlloc<relic::bn_t>(1);
   bn_new(*keydata);  // Freed in destructor

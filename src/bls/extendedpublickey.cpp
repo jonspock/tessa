@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "extendedpublickey.hpp"
-#include "bls.hpp"
-#include "blsutil.hpp"
-#include "extendedprivatekey.hpp"
+#include "extendedpublickey.h"
+#include "bls.h"
+#include "blsutil.h"
+#include "extendedprivatekey.h"
 #include <string>
 
 ExtendedPublicKey ExtendedPublicKey::FromBytes(const uint8_t *serialized) {
@@ -28,7 +28,7 @@ ExtendedPublicKey ExtendedPublicKey::FromBytes(const uint8_t *serialized) {
   const uint8_t *pkPointer = ccPointer + ChainCode::CHAIN_CODE_SIZE;
 
   ExtendedPublicKey epk(version, depth, parentFingerprint, childNumber, ChainCode::FromBytes(ccPointer),
-                        BLSPublicKey::FromBytes(pkPointer));
+                        CPubKey::FromBytes(pkPointer));
   return epk;
 }
 
@@ -38,7 +38,7 @@ ExtendedPublicKey ExtendedPublicKey::PublicChild(uint32_t i) const {
   uint32_t cmp = (1 << 31);
   if (i >= cmp) { throw std::string("Cannot derive hardened children from public key"); }
   if (depth >= 255) { throw std::string("Cannot go further than 255 levels"); }
-  uint8_t ILeft[BLSPrivateKey::PRIVATE_KEY_SIZE];
+  uint8_t ILeft[CPrivKey::PRIVATE_KEY_SIZE];
   uint8_t IRight[ChainCode::CHAIN_CODE_SIZE];
 
   // Chain code is used as hmac key
@@ -46,7 +46,7 @@ ExtendedPublicKey ExtendedPublicKey::PublicChild(uint32_t i) const {
   chainCode.Serialize(hmacKey);
 
   // Public key serialization, i serialization, and one 0 or 1 byte
-  size_t inputLen = BLSPublicKey::PUBLIC_KEY_SIZE + 4 + 1;
+  size_t inputLen = CPubKey::PUBLIC_KEY_SIZE + 4 + 1;
 
   // Hmac input includes sk or pk, int i, and byte with 0 or 1
   uint8_t hmacInput[inputLen];
@@ -54,7 +54,7 @@ ExtendedPublicKey ExtendedPublicKey::PublicChild(uint32_t i) const {
   // Fill the input with the required data
   pk.Serialize(hmacInput);
   hmacInput[inputLen - 1] = 0;
-  BLSUtil::IntToFourBytes(hmacInput + BLSPublicKey::PUBLIC_KEY_SIZE, i);
+  BLSUtil::IntToFourBytes(hmacInput + CPubKey::PUBLIC_KEY_SIZE, i);
 
   relic::md_hmac(ILeft, hmacInput, inputLen, hmacKey, ChainCode::CHAIN_CODE_SIZE);
 
@@ -65,7 +65,7 @@ ExtendedPublicKey ExtendedPublicKey::PublicChild(uint32_t i) const {
 
   relic::bn_t leftSk;
   bn_new(leftSk);
-  bn_read_bin(leftSk, ILeft, BLSPrivateKey::PRIVATE_KEY_SIZE);
+  bn_read_bin(leftSk, ILeft, CPrivKey::PRIVATE_KEY_SIZE);
 
   relic::bn_t order;
   bn_new(order);
@@ -78,7 +78,7 @@ ExtendedPublicKey ExtendedPublicKey::PublicChild(uint32_t i) const {
   g1_add(newPk, newPk, oldPk);
 
   ExtendedPublicKey epk(version, depth + 1, GetPublicKey().GetFingerprint(), i, ChainCode::FromBytes(IRight),
-                        BLSPublicKey::FromG1(&newPk));
+                        CPubKey::FromG1(&newPk));
 
   return epk;
 }
@@ -93,7 +93,7 @@ uint32_t ExtendedPublicKey::GetChildNumber() const { return childNumber; }
 
 ChainCode ExtendedPublicKey::GetChainCode() const { return chainCode; }
 
-BLSPublicKey ExtendedPublicKey::GetPublicKey() const { return pk; }
+CPubKey ExtendedPublicKey::GetPublicKey() const { return pk; }
 
 // Comparator implementation.
 bool operator==(ExtendedPublicKey const &a, ExtendedPublicKey const &b) {

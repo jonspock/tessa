@@ -188,6 +188,7 @@ add_library(mac_stuff
 	macnotificationhandler.mm
 	)
 set_property(TARGET mac_stuff PROPERTY CXX_STANDARD 11)
+set(MAC_LIBS mac_stuff)
 endif()
 
 
@@ -220,14 +221,10 @@ add_dependencies(tessa-qt translations_target)
 set_property(TARGET tessa-qt PROPERTY CXX_STANDARD 11)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  # ORIG TARGET_LINK_LIBRARIES(tessa-qt coin qt_stuff mac_stuff db_cxx db secp256k1 bitcoin_crypto zerocoin rocksdb ${Boost_LIBRARIES} ${ANL} qrencode miniupnpc /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a pthread "-framework Cocoa")
-
-# STATIC LINK SPECIFIC FOR MAC-DEPLOY TARGET
-  
-## Ref  TARGET_LINK_LIBRARIES(tessa-qt coin qt_stuff mac_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb ${Boost_LIBRARIES} ${ANL} /usr/local/opt/protobuf/lib/libprotobuf.a /usr/local/lib/libqrencode.a /usr/local/lib/libminiupnpc.a /usr/local/lib/libevent.a /usr/local/lib/libevent_pthreads.a  /usr/local/lib/libzmq.a "-framework Cocoa")
-  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff mac_stuff ${Qt5_LIBRARIES} qrencode /usr/local/lib/libzmq.a "-framework Cocoa")
+  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} qrencode /usr/local/lib/libzmq.a "-framework Cocoa")
 else()
-	TARGET_LINK_LIBRARIES(tessa-qt coin qt_stuff ${Qt5_LIBRARIES} lmdb secp256k1 gmp zerocoin rocksdb ${Boost_LIBRARIES} ${ANL} miniupnpc qrencode event event_pthreads pthread )
+  # Review list here
+	TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${Qt5_LIBRARIES} ${ANL} miniupnpc qrencode event event_pthreads pthread)
 endif()
 
 #############################################################

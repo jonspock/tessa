@@ -21,7 +21,7 @@ namespace relic {
 #include "relic_test.h"
 }  // namespace relic
 
-#include "blsutil.hpp"
+#include "blsutil.h"
 
 class ChainCode {
  public:

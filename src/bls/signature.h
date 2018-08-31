@@ -14,39 +14,38 @@
 
 #pragma once
 
-#include <iostream>
 #include <vector>
 
-#include "aggregationinfo.hpp"
-#include "blsutil.hpp"
+#include "aggregationinfo.h"
+#include "blsutil.h"
 
 /**
  * An encapsulated signature.
- * A BLSSignature is composed of two things:
+ * A Signature is composed of two things:
  *     1. 96 byte group element of g2
  *     2. AggregationInfo object, which describes how the signature was
  *        generated, and how it should be verified.
  */
-class BLSSignature {
+class Signature {
  public:
   static const size_t SIGNATURE_SIZE = 96;
 
   // Initializes from serialized byte array/
-  static BLSSignature FromBytes(const uint8_t *data);
+  static Signature FromBytes(const uint8_t *data);
 
   // Initializes from bytes with AggregationInfo/
-  static BLSSignature FromBytes(const uint8_t *data, const AggregationInfo &info);
+  static Signature FromBytes(const uint8_t *data, const AggregationInfo &info);
 
   // Initializes from native relic g2 element/
-  static BLSSignature FromG2(relic::g2_t *element);
+  static Signature FromG2(relic::g2_t *element);
 
   // Copy constructor. Deep copies contents.
-  BLSSignature(const BLSSignature &signature);
+  Signature(const Signature &signature);
 
   // Divides the aggregate signature (this) by a list of signatures.
   // These divisors can be single or aggregate signatures, but all
   // msg/pk pairs in these signatures must be distinct and unique.
-  BLSSignature DivideBy(std::vector<BLSSignature> const &divisorSigs) const;
+  Signature DivideBy(std::vector<Signature> const &divisorSigs) const;
 
   // Gets the native relic point for this signature.
   void GetPoint(relic::g2_t output) const;
@@ -68,21 +67,21 @@ class BLSSignature {
   // the aggregation info.
   void Serialize(uint8_t *buffer) const;
 
-  friend bool operator==(BLSSignature const &a, BLSSignature const &b);
-  friend bool operator!=(BLSSignature const &a, BLSSignature const &b);
-  friend bool operator<(BLSSignature const &a, BLSSignature const &b);
-  friend std::ostream &operator<<(std::ostream &os, BLSSignature const &s);
-  BLSSignature &operator=(const BLSSignature &rhs);
+  friend bool operator==(Signature const &a, Signature const &b);
+  friend bool operator!=(Signature const &a, Signature const &b);
+  friend bool operator<(Signature const &a, Signature const &b);
+  friend std::ostream &operator<<(std::ostream &os, Signature const &s);
+  Signature &operator=(const Signature &rhs);
 
  private:
   // Prevent public construction, force static method
-  BLSSignature() {}
+  Signature() {}
 
   static void CompressPoint(uint8_t *result, relic::g2_t *point);
 
   // Signature group element
   relic::g2_t sig;
-  uint8_t data[BLSSignature::SIGNATURE_SIZE];
+  uint8_t data[Signature::SIGNATURE_SIZE];
 
   // Optional info about how this was aggregated
   AggregationInfo aggregationInfo;

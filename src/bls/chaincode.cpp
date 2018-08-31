@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "chaincode.hpp"
-#include "bls.hpp"
+#include "chaincode.h"
+#include "bls.h"
 
 ChainCode ChainCode::FromBytes(const uint8_t *bytes) {
   BLS::AssertInitialized();

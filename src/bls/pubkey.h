@@ -14,24 +14,22 @@
 
 #pragma once
 
-#include <iostream>
 #include <vector>
-
-#include "blsutil.hpp"
+#include "blsutil.h"
 
 /** An encapsulated public key. */
-class BLSPublicKey {
+class CPubKey {
  public:
   static const size_t PUBLIC_KEY_SIZE = 48;
 
   // Construct a public key from a byte vector.
-  static BLSPublicKey FromBytes(const uint8_t *key);
+  static CPubKey FromBytes(const uint8_t *key);
 
   // Construct a public key from a native g1 element.
-  static BLSPublicKey FromG1(const relic::g1_t *key);
+  static CPubKey FromG1(const relic::g1_t *key);
 
   // Construct a public key from another public key.
-  BLSPublicKey(const BLSPublicKey &pubKey);
+  CPubKey(const CPubKey &pubKey);
 
   // Simple read-only vector-like interface to the pubkey data.
   size_t size() const;
@@ -40,10 +38,10 @@ class BLSPublicKey {
   const uint8_t &operator[](size_t pos) const;
 
   // Comparator implementation.
-  friend bool operator==(BLSPublicKey const &a, BLSPublicKey const &b);
-  friend bool operator!=(BLSPublicKey const &a, BLSPublicKey const &b);
-  friend bool operator<(BLSPublicKey const &a, BLSPublicKey const &b);
-  friend std::ostream &operator<<(std::ostream &os, BLSPublicKey const &s);
+  friend bool operator==(CPubKey const &a, CPubKey const &b);
+  friend bool operator!=(CPubKey const &a, CPubKey const &b);
+  friend bool operator<(CPubKey const &a, CPubKey const &b);
+  friend std::ostream &operator<<(std::ostream &os, CPubKey const &s);
 
   void Serialize(uint8_t *buffer) const;
   void GetPoint(relic::g1_t &output) const { *output = *q; }
@@ -53,12 +51,12 @@ class BLSPublicKey {
 
  private:
   // Don't allow public construction, force static methods
-  BLSPublicKey() {}
+  CPubKey() {}
 
   static void CompressPoint(uint8_t *result, const relic::g1_t *point);
 
   // Public key group element
   relic::g1_t q;
-  uint8_t data[BLSPublicKey::PUBLIC_KEY_SIZE];
+  uint8_t data[CPubKey::PUBLIC_KEY_SIZE];
 };
 

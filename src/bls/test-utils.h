@@ -14,7 +14,7 @@
 
 #include <chrono>
 #include <string>
-#include "bls.hpp"
+#include "bls.h"
 
 using std::string;
 using std::vector;

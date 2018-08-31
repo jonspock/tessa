@@ -14,11 +14,11 @@
 
 #pragma once
 
-#include "aggregationinfo.hpp"
-#include "blsprivatekey.hpp"
-#include "blspublickey.hpp"
-#include "blssignature.hpp"
-#include "extendedprivatekey.hpp"
+#include "aggregationinfo.h"
+#include "privkey.h"
+#include "pubkey.h"
+#include "signature.h"
+#include "extendedprivatekey.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -49,37 +49,37 @@ class BLS {
   // which may be identical. The signature can then be verified
   // using VerifyAggregate. The returned signature contains
   // information on how the aggregation was done (AggragationInfo).
-  static BLSSignature AggregateSigs(std::vector<BLSSignature> const &sigs);
+  static Signature AggregateSigs(std::vector<Signature> const &sigs);
 
   // Verifies a single or aggregate signature.
   // Performs two pairing operations, sig must contain information on
   // how aggregation was performed (AggregationInfo). The Aggregation
   // Info contains all the public keys and messages required.
-  static bool Verify(const BLSSignature &sig);
+  static bool Verify(const Signature &sig);
 
   // Creates a combined public/private key that can be used to create
   // or verify aggregate signatures on the same message
-  static BLSPublicKey AggregatePubKeys(std::vector<BLSPublicKey> const &pubKeys, bool secure);
-  static BLSPrivateKey AggregatePrivKeys(std::vector<BLSPrivateKey> const &privateKeys,
-                                         std::vector<BLSPublicKey> const &pubKeys, bool secure);
+  static CPubKey AggregatePubKeys(std::vector<CPubKey> const &pubKeys, bool secure);
+  static CPrivKey AggregatePrivKeys(std::vector<CPrivKey> const &privateKeys,
+                                         std::vector<CPubKey> const &pubKeys, bool secure);
 
   // Used for secure aggregation
-  static void HashPubKeys(relic::bn_t *output, size_t numOutputs, std::vector<BLSPublicKey> const &pubKeys);
+  static void HashPubKeys(relic::bn_t *output, size_t numOutputs, std::vector<CPubKey> const &pubKeys);
 
  private:
   // Efficiently aggregates many signatures using the simple aggregation
   // method. Performs only n g2 operations.
-  static BLSSignature AggregateSigsSimple(std::vector<BLSSignature> const &sigs);
+  static Signature AggregateSigsSimple(std::vector<Signature> const &sigs);
 
   // Aggregates many signatures using the secure aggregation method.
   // Performs ~ n * 256 g2 operations.
-  static BLSSignature AggregateSigsSecure(std::vector<BLSSignature> const &sigs,
-                                          std::vector<BLSPublicKey> const &pubKeys,
+  static Signature AggregateSigsSecure(std::vector<Signature> const &sigs,
+                                          std::vector<CPubKey> const &pubKeys,
                                           std::vector<uint8_t *> const &messageHashes);
 
   // Internal methods
-  static BLSSignature AggregateSigsInternal(std::vector<BLSSignature> const &sigs,
-                                            std::vector<std::vector<BLSPublicKey> > const &pubKeys,
+  static Signature AggregateSigsInternal(std::vector<Signature> const &sigs,
+                                            std::vector<std::vector<CPubKey> > const &pubKeys,
                                             std::vector<std::vector<uint8_t *> > const &messageHashes);
 
   static bool VerifyNative(relic::g2_t aggSig, relic::g1_t *pubKeys, relic::g2_t *mappedHashes, size_t len);
