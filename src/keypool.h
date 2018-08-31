@@ -1,6 +1,10 @@
 #pragma once
-#include "ecdsa/pubkey.h"
+
 #include "serialize.h"
+
+namespace ecdsa {
+  class CPubKey;
+}
 
 /** A key pool entry */
 class CKeyPool {

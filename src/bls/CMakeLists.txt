@@ -27,3 +27,7 @@ add_executable(runbench test-bench.cpp)
 
 target_link_libraries(runtest bls relic_s sodium)
 target_link_libraries(runbench bls relic_s sodium)
+
+#add_executable(bls_keytests  bls_key_tests.cpp)
+#target_link_libraries(bls_keytests coin secp256k1 ecdsa ${Boost_LIBRARIES} event pthread gmp sodium) 
+

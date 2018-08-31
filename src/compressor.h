@@ -11,8 +11,11 @@
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "serialize.h"
-#include "ecdsa/key.h"
-#include "ecdsa/pubkey.h"
+
+namespace ecdsa {
+  class CPubKey;
+  class CKeyID;
+}
 
 class CScriptID;
 

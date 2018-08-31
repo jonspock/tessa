@@ -7,9 +7,16 @@
 #ifndef BITCOIN_KEYSTORE_H
 #define BITCOIN_KEYSTORE_H
 
-#include "ecdsa/key.h"
-#include "ecdsa/pubkey.h"
+#include "support/allocators/secure.h"
 #include "sync.h"
+#include <cstdint>
+#include <set>
+
+namespace ecdsa {
+  class CPubKey;
+  class CKey;
+  class CKeyID;
+}
 
 class CScript;
 class CScriptID;

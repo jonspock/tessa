@@ -7,7 +7,11 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-#include "ecdsa/pubkey.h"
+
+namespace ecdsa {
+  class CPubKey;
+}
+
 class CWallet;
 
 /** A key allocated from the key pool. */

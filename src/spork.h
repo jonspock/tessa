@@ -7,13 +7,16 @@
 #pragma once
 
 #include "base58.h"
-#include "ecdsa/key.h"
-#include "ecdsa/pubkey.h"
 #include "main.h"
 #include "net.h"
 #include "protocol.h"
 #include "sync.h"
 #include "util.h"
+
+namespace ecdsa {
+  class CPubKey;
+  class CKey;
+}
 
 class CSporkMessage;
 class CSporkManager;
