@@ -16,14 +16,18 @@
 #pragma once
 
 #include "chainparams.h"
-#include "ecdsa/key.h"
-#include "ecdsa/pubkey.h"
 #include "script/script.h"
 #include "script/standard.h"
 #include "support/allocators/zeroafterfree.h"
 
 #include <string>
 #include <vector>
+
+namespace ecdsa {
+  class CPubKey;
+  class CKey;
+  class CKeyID;
+}
 
 /**
  * Encode a byte sequence as a base58-encoded string.
