@@ -38,8 +38,6 @@ option(STLIB "Build static library" on)
 option(STBIN "Build static binaries" on)
 option(AMALG "Build amalgamation" off)
 
-
-
 if (SHOW_MESSAGES) 
   message(STATUS "Available switches (default = CHECK, VERBS, DOCUM):\n")
   
@@ -288,7 +286,9 @@ set(ALLOC "AUTO" CACHE STRING "Allocation policy")
 
 # Compiler flags.
 if("$ENV{COMP}" STREQUAL "")
-	set(COMP "-O2 -funroll-loops -fomit-frame-pointer" CACHE STRING "User-chosen compiler flags.")
+  # Not sure why CACHE used here, disable
+  # set(COMP "-O2 -funroll-loops -fomit-frame-pointer" CACHE STRING "User-chosen compiler flags.")
+  set(COMP "-O3 -funroll-loops -fomit-frame-pointer -march=native -mtune=native")
 else("$ENV{COMP}" STREQUAL "")
 	set(COMP "$ENV{COMP}" CACHE STRING "User-chosen compiler flags.")
 endif("$ENV{COMP}" STREQUAL "")
@@ -333,6 +333,8 @@ else(OPSYS STREQUAL LINUX)
 	set(TIMER "ANSI" CACHE STRING "Timer")
 endif(OPSYS STREQUAL LINUX)
 
+message(STATUS "COMP =  ${COMP}")
+
 if(DEBUG)
 	# If the user did not specify compile flags, we turn off all optimizations.
 	set(CFLAGS "-O0 -fno-omit-frame-pointer")
@@ -342,6 +344,7 @@ else(DEBUG)
 	set(CFLAGS "${COMP}")
 	set(DFLAGS "")
 endif(DEBUG)
+
 
 if(MULTI STREQUAL OPENMP)
 	find_package(OpenMP REQUIRED)
