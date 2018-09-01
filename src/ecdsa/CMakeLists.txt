@@ -10,6 +10,5 @@ add_library(ecdsa ${ECDSA_HEADERS}
 )
 
 add_executable(keytests  key_tests.cpp)
-
 target_link_libraries(keytests coin secp256k1 ecdsa ${Boost_LIBRARIES} event pthread gmp sodium) 
 
