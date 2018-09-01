@@ -1702,7 +1702,7 @@ bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
   }
 
   // for (auto& denom : zerocoinDenomList)
-  //   LogPrint(TessaLog::ZERO, "%s coins for denomination %d pubcoin %s\n", __func__, denom,
+  //   LogPrint(TessaLog::ZKP, "%s coins for denomination %d pubcoin %s\n", __func__, denom,
   //   pindex->mapZerocoinSupply.at(denom));
 
   return true;
@@ -1896,7 +1896,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime1 = GetTimeMicros();
   nTimeConnect += nTime1 - nTimeStart;
-  LogPrint(TessaLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n",
+  LogPrint(TessaLog::Bench, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n",
            (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(),
            nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
@@ -1924,7 +1924,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   if (!control.Wait()) return state.DoS(100, false);
   int64_t nTime2 = GetTimeMicros();
   nTimeVerify += nTime2 - nTimeStart;
-  LogPrint(TessaLog::BENCH, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1,
+  LogPrint(TessaLog::Bench, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1,
            0.001 * (nTime2 - nTimeStart), nInputs <= 1 ? 0 : 0.001 * (nTime2 - nTimeStart) / (nInputs - 1),
            nTimeVerify * 0.000001);
 
@@ -1995,7 +1995,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime3 = GetTimeMicros();
   nTimeIndex += nTime3 - nTime2;
-  LogPrint(TessaLog::BENCH, "    - Index writing: %.2fms [%.2fs]\n", 0.001 * (nTime3 - nTime2), nTimeIndex * 0.000001);
+  LogPrint(TessaLog::Bench, "    - Index writing: %.2fms [%.2fs]\n", 0.001 * (nTime3 - nTime2), nTimeIndex * 0.000001);
 
   // Watch for changes to the previous coinbase transaction.
   static uint256 hashPrevBestCoinBase;
@@ -2004,7 +2004,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   int64_t nTime4 = GetTimeMicros();
   nTimeCallbacks += nTime4 - nTime3;
-  LogPrint(TessaLog::BENCH, "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
+  LogPrint(TessaLog::Bench, "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
 
   // Remove zerocoinspends from the pending map
   for (const uint256& txid : vSpendsInBlock) {
@@ -2118,7 +2118,7 @@ bool static DisconnectTip(CValidationState& state) {
       return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
     assert(view.Flush());
   }
-  LogPrint(TessaLog::BENCH, "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
+  LogPrint(TessaLog::Bench, "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
   // Write the chain state to disk, if necessary.
   if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS)) return false;
   // Resurrect mempool transactions from the disconnected block.
@@ -2167,7 +2167,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   int64_t nTime2 = GetTimeMicros();
   nTimeReadFromDisk += nTime2 - nTime1;
   int64_t nTime3;
-  LogPrint(TessaLog::BENCH, "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001,
+  LogPrint(TessaLog::Bench, "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001,
            nTimeReadFromDisk * 0.000001);
   {
     CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
@@ -2180,13 +2180,13 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     mapBlockSource.erase(inv.hash);
     nTime3 = GetTimeMicros();
     nTimeConnectTotal += nTime3 - nTime2;
-    LogPrint(TessaLog::BENCH, "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001,
+    LogPrint(TessaLog::Bench, "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001,
              nTimeConnectTotal * 0.000001);
     assert(view.Flush());
   }
   int64_t nTime4 = GetTimeMicros();
   nTimeFlush += nTime4 - nTime3;
-  LogPrint(TessaLog::BENCH, "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
+  LogPrint(TessaLog::Bench, "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
 
   // Write the chain state to disk, if necessary. Always write to disk if this is the first of a new file.
   FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
@@ -2195,7 +2195,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   if (!FlushStateToDisk(state, flushMode)) return false;
   int64_t nTime5 = GetTimeMicros();
   nTimeChainState += nTime5 - nTime4;
-  LogPrint(TessaLog::BENCH, "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001,
+  LogPrint(TessaLog::Bench, "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001,
            nTimeChainState * 0.000001);
 
   // Remove conflicting transactions from the mempool.
@@ -2213,9 +2213,9 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   int64_t nTime6 = GetTimeMicros();
   nTimePostConnect += nTime6 - nTime5;
   nTimeTotal += nTime6 - nTime1;
-  LogPrint(TessaLog::BENCH, "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001,
+  LogPrint(TessaLog::Bench, "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001,
            nTimePostConnect * 0.000001);
-  LogPrint(TessaLog::BENCH, "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
+  LogPrint(TessaLog::Bench, "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
   return true;
 }
 

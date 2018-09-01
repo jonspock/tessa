@@ -800,7 +800,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
 
         for (auto& m : listMints) {
           if (IsMyMint(m.GetValue())) {
-            LogPrint(TessaLog::ZERO, "%s: found mint\n", __func__);
+            LogPrint(TessaLog::ZKP, "%s: found mint\n", __func__);
             pwalletMain->UpdateMint(m.GetValue(), pindex->nHeight, m.GetTxHash(), m.GetDenomination());
 
             // Add the transaction to the wallet
@@ -2738,7 +2738,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
     txNew.vout.push_back(outMint);
 
     // store as CZerocoinMint for later use
-    LogPrint(TessaLog::ZERO, "%s: new mint %s\n", __func__, dMint.ToString());
+    LogPrint(TessaLog::ZKP, "%s: new mint %s\n", __func__, dMint.ToString());
     vDMints.emplace_back(dMint);
   }
 

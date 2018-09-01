@@ -86,7 +86,7 @@ void DatabaseChecksums(AccumulatorMap& mapAccumulators) {
   {
     CBigNum bnValue = mapAccumulators.GetValue(CoinDenomination::ZQ_ONE);
     uint32_t nCheckSum = GetChecksum(bnValue);
-    LogPrint(TessaLog::ZERO, "%s : checksum:%d\n", __func__, nCheckSum);
+    LogPrint(TessaLog::ZKP, "%s : checksum:%d\n", __func__, nCheckSum);
   }
 
   for (auto& denom : zerocoinDenomList) {
@@ -126,7 +126,7 @@ bool LoadAccumulatorValuesFromDB(const uint256 nCheckpoint) {
     if (!zerocoinDB->ReadAccumulatorValue(nChecksum, bnValue)) {
       if (!count(listAccCheckpointsNoDB.begin(), listAccCheckpointsNoDB.end(), nCheckpoint))
         listAccCheckpointsNoDB.push_back(nCheckpoint);
-      LogPrint(TessaLog::ZERO, "%s : Missing databased value for checksum %d", __func__, nChecksum);
+      LogPrint(TessaLog::ZKP, "%s : Missing databased value for checksum %d", __func__, nChecksum);
       return false;
     }
     mapAccumulatorValues.insert(make_pair(nChecksum, bnValue));
@@ -211,7 +211,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
   // set the accumulators to last checkpoint value
   int nHeightCheckpoint;
   mapAccumulators.Reset();
-  LogPrint(TessaLog::ZERO, "%s Reseting MapAccumulators\n", __func__);
+  LogPrint(TessaLog::ZKP, "%s Reseting MapAccumulators\n", __func__);
   if (!InitializeAccumulators(nHeight, nHeightCheckpoint, mapAccumulators))
     return error("%s: failed to initialize accumulators", __func__);
 
@@ -242,7 +242,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
       return error("%s: failed to get zerocoin mintlist from block %d", __func__, pindex->nHeight);
 
     nTotalMintsFound += listPubcoins.size();
-    LogPrint(TessaLog::ZERO, "%s found %d mints at height %d\n", __func__, listPubcoins.size(), pindex->nHeight);
+    LogPrint(TessaLog::ZKP, "%s found %d mints at height %d\n", __func__, listPubcoins.size(), pindex->nHeight);
 
     // add the pubcoins to accumulator
     for (const PublicCoin& pubcoin : listPubcoins) {
@@ -258,7 +258,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
   else
     nCheckpoint = mapAccumulators.GetCheckpoint();
 
-  LogPrint(TessaLog::ZERO, "%s checkpoint=%s\n", __func__, nCheckpoint.GetHex());
+  LogPrint(TessaLog::ZKP, "%s checkpoint=%s\n", __func__, nCheckpoint.GetHex());
   return true;
 }
 
@@ -371,7 +371,7 @@ bool GetAccumulatorValue(int& nHeight, const libzerocoin::CoinDenomination denom
 
 bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator, AccumulatorWitness& witness,
                                 int nSecurityLevel, int& nMintsAdded, string& strError, CBlockIndex* pindexCheckpoint) {
-  LogPrint(TessaLog::ZERO, "%s: generating\n", __func__);
+  LogPrint(TessaLog::ZKP, "%s: generating\n", __func__);
   int nLockAttempts = 0;
   while (nLockAttempts < 100) {
     TRY_LOCK(cs_main, lockMain);
@@ -383,10 +383,10 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
     break;
   }
   if (nLockAttempts == 100) return error("%s: could not get lock on cs_main", __func__);
-  LogPrint(TessaLog::ZERO, "%s: after lock\n", __func__);
+  LogPrint(TessaLog::ZKP, "%s: after lock\n", __func__);
   uint256 txid;
   if (!zerocoinDB->ReadCoinMint(coin.getValue(), txid)) return error("%s failed to read mint from db", __func__);
-  LogPrint(TessaLog::ZERO, "%s Read mint for %s from DB", __func__, coin.getValue());
+  LogPrint(TessaLog::ZKP, "%s Read mint for %s from DB", __func__, coin.getValue());
 
   CTransaction txMinted;
   uint256 hashBlock;
@@ -395,13 +395,13 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
   int nHeightTest;
   if (!IsTransactionInChain(txid, nHeightTest)) return error("%s: mint tx %s is not in chain", __func__, txid.GetHex());
 
-  LogPrint(TessaLog::ZERO, "%s Got mint for in chain %s", __func__, txid.GetHex());
+  LogPrint(TessaLog::ZKP, "%s Got mint for in chain %s", __func__, txid.GetHex());
 
   int nHeightMintAdded = mapBlockIndex[hashBlock]->nHeight;
 
   // get the checkpoint added at the next multiple of ACC_BLOCK_INTERVAL
   int nHeightCheckpoint = nHeightMintAdded + (ACC_BLOCK_INTERVAL - (nHeightMintAdded % ACC_BLOCK_INTERVAL));
-  LogPrint(TessaLog::ZERO, "%s nHeightCheckpoint %d", __func__, nHeightCheckpoint);
+  LogPrint(TessaLog::ZKP, "%s nHeightCheckpoint %d", __func__, nHeightCheckpoint);
 
   // the height to start accumulating coins to add to witness
   int nAccStartHeight = nHeightMintAdded - (nHeightMintAdded % ACC_BLOCK_INTERVAL);
@@ -430,7 +430,7 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
   libzerocoin::Accumulator witnessAccumulator = accumulator;
 
   while (pindex) {
-    LogPrint(TessaLog::ZERO, "%s Height = %d CheckPoint = %s", __func__, pindex->nHeight,
+    LogPrint(TessaLog::ZKP, "%s Height = %d CheckPoint = %s", __func__, pindex->nHeight,
              pindex->nAccumulatorCheckpoint.ToString());
     if (pindex->nHeight != nAccStartHeight && pindex->pprev->nAccumulatorCheckpoint != pindex->nAccumulatorCheckpoint)
       ++nCheckpointsAdded;
@@ -462,7 +462,7 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
 
   // calculate how many mints of this denomination existed in the accumulator we initialized
   nMintsAdded += ComputeAccumulatedCoins(nAccStartHeight, coin.getDenomination());
-  LogPrint(TessaLog::ZERO, "%s : %d mints added to witness\n", __func__, nMintsAdded);
+  LogPrint(TessaLog::ZKP, "%s : %d mints added to witness\n", __func__, nMintsAdded);
 
   return true;
 }

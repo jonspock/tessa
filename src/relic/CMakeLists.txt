@@ -382,8 +382,7 @@ message(STATUS "Compiler flags: ${CMAKE_C_FLAGS}")
 message(STATUS "Linker flags: ${LFLAGS}")
 
 string(TOUPPER ${ARITH} ARITH)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/relic_conf.h.in
-	${CMAKE_CURRENT_BINARY_DIR}/include/relic_conf.h @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/relic_conf.h.in ${CMAKE_BINARY_DIR}/relic_conf.h @ONLY)
 message(STATUS "Configured ${CMAKE_CURRENT_SOURCE_DIR}/include/relic_conf.h.in")
 string(TOLOWER ${ARITH} ARITH)
 

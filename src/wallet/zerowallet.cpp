@@ -42,7 +42,7 @@ CZeroWallet::CZeroWallet() {
     key.MakeNewKey(true);
     seed = key.GetPrivKey_256();
     seedMaster = seed;
-    LogPrint(TessaLog::ZERO, "%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,
+    LogPrint(TessaLog::ZKP, "%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,
              Hash(seed.begin(), seed.end()).GetHex());
   } else if (!pwalletMain->GetDeterministicSeed(hashSeed, seed)) {
     LogPrintf("%s: failed to get deterministic seed for hashseed %s\n", __func__, hashSeed.GetHex());
@@ -98,7 +98,7 @@ void CZeroWallet::GenerateZMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
   bool fFound;
 
   uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
-  LogPrint(TessaLog::ZERO, "%s : n=%d nStop=%d, diff = %d\n", __func__, n, nStop - 1, nStop - n);
+  LogPrint(TessaLog::ZKP, "%s : n=%d nStop=%d, diff = %d\n", __func__, n, nStop - 1, nStop - n);
   int64_t nTime_ref = GetTimeMillis();
   for (uint32_t i = n; i < nStop; ++i) {
     if (ShutdownRequested()) return;
@@ -123,7 +123,7 @@ void CZeroWallet::GenerateZMintPool(uint32_t nCountStart, uint32_t nCountEnd) {
     mintPool.Add(bnValue, i);
     gWalletDB.WriteMintPoolPair(hashSeed, GetPubCoinHash(bnValue), i);
     int64_t now = GetTimeMillis();
-    LogPrint(TessaLog::ZERO, "%s : %s count=%d, time total= %d (ms), this coin time = %d (ms)\n", __func__,
+    LogPrint(TessaLog::ZKP, "%s : %s count=%d, time total= %d (ms), this coin time = %d (ms)\n", __func__,
              bnValue.GetHex().substr(0, 6), i, now - nTime_ref, now - nTime_delta);
   }
 }
@@ -157,7 +157,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
   while (found) {
     found = false;
     if (fGenerateMintPool) GenerateZMintPool();
-    LogPrint(TessaLog::ZERO, "%s: Mintpool size=%d\n", __func__, mintPool.size());
+    LogPrint(TessaLog::ZKP, "%s: Mintpool size=%d\n", __func__, mintPool.size());
 
     std::set<uint256> setChecked;
     list<pair<uint256, uint32_t> > listMints = mintPool.List();
@@ -177,7 +177,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
       CZerocoinMint mint;
       if (zerocoinDB->ReadCoinMint(pMint.first, txHash)) {
         // this mint has already occurred on the chain, increment counter's state to reflect this
-        LogPrint(TessaLog::ZERO, "%s : Found wallet coin mint=%s count=%d tx=%s\n", __func__, pMint.first.GetHex(),
+        LogPrint(TessaLog::ZKP, "%s : Found wallet coin mint=%s count=%d tx=%s\n", __func__, pMint.first.GetHex(),
                  pMint.second, txHash.GetHex());
         found = true;
 
@@ -237,7 +237,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
         SetMintSeen(bnValue, pindex->nHeight, txHash, denomination);
         nLastCountUsed = std::max(pMint.second, nLastCountUsed);
         nCountLastUsed = std::max(nLastCountUsed, nCountLastUsed);
-        LogPrint(TessaLog::ZERO, "%s: updated count to %d\n", __func__, nCountLastUsed);
+        LogPrint(TessaLog::ZKP, "%s: updated count to %d\n", __func__, nCountLastUsed);
       }
     }
   }

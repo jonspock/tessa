@@ -87,7 +87,7 @@
 #define WORD     @WORD@
 
 /** Byte boundary to align digit vectors. */
-#define ALIGN    @ALIGN@
+//#define ALIGN    @ALIGN@
 
 /** Build multiple precision integer module. */
 #cmakedefine WITH_BN
