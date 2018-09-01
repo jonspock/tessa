@@ -27,6 +27,7 @@ namespace ecdsa {
   class CPubKey;
   class CKey;
   class CKeyID;
+  struct CExtKey;
 }
 
 /**

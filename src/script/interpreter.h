@@ -13,7 +13,10 @@
 #include <string>
 #include <vector>
 
-#include "ecdsa/pubkey.h"
+namespace ecdsa {
+  class CPubKey;
+}
+
 class CScript;
 class CTransaction;
 class uint256;
