@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
 class CNetAddr;

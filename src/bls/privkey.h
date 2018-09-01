@@ -37,7 +37,7 @@ class CPrivKey {
 
   ~CPrivKey();
 
-  CPubKey GetPublicKey() const;
+  bls12_381::CPubKey GetPublicKey() const;
 
   // Compare to different private key
   friend bool operator==(const CPrivKey& a, const CPrivKey& b);
@@ -52,15 +52,45 @@ class CPrivKey {
   relic::bn_t* GetValue() const { return keydata; }
 
   // Serialize the key into bytes
-  void Serialize(uint8_t* buffer) const;
+  // void Serialize(uint8_t* buffer) const;
+
+  //! Implement serialization, as if this was a byte vector.
+  unsigned int GetSerializeSize() const { return size() + 1; }
+  template <typename Stream> void Serialize(Stream& s) const {
+    /*
+    unsigned int len = size();
+    ::WriteCompactSize(s, len);
+    // TBD s.write((char*)vch, len);
+    */
+  }
+  template <typename Stream> void Unserialize(Stream& s) {
+    /*
+    unsigned int len = ::ReadCompactSize(s);
+    if (len <= PRIVATE_KEY_SIZE) {
+      // TBD s.read((char*)vch, len);
+    } else {
+      // invalid pubkey, skip available data
+      char dummy;
+      //while (len--) s.read(&dummy, 1);
+      //Invalidate();
+    }
+    */
+  }
+
 
   // Sign a message
-  Signature Sign(uint8_t* msg, size_t len) const;
-  Signature SignPrehashed(uint8_t* hash) const;
+  bls12_381::Signature Sign(uint8_t* msg, size_t len) const;
+  bls12_381::Signature SignPrehashed(uint8_t* hash) const;
 
- private:
-  // Don't allow public construction, force static methods
+  // FOR NOW : ALLOW : Don't allow public construction, force static methods
   CPrivKey() {}
+
+  void clear() {
+    //BLS::AssertInitialized();
+    BLSUtil::SecFree(keydata);
+  }
+  
+  //private:
 
   // The actual byte data
   relic::bn_t* keydata;
@@ -68,3 +98,5 @@ class CPrivKey {
   // Allocate memory for private key
   void AllocateKeyData();
 };
+
+

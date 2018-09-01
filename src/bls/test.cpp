@@ -22,6 +22,8 @@ using std::vector;
 using std::cout;
 using std::endl;
 
+using namespace bls12_381;
+
 TEST_CASE("Key generation") {
     SECTION("Should generate a keypair from a seed") {
         uint8_t seed[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -89,7 +91,7 @@ TEST_CASE("Signatures") {
         CPrivKey sk2 = CPrivKey(sk1);
 
         uint8_t skBytes[CPrivKey::PRIVATE_KEY_SIZE];
-        sk2.Serialize(skBytes);
+        //        sk2.Serialize(skBytes);
         CPrivKey sk4 = CPrivKey::FromBytes(skBytes);
 
         CPubKey pk2 = CPubKey(pk1);
@@ -145,12 +147,12 @@ TEST_CASE("Signatures") {
 
         uint8_t* skData = BLSUtil::SecAlloc<uint8_t>(
                 Signature::SIGNATURE_SIZE);
-        sk1.Serialize(skData);
+        //        sk1.Serialize(skData);
         CPrivKey sk2 = CPrivKey::FromBytes(skData);
         REQUIRE(sk1 == sk2);
 
         uint8_t pkData[CPubKey::PUBLIC_KEY_SIZE];
-        pk1.Serialize(pkData);
+        //        pk1.Serialize(pkData);
 
         CPubKey pk2 = CPubKey::FromBytes(pkData);
         REQUIRE(pk1 == pk2);
@@ -158,7 +160,7 @@ TEST_CASE("Signatures") {
         Signature sig1 = sk1.Sign(message1, sizeof(message1));
 
         uint8_t sigData[Signature::SIGNATURE_SIZE];
-        sig1.Serialize(sigData);
+        //        sig1.Serialize(sigData);
 
         Signature sig2 = Signature::FromBytes(sigData);
         REQUIRE(sig1 == sig2);
@@ -175,7 +177,7 @@ TEST_CASE("Signatures") {
         CPrivKey sk1 = CPrivKey::FromSeed(seed, 32);
         uint8_t* skData = BLSUtil::SecAlloc<uint8_t>(
                 Signature::SIGNATURE_SIZE);
-        sk1.Serialize(skData);
+        //        sk1.Serialize(skData);
         skData[0] = 255;
         REQUIRE_THROWS(CPrivKey::FromBytes(skData));
 
@@ -595,7 +597,7 @@ TEST_CASE("HD keys") {
                           .PrivateChild(70)
                           .PrivateChild(4);
         uint8_t chainCode[32];
-        eskLong.GetChainCode().Serialize(chainCode);
+        //        eskLong.GetChainCode().Serialize(chainCode);
     }
 
 
@@ -689,9 +691,9 @@ TEST_CASE("HD keys") {
         uint8_t buffer2[ExtendedPublicKey::EXTENDED_PUBLIC_KEY_SIZE];
         uint8_t buffer3[ExtendedPublicKey::EXTENDED_PUBLIC_KEY_SIZE];
 
-        sk3.Serialize(buffer1);
-        sk3.GetExtendedPublicKey().Serialize(buffer2);
-        pk4.Serialize(buffer3);
+        //        sk3.Serialize(buffer1);
+        //        sk3.GetExtendedPublicKey().Serialize(buffer2);
+        //        pk4.Serialize(buffer3);
         REQUIRE(std::memcmp(buffer2, buffer3,
                 ExtendedPublicKey::EXTENDED_PUBLIC_KEY_SIZE) == 0);
     }
@@ -876,7 +878,7 @@ TEST_CASE("AggregationInfo") {
         }
         REQUIRE(BLS::Verify(aggSig));
         uint8_t sigSerialized[Signature::SIGNATURE_SIZE];
-        aggSig.Serialize(sigSerialized);
+        //aggSig.Serialize(sigSerialized);
 
         const Signature aggSig2 = Signature::FromBytes(sigSerialized);
         REQUIRE(BLS::Verify(aggSig2) == false);
@@ -951,9 +953,9 @@ TEST_CASE("AggregationInfo") {
         uint8_t pkBytes[CPubKey::PUBLIC_KEY_SIZE];    // 48 byte array
         uint8_t sigBytes[Signature::SIGNATURE_SIZE];    // 96 byte array
 
-        sk.Serialize(skBytes);   // 32 bytes
-        pk.Serialize(pkBytes);   // 48 bytes
-        sig.Serialize(sigBytes); // 96 bytes
+        //        sk.Serialize(skBytes);   // 32 bytes
+        //        pk.Serialize(pkBytes);   // 48 bytes
+        //        sig.Serialize(sigBytes); // 96 bytes
         // Takes array of 32 bytes
         sk = CPrivKey::FromBytes(skBytes);
 
@@ -1011,7 +1013,7 @@ TEST_CASE("AggregationInfo") {
         Signature aggSigFinal = BLS::AggregateSigs(sigsFinal);
 
         // Serialize the final signature
-        aggSigFinal.Serialize(sigBytes);
+        //        aggSigFinal.Serialize(sigBytes);
         // Deserialize aggregate signature
         aggSigFinal = Signature::FromBytes(sigBytes);
 

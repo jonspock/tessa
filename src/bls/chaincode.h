@@ -22,6 +22,7 @@ namespace relic {
 }  // namespace relic
 
 #include "blsutil.h"
+namespace bls12_381 {
 
 class ChainCode {
  public:
@@ -44,4 +45,4 @@ class ChainCode {
 
   relic::bn_t chainCode;
 };
-
+}

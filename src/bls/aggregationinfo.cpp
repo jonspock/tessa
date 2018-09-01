@@ -20,12 +20,14 @@
 #include <string>
 #include <utility>
 
+namespace bls12_381 {
+
 // Creates a new object, copying the messageHash and pk
 AggregationInfo AggregationInfo::FromMsgHash(const CPubKey &pk, const uint8_t *messageHash) {
   uint8_t *mapKey = new uint8_t[BLS::MESSAGE_HASH_LEN + CPubKey::PUBLIC_KEY_SIZE];
 
   std::memcpy(mapKey, messageHash, BLS::MESSAGE_HASH_LEN);
-  pk.Serialize(mapKey + BLS::MESSAGE_HASH_LEN);
+  //  pk.Serialize(mapKey + BLS::MESSAGE_HASH_LEN);
   AggregationInfo::AggregationTree tree;
   relic::bn_t *one = new relic::bn_t[1];
   bn_new(*one);
@@ -57,7 +59,7 @@ AggregationInfo AggregationInfo::FromVectors(std::vector<CPubKey> const &pubKeys
   for (size_t i = 0; i < pubKeys.size(); i++) {
     uint8_t *mapKey = new uint8_t[BLS::MESSAGE_HASH_LEN + CPubKey::PUBLIC_KEY_SIZE];
     std::memcpy(mapKey, messageHashes[i], BLS::MESSAGE_HASH_LEN);
-    pubKeys[i].Serialize(mapKey + BLS::MESSAGE_HASH_LEN);
+    //    pubKeys[i].Serialize(mapKey + BLS::MESSAGE_HASH_LEN);
     relic::bn_t *mapValue = new relic::bn_t[1];
     bn_new(*mapValue) bn_copy(*mapValue, *exponents[i]);
     tree.insert(std::make_pair(mapKey, mapValue));
@@ -124,7 +126,7 @@ void AggregationInfo::RemoveEntries(std::vector<uint8_t *> const &messages, std:
   for (size_t i = 0; i < messages.size(); i++) {
     uint8_t entry[BLS::MESSAGE_HASH_LEN + CPubKey::PUBLIC_KEY_SIZE];
     std::memcpy(entry, messages[i], BLS::MESSAGE_HASH_LEN);
-    pubKeys[i].Serialize(entry + BLS::MESSAGE_HASH_LEN);
+    //    pubKeys[i].Serialize(entry + BLS::MESSAGE_HASH_LEN);
     auto kv = tree.find(entry);
     const uint8_t *first = kv->first;
     const relic::bn_t *second = kv->second;
@@ -141,7 +143,7 @@ void AggregationInfo::RemoveEntries(std::vector<uint8_t *> const &messages, std:
 void AggregationInfo::GetExponent(relic::bn_t *result, const uint8_t *messageHash, const CPubKey &pubKey) const {
   uint8_t mapKey[BLS::MESSAGE_HASH_LEN + CPubKey::PUBLIC_KEY_SIZE];
   std::memcpy(mapKey, messageHash, BLS::MESSAGE_HASH_LEN);
-  pubKey.Serialize(mapKey + BLS::MESSAGE_HASH_LEN);
+  //  pubKey.Serialize(mapKey + BLS::MESSAGE_HASH_LEN);
   bn_copy(*result, *tree.at(mapKey));
 }
 
@@ -170,8 +172,8 @@ bool operator<(AggregationInfo const &a, AggregationInfo const &b) {
     uint8_t bufferB[BLS::MESSAGE_HASH_LEN + CPubKey::PUBLIC_KEY_SIZE];
     std::memcpy(bufferA, a.sortedMessageHashes[i], BLS::MESSAGE_HASH_LEN);
     std::memcpy(bufferB, b.sortedMessageHashes[i], BLS::MESSAGE_HASH_LEN);
-    a.sortedPubKeys[i].Serialize(bufferA + BLS::MESSAGE_HASH_LEN);
-    b.sortedPubKeys[i].Serialize(bufferB + BLS::MESSAGE_HASH_LEN);
+    //    a.sortedPubKeys[i].Serialize(bufferA + BLS::MESSAGE_HASH_LEN);
+    //    b.sortedPubKeys[i].Serialize(bufferB + BLS::MESSAGE_HASH_LEN);
     if (std::memcmp(bufferA, bufferB, BLS::MESSAGE_HASH_LEN + CPubKey::PUBLIC_KEY_SIZE) < 0) {
       lessThan = true;
       break;
@@ -333,3 +335,5 @@ void AggregationInfo::Clear() {
 AggregationInfo::AggregationInfo() {}
 
 AggregationInfo::~AggregationInfo() { Clear(); }
+
+}

@@ -16,6 +16,8 @@
 #include "bls.h"
 #include "test-utils.h"
 
+using namespace bls12_381;
+
 using std::string;
 using std::vector;
 using std::cout;
@@ -29,7 +31,7 @@ void benchSigs() {
     CPrivKey sk = CPrivKey::FromSeed(seed, 32);
     CPubKey pk = sk.GetPublicKey();
     uint8_t message1[48];
-    pk.Serialize(message1);
+    //    pk.Serialize(message1);
 
     auto start = startStopwatch();
 
@@ -145,7 +147,7 @@ void benchAggregateSigsSimple() {
 
         CPrivKey sk = CPrivKey::FromSeed(seed, 32);
         const CPubKey pk = sk.GetPublicKey();
-        pk.Serialize(message);
+        //        pk.Serialize(message);
         sks.push_back(sk);
         sigs.push_back(sk.Sign(message, sizeof(message)));
     }

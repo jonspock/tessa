@@ -28,6 +28,8 @@ namespace relic {
 #include "relic_test.h"
 }  // namespace relic
 
+namespace bls12_381 {
+
 /*
  * Principal class for verification and signature aggregation.
  * Include this file to use the library.
@@ -86,3 +88,4 @@ class BLS {
 
   static void CheckRelicErrors();
 };
+}

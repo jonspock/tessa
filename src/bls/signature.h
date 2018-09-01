@@ -19,6 +19,7 @@
 #include "aggregationinfo.h"
 #include "blsutil.h"
 
+namespace bls12_381 {
 /**
  * An encapsulated signature.
  * A Signature is composed of two things:
@@ -73,7 +74,7 @@ class Signature {
   friend std::ostream &operator<<(std::ostream &os, Signature const &s);
   Signature &operator=(const Signature &rhs);
 
- private:
+  //private:
   // Prevent public construction, force static method
   Signature() {}
 
@@ -86,3 +87,5 @@ class Signature {
   // Optional info about how this was aggregated
   AggregationInfo aggregationInfo;
 };
+
+}

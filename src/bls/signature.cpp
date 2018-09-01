@@ -21,6 +21,8 @@ using std::string;
 using relic::bn_t;
 using relic::fp_t;
 
+namespace bls12_381 {
+
 Signature Signature::FromBytes(const uint8_t *data) {
     BLS::AssertInitialized();
     Signature sigObj = Signature();
@@ -199,3 +201,4 @@ void Signature::CompressPoint(uint8_t* result, relic::g2_t* point) {
     std::memcpy(result, buffer + 1, SIGNATURE_SIZE);
 }
 
+}

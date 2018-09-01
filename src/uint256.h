@@ -10,7 +10,7 @@
 #include <crypto/common.h>
 #include <cstring>
 #include <stdexcept>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 

@@ -8,7 +8,7 @@
 #ifndef BITCOIN_MINER_H
 #define BITCOIN_MINER_H
 
-#include <stdint.h>
+#include <cstdint>
 
 class CBlock;
 class CBlockHeader;

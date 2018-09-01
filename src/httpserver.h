@@ -7,7 +7,7 @@
 
 #include <boost/thread.hpp>
 #include <functional>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 static const int DEFAULT_HTTP_THREADS = 4;

@@ -6,8 +6,8 @@
 #define CATCH_CONFIG_RUNNER
 #include "catch.hpp"
 
-#include "pubkey.h"
-#include "privkey.h"
+#include "bls/pubkey.h"
+#include "bls/privkey.h"
 
 #include "base58.h"
 #include "script/script.h"
@@ -19,7 +19,7 @@
 #include <vector>
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls12_381;
 
 static const string strSecret1     ("87vK7Vayi3QLsuiva5yWSuVwSMhMcRM9dBsaD6JXMD1P5vnjRFn");
 static const string strSecret2     ("87FGYGFDg5SYfdD4XL593hr7do6f52czPecVsYSAXi8N4RGeS9i");

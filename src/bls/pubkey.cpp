@@ -19,6 +19,8 @@
 #include "pubkey.h"
 #include "blsutil.h"
 
+namespace bls12_381 {
+
 CPubKey CPubKey::FromBytes(const uint8_t *key) {
   BLS::AssertInitialized();
   CPubKey pk = CPubKey();
@@ -59,10 +61,12 @@ const uint8_t *CPubKey::end() const { return data + size(); }
 
 const uint8_t &CPubKey::operator[](size_t pos) const { return data[pos]; }
 
+/*
 void CPubKey::Serialize(uint8_t *buffer) const {
   BLS::AssertInitialized();
   std::memcpy(buffer, data, PUBLIC_KEY_SIZE);
 }
+*/
 
 // Comparator implementation.
 bool operator==(CPubKey const &a, CPubKey const &b) {
@@ -96,4 +100,6 @@ void CPubKey::CompressPoint(uint8_t *result, const relic::g1_t *point) {
 
   if (buffer[0] == 0x03) { buffer[1] |= 0x80; }
   std::memcpy(result, buffer + 1, PUBLIC_KEY_SIZE);
+}
+
 }

@@ -14,6 +14,7 @@
 
 #include "chaincode.h"
 #include "bls.h"
+namespace bls12_381 {
 
 ChainCode ChainCode::FromBytes(const uint8_t *bytes) {
   BLS::AssertInitialized();
@@ -43,3 +44,5 @@ std::ostream &operator<<(std::ostream &os, ChainCode const &s) {
 }
 
 void ChainCode::Serialize(uint8_t *buffer) const { bn_write_bin(buffer, ChainCode::CHAIN_CODE_SIZE, chainCode); }
+
+}

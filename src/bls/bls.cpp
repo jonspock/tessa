@@ -20,6 +20,8 @@
 #include "bls.h"
 #include "blsutil.h"
 
+using namespace bls12_381;
+
 const char BLS::GROUP_ORDER[] = "73EDA753299D7D483339D80809A1D80553BDA402FFFE5BFEFFFFFFFF00000001";
 
 bool BLSInitResult = BLS::Init();
@@ -40,8 +42,8 @@ bool BLS::Init() {
     std::cout << "ep_param_set_any_pairf() failed";
     return false;
   }
-  if (libsodium::sodium_init() < 0) {
-    std::cout << "libsodium init failed";
+  if (sodium_init() < 0) {
+    std::cout << "sodium init failed";
     return false;
   }
   return true;
@@ -49,7 +51,7 @@ bool BLS::Init() {
 
 void BLS::AssertInitialized() {
   if (!relic::core_get()) { throw std::string("Library not initialized properly. Call BLS::Init()"); }
-  if (libsodium::sodium_init() < 0) { throw std::string("Libsodium initialization failed."); }
+  if (sodium_init() < 0) { throw std::string("Libsodium initialization failed."); }
 }
 
 void BLS::Clean() { relic::core_clean(); }
@@ -83,7 +85,7 @@ Signature BLS::AggregateSigsSecure(std::vector<Signature> const &sigs, std::vect
   for (size_t i = 0; i < pubKeys.size(); i++) {
     uint8_t *sortKey = new uint8_t[MESSAGE_HASH_LEN + CPubKey::PUBLIC_KEY_SIZE];
     std::memcpy(sortKey, messageHashes[i], MESSAGE_HASH_LEN);
-    pubKeys[i].Serialize(sortKey + BLS::MESSAGE_HASH_LEN);
+    //    pubKeys[i].Serialize(sortKey + BLS::MESSAGE_HASH_LEN);
     sigsMap.insert(std::make_pair(sortKey, sigs[i]));
     pkMap.insert(std::make_pair(sortKey, pubKeys[i]));
     sortKeysSorted.push_back(sortKey);
@@ -228,7 +230,7 @@ Signature BLS::AggregateSigsInternal(std::vector<Signature> const &sigs,
       for (size_t j = 0; j < collidingPks[i].size(); j++) {
         uint8_t *sortKey = new uint8_t[MESSAGE_HASH_LEN + CPubKey::PUBLIC_KEY_SIZE];
         std::memcpy(sortKey, collidingMessageHashes[i][j], MESSAGE_HASH_LEN);
-        collidingPks[i][j].Serialize(sortKey + BLS::MESSAGE_HASH_LEN);
+        //        collidingPks[i][j].Serialize(sortKey + BLS::MESSAGE_HASH_LEN);
         sortKeysSorted.push_back(sortKey);
       }
     }
@@ -483,7 +485,7 @@ void BLS::HashPubKeys(relic::bn_t *output, size_t numOutputs, std::vector<CPubKe
   uint8_t *pkBuffer = new uint8_t[CPubKey::PUBLIC_KEY_SIZE * (pubKeys.size())];
   relic::bn_t order;
 
-  for (size_t i = 0; i < pubKeys.size(); i++) { pubKeys[i].Serialize(pkBuffer + i * CPubKey::PUBLIC_KEY_SIZE); }
+  //  for (size_t i = 0; i < pubKeys.size(); i++) { pubKeys[i].Serialize(pkBuffer + i * CPubKey::PUBLIC_KEY_SIZE); }
 
   bn_new(order);
   g2_get_ord(order);

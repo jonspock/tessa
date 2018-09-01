@@ -20,10 +20,8 @@
 #include <sstream>
 #include <string>
 
-namespace libsodium {
 #include "sodium/core.h"
 #include "sodium/utils.h"
-}  // namespace libsodium
 
 namespace relic {
 #include "relic.h"
@@ -68,13 +66,13 @@ class BLSUtil {
    * paging to disk, and zeroes out the memory when it's freed.
    */
   template <class T> static T* SecAlloc(size_t numTs) {
-    return static_cast<T*>(libsodium::sodium_malloc(sizeof(T) * numTs));
+    return static_cast<T*>(sodium_malloc(sizeof(T) * numTs));
   }
 
   /*
    * Frees memory allocated using SecAlloc.
    */
-  static void SecFree(void* ptr) { libsodium::sodium_free(ptr); }
+  static void SecFree(void* ptr) { sodium_free(ptr); }
 
   /*
    * Converts a 32 bit int to bytes.

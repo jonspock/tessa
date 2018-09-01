@@ -18,6 +18,8 @@
 #include <cstring>
 #include <string>
 
+namespace bls12_381 {
+
 ExtendedPrivateKey ExtendedPrivateKey::FromSeed(const uint8_t* seed, size_t seedLen) {
   BLS::AssertInitialized();
 
@@ -49,8 +51,7 @@ ExtendedPrivateKey ExtendedPrivateKey::FromSeed(const uint8_t* seed, size_t seed
   bn_mod_basic(*skBn, *skBn, order);
   bn_write_bin(ILeft, CPrivKey::PRIVATE_KEY_SIZE, *skBn);
 
-  ExtendedPrivateKey esk(ExtendedPublicKey::VERSION, 0, 0, 0, ChainCode::FromBytes(IRight),
-                         CPrivKey::FromBytes(ILeft));
+  ExtendedPrivateKey esk(ExtendedPublicKey::VERSION, 0, 0, 0, ChainCode::FromBytes(IRight), CPrivKey::FromBytes(ILeft));
 
   BLSUtil::SecFree(skBn);
   BLSUtil::SecFree(ILeft);
@@ -84,7 +85,7 @@ ExtendedPrivateKey ExtendedPrivateKey::PrivateChild(uint32_t i) const {
 
   // Chain code is used as hmac key
   uint8_t hmacKey[ChainCode::CHAIN_CODE_SIZE];
-  chainCode.Serialize(hmacKey);
+  //  chainCode.Serialize(hmacKey);
 
   size_t inputLen = hardened ? CPrivKey::PRIVATE_KEY_SIZE + 4 + 1 : CPubKey::PUBLIC_KEY_SIZE + 4 + 1;
   // Hmac input includes sk or pk, int i, and byte with 0 or 1
@@ -92,10 +93,10 @@ ExtendedPrivateKey ExtendedPrivateKey::PrivateChild(uint32_t i) const {
 
   // Fill the input with the required data
   if (hardened) {
-    sk.Serialize(hmacInput);
+    // sk.Serialize(hmacInput);
     BLSUtil::IntToFourBytes(hmacInput + CPrivKey::PRIVATE_KEY_SIZE, i);
   } else {
-    sk.GetPublicKey().Serialize(hmacInput);
+    // sk.GetPublicKey().Serialize(hmacInput);
     BLSUtil::IntToFourBytes(hmacInput + CPubKey::PUBLIC_KEY_SIZE, i);
   }
   hmacInput[inputLen - 1] = 0;
@@ -159,8 +160,8 @@ ExtendedPublicKey ExtendedPrivateKey::GetExtendedPublicKey() const {
   BLSUtil::IntToFourBytes(buffer + 5, parentFingerprint);
   BLSUtil::IntToFourBytes(buffer + 9, childNumber);
 
-  chainCode.Serialize(buffer + 13);
-  sk.GetPublicKey().Serialize(buffer + 13 + ChainCode::CHAIN_CODE_SIZE);
+  // chainCode.Serialize(buffer + 13);
+  // sk.GetPublicKey().Serialize(buffer + 13 + ChainCode::CHAIN_CODE_SIZE);
 
   return ExtendedPublicKey::FromBytes(buffer);
 }
@@ -172,7 +173,7 @@ bool operator==(ExtendedPrivateKey const& a, ExtendedPrivateKey const& b) {
 }
 
 bool operator!=(ExtendedPrivateKey const& a, ExtendedPrivateKey const& b) { return !(a == b); }
-
+/*
 void ExtendedPrivateKey::Serialize(uint8_t* buffer) const {
   BLS::AssertInitialized();
   BLSUtil::IntToFourBytes(buffer, version);
@@ -182,6 +183,8 @@ void ExtendedPrivateKey::Serialize(uint8_t* buffer) const {
   chainCode.Serialize(buffer + 13);
   sk.Serialize(buffer + 13 + ChainCode::CHAIN_CODE_SIZE);
 }
+*/
 
 // Destructors in CPrivKey and ChainCode handle cleaning of memory
 ExtendedPrivateKey::~ExtendedPrivateKey() {}
+}

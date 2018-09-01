@@ -18,6 +18,8 @@
 #include "extendedprivatekey.h"
 #include <string>
 
+namespace bls12_381 {
+
 ExtendedPublicKey ExtendedPublicKey::FromBytes(const uint8_t *serialized) {
   BLS::AssertInitialized();
   uint32_t version = BLSUtil::FourBytesToInt(serialized);
@@ -43,7 +45,7 @@ ExtendedPublicKey ExtendedPublicKey::PublicChild(uint32_t i) const {
 
   // Chain code is used as hmac key
   uint8_t hmacKey[ChainCode::CHAIN_CODE_SIZE];
-  chainCode.Serialize(hmacKey);
+  //  chainCode.Serialize(hmacKey);
 
   // Public key serialization, i serialization, and one 0 or 1 byte
   size_t inputLen = CPubKey::PUBLIC_KEY_SIZE + 4 + 1;
@@ -52,7 +54,7 @@ ExtendedPublicKey ExtendedPublicKey::PublicChild(uint32_t i) const {
   uint8_t hmacInput[inputLen];
 
   // Fill the input with the required data
-  pk.Serialize(hmacInput);
+  //  pk.Serialize(hmacInput);
   hmacInput[inputLen - 1] = 0;
   BLSUtil::IntToFourBytes(hmacInput + CPubKey::PUBLIC_KEY_SIZE, i);
 
@@ -107,7 +109,7 @@ std::ostream &operator<<(std::ostream &os, ExtendedPublicKey const &a) {
   BLS::AssertInitialized();
   return os << a.GetPublicKey() << a.GetChainCode();
 }
-
+/*
 void ExtendedPublicKey::Serialize(uint8_t *buffer) const {
   BLS::AssertInitialized();
   BLSUtil::IntToFourBytes(buffer, version);
@@ -117,4 +119,7 @@ void ExtendedPublicKey::Serialize(uint8_t *buffer) const {
   chainCode.Serialize(buffer + 13);
   pk.Serialize(buffer + 13 + ChainCode::CHAIN_CODE_SIZE);
 }
+*/
 
+
+}
