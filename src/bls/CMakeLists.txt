@@ -3,6 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1.0 FATAL_ERROR)
 include_directories(
   ${INCLUDE_DIRECTORIES}
   ${CMAKE_CURRENT_SOURCE_DIR}/../relic/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../
 #  ${CMAKE_BINARY_DIR}/../relic/include
   ${CMAKE_BINARY_DIR} # for relic_conf.h
   )
