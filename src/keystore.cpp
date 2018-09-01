@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "keystore.h"
-
+#include "ecdsa/key.h"
 #include "script/script.h"
 #include "script/standard.h"
 #include "util.h"

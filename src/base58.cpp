@@ -8,7 +8,7 @@
 
 #include "hash.h"
 #include "uint256.h"
-
+#include "ecdsa/key.h"
 #include "support/cleanse.h"
 #include <assert.h>
 #include <boost/variant/apply_visitor.hpp>

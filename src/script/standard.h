@@ -5,16 +5,17 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_SCRIPT_STANDARD_H
-#define BITCOIN_SCRIPT_STANDARD_H
+#pragma once
 
 #include "script/interpreter.h"
 #include "uint256.h"
-#include "ecdsa/key.h"
-
 #include <boost/variant.hpp>
 
 #include <stdint.h>
+
+namespace ecdsa {
+  class CPubKey;
+}
 
 class CScript;
 
@@ -92,4 +93,3 @@ CScript GetScriptForDestination(const CTxDestination& dest);
 CScript GetScriptForRawPubKey(const ecdsa::CPubKey &pubkey);
 CScript GetScriptForMultisig(int nRequired, const std::vector<ecdsa::CPubKey>& keys);
 
-#endif  // BITCOIN_SCRIPT_STANDARD_H
