@@ -7,6 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "blockundo.h"
+#include "hash.h"
 #include "chainparams.h"
 #include "clientversion.h"
 #include "mainfile.h"

@@ -40,6 +40,7 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "zerochain.h"
+#include "ecdsa/ecdsa.h"
 
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"

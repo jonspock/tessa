@@ -20,6 +20,7 @@
 #include "ModulusType.h"
 #include "ecdsa/pubkey.h"
 #include "uint512.h"
+#include "hash.h"
 #include <stdexcept>
 
 using namespace std;

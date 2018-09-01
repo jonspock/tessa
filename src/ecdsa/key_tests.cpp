@@ -7,6 +7,7 @@
 #include "catch.hpp"
 
 #include "key.h"
+#include "ecdsa.h"
 
 #include "base58.h"
 #include "script/script.h"

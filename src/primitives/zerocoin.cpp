@@ -24,7 +24,7 @@ uint256 GetPubCoinHash(const CBigNum& bnValue) {
 }
 
 bool CZerocoinMint::GetKeyPair(ecdsa::CKey& key) const {
-  if (privkey.empty()) return error("%s: empty privkey %s", __func__, privkey.data());
+  if (privkey.size() == 0) return error("%s: empty privkey ", __func__);
   return key.SetPrivKey(privkey, true);
 }
 

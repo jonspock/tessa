@@ -154,7 +154,8 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	  add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
   else()
     message(STATUS "Explicitly adding define for BOOST_NO_AUTO_PTR")
-	  add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
+	  add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
+	  #add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
   endif()
 else()
 	add_definitions("-Wno-cpp -Wno-unused-function")
@@ -405,6 +406,9 @@ include_directories(
   ${GMP_INCLUDE_DIR}
   ${ROCKSDB_ROOT_DIR}/include
   ${sodium_INCLUDE_DIR}
+
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/relic/include
+  
   ${CMAKE_CURRENT_SOURCE_DIR}/src/liblmdb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
@@ -500,7 +504,7 @@ set(PP_EXT "LAZYR" CACHE STRING "")
 set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 
 add_subdirectory(src/relic)
-add_subdirectory(src/bls)
+#add_subdirectory(src/bls)
 
 SET(LIBS_LIST coin secp256k1 gmp zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
 

@@ -42,6 +42,7 @@
 #include "db.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
+#include "ecdsa/ecdsa.h"
 
 #include <fstream>
 #include <cstdint>

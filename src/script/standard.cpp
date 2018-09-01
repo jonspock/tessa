@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "script/standard.h"
-
+#include "hash.h"
 #include "ecdsa/pubkey.h"
 #include "script/script.h"
 #include "util.h"
