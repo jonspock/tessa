@@ -2652,7 +2652,7 @@ int CMerkleTx::GetTransactionLockSignatures() const {
   return -1;
 }
 
-bool CMerkleTx::IsTransactionLockTimedOut() const { return 0; }
+bool CMerkleTx::IsTransactionLockTimedOut() const { return false; }
 
 // Given a set of inputs, find the public key that contributes the most coins to the input set
 CScript GetLargestContributor(set<pair<const CWalletTx*, unsigned int> >& setCoins) {

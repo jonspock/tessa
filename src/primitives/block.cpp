@@ -61,8 +61,9 @@ uint256 CBlock::BuildMerkleTree(bool* fMutated) const {
   */
   vMerkleTree.clear();
   vMerkleTree.reserve(vtx.size() * 2 + 16);  // Safe upper bound for the number of total nodes.
-  for (std::vector<CTransaction>::const_iterator it(vtx.begin()); it != vtx.end(); ++it)
-    vMerkleTree.push_back(it->GetHash());
+  for (const auto& it : vtx) {
+    vMerkleTree.push_back(it.GetHash());
+  }
   int j = 0;
   bool mutated = false;
   for (int nSize = vtx.size(); nSize > 1; nSize = (nSize + 1) / 2) {
@@ -96,11 +97,11 @@ std::vector<uint256> CBlock::GetMerkleBranch(int nIndex) const {
 
 uint256 CBlock::CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMerkleBranch, int nIndex) {
   if (nIndex == -1) return uint256();
-  for (std::vector<uint256>::const_iterator it(vMerkleBranch.begin()); it != vMerkleBranch.end(); ++it) {
+  for (const auto& it : vMerkleBranch) {
     if (nIndex & 1)
-      hash = Hash(BEGIN(*it), END(*it), BEGIN(hash), END(hash));
+      hash = Hash(BEGIN(it), END(it), BEGIN(hash), END(hash));
     else
-      hash = Hash(BEGIN(hash), END(hash), BEGIN(*it), END(*it));
+      hash = Hash(BEGIN(hash), END(hash), BEGIN(it), END(it));
     nIndex >>= 1;
   }
   return hash;
@@ -112,9 +113,9 @@ std::string CBlock::ToString() const {
       "CBlock(hash=%s, ver=%d, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u)\n",
       GetHash().ToString(), nHeaderVersion, hashPrevBlock.ToString(), hashMerkleRoot.ToString(), nTime, nBits, nNonce,
       vtx.size());
-  for (unsigned int i = 0; i < vtx.size(); i++) { s << "  " << vtx[i].ToString() << "\n"; }
+  for (const auto& v : vtx) { s << "  " << v.ToString() << "\n"; }
   s << "  vMerkleTree: ";
-  for (unsigned int i = 0; i < vMerkleTree.size(); i++) s << " " << vMerkleTree[i].ToString();
+  for (const auto& v : vMerkleTree) { s << "  " << v.ToString() << "\n"; }
   s << "\n";
   return s.str();
 }

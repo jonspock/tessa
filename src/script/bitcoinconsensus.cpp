@@ -22,9 +22,9 @@ class TxInputStream {
   TxInputStream& read(char* pch, size_t nSize) {
     if (nSize > m_remaining) throw std::ios_base::failure(std::string(__func__) + ": end of data");
 
-    if (pch == NULL) throw std::ios_base::failure(std::string(__func__) + ": bad destination buffer");
+    if (pch == nullptr) throw std::ios_base::failure(std::string(__func__) + ": bad destination buffer");
 
-    if (m_data == NULL) throw std::ios_base::failure(std::string(__func__) + ": bad source buffer");
+    if (m_data == nullptr) throw std::ios_base::failure(std::string(__func__) + ": bad source buffer");
 
     memcpy(pch, m_data, nSize);
     m_remaining -= nSize;
@@ -69,7 +69,7 @@ int bitcoinconsensus_verify_script(const uint8_t* scriptPubKey, unsigned int scr
     set_error(err, bitcoinconsensus_ERR_OK);
 
     return VerifyScript(tx.vin[nIn].scriptSig, CScript(scriptPubKey, scriptPubKey + scriptPubKeyLen), flags,
-                        TransactionSignatureChecker(&tx, nIn), NULL);
+                        TransactionSignatureChecker(&tx, nIn), nullptr);
   } catch (const std::exception&) {
     return set_error(err, bitcoinconsensus_ERR_TX_DESERIALIZE);  // Error deserializing
   }

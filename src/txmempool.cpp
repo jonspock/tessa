@@ -231,7 +231,7 @@ class CMinerPolicyEstimator {
 
     if (sortedPrioritySamples.size() == 0) {
       for (size_t i = 0; i < history.size(); i++) history.at(i).GetPrioritySamples(sortedPrioritySamples);
-      std::sort(sortedPrioritySamples.begin(), sortedPrioritySamples.end(), std::greater<double>());
+      std::sort(sortedPrioritySamples.begin(), sortedPrioritySamples.end(), std::greater<>());
     }
     if (sortedPrioritySamples.size() < 11) return -1.0;
 

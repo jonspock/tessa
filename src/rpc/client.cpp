@@ -11,8 +11,8 @@
 #include "ui_interface.h"
 #include "util.h"
 
-#include <set>
 #include <cstdint>
+#include <set>
 
 #include <boost/algorithm/string/case_conv.hpp>  // for to_lower()
 #include <univalue.h>
@@ -134,10 +134,8 @@ class CRPCConvertTable {
 };
 
 CRPCConvertTable::CRPCConvertTable() {
-  const unsigned int n_elem = (sizeof(vRPCConvertParams) / sizeof(vRPCConvertParams[0]));
-
-  for (unsigned int i = 0; i < n_elem; i++) {
-    members.insert(std::make_pair(vRPCConvertParams[i].methodName, vRPCConvertParams[i].paramIdx));
+  for (const auto& e : vRPCConvertParams) {
+    members.insert(std::make_pair(e.methodName, e.paramIdx));
   }
 }
 

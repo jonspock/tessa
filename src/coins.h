@@ -166,8 +166,9 @@ class CCoins {
     // spentness bitmask
     nSize += nMaskSize;
     // txouts themself
-    for (unsigned int i = 0; i < vout.size(); i++)
-      if (!vout[i].IsNull()) nSize += ::GetSerializeSize(CTxOutCompressor(REF(vout[i])));
+    for (auto& v : vout) {
+      if (!v.IsNull()) nSize += ::GetSerializeSize(CTxOutCompressor(REF(v)));
+    }
     // height
     nSize += ::GetSerializeSize(VARINT(nHeight));
     return nSize;
@@ -193,8 +194,8 @@ class CCoins {
       ::Serialize(s, chAvail);
     }
     // txouts themself
-    for (unsigned int i = 0; i < vout.size(); i++) {
-      if (!vout[i].IsNull()) ::Serialize(s, CTxOutCompressor(REF(vout[i])));
+    for (auto& v : vout) {
+      if (!v.IsNull()) ::Serialize(s, CTxOutCompressor(REF(v)));
     }
     // coinbase height
     ::Serialize(s, VARINT(nHeight));

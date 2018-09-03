@@ -19,26 +19,6 @@ ELSE(NOT CMAKE_BUILD_TYPE)
     MESSAGE("Build type set to '${CMAKE_BUILD_TYPE}'")
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-# For projects using Git, use git version patch
-IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-    SET(PATCH_OUT "0")
-ELSE("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-    # Find Git Version Patch
-    FIND_PROGRAM(GIT git)
-    IF(GIT)
-        EXECUTE_PROCESS(
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMAND ${GIT} rev-parse --short HEAD 
-            OUTPUT_VARIABLE GIT_OUT OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        SET(PATCH_OUT "0-${GIT_OUT}")
-    ELSE(GIT)
-        SET(PATCH_OUT "0")
-    ENDIF(GIT)
-ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-
-SET(PROJECT_VERSION_PATCH ${PATCH_OUT})
-
 # Project Version
 SET(CPACK_PACKAGE_VERSION_MAJOR ${TESSA_VERSION_MAJOR})
 SET(CPACK_PACKAGE_VERSION_MINOR ${TESSA_VERSION_MINOR})
@@ -71,7 +51,7 @@ endif()
 
 unset(Qt5Enables)
 foreach(comp Widgets Core Gui Network LinguistTools DBus)
-  find_package(Qt5${comp})
+  find_package(Qt5${comp} REQUIRED)
   set(Qt5Enables "${Qt5Enables};Qt5${comp}_FOUND")
   if(Qt5${comp}_FOUND)
     MESSAGE(STATUS "FOUND QT5${comp}")
@@ -181,25 +161,22 @@ SET(QT_FILES
 	)
 
   
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-add_library(mac_stuff
-	macdockiconhandler.mm
-	macnotificationhandler.mm
-	)
-set_property(TARGET mac_stuff PROPERTY CXX_STANDARD 11)
-set(MAC_LIBS mac_stuff)
+  add_library(mac_stuff
+	  macdockiconhandler.mm
+	  macnotificationhandler.mm
+	  )
+  set_property(TARGET mac_stuff PROPERTY CXX_STANDARD 11)
+  set(MAC_LIBS mac_stuff)
 endif()
 
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	ADD_LIBRARY(qt_stuff ${QT_FILES} ${UI_HEADERS})
-else()
-	ADD_LIBRARY(qt_stuff ${QT_FILES} ../rpc/client.cpp ${UI_HEADERS})
+add_library(qt_stuff ${QT_FILES} ${UI_HEADERS} $<$<BOOL:${DARWIN}>:../rpc/client.cpp> )
+if(CLANG_TIDY_EXE)
+##  set_target_properties(qt_stuff PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
 endif()
 
 set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)
-#target_include_directories(qt_stuff PUBLIC {OPENSSL_INCLUDE_DIR})
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
 SET(QT_TRANSLATIONS_FILES
@@ -217,13 +194,13 @@ QT5_ADD_RESOURCES(QRC_RESOURCE tessa.qrc)
 QT5_ADD_RESOURCES(QRC_LOCALE_RESOURCE tessa_locale.qrc)
 
 add_executable(tessa-qt tessa.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} ${GUI_FORM_HEADERS})
+
 add_dependencies(tessa-qt translations_target)
 set_property(TARGET tessa-qt PROPERTY CXX_STANDARD 11)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} qrencode /usr/local/lib/libzmq.a "-framework Cocoa")
+  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} qrencode zmq "-framework Cocoa")
 else()
-  # Review list here
 	TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${Qt5_LIBRARIES} ${ANL} miniupnpc qrencode event event_pthreads pthread)
 endif()
 

@@ -16,7 +16,7 @@
 
 // Assuming same path as Environment
 bool CDB::init(const fs::path& wallet_dir, const char* pszMode) {
-  if (env) return 0;  // Already setup
+  if (env) return false;  // Already setup
   // check?
   if (mdb_env_create(&env)) throw std::runtime_error("Failed on creating Db Env");
   fDbEnvInit = false;
@@ -24,7 +24,7 @@ bool CDB::init(const fs::path& wallet_dir, const char* pszMode) {
 }
 
 bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
-  if (fDbEnvInit) return 0;
+  if (fDbEnvInit) return false;
 
   boost::this_thread::interruption_point();
 
@@ -68,7 +68,7 @@ bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
     if (fCreate) WriteVersion(CLIENT_VERSION);
   }
   fDbEnvInit = true;
-  return 0;
+  return false;
 }
 
 MDB_cursor* CDB::GetCursor() {

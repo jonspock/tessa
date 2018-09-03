@@ -24,8 +24,8 @@ int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd) {
 
 // Get the last stake modifier and its generation time from a given block
 static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModifier, int64_t& nModifierTime) {
-  if (!pindex) return error("GetLastStakeModifier: null pindex");
-  while (pindex && pindex->pprev && !pindex->GeneratedStakeModifier()) pindex = pindex->pprev;
+  if (pindex == nullptr) return error("GetLastStakeModifier: null pindex");
+  while ((pindex != nullptr) && (pindex->pprev != nullptr) && !pindex->GeneratedStakeModifier()) pindex = pindex->pprev;
   if (!pindex->GeneratedStakeModifier()) return error("GetLastStakeModifier: no generation at genesis block");
   nStakeModifier = pindex->nStakeModifier;
   nModifierTime = pindex->GetBlockTime();
@@ -57,7 +57,7 @@ static bool SelectBlockFromCandidates(vector<pair<int64_t, uint256> >& vSortedBy
                                       const CBlockIndex** pindexSelected) {
   bool fSelected = false;
   arith_uint256 hashBest(0);
-  *pindexSelected = (const CBlockIndex*)0;
+  *pindexSelected = nullptr;
   for (const auto& item : vSortedByTimestamp) {
     if (!mapBlockIndex.count(item.second))
       return error("SelectBlockFromCandidates: failed to find block index for candidate block %s",
@@ -82,11 +82,11 @@ static bool SelectBlockFromCandidates(vector<pair<int64_t, uint256> >& vSortedBy
 
     if (fSelected && hashSelection < hashBest) {
       hashBest = hashSelection;
-      *pindexSelected = (const CBlockIndex*)pindex;
+      *pindexSelected = pindex;
     } else if (!fSelected) {
       fSelected = true;
       hashBest = hashSelection;
-      *pindexSelected = (const CBlockIndex*)pindex;
+      *pindexSelected = pindex;
     }
   }
   if (GetBoolArg("-printstakemodifier", false))
@@ -110,7 +110,7 @@ static bool SelectBlockFromCandidates(vector<pair<int64_t, uint256> >& vSortedBy
 bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeModifier, bool& fGeneratedStakeModifier) {
   nStakeModifier = 0;
   fGeneratedStakeModifier = false;
-  if (!pindexPrev) {
+  if (pindexPrev == nullptr) {
     fGeneratedStakeModifier = true;
     return true;  // genesis block's modifier is 0
   }
@@ -142,7 +142,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
       (pindexPrev->GetBlockTime() / Params().ModifierInterval()) * Params().ModifierInterval() - nSelectionInterval;
   const CBlockIndex* pindex = pindexPrev;
 
-  while (pindex && pindex->GetBlockTime() >= nSelectionIntervalStart) {
+  while ((pindex != nullptr) && pindex->GetBlockTime() >= nSelectionIntervalStart) {
     // See SolarCoin regarding uint256 sorting XXXX https://github.com/onsightit/solarcoin/blob/master/src/kernel.cpp
     vSortedByTimestamp.push_back(make_pair(pindex->GetBlockTime(), pindex->GetBlockHash()));
     pindex = pindex->pprev;
@@ -182,7 +182,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     // '-' indicates proof-of-work blocks not selected
     strSelectionMap.insert(0, pindexPrev->nHeight - nHeightFirstCandidate + 1, '-');
     pindex = pindexPrev;
-    while (pindex && pindex->nHeight >= nHeightFirstCandidate) {
+    while ((pindex != nullptr) && pindex->nHeight >= nHeightFirstCandidate) {
       // '=' indicates proof-of-stake blocks not selected
       if (pindex->IsProofOfStake()) strSelectionMap.replace(pindex->nHeight - nHeightFirstCandidate, 1, "=");
       pindex = pindex->pprev;
@@ -221,14 +221,14 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
 
   // loop to find the stake modifier later by a selection interval
   while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval) {
-    if (!pindexNext) {
+    if (pindexNext == nullptr) {
       // Should never happen
       return error("Null pindexNext\n");
     }
 
     pindex = pindexNext;
     pindexNext = chainActive[pindexNext->nHeight + 1];
-    if (!pindexNext) {
+    if (pindexNext == nullptr) {
       // std::cout << " done early\n";
       return true;
     }
@@ -338,7 +338,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::uniqu
   }
 
   CBlockIndex* pindex = stake->GetIndexFrom();
-  if (!pindex) return error("%s: Failed to find the block index", __func__);
+  if (pindex == nullptr) return error("%s: Failed to find the block index", __func__);
 
   // Read block header
   CBlock blockprev;
@@ -373,7 +373,7 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex) {
   assert(pindex->pprev || pindex->GetBlockHash() == Params().HashGenesisBlock());
   // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
   CDataStream ss(SER_GETHASH);
-  if (pindex->pprev) ss << pindex->pprev->nStakeModifierChecksum;
+  if (pindex->pprev != nullptr) ss << pindex->pprev->nStakeModifierChecksum;
   ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
   arith_uint256 hashChecksum = UintToArith256(Hash(ss.begin(), ss.end()));
   hashChecksum >>= (256 - 32);

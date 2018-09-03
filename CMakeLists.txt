@@ -8,6 +8,29 @@ list(GET VERSION_LIST 1 TESSA_VERSION_MINOR)
 list(GET VERSION_LIST 2 TESSA_VERSION_REVISION)
 list(GET VERSION_LIST 3 TESSA_VERSION_BUILD)
 
+# For projects using Git, use git version patch
+# Find Git Version Patch
+FIND_PROGRAM(GIT git)
+IF(GIT)
+  EXECUTE_PROCESS(
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${GIT} rev-parse --short HEAD 
+    OUTPUT_VARIABLE GIT_OUT OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  MESSAGE(STATUS "GIT-out  ${GIT_OUT}")
+ENDIF(GIT)
+
+IF(GIT)
+  EXECUTE_PROCESS(
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${GIT} describe
+    OUTPUT_VARIABLE DESC_OUT OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  MESSAGE(STATUS "For ${GIT} describe : Got ${DESC_OUT}")
+ENDIF(GIT)
+
+SET(TESSA_VERSION_PATCH ${GIT_OUT})
+
 include(CheckSymbolExists)
 include(CheckCXXCompilerFlag)
 
@@ -35,7 +58,7 @@ if(NOT CLANG_TIDY_EXE)
   message(STATUS "clang-tidy not found.")
 else()
   message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
-  set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "-checks=*,-clang-analyzer-alpha.*")
+  set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "-checks=*,-clang-analyzer-alpha.*,-fuchsia-default-arguments,-readability-inconsistent-declaration-parameter-name,-google-runtime-references,-hicpp-braces-around-statements")
 endif()
 
 # Default visibility is hidden on all targets.
@@ -54,32 +77,6 @@ ENDIF()
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   list(APPEND CMAKE_PREFIX_PATH /opt/local/opt/qt5)
 endif()
-
-# For projects using Git, use git version patch
-# Find Git Version Patch
-FIND_PROGRAM(GIT git)
-IF(GIT)
-  EXECUTE_PROCESS(
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND ${GIT} rev-parse --short HEAD 
-    OUTPUT_VARIABLE GIT_OUT OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-  SET(PATCH_OUT "0-${GIT_OUT}")
-ELSE(GIT)
-  SET(PATCH_OUT "0")
-ENDIF(GIT)
-
-IF(GIT)
-  EXECUTE_PROCESS(
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND ${GIT} describe
-    OUTPUT_VARIABLE GD_OUT OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-  MESSAGE(STATUS "For ${GIT} describe : Got ${GD_OUT}")
-ENDIF(GIT)
-
-SET(TESSA_VERSION_PATCH ${PATCH_OUT})
-
 
 if(CMAKE_CXX_FLAGS_RELEASE MATCHES DNDEBUG)
   string(REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -231,12 +228,6 @@ SET(COMMON_A
   ./src/fs.cpp
 	)
 
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h.in")
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/clientversion.h.in clientversion.h @ONLY)
-else()
-  message(WARNING "Using Versions defined in clientversion.h - is it up to date?")
-endif()
-   
 # No longer used    
 add_custom_target(buildHeader
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/share/genbuild.sh ${CMAKE_CURRENT_SOURCE_DIR}/src/build.h ${CMAKE_CURRENT_SOURCE_DIR}
@@ -428,7 +419,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/
   ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/forms
-  # For clientversion.h file
+  # For relic_conf.h file
   ${CMAKE_CURRENT_BINARY_DIR}
   # For config file tessa-config.h
   ${CMAKE_CURRENT_BINARY_DIR}/src
@@ -464,7 +455,7 @@ add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEAD
   ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 
 if(CLANG_TIDY_EXE)
-  set_target_properties(coin PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
+###  set_target_properties(coin PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
 endif()
 
 # not used
@@ -492,6 +483,7 @@ add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
 #------------------- ------------------- ------------------- ------------------- -------------------
 # For Relic
 #------------------- ------------------- ------------------- ------------------- -------------------
+##SET(CMAKE_VERBOSE_MAKEFILE OFF)
 set(WORD 64 CACHE INTEGER "")
 set(TIMER "CYCLE" CACHE STRING "")
 set(CHECK "off" CACHE STRING "")
@@ -526,12 +518,16 @@ set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 
 add_subdirectory(src/relic)
 add_subdirectory(src/bls)
+
 #------------------- ------------------- ------------------- ------------------- -------------------
 
 SET(LIBS_LIST coin secp256k1 gmp zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} ${ANL}
   miniupnpc event event_pthreads pthread sodium)
 
+
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
+
+
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(tessad ${LIBS_LIST} zmq pthread )

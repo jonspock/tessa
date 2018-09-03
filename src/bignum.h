@@ -113,7 +113,7 @@ public:
     uint256 getuint256() const
     {
         uint256 n(uint256S("0"));
-        mpz_export((unsigned char*)&n, NULL, -1, 1, 0, 0, bn);
+        mpz_export((unsigned char*)&n, nullptr, -1, 1, 0, 0, bn);
         return n;
     }
 
@@ -178,7 +178,7 @@ public:
 
     std::string ToString(int nBase=10) const
     {
-        char* c_str = mpz_get_str(NULL, nBase, bn);
+        char* c_str = mpz_get_str(nullptr, nBase, bn);
         std::string str(c_str);
         return str;
     }

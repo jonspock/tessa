@@ -16,7 +16,7 @@
 
 // Assuming same path as Environment
 bool CDbWrapper::init(const fs::path& wallet_dir, const char* pszMode) {
-  if (env) return 0;  // Already setup
+  if (env) return false;  // Already setup
   // check?
   if (mdb_env_create(&env)) throw std::runtime_error("Failed on creating Db Env");
   fDbEnvInit = false;
@@ -24,7 +24,7 @@ bool CDbWrapper::init(const fs::path& wallet_dir, const char* pszMode) {
 }
 
 bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
-  if (fDbEnvInit) return 0;
+  if (fDbEnvInit) return false;
 
   boost::this_thread::interruption_point();
 
@@ -41,7 +41,7 @@ bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
   if (dbr != 0) {
     LogPrintf("CDbWrapperEnv::Open : Error opening database environment:\n");
     Close();
-    return -1;
+    return true;
   }
 
   fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
@@ -64,13 +64,13 @@ bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
     if (dbr != 0) {
       LogPrintf("CDbWrapper : Error, can't open database dbi");
       Close();
-      return -1;
+      return true;
     }
 
     // if (fCreate) WriteVersion(CLIENT_VERSION);
   }
   fDbEnvInit = true;
-  return 0;
+  return false;
 }
 
 MDB_cursor* CDbWrapper::GetCursor() const {

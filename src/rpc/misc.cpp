@@ -189,18 +189,16 @@ class DescribeAddressVisitor : public boost::static_visitor<UniValue> {
 UniValue spork(const UniValue& params, bool fHelp) {
   if (params.size() == 1 && params[0].get_str() == "show") {
     UniValue ret(UniValue::VOBJ);
-    for (unsigned int nSporkID = 0; nSporkID < sporkList.size(); nSporkID++) {
-      if (gSporkManager.GetSporkNameByID(sporkList[nSporkID]) != "Unknown")
-        ret.push_back(Pair(gSporkManager.GetSporkNameByID(sporkList[nSporkID]),
-                           gSporkManager.GetSporkValue(sporkList[nSporkID])));
+    for (const auto& s : sporkList) {
+      if (gSporkManager.GetSporkNameByID(s) != "Unknown")
+        ret.push_back(Pair(gSporkManager.GetSporkNameByID(s),gSporkManager.GetSporkValue(s)));
     }
     return ret;
   } else if (params.size() == 1 && params[0].get_str() == "active") {
     UniValue ret(UniValue::VOBJ);
-    for (unsigned int nSporkID = 0; nSporkID < sporkList.size(); nSporkID++) {
-      if (gSporkManager.GetSporkNameByID(sporkList[nSporkID]) != "Unknown")
-        ret.push_back(Pair(gSporkManager.GetSporkNameByID(sporkList[nSporkID]),
-                           gSporkManager.IsSporkActive(sporkList[nSporkID])));
+    for (const auto& s : sporkList) {
+      if (gSporkManager.GetSporkNameByID(s) != "Unknown")
+        ret.push_back(Pair(gSporkManager.GetSporkNameByID(s),gSporkManager.IsSporkActive(s)));
     }
     return ret;
   } else if (params.size() == 2) {

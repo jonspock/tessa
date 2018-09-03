@@ -34,8 +34,8 @@ ClientModel::ClientModel(OptionsModel* optionsModel, QObject* parent)
       peerTableModel(0),
       banTableModel(0),
       cachedNumBlocks(0),
-      cachedReindexing(0),
-      cachedImporting(0),
+      cachedReindexing(false),
+      cachedImporting(false),
       numBlocksAtStartup(-1),
       pollTimer(0) {
   peerTableModel = new PeerTableModel(this);

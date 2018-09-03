@@ -11,5 +11,5 @@
 class CBigNum;
 CBigNum randBignum(const CBigNum& range);
 CBigNum RandKBitBigum(const uint32_t k);
-CBigNum generatePrime(const unsigned int numBits, bool safe = false);
+CBigNum generatePrime(const unsigned int numBits);
 
