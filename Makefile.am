@@ -8,11 +8,6 @@ SUBDIRS = src
 
 export PYTHONPATH
 
-if BUILD_BITCOIN_LIBS
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libbitcoinconsensus.pc
-endif
-
 BITCOIND_BIN=$(top_builddir)/src/$(BITCOIN_DAEMON_NAME)$(EXEEXT)
 BITCOIN_QT_BIN=$(top_builddir)/src/qt/$(BITCOIN_GUI_NAME)$(EXEEXT)
 BITCOIN_CLI_BIN=$(top_builddir)/src/$(BITCOIN_CLI_NAME)$(EXEEXT)
@@ -162,60 +157,6 @@ $(BITCOIND_BIN): FORCE
 
 $(BITCOIN_CLI_BIN): FORCE
 	$(MAKE) -C src $(@F)
-
-if USE_LCOV
-
-baseline.info:
-	$(LCOV) -c -i -d $(abs_builddir)/src -o $@
-
-baseline_filtered.info: baseline.info
-	$(LCOV) -r $< "/usr/include/*" -o $@
-
-leveldb_baseline.info: baseline_filtered.info
-	$(LCOV) -c -i -d $(abs_builddir)/src/leveldb -b $(abs_builddir)/src/leveldb -o $@
-
-leveldb_baseline_filtered.info: leveldb_baseline.info
-	$(LCOV) -r $< "/usr/include/*" -o $@
-
-baseline_filtered_combined.info: leveldb_baseline_filtered.info baseline_filtered.info
-	$(LCOV) -a leveldb_baseline_filtered.info -a baseline_filtered.info -o $@
-
-test_pivx.info: baseline_filtered_combined.info
-	$(MAKE) -C src/ check
-	$(LCOV) -c -d $(abs_builddir)/src -t test_pivx -o $@
-	$(LCOV) -z -d $(abs_builddir)/src
-	$(LCOV) -z -d $(abs_builddir)/src/leveldb
-
-test_pivx_filtered.info: test_pivx.info
-	$(LCOV) -r $< "/usr/include/*" -o $@
-
-block_test.info: test_pivx_filtered.info
-	$(MKDIR_P) qa/tmp
-	-@TIMEOUT=15 qa/pull-tester/run-bitcoind-for-test.sh $(JAVA) -jar $(JAVA_COMPARISON_TOOL) qa/tmp/compTool 0
-	$(LCOV) -c -d $(abs_builddir)/src --t BitcoinJBlockTest -o $@
-	$(LCOV) -z -d $(abs_builddir)/src
-	$(LCOV) -z -d $(abs_builddir)/src/leveldb
-
-block_test_filtered.info: block_test.info
-	$(LCOV) -r $< "/usr/include/*" -o $@
-
-test_pivx_coverage.info: baseline_filtered_combined.info test_pivx_filtered.info
-	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_pivx_filtered.info -o $@
-
-total_coverage.info:  baseline_filtered_combined.info test_pivx_filtered.info block_test_filtered.info
-	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_pivx_filtered.info -a block_test_filtered.info -o $@ | $(GREP) "\%" | $(AWK) '{ print substr($$3,2,50) "/" $$5 }' > coverage_percent.txt
-
-test_pivx.coverage/.dirstamp:  test_pivx_coverage.info
-	$(GENHTML) -s $< -o $(@D)
-	@touch $@
-
-total.coverage/.dirstamp: total_coverage.info
-	$(GENHTML) -s $< -o $(@D)
-	@touch $@
-
-cov: test_pivx.coverage/.dirstamp total.coverage/.dirstamp
-
-endif
 
 dist_noinst_SCRIPTS = autogen.sh
 
