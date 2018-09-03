@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <assert.h>
+#include <cassert>
 #include <cstring>
 #include <stdexcept>
 #include <cstdint>

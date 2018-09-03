@@ -19,6 +19,18 @@ if(CCACHE)
 endif(CCACHE)
 
 
+find_program(
+  CLANG_TIDY_EXE
+  NAMES "clang-tidy"
+  DOC "Path to clang-tidy executable"
+  )
+if(NOT CLANG_TIDY_EXE)
+  message(STATUS "clang-tidy not found.")
+else()
+  message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
+  set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "-checks=*,-clang-analyzer-alpha.*")
+endif()
+
 # Default visibility is hidden on all targets.
 #set(CMAKE_C_VISIBILITY_PRESET hidden)
 #set(CMAKE_CXX_VISIBILITY_PRESET hidden)
@@ -471,6 +483,9 @@ link_directories(${ROCKSDB_ROOT_DIR}/lib)
 add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
 add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
 
+#------------------- ------------------- ------------------- ------------------- -------------------
+# For Relic
+#------------------- ------------------- ------------------- ------------------- -------------------
 set(WORD 64 CACHE INTEGER "")
 set(TIMER "CYCLE" CACHE STRING "")
 set(CHECK "off" CACHE STRING "")
@@ -505,13 +520,15 @@ set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 
 add_subdirectory(src/relic)
 add_subdirectory(src/bls)
+#------------------- ------------------- ------------------- ------------------- -------------------
 
-SET(LIBS_LIST coin secp256k1 gmp zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} ${ANL} miniupnpc event event_pthreads pthread sodium)
+SET(LIBS_LIST coin secp256k1 gmp zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} ${ANL}
+  miniupnpc event event_pthreads pthread sodium)
 
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	target_link_libraries(tessad ${LIBS_LIST} /usr/local/lib/libzmq.a pthread )
+	target_link_libraries(tessad ${LIBS_LIST} zmq pthread )
 else()
 	target_link_libraries(tessad coin ${LIBS_LIST})
 endif()

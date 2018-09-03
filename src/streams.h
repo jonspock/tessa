@@ -12,7 +12,7 @@
 #include "serialize.h"
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <cstring>
 #include <ios>
 #include <limits>

@@ -6,7 +6,7 @@
 #define BITCOIN_TIMEDATA_H
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <cstdint>
 #include <vector>
 
