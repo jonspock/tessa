@@ -163,62 +163,6 @@ AC_ARG_ENABLE([debug],
 AC_LANG_PUSH([C++])
 AX_CHECK_COMPILE_FLAG([-Werror],[CXXFLAG_WERROR="-Werror"],[CXXFLAG_WERROR=""])
 
-if test "x$enable_asan" = xyes; then
-	enable_debug=yes
-  asan_failed=no
-  AX_CHECK_COMPILE_FLAG([-fsanitize=address],
-    [CXXFLAGS="$CXXFLAGS -fsanitize=address"],
-    [asan_failed=yes])
-  AX_CHECK_LINK_FLAG([-fsanitize=address],
-    [LDFLAGS="$LDFLAGS -fsanitize=address"],
-    [asan_failed=yes])
-  AX_CHECK_COMPILE_FLAG([-fno-omit-frame-pointer],
-    [CXXFLAGS="$CXXFLAGS -fno-omit-frame-pointer"],
-    [asan_failed=yes])
-
-  if test "x$asan_failed" = xyes; then
-    AC_MSG_ERROR("ASAN is not supported")
-  fi
-  # fix linkage in MacOs
-  [LIBTOOL_APP_LDFLAGS="$LIBTOOL_APP_LDFLAGS -fsanitize=address"],
-fi
-
-if test "x$enable_tsan" = xyes; then
-  enable_debug=yes
-  tsan_failed=no
-  AX_CHECK_COMPILE_FLAG([-fsanitize=thread],
-    [CXXFLAGS="$CXXFLAGS -fsanitize=thread"],
-    [tsan_failed=yes])
-  AX_CHECK_LINK_FLAG([-fsanitize=thread],
-    [LDFLAGS="$LDFLAGS -fsanitize=thread"],
-    [tsan_failed=yes])
-  AX_CHECK_COMPILE_FLAG([-fno-omit-frame-pointer],
-    [CXXFLAGS="$CXXFLAGS -fno-omit-frame-pointer"],
-    [tsan_failed=yes])
-
-  if test "x$tsan_failed" = xyes; then
-    AC_MSG_ERROR("TSAN is not supported")
-  fi
-fi
-
-if test "x$enable_ubsan" = xyes; then
-  enable_debug=yes
-  ubsan_failed=no
-  AX_CHECK_COMPILE_FLAG([-fsanitize=undefined],
-    [CXXFLAGS="$CXXFLAGS -fsanitize=undefined"],
-    [ubsan_failed=yes])
-  AX_CHECK_LINK_FLAG([-fsanitize=undefined],
-    [LDFLAGS="$LDFLAGS -fsanitize=undefined"],
-    [ubsan_failed=yes])
-  AX_CHECK_COMPILE_FLAG([-fno-omit-frame-pointer],
-    [CXXFLAGS="$CXXFLAGS -fno-omit-frame-pointer"],
-    [ubsan_failed=yes])
-
-  if test "x$ubsan_failed" = xyes; then
-    AC_MSG_ERROR("UBSAN is not supported")
-  fi
-fi
-
 if test "x$enable_debug" = xyes; then
     CPPFLAGS="$CPPFLAGS -DDEBUG -DDEBUG_LOCKORDER"
     if test "x$GCC" = xyes; then
@@ -437,26 +381,6 @@ fi
 
 if test x$use_extended_functional_tests != xno; then
   AC_SUBST(EXTENDED_FUNCTIONAL_TESTS, --extended)
-fi
-
-if test x$use_lcov = xyes; then
-  if test x$LCOV = x; then
-    AC_MSG_ERROR("lcov testing requested but lcov not found")
-  fi
-  if test x$GCOV = x; then
-    AC_MSG_ERROR("lcov testing requested but gcov not found")
-  fi
-  if test x$PYTHON = x; then
-    AC_MSG_ERROR("lcov testing requested but python not found")
-  fi
-  if test x$GENHTML = x; then
-    AC_MSG_ERROR("lcov testing requested but genhtml not found")
-  fi
-  LCOV="$LCOV --gcov-tool=$GCOV"
-  AX_CHECK_LINK_FLAG([[--coverage]], [LDFLAGS="$LDFLAGS --coverage"],
-    [AC_MSG_ERROR("lcov testing requested but --coverage linker flag does not work")])
-  AX_CHECK_COMPILE_FLAG([--coverage],[CXXFLAGS="$CXXFLAGS --coverage"],
-    [AC_MSG_ERROR("lcov testing requested but --coverage flag does not work")])
 fi
 
 dnl Check for pthread compile/link requirements
@@ -1188,11 +1112,6 @@ echo "  with upnp     = $use_upnp"
 echo "  use asm       = $use_asm"
 echo "  debug enabled = $enable_debug"
 echo "  werror        = $enable_werror"
-echo
-echo "  sanitizers    "
-echo "          asan  = $enable_asan"
-echo "          tsan  = $enable_tsan"
-echo "          ubsan = $enable_ubsan"
 echo
 echo "  target os     = $TARGET_OS"
 echo "  build os      = $BUILD_OS"
