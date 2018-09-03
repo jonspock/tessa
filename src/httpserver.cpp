@@ -235,8 +235,8 @@ static void http_request_cb(struct evhttp_request* req, void* arg) {
   // Find registered handler for prefix
   std::string strURI = hreq->GetURI();
   std::string path;
-  std::vector<HTTPPathHandler>::const_iterator i = pathHandlers.begin();
-  std::vector<HTTPPathHandler>::const_iterator iend = pathHandlers.end();
+  auto i = pathHandlers.begin();
+  auto iend = pathHandlers.end();
   for (; i != iend; ++i) {
     bool match = false;
     if (i->exactMatch)
@@ -579,8 +579,8 @@ void RegisterHTTPHandler(const std::string& prefix, bool exactMatch, const HTTPR
 }
 
 void UnregisterHTTPHandler(const std::string& prefix, bool exactMatch) {
-  std::vector<HTTPPathHandler>::iterator i = pathHandlers.begin();
-  std::vector<HTTPPathHandler>::iterator iend = pathHandlers.end();
+  auto i = pathHandlers.begin();
+  auto iend = pathHandlers.end();
   for (; i != iend; ++i)
     if (i->prefix == prefix && i->exactMatch == exactMatch) break;
   if (i != iend) {
