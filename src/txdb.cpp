@@ -47,7 +47,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
   CLevelDBBatch batch;
   size_t count = 0;
   size_t changed = 0;
-  for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
+   for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
     if (it->second.flags & CCoinsCacheEntry::DIRTY) {
       BatchWriteCoins(batch, it->first, it->second.coins);
       changed++;
@@ -147,8 +147,8 @@ bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos) { return Re
 
 bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> >& vect) {
   CLevelDBBatch batch;
-  for (std::vector<std::pair<uint256, CDiskTxPos> >::const_iterator it = vect.begin(); it != vect.end(); it++)
-    batch.Write(make_pair('t', it->first), it->second);
+  for (auto& it : vect)
+    batch.Write(make_pair('t', it.first), it.second);
   return WriteBatch(batch);
 }
 
@@ -256,11 +256,10 @@ bool CZerocoinDB::WriteCoinMint(const libzerocoin::PublicCoin& pubCoin, const ui
 bool CZerocoinDB::WriteCoinMintBatch(const std::vector<std::pair<libzerocoin::PublicCoin, uint256> >& mintInfo) {
   CLevelDBBatch batch;
   size_t count = 0;
-  for (std::vector<std::pair<libzerocoin::PublicCoin, uint256> >::const_iterator it = mintInfo.begin();
-       it != mintInfo.end(); it++) {
-    libzerocoin::PublicCoin pubCoin = it->first;
+  for (auto& it : mintInfo) {
+    libzerocoin::PublicCoin pubCoin = it.first;
     uint256 hash = GetPubCoinHash(pubCoin.getValue());
-    batch.Write(make_pair('m', hash), it->second);
+    batch.Write(make_pair('m', hash), it.second);
     ++count;
   }
 

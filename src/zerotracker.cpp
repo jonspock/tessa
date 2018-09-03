@@ -240,7 +240,7 @@ bool CZeroTracker::UpdateStatusInternal(const std::set<uint256>& setMempool, CMi
   bool isMintInChain = zerocoinDB->ReadCoinMint(mint.hashPubcoin, txidMint);
 
   // See if there is internal record of spending this mint (note this is memory only, would reset on restart)
-  bool isPendingSpend = static_cast<bool>(mapPendingSpends.count(mint.hashSerial));
+  auto isPendingSpend = static_cast<bool>(mapPendingSpends.count(mint.hashSerial));
 
   // See if there is a blockchain record of spending this mint
   uint256 txidSpend;

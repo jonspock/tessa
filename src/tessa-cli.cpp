@@ -113,7 +113,7 @@ struct HTTPReply {
 };
 
 static void http_request_done(struct evhttp_request* req, void* ctx) {
-  HTTPReply* reply = static_cast<HTTPReply*>(ctx);
+  auto reply = static_cast<HTTPReply*>(ctx);
 
   if (req == nullptr) {
     /* If req is nullptr, it means an error occurred while connecting, but
@@ -128,7 +128,7 @@ static void http_request_done(struct evhttp_request* req, void* ctx) {
   struct evbuffer* buf = evhttp_request_get_input_buffer(req);
   if (buf) {
     size_t size = evbuffer_get_length(buf);
-    const char* data = (const char*)evbuffer_pullup(buf, size);
+    auto data = (const char*)evbuffer_pullup(buf, size);
     if (data) reply->body = std::string(data, size);
     evbuffer_drain(buf, size);
   }

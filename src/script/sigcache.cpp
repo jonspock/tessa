@@ -31,7 +31,7 @@ class CSignatureCache {
     boost::shared_lock<boost::shared_mutex> lock(cs_sigcache);
 
     sigdata_type k(hash, vchSig, pubKey);
-    std::set<sigdata_type>::iterator mi = setValid.find(k);
+    auto mi = setValid.find(k);
     if (mi != setValid.end()) return true;
     return false;
   }

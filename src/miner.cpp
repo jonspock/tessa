@@ -156,8 +156,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     // This vector will be sorted into a priority queue:
     vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool.mapTx.size());
-    for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi) {
-      const CTransaction& tx = mi->second.GetTx();
+    for (auto& mi : mempool.mapTx) {
+      const CTransaction& tx = mi.second.GetTx();
       if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)) { continue; }
 
       COrphan* porphan = nullptr;
@@ -244,7 +244,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         porphan->dPriority = dPriority;
         porphan->feeRate = feeRate;
       } else
-        vecPriority.push_back(TxPriority(dPriority, feeRate, &mi->second.GetTx()));
+        vecPriority.push_back(TxPriority(dPriority, feeRate, &mi.second.GetTx()));
     }
 
     // Collect transactions into block
