@@ -98,8 +98,8 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<uint
     vector<uint8_t> vch1, vch2;
 
     // Compare
-    CScript::const_iterator pc1 = script1.begin();
-    CScript::const_iterator pc2 = script2.begin();
+    auto pc1 = script1.begin();
+    auto pc2 = script2.begin();
     while (true) {
       if (pc1 == script1.end() && pc2 == script2.end()) {
         // Found a match
@@ -134,7 +134,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<uint
         vSolutionsRet.push_back(vch1);
       } else if (opcode2 == OP_SMALLINTEGER) {  // Single-byte small integer pushed onto vSolutions
         if (opcode1 == OP_0 || (opcode1 >= OP_1 && opcode1 <= OP_16)) {
-          char n = (char)CScript::DecodeOP_N(opcode1);
+          auto n = (char)CScript::DecodeOP_N(opcode1);
           vSolutionsRet.push_back(valtype(1, n));
         } else
           break;

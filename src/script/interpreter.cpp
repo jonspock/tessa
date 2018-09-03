@@ -231,9 +231,9 @@ bool EvalScript(vector<vector<uint8_t> >& stack, const CScript& script, unsigned
   static const valtype vchZero(0);
   static const valtype vchTrue(1, 1);
 
-  CScript::const_iterator pc = script.begin();
-  CScript::const_iterator pend = script.end();
-  CScript::const_iterator pbegincodehash = script.begin();
+  auto pc = script.begin();
+  auto pend = script.end();
+  auto pbegincodehash = script.begin();
   opcodetype opcode;
   valtype vchPushValue;
   vector<bool> vfExec;
@@ -846,8 +846,8 @@ class CTransactionSignatureSerializer {
 
   /** Serialize the passed scriptCode, skipping OP_CODESEPARATORs */
   template <typename S> void SerializeScriptCode(S& s) const {
-    CScript::const_iterator it = scriptCode.begin();
-    CScript::const_iterator itBegin = it;
+    auto it = scriptCode.begin();
+    auto itBegin = it;
     opcodetype opcode;
     unsigned int nCodeSeparators = 0;
     while (scriptCode.GetOp(it, opcode)) {

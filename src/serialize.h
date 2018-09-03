@@ -164,7 +164,7 @@ template <typename Stream> inline void Unserialize(Stream& s, libzerocoin::CoinD
 // Serialization for libzerocoin::SpendType
 inline unsigned int GetSerializedSize(libzerocoin::SpendType a) { return sizeof(libzerocoin::SpendType); }
 template <typename Stream> inline void Serialize(Stream& s, libzerocoin::SpendType a) {
-  uint8_t f = static_cast<uint8_t>(a);
+  auto f = static_cast<uint8_t>(a);
   WRITEDATA(s, f);
 }
 
@@ -493,7 +493,7 @@ void Serialize_impl(Stream& os, const std::vector<T, A>& v, const unsigned char&
 template <typename Stream, typename T, typename A, typename V>
 void Serialize_impl(Stream& os, const std::vector<T, A>& v, const V&) {
   WriteCompactSize(os, v.size());
-  for (typename std::vector<T, A>::const_iterator vi = v.begin(); vi != v.end(); ++vi) ::Serialize(os, (*vi));
+  for (const auto& vi : v) ::Serialize(os, vi);
 }
 
 template <typename Stream, typename T, typename A> inline void Serialize(Stream& os, const std::vector<T, A>& v) {
@@ -568,15 +568,14 @@ template <typename Stream, typename K, typename T> void Unserialize(Stream& is, 
 template <typename K, typename T, typename Pred, typename A>
 unsigned int GetSerializeSize(const std::map<K, T, Pred, A>& m) {
   unsigned int nSize = GetSizeOfCompactSize(m.size());
-  for (typename std::map<K, T, Pred, A>::const_iterator mi = m.begin(); mi != m.end(); ++mi)
-    nSize += GetSerializeSize((*mi));
+  for (const auto& mi : m) nSize += GetSerializeSize(mi);
   return nSize;
 }
 
 template <typename Stream, typename K, typename T, typename Pred, typename A>
 void Serialize(Stream& os, const std::map<K, T, Pred, A>& m) {
   WriteCompactSize(os, m.size());
-  for (typename std::map<K, T, Pred, A>::const_iterator mi = m.begin(); mi != m.end(); ++mi) Serialize(os, (*mi));
+  for (const auto& mi : m) Serialize(os, mi);
 }
 
 template <typename Stream, typename K, typename T, typename Pred, typename A>
