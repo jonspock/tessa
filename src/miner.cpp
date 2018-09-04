@@ -8,9 +8,9 @@
 
 #include "miner.h"
 #include "amount.h"
+#include "ecdsa/key.h"
 #include "hash.h"
 #include "init.h"
-#include "ecdsa/key.h"
 #include "main.h"
 #include "net.h"
 #include "pow.h"

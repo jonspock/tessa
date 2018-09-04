@@ -9,8 +9,8 @@
 #include "blockdisk.h"
 
 #include "addrman.h"
-#include "ecdsa/blocksignature.h"
 #include "checkqueue.h"
+#include "ecdsa/blocksignature.h"
 #include "init.h"
 #include "kernel.h"
 #include "main.h"

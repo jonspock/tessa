@@ -11,8 +11,8 @@
 #include "ui_interface.h"
 #include "util.h"
 
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 #include <string>
 
 static bool noui_ThreadSafeMessageBox(const std::string& message, const std::string& caption, unsigned int style) {

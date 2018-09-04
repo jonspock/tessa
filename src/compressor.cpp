@@ -7,8 +7,8 @@
 
 #include "compressor.h"
 
-#include "hash.h"
 #include "ecdsa/pubkey.h"
+#include "hash.h"
 #include "script/standard.h"
 
 using namespace ecdsa;

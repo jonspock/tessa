@@ -221,7 +221,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
   CBlockIndex* pindex = chainActive[nHeightCheckpoint - 2 * ACC_BLOCK_INTERVAL];
 
 #warning "Check this"
-  if (pindex==nullptr) return true;
+  if (pindex == nullptr) return true;
 
   while (pindex->nHeight < nHeight - ACC_BLOCK_INTERVAL) {
     // checking whether we should stop this process due to a shutdown request

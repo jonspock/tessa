@@ -543,7 +543,8 @@ void CNode::SweepBanned() {
         setBanned.erase(it++);
         setBannedIsDirty = true;
         notifyUI = true;
-        LogPrint(TessaLog::NET, "%s: Removed banned node ip/subnet from banlist.dat: %s\n", __func__, subNet.ToString());
+        LogPrint(TessaLog::NET, "%s: Removed banned node ip/subnet from banlist.dat: %s\n", __func__,
+                 subNet.ToString());
       } else
         ++it;
     }

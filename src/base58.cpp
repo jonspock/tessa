@@ -6,16 +6,16 @@
 
 #include "base58.h"
 
-#include "hash.h"
-#include "uint256.h"
 #include "ecdsa/key.h"
+#include "hash.h"
 #include "support/cleanse.h"
+#include "uint256.h"
 #include <assert.h>
 #include <boost/variant/apply_visitor.hpp>
 #include <boost/variant/static_visitor.hpp>
+#include <cstdint>
 #include <iomanip>
 #include <sstream>
-#include <cstdint>
 #include <string>
 #include <vector>
 

@@ -12,12 +12,12 @@
 
 #include <mutex>
 
-#include "util.h"
 #include "chainparamsbase.h"
 #include "random.h"
 #include "serialize.h"
 #include "support/allocators/secure.h"
 #include "sync.h"
+#include "util.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
 // Wraps boost::filesystem inside fs namespace (future c++17)

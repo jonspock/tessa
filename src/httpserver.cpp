@@ -14,8 +14,8 @@
 #include "ui_interface.h"
 #include "util.h"
 
-#include <cstring>
 #include <cstdio>
+#include <cstring>
 #include <stdlib.h>
 
 #include <signal.h>

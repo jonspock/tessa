@@ -19,10 +19,11 @@
 #include "accumulatormap.h"
 #include "accumulators.h"
 #include "addrman.h"
-#include "ecdsa/blocksignature.h"
 #include "chainparams.h"
 #include "checkpoints.h"
 #include "checkqueue.h"
+#include "ecdsa/blocksignature.h"
+#include "ecdsa/ecdsa.h"
 #include "init.h"
 #include "kernel.h"
 #include "mainzero.h"
@@ -40,7 +41,6 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "zerochain.h"
-#include "ecdsa/ecdsa.h"
 
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"
@@ -4413,8 +4413,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
     if (!(sProblem.empty())) {
-      LogPrint(TessaLog::NET, "pong peer=%d %s: %s, %x expected, %x received, %u bytes\n", pfrom->id, pfrom->cleanSubVer,
-               sProblem, pfrom->nPingNonceSent, nonce, nAvail);
+      LogPrint(TessaLog::NET, "pong peer=%d %s: %s, %x expected, %x received, %u bytes\n", pfrom->id,
+               pfrom->cleanSubVer, sProblem, pfrom->nPingNonceSent, nonce, nAvail);
     }
     if (bPingFinished) { pfrom->nPingNonceSent = 0; }
   }
