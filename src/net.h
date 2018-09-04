@@ -608,7 +608,7 @@ class CNode {
   }
 
   void ClearFulfilledRequest(std::string strRequest) {
-    std::vector<std::string>::iterator it = vecRequestsFulfilled.begin();
+    auto it = vecRequestsFulfilled.begin();
     while (it != vecRequestsFulfilled.end()) {
       if ((*it) == strRequest) {
         vecRequestsFulfilled.erase(it);

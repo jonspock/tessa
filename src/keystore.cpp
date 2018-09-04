@@ -45,7 +45,7 @@ bool CBasicKeyStore::HaveCScript(const CScriptID& hash) const {
 
 bool CBasicKeyStore::GetCScript(const CScriptID& hash, CScript& redeemScriptOut) const {
   LOCK(cs_KeyStore);
-  ScriptMap::const_iterator mi = mapScripts.find(hash);
+  auto mi = mapScripts.find(hash);
   if (mi != mapScripts.end()) {
     redeemScriptOut = (*mi).second;
     return true;
@@ -110,18 +110,14 @@ void CBasicKeyStore::GetKeys(std::set<CKeyID>& setAddress) const {
   setAddress.clear();
   {
     LOCK(cs_KeyStore);
-    KeyMap::const_iterator mi = mapKeys.begin();
-    while (mi != mapKeys.end()) {
-      setAddress.insert((*mi).first);
-      mi++;
-    }
+    for (const auto& mi : mapKeys) setAddress.insert(mi.first);
   }
 }
 
 bool CBasicKeyStore::GetKey(const CKeyID& address, CKey& keyOut) const {
   {
     LOCK(cs_KeyStore);
-    KeyMap::const_iterator mi = mapKeys.find(address);
+    auto mi = mapKeys.find(address);
     if (mi != mapKeys.end()) {
       keyOut = mi->second;
       return true;
