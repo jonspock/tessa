@@ -61,8 +61,12 @@
 
 #include <sodium/core.h>
 
-using namespace boost;
 using namespace std;
+using boost::filesystem::path;
+using boost::filesystem::filesystem_error;
+using boost::filesystem::exists;
+using boost::filesystem::create_directories;
+
 
 CWallet* pwalletMain = nullptr;
 CZeroWallet* zwalletMain = nullptr;
@@ -681,12 +685,12 @@ void ThreadImport(std::vector<fs::path> vImportFiles) {
   }
 
   // hardcoded $DATADIR/bootstrap.dat
-  filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
-  if (filesystem::exists(pathBootstrap)) {
+  path pathBootstrap = GetDataDir() / "bootstrap.dat";
+  if (exists(pathBootstrap)) {
     FILE* file = fopen(pathBootstrap.string().c_str(), "rb");
     if (file) {
       CImportingNow imp;
-      filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
+      path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
       LogPrintf("Importing bootstrap.dat...\n");
       LoadExternalBlockFile(file);
       RenameOver(pathBootstrap, pathBootstrapOld);
@@ -1059,13 +1063,13 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   // ********************************************************* Step 5: Backup wallet and verify wallet database
   // integrity
   if (!fDisableWallet) {
-    filesystem::path backupDir = GetDataDir() / "backups";
-    if (!filesystem::exists(backupDir)) {
+    path backupDir = GetDataDir() / "backups";
+    if (!exists(backupDir)) {
       // Always create backup folder to not confuse the operating system's file browser
-      filesystem::create_directories(backupDir);
+      create_directories(backupDir);
     }
     if (nWalletBackups > 0) {
-      if (filesystem::exists(backupDir)) {
+      if (exists(backupDir)) {
         // Create backup of the wallet
         std::string dateTimeStr = DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime());
         std::string backupPathStr = backupDir.string();
@@ -1118,30 +1122,30 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     if (GetBoolArg("-resync", false)) {
       uiInterface.InitMessage(_("Preparing for resync..."));
       // Delete the local blockchain folders to force a resync from scratch to get a consitent blockchain-state
-      filesystem::path blocksDir = GetDataDir() / "blocks";
-      filesystem::path chainstateDir = GetDataDir() / "chainstate";
-      filesystem::path sporksDir = GetDataDir() / "sporks";
-      filesystem::path zerocoinDir = GetDataDir() / "zerocoin";
+      path blocksDir = GetDataDir() / "blocks";
+      path chainstateDir = GetDataDir() / "chainstate";
+      path sporksDir = GetDataDir() / "sporks";
+      path zerocoinDir = GetDataDir() / "zerocoin";
 
       LogPrintf("Deleting blockchain folders blocks, chainstate, sporks and zerocoin\n");
       // We delete in 4 individual steps in case one of the folder is missing already
       try {
-        if (filesystem::exists(blocksDir)) {
+        if (exists(blocksDir)) {
           fs::remove_all(blocksDir);
           LogPrintf("-resync: folder deleted: %s\n", blocksDir.string().c_str());
         }
 
-        if (filesystem::exists(chainstateDir)) {
+        if (exists(chainstateDir)) {
           fs::remove_all(chainstateDir);
           LogPrintf("-resync: folder deleted: %s\n", chainstateDir.string().c_str());
         }
 
-        if (filesystem::exists(sporksDir)) {
+        if (exists(sporksDir)) {
           fs::remove_all(sporksDir);
           LogPrintf("-resync: folder deleted: %s\n", sporksDir.string().c_str());
         }
 
-        if (filesystem::exists(zerocoinDir)) {
+        if (exists(zerocoinDir)) {
           fs::remove_all(zerocoinDir);
           LogPrintf("-resync: folder deleted: %s\n", zerocoinDir.string().c_str());
         }
@@ -1292,19 +1296,19 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   fReindex = GetBoolArg("-reindex", false);
 
   // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
-  filesystem::path blocksDir = GetDataDir() / "blocks";
-  if (!filesystem::exists(blocksDir)) {
-    filesystem::create_directories(blocksDir);
+  path blocksDir = GetDataDir() / "blocks";
+  if (!exists(blocksDir)) {
+    create_directories(blocksDir);
     bool linked = false;
     for (unsigned int i = 1; i < 10000; i++) {
-      filesystem::path source = GetDataDir() / strprintf("blk%04u.dat", i);
-      if (!filesystem::exists(source)) break;
-      filesystem::path dest = blocksDir / strprintf("blk%05u.dat", i - 1);
+      path source = GetDataDir() / strprintf("blk%04u.dat", i);
+      if (!exists(source)) break;
+      path dest = blocksDir / strprintf("blk%05u.dat", i - 1);
       try {
-        filesystem::create_hard_link(source, dest);
+        create_hard_link(source, dest);
         LogPrintf("Hardlinked %s -> %s\n", source.string(), dest.string());
         linked = true;
-      } catch (filesystem::filesystem_error& e) {
+      } catch (filesystem_error& e) {
         // Note: hardlink creation failing is not a disaster, it just means
         // blocks will get re-downloaded from peers.
         LogPrintf("Error hardlinking blk%04u.dat : %s\n", i, e.what());

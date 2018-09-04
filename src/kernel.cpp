@@ -12,10 +12,17 @@
 #include "timedata.h"
 #include "util.h"
 
-using namespace std;
+using std::vector;
+using std::map;
+using std::pair;
+using std::make_pair;
+using std::string;
+using std::min;
+using std::unique_ptr;
+
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
-static std::map<int, unsigned int> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7u}};
+static map<int, unsigned int> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7u}};
 
 // Get time weight
 int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd) {
@@ -229,7 +236,7 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     pindex = pindexNext;
     pindexNext = chainActive[pindexNext->nHeight + 1];
     if (pindexNext == nullptr) {
-      // std::cout << " done early\n";
+      // cout << " done early\n";
       return true;
     }
     if (pindex->GeneratedStakeModifier()) {
@@ -309,7 +316,7 @@ bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockF
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::unique_ptr<CStakeInput>& stake) {
+bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, unique_ptr<CStakeInput>& stake) {
   const CTransaction tx = block.vtx[1];
   if (!tx.IsCoinStake())
     return error("CheckProofOfStake() : called on non-coinstake %s", tx.GetHash().ToString().c_str());
@@ -334,7 +341,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::uniqu
 
     auto pivInput = new CStake();
     pivInput->SetInput(txPrev, txin.prevout.n);
-    stake = std::unique_ptr<CStakeInput>(pivInput);
+    stake = unique_ptr<CStakeInput>(pivInput);
   }
 
   CBlockIndex* pindex = stake->GetIndexFrom();
