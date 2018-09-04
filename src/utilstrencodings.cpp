@@ -15,7 +15,8 @@
 #include <cerrno>
 #include <limits>
 
-using namespace std;
+using std::string;
+using std::vector;
 
 string SanitizeString(const string& str) {
   /**

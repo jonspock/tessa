@@ -75,13 +75,12 @@
 #include <sys/prctl.h>
 #endif
 
-using namespace std;
 ArgsManager gArgs;
 
 // Tessa only features
 /** Spork enforcement enabled time */
 bool fSucessfullyLoaded = false;
-string strMiscWarning;
+std::string strMiscWarning;
 
 /** Interpret string as boolean, for argument parsing */
 static bool InterpretBool(const std::string& strValue) {
