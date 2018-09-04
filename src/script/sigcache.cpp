@@ -52,8 +52,8 @@ class CSignatureCache {
 
 }  // namespace
 
-bool CachingTransactionSignatureChecker::VerifySignature(const std::vector<uint8_t>& vchSig, const ecdsa::CPubKey& pubkey,
-                                                         const uint256& sighash) const {
+bool CachingTransactionSignatureChecker::VerifySignature(const std::vector<uint8_t>& vchSig,
+                                                         const ecdsa::CPubKey& pubkey, const uint256& sighash) const {
   static CSignatureCache signatureCache;
 
   if (signatureCache.Get(sighash, vchSig, pubkey)) return true;

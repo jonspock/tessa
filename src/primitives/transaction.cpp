@@ -78,16 +78,17 @@ uint256 CMutableTransaction::GetHash() const { return SerializeHash(*this); }
 
 std::string CMutableTransaction::ToString() const {
   std::string str;
-  str += strprintf("CMutableTransaction(ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n", nTransactionVersion, vin.size(),
-                   vout.size(), nLockTime);
-  for (const auto& v : vin) str += "    " + v.ToString() + "\n";
-  for (const auto& v : vout) str += "    " + v.ToString() + "\n";
+  str += strprintf("CMutableTransaction(ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n", nTransactionVersion,
+                   vin.size(), vout.size(), nLockTime);
+  for (const auto &v : vin) str += "    " + v.ToString() + "\n";
+  for (const auto &v : vout) str += "    " + v.ToString() + "\n";
   return str;
 }
 
 void CTransaction::UpdateHash() const { *const_cast<uint256 *>(&hash) = SerializeHash(*this); }
 
-CTransaction::CTransaction() : hash(), nTransactionVersion(CTransaction::CURRENT_VERSION), vin(), vout(), nLockTime(0) {}
+CTransaction::CTransaction()
+    : hash(), nTransactionVersion(CTransaction::CURRENT_VERSION), vin(), vout(), nLockTime(0) {}
 
 CTransaction::CTransaction(const CMutableTransaction &tx)
     : nTransactionVersion(tx.nTransactionVersion), vin(tx.vin), vout(tx.vout), nLockTime(tx.nLockTime) {
@@ -115,7 +116,7 @@ bool CTransaction::IsCoinStake() const {
 
 CAmount CTransaction::GetValueOut() const {
   CAmount nValueOut = 0;
-  for (const auto& v : vout) {
+  for (const auto &v : vout) {
     // Tessa: previously MoneyRange() was called here. This has been replaced with negative check and boundary wrap
     // check.
     if (v.nValue < 0) throw std::runtime_error("CTransaction::GetValueOut() : value out of range : less than 0");
@@ -129,7 +130,7 @@ CAmount CTransaction::GetValueOut() const {
 }
 
 CAmount CTransaction::GetZerocoinMinted() const {
-  for (const CTxOut& txOut : vout) {
+  for (const CTxOut &txOut : vout) {
     if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
 
     return txOut.nValue;
@@ -139,7 +140,7 @@ CAmount CTransaction::GetZerocoinMinted() const {
 }
 
 bool CTransaction::UsesUTXO(const COutPoint out) {
-  for (const CTxIn& in : vin) {
+  for (const CTxIn &in : vin) {
     if (in.prevout == out) return true;
   }
 
@@ -157,7 +158,7 @@ CAmount CTransaction::GetZerocoinSpent() const {
   if (!IsZerocoinSpend()) return 0;
 
   CAmount nValueOut = 0;
-  for (const CTxIn& txin : vin) {
+  for (const CTxIn &txin : vin) {
     if (!txin.scriptSig.IsZerocoinSpend()) continue;
 
     nValueOut += txin.nSequence * COIN;
@@ -168,7 +169,7 @@ CAmount CTransaction::GetZerocoinSpent() const {
 
 int CTransaction::GetZerocoinMintCount() const {
   int nCount = 0;
-  for (const CTxOut& out : vout) {
+  for (const CTxOut &out : vout) {
     if (out.scriptPubKey.IsZerocoinMint()) nCount++;
   }
   return nCount;
@@ -188,7 +189,7 @@ unsigned int CTransaction::CalculateModifiedSize(unsigned int nTxSize) const {
   // Providing any more cleanup incentive than making additional inputs free would
   // risk encouraging people to create junk outputs to redeem later.
   if (nTxSize == 0) nTxSize = ::GetSerializeSize(*this);
-  for (const auto& v : vin) {
+  for (const auto &v : vin) {
     unsigned int offset = 41U + std::min(110U, (unsigned int)v.scriptSig.size());
     if (nTxSize > offset) nTxSize -= offset;
   }
@@ -199,7 +200,7 @@ std::string CTransaction::ToString() const {
   std::string str;
   str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
                    GetHash().ToString().substr(0, 10), nTransactionVersion, vin.size(), vout.size(), nLockTime);
-  for (const auto& v : vin) { str += "    " + v.ToString() + "\n"; }
-  for (const auto& v : vout) { str += "    " + v.ToString() + "\n"; }
+  for (const auto &v : vin) { str += "    " + v.ToString() + "\n"; }
+  for (const auto &v : vout) { str += "    " + v.ToString() + "\n"; }
   return str;
 }

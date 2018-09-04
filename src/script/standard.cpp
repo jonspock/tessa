@@ -6,8 +6,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "script/standard.h"
-#include "hash.h"
 #include "ecdsa/pubkey.h"
+#include "hash.h"
 #include "script/script.h"
 #include "util.h"
 #include "utilstrencodings.h"
@@ -274,7 +274,7 @@ CScript GetScriptForDestination(const CTxDestination& dest) {
   return script;
 }
 
-CScript GetScriptForRawPubKey(const CPubKey &pubKey) {
+CScript GetScriptForRawPubKey(const CPubKey& pubKey) {
   return CScript() << std::vector<uint8_t>(pubKey.begin(), pubKey.end()) << OP_CHECKSIG;
 }
 

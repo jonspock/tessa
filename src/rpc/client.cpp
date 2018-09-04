@@ -134,9 +134,7 @@ class CRPCConvertTable {
 };
 
 CRPCConvertTable::CRPCConvertTable() {
-  for (const auto& e : vRPCConvertParams) {
-    members.insert(std::make_pair(e.methodName, e.paramIdx));
-  }
+  for (const auto& e : vRPCConvertParams) { members.insert(std::make_pair(e.methodName, e.paramIdx)); }
 }
 
 static CRPCConvertTable rpcCvtTable;

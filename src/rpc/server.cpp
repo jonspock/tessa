@@ -424,7 +424,8 @@ void JSONRequest::parse(const UniValue& valRequest) {
   if (valMethod.isNull()) throw JSONRPCError(RPC_INVALID_REQUEST, "Missing method");
   if (!valMethod.isStr()) throw JSONRPCError(RPC_INVALID_REQUEST, "Method must be a string");
   strMethod = valMethod.get_str();
-  if (strMethod != "getblocktemplate") LogPrint(TessaLog::RPC, "ThreadRPCServer method=%s\n", SanitizeString(strMethod));
+  if (strMethod != "getblocktemplate")
+    LogPrint(TessaLog::RPC, "ThreadRPCServer method=%s\n", SanitizeString(strMethod));
 
   // Parse params
   UniValue valParams = find_value(request, "params");

@@ -5,8 +5,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "ecdsa/pubkey.h"
 #include "script/sign.h"
+#include "ecdsa/pubkey.h"
 #include "primitives/transaction.h"
 #include "uint256.h"
 #include "util.h"
@@ -15,7 +15,8 @@ using namespace std;
 
 typedef vector<uint8_t> valtype;
 
-bool Sign1(const ecdsa::CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet) {
+bool Sign1(const ecdsa::CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType,
+           CScript& scriptSigRet) {
   ecdsa::CKey key;
   if (!keystore.GetKey(address, key)) return false;
 

@@ -7,13 +7,13 @@
 
 #include "primitives/block.h"
 
+#include "crypto/hashargon2d.h"
 #include "hash.h"
 #include "script/sign.h"
 #include "script/standard.h"
 #include "tinyformat.h"
 #include "util.h"
 #include "utilstrencodings.h"
-#include "crypto/hashargon2d.h"
 
 uint256 CBlockHeader::GetHash() const {
 #ifndef POWARGON
@@ -61,9 +61,7 @@ uint256 CBlock::BuildMerkleTree(bool* fMutated) const {
   */
   vMerkleTree.clear();
   vMerkleTree.reserve(vtx.size() * 2 + 16);  // Safe upper bound for the number of total nodes.
-  for (const auto& it : vtx) {
-    vMerkleTree.push_back(it.GetHash());
-  }
+  for (const auto& it : vtx) { vMerkleTree.push_back(it.GetHash()); }
   int j = 0;
   bool mutated = false;
   for (int nSize = vtx.size(); nSize > 1; nSize = (nSize + 1) / 2) {
