@@ -297,7 +297,7 @@ CTxMemPool::~CTxMemPool() { delete minerPolicyEstimator; }
 void CTxMemPool::pruneSpent(const uint256& hashTx, CCoins& coins) {
   LOCK(cs);
 
-  std::map<COutPoint, CInPoint>::iterator it = mapNextTx.lower_bound(COutPoint(hashTx, 0));
+  auto it = mapNextTx.lower_bound(COutPoint(hashTx, 0));
 
   // iterate over all COutPoints in mapNextTx whose hash equals the provided hashTx
   while (it != mapNextTx.end() && it->first.hash == hashTx) {
@@ -345,7 +345,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
       // happen during chain re-orgs if origTx isn't re-accepted into
       // the mempool for any reason.
       for (unsigned int i = 0; i < origTx.vout.size(); i++) {
-        std::map<COutPoint, CInPoint>::iterator it = mapNextTx.find(COutPoint(origTx.GetHash(), i));
+        auto it = mapNextTx.find(COutPoint(origTx.GetHash(), i));
         if (it == mapNextTx.end()) continue;
         txToRemove.push_back(it->second.ptx->GetHash());
       }
@@ -357,7 +357,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
       const CTransaction& tx = mapTx[hash].GetTx();
       if (fRecursive) {
         for (unsigned int i = 0; i < tx.vout.size(); i++) {
-          std::map<COutPoint, CInPoint>::iterator it = mapNextTx.find(COutPoint(hash, i));
+          auto it = mapNextTx.find(COutPoint(hash, i));
           if (it == mapNextTx.end()) continue;
           txToRemove.push_back(it->second.ptx->GetHash());
         }
@@ -376,10 +376,10 @@ void CTxMemPool::removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned in
   // Remove transactions spending a coinbase which are now immature
   LOCK(cs);
   list<CTransaction> transactionsToRemove;
-  for (std::map<uint256, CTxMemPoolEntry>::const_iterator it = mapTx.begin(); it != mapTx.end(); it++) {
-    const CTransaction& tx = it->second.GetTx();
+  for (auto& it : mapTx) {
+    const CTransaction& tx = it.second.GetTx();
     for (const CTxIn& txin : tx.vin) {
-      std::map<uint256, CTxMemPoolEntry>::const_iterator it2 = mapTx.find(txin.prevout.hash);
+      auto it2 = mapTx.find(txin.prevout.hash);
       if (it2 != mapTx.end()) continue;
       const CCoins* coins = pcoins->AccessCoins(txin.prevout.hash);
       if (fSanityCheck) assert(coins);
@@ -401,7 +401,7 @@ void CTxMemPool::removeConflicts(const CTransaction& tx, std::list<CTransaction>
   list<CTransaction> result;
   LOCK(cs);
   for (const CTxIn& txin : tx.vin) {
-    std::map<COutPoint, CInPoint>::iterator it = mapNextTx.find(txin.prevout);
+    auto it = mapNextTx.find(txin.prevout);
     if (it != mapNextTx.end()) {
       const CTransaction& txConflict = *it->second.ptx;
       if (txConflict != tx) { remove(txConflict, removed, true); }
@@ -456,7 +456,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
     bool fDependsWait = false;
     for (const CTxIn& txin : tx.vin) {
       // Check that every mempool transaction's inputs refer to available coins, or other mempool tx's.
-      std::map<uint256, CTxMemPoolEntry>::const_iterator it2 = mapTx.find(txin.prevout.hash);
+      auto it2 = mapTx.find(txin.prevout.hash);
       if (it2 != mapTx.end()) {
         const CTransaction& tx2 = it2->second.GetTx();
         assert(tx2.vout.size() > txin.prevout.n && !tx2.vout[txin.prevout.n].IsNull());
@@ -497,14 +497,14 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
       stepsSinceLastRemove = 0;
     }
   }
-  for (std::map<COutPoint, CInPoint>::const_iterator it = mapNextTx.begin(); it != mapNextTx.end(); it++) {
-    uint256 hash = it->second.ptx->GetHash();
-    map<uint256, CTxMemPoolEntry>::const_iterator it2 = mapTx.find(hash);
+  for (auto& it : mapNextTx) {
+    uint256 hash = it.second.ptx->GetHash();
+    auto it2 = mapTx.find(hash);
     const CTransaction& tx = it2->second.GetTx();
     assert(it2 != mapTx.end());
-    assert(&tx == it->second.ptx);
-    assert(tx.vin.size() > it->second.n);
-    assert(it->first == it->second.ptx->vin[it->second.n].prevout);
+    assert(&tx == it.second.ptx);
+    assert(tx.vin.size() > it.second.n);
+    assert(it.first == it.second.ptx->vin[it.second.n].prevout);
   }
 
   assert(totalTxSize == checkTotal);
@@ -515,15 +515,14 @@ void CTxMemPool::queryHashes(vector<uint256>& vtxid) {
 
   LOCK(cs);
   vtxid.reserve(mapTx.size());
-  for (map<uint256, CTxMemPoolEntry>::iterator mi = mapTx.begin(); mi != mapTx.end(); ++mi)
-    vtxid.push_back((*mi).first);
+  for (auto& mi : mapTx) vtxid.push_back(mi.first);
 }
 
 void CTxMemPool::getTransactions(std::set<uint256>& setTxid) {
   setTxid.clear();
 
   LOCK(cs);
-  for (map<uint256, CTxMemPoolEntry>::iterator mi = mapTx.begin(); mi != mapTx.end(); ++mi) setTxid.insert((*mi).first);
+  for (auto& mi : mapTx) setTxid.insert(mi.first);
 }
 
 bool CTxMemPool::lookup(uint256 hash, CTransaction& result) const {
@@ -585,7 +584,7 @@ void CTxMemPool::PrioritiseTransaction(const uint256 hash, const string strHash,
 
 void CTxMemPool::ApplyDeltas(const uint256 hash, double& dPriorityDelta, CAmount& nFeeDelta) {
   LOCK(cs);
-  std::map<uint256, std::pair<double, CAmount> >::iterator pos = mapDeltas.find(hash);
+  auto pos = mapDeltas.find(hash);
   if (pos == mapDeltas.end()) return;
   const std::pair<double, CAmount>& deltas = pos->second;
   dPriorityDelta += deltas.first;

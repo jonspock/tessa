@@ -156,7 +156,7 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vMasterKeyIn) {
 
     bool keyPass = false;
     bool keyFail = false;
-    CryptedKeyMap::const_iterator mi = mapCryptedKeys.begin();
+    auto mi = mapCryptedKeys.begin();
     for (; mi != mapCryptedKeys.end(); ++mi) {
       const CPubKey &vchPubKey = (*mi).second.first;
       const std::vector<uint8_t> &vchCryptedSecret = (*mi).second.second;
@@ -244,7 +244,7 @@ bool CCryptoKeyStore::GetPubKey(const CKeyID &address, CPubKey &vchPubKeyOut) co
     LOCK(cs_KeyStore);
     if (!IsCrypted()) return CBasicKeyStore::GetPubKey(address, vchPubKeyOut);
 
-    CryptedKeyMap::const_iterator mi = mapCryptedKeys.find(address);
+    auto mi = mapCryptedKeys.find(address);
     if (mi != mapCryptedKeys.end()) {
       vchPubKeyOut = (*mi).second.first;
       return true;

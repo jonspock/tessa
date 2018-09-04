@@ -40,18 +40,18 @@ int CWalletTx::GetRequestCount() const {
     if (IsCoinBase()) {
       // Generated block
       if (!hashBlock.IsNull()) {
-        map<uint256, int>::const_iterator mi = pwallet->mapRequestCount.find(hashBlock);
+        auto mi = pwallet->mapRequestCount.find(hashBlock);
         if (mi != pwallet->mapRequestCount.end()) nRequests = (*mi).second;
       }
     } else {
       // Did anyone request this transaction?
-      map<uint256, int>::const_iterator mi = pwallet->mapRequestCount.find(GetHash());
+      auto mi = pwallet->mapRequestCount.find(GetHash());
       if (mi != pwallet->mapRequestCount.end()) {
         nRequests = (*mi).second;
 
         // How about the block it's in?
         if (nRequests == 0 && !hashBlock.IsNull()) {
-          map<uint256, int>::const_iterator mi = pwallet->mapRequestCount.find(hashBlock);
+          auto mi = pwallet->mapRequestCount.find(hashBlock);
           if (mi != pwallet->mapRequestCount.end())
             nRequests = (*mi).second;
           else
@@ -318,7 +318,7 @@ void CWalletTx::GetAccountAmounts(const string& strAccount, CAmount& nReceived, 
     LOCK(pwallet->cs_wallet);
     for (const COutputEntry& r : listReceived) {
       if (pwallet->mapAddressBook.count(r.destination)) {
-        map<CTxDestination, CAddressBookData>::const_iterator mi = pwallet->mapAddressBook.find(r.destination);
+        auto mi = pwallet->mapAddressBook.find(r.destination);
         if (mi != pwallet->mapAddressBook.end() && (*mi).second.name == strAccount) nReceived += r.amount;
       } else if (strAccount.empty()) {
         nReceived += r.amount;
