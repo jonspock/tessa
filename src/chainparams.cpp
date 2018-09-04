@@ -12,7 +12,7 @@
 #include "util.h"
 #include "utilstrencodings.h"
 
-#include <assert.h>
+#include <cassert>
 
 using namespace std;
 

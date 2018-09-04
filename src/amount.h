@@ -10,7 +10,7 @@
 
 #include "serialize.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 
 typedef int64_t CAmount;

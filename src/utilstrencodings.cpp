@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
-#include <errno.h>
+#include <cerrno>
 #include <limits>
 
 using namespace std;

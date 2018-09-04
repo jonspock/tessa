@@ -10,8 +10,7 @@
 #include "script/interpreter.h"
 #include "uint256.h"
 #include <boost/variant.hpp>
-
-#include <stdint.h>
+#include <cstdint>
 
 namespace ecdsa {
   class CPubKey;

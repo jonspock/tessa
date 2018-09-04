@@ -10,7 +10,7 @@
 #include "hash.h"
 #include "support/cleanse.h"
 #include "uint256.h"
-#include <assert.h>
+#include <cassert>
 #include <boost/variant/apply_visitor.hpp>
 #include <boost/variant/static_visitor.hpp>
 #include <cstdint>

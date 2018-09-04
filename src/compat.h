@@ -36,7 +36,6 @@
 #else
 #include <arpa/inet.h>
 #include <ifaddrs.h>
-#include <limits.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -45,6 +44,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <climits>
 #endif
 
 #ifdef WIN32

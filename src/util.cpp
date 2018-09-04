@@ -11,6 +11,7 @@
 #endif
 
 #include <mutex>
+#include <cstdarg>
 
 #include "chainparamsbase.h"
 #include "random.h"
@@ -24,7 +25,6 @@
 #include "fs.h"
 
 #include <boost/thread.hpp>
-#include <stdarg.h>
 
 #ifndef WIN32
 // for posix_fallocate

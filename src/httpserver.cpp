@@ -16,7 +16,7 @@
 
 #include <cstdio>
 #include <cstring>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <signal.h>
 #include <sys/stat.h>
