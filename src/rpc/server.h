@@ -12,11 +12,11 @@
 #include "rpc/protocol.h"
 #include "uint256.h"
 
+#include <cstdint>
+#include <functional>
 #include <list>
 #include <map>
-#include <cstdint>
 #include <string>
-#include <functional>
 #include <univalue.h>
 
 class CRPCCommand;

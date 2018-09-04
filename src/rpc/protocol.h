@@ -8,9 +8,9 @@
 #pragma once
 
 #include "fs.h"
+#include <cstdint>
 #include <list>
 #include <map>
-#include <cstdint>
 #include <string>
 
 #include <univalue.h>
@@ -89,4 +89,3 @@ bool GenerateAuthCookie(std::string* cookie_out);
 bool GetAuthCookie(std::string* cookie_out);
 /** Delete RPC authentication cookie from disk */
 void DeleteAuthCookie();
-
