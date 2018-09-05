@@ -10,9 +10,9 @@
 #include "tinyformat.h"
 
 #include <algorithm>
+#include <cerrno>
 #include <cstdlib>
 #include <cstring>
-#include <cerrno>
 #include <limits>
 
 using std::string;

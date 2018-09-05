@@ -10,8 +10,8 @@
 #include "tessa-config.h"
 #endif
 
-#include <mutex>
 #include <cstdarg>
+#include <mutex>
 
 #include "chainparamsbase.h"
 #include "random.h"

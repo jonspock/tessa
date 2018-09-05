@@ -12,14 +12,13 @@
 #include "timedata.h"
 #include "util.h"
 
-using std::vector;
-using std::map;
-using std::pair;
 using std::make_pair;
-using std::string;
+using std::map;
 using std::min;
+using std::pair;
+using std::string;
 using std::unique_ptr;
-
+using std::vector;
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static map<int, unsigned int> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7u}};

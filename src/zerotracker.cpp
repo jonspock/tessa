@@ -12,9 +12,8 @@
 #include "util.h"
 #include "wallet/walletdb.h"
 
-using std::vector;
 using std::make_pair;
-
+using std::vector;
 
 CZeroTracker::CZeroTracker() {
   mapSerialHashes.clear();
