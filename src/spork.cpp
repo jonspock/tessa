@@ -150,7 +150,7 @@ void CSporkManager::ReprocessBlocks(int nBlocks) {
   if (state.IsValid()) { ActivateBestChain(state); }
 }
 
-bool CSporkManager::VerifyMessage(CPubKey pubkey, vector<uint8_t>& vchSig, std::string strMessage) {
+bool CSporkManager::VerifyMessage(CPubKey pubkey, vector<uint8_t>& vchSig, const std::string& strMessage) {
   CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
@@ -176,7 +176,7 @@ bool CSporkManager::CheckSignature(CSporkMessage& spork, bool fCheckSigner) {
   return fValidWithNewKey;
 }
 
-bool CSporkManager::SetKey(std::string strSecret, CKey& key, CPubKey& pubkey) {
+bool CSporkManager::SetKey(const std::string& strSecret, CKey& key, CPubKey& pubkey) {
   CBitcoinSecret vchSecret;
   bool fGood = vchSecret.SetString(strSecret);
 
@@ -188,7 +188,7 @@ bool CSporkManager::SetKey(std::string strSecret, CKey& key, CPubKey& pubkey) {
   return true;
 }
 
-bool CSporkManager::SignMessage(std::string strMessage, vector<uint8_t>& vchSig, CKey key) {
+bool CSporkManager::SignMessage(const std::string& strMessage, vector<uint8_t>& vchSig, CKey key) {
   CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
@@ -244,7 +244,7 @@ void CSporkManager::Relay(CSporkMessage& msg) {
   RelayInv(inv);
 }
 
-bool CSporkManager::SetPrivKey(std::string strPrivKey) {
+bool CSporkManager::SetPrivKey(const std::string& strPrivKey) {
   CSporkMessage msg;
 
   // Test signing successful, proceed
@@ -257,7 +257,7 @@ bool CSporkManager::SetPrivKey(std::string strPrivKey) {
   return ok;
 }
 
-SporkID CSporkManager::GetSporkIDByName(std::string strName) {
+SporkID CSporkManager::GetSporkIDByName(const std::string& strName) {
   if (strName == "SPORK_PROTOCOL_ENFORCEMENT")
     return SporkID::SPORK_PROTOCOL_ENFORCEMENT;
   else

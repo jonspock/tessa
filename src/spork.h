@@ -67,16 +67,16 @@ class CSporkManager {
   CSporkMessage getSpork(const uint256& s) { return mapSporks[s]; }
 
   std::string GetSporkNameByID(SporkID id);
-  SporkID GetSporkIDByName(std::string strName);
+  SporkID GetSporkIDByName(const std::string& strName);
   SporkID GetSporkIDByInt(int i);
   int64_t GetSporkValue(SporkID i);
   bool IsSporkActive(SporkID nSporkID);
 
   bool UpdateSpork(SporkID nSporkID, int64_t nValue);
-  bool SetPrivKey(std::string strPrivKey);
-  bool SetKey(std::string strSecret, ecdsa::CKey& key, ecdsa::CPubKey& pubkey);
-  bool SignMessage(std::string strMessage, std::vector<uint8_t>& vchSig, ecdsa::CKey key);
-  bool VerifyMessage(ecdsa::CPubKey pubkey, std::vector<uint8_t>& vchSig, std::string strMessage);
+  bool SetPrivKey(const std::string& strPrivKey);
+  bool SetKey(const std::string& strSecret, ecdsa::CKey& key, ecdsa::CPubKey& pubkey);
+  bool SignMessage(const std::string& strMessage, std::vector<uint8_t>& vchSig, ecdsa::CKey key);
+  bool VerifyMessage(ecdsa::CPubKey pubkey, std::vector<uint8_t>& vchSig, const std::string& strMessage);
   bool CheckSignature(CSporkMessage& spork, bool fCheckSigner = false);
   bool Sign(CSporkMessage& spork);
   void Relay(CSporkMessage& msg);

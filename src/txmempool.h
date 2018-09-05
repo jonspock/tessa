@@ -17,7 +17,7 @@
 
 class CAutoFile;
 
-inline double AllowFreeThreshold() { return COIN * 1440 / 250; }
+inline double AllowFreeThreshold() { return (double)COIN * 1440 / 250.0; }
 
 inline bool AllowFree(double dPriority) {
   // Large (in bytes) low-priority (new, small-coin) transactions
@@ -126,7 +126,7 @@ class CTxMemPool {
   void AddTransactionsUpdated(unsigned int n);
 
   /** Affect CreateNewBlock prioritisation of transactions */
-  void PrioritiseTransaction(const uint256 hash, const std::string strHash, double dPriorityDelta,
+  void PrioritiseTransaction(const uint256 hash, const std::string& strHash, double dPriorityDelta,
                              const CAmount& nFeeDelta);
   void ApplyDeltas(const uint256 hash, double& dPriorityDelta, CAmount& nFeeDelta);
   void ClearPrioritisation(const uint256 hash);

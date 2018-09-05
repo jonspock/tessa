@@ -123,7 +123,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
                                       CZerocoinSpendReceipt& receipt, std::vector<CZerocoinMint>& vSelectedMints,
                                       std::vector<CDeterministicMint>& vNewMints, bool fMintChange,
                                       bool fMinimizeChange, CBitcoinAddress* address = nullptr);
-  bool MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
+  bool MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
                   CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType,
                   CBlockIndex* pindexCheckpoint = nullptr);
   std::string MintZerocoinFromOutPoint(CAmount nValue, CWalletTx& wtxNew, std::vector<CDeterministicMint>& vDMints,
@@ -409,7 +409,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   std::set<std::set<CTxDestination> > GetAddressGroupings();
   std::map<CTxDestination, CAmount> GetAddressBalances();
 
-  std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
+  std::set<CTxDestination> GetAccountAddresses(const std::string& strAccount) const;
 
   isminetype IsMine(const CTxIn& txin) const;
   CAmount GetDebit(const CTxIn& txin, const isminefilter& filter) const;
@@ -482,7 +482,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   bool SetDefaultKey(const ecdsa::CPubKey& vchPubKey);
 
-  CWallet* CreateWalletFromFile(const std::string walletFile);
+  CWallet* CreateWalletFromFile(const std::string& walletFile);
 
   /* Set the HD chain model (chain child index counters) */
   bool SetHDChain(const CHDChain& chain, bool memonly);

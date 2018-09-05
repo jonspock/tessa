@@ -74,7 +74,7 @@ template <typename T> inline std::string HexStr(const T& vch, bool fSpaces = fal
 }
 
 /** Reverse the endianess of a string */
-inline std::string ReverseEndianString(std::string in) {
+inline std::string ReverseEndianString(const std::string& in) {
   std::string out = "";
   unsigned int s = in.size();
   for (unsigned int i = 0; i < s; i += 2) { out += in.substr(s - i - 2, 2); }
@@ -86,7 +86,7 @@ inline std::string ReverseEndianString(std::string in) {
  * Format a paragraph of text to a fixed width, adding spaces for
  * indentation to any added line.
  */
-std::string FormatParagraph(const std::string in, size_t width = 79, size_t indent = 0);
+std::string FormatParagraph(const std::string& in, size_t width = 79, size_t indent = 0);
 
 /**
  * Timing-attack-resistant comparison.

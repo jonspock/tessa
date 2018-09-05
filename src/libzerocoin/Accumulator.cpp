@@ -32,7 +32,7 @@ Accumulator::Accumulator(const ZerocoinParams* p, const CoinDenomination d) : de
   this->zkp_iterations = p->zkp_iterations;
   this->value = this->params->accumulatorBase;
 }
-Accumulator::Accumulator(const ZerocoinParams* p, const CoinDenomination d, const Bignum bnValue) : denomination(d) {
+  Accumulator::Accumulator(const ZerocoinParams* p, const Bignum& bnValue, const CoinDenomination d) : denomination(d) {
   assert(p);
   this->params = &(p->accumulatorParams);
   this->zkp_iterations = p->zkp_iterations;

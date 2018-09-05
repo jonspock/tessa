@@ -18,7 +18,7 @@
 
 namespace libzerocoin {
 
-void AccumulatorWitness::resetValue(const Accumulator& checkpoint, const PublicCoin coin) {
+void AccumulatorWitness::resetValue(const Accumulator& checkpoint, const PublicCoin& coin) {
   this->witness.setValue(checkpoint.getValue());
   this->element = coin;
 }

@@ -24,7 +24,7 @@ class CValidationState {
 
  public:
   CValidationState() : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false) {}
-  bool DoS(int level, bool ret = false, uint8_t chRejectCodeIn = 0, std::string strRejectReasonIn = "",
+  bool DoS(int level, bool ret = false, uint8_t chRejectCodeIn = 0, const std::string& strRejectReasonIn = "",
            bool corruptionIn = false) {
     chRejectCode = chRejectCodeIn;
     strRejectReason = strRejectReasonIn;
@@ -34,10 +34,10 @@ class CValidationState {
     mode = MODE_INVALID;
     return ret;
   }
-  bool Invalid(bool ret = false, uint8_t _chRejectCode = 0, std::string _strRejectReason = "") {
+  bool Invalid(bool ret = false, uint8_t _chRejectCode = 0, const std::string& _strRejectReason = "") {
     return DoS(0, ret, _chRejectCode, _strRejectReason);
   }
-  bool Error(std::string strRejectReasonIn = "") {
+  bool Error(const std::string& strRejectReasonIn = "") {
     if (mode == MODE_VALID) strRejectReason = strRejectReasonIn;
     mode = MODE_ERROR;
     return false;

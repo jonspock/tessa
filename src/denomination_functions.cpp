@@ -33,7 +33,7 @@ CoinDenomination getMaxDenomHeld(const std::map<CoinDenomination, CAmount>& mapC
 // Get Exact Amount with CoinsHeld
 // -------------------------------------------------------------------------------------------------------
 std::map<CoinDenomination, CAmount> getSpendCoins(const CAmount nValueTarget,
-                                                  const std::map<CoinDenomination, CAmount> mapOfDenomsHeld)
+                                                  const std::map<CoinDenomination, CAmount>& mapOfDenomsHeld)
 
 {
   std::map<CoinDenomination, CAmount> mapUsed;
@@ -366,7 +366,7 @@ int calculateChange(int nMaxNumberOfSpends, bool fMinimizeChange, const CAmount 
 std::vector<CMintMeta> SelectMintsFromList(const CAmount nValueTarget, CAmount& nSelectedValue, int nMaxNumberOfSpends,
                                            bool fMinimizeChange, int& nCoinsReturned,
                                            const std::list<CMintMeta>& listMints,
-                                           const std::map<CoinDenomination, CAmount> mapOfDenomsHeld,
+                                           const std::map<CoinDenomination, CAmount>& mapOfDenomsHeld,
                                            int& nNeededSpends) {
   std::vector<CMintMeta> vSelectedMints;
   std::map<CoinDenomination, CAmount> mapOfDenomsUsed;

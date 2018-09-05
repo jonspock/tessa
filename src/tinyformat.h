@@ -939,7 +939,7 @@ namespace detail {
     // nonstandard.
     template <> class FormatListN<0> : public FormatList {
     public:
-        FormatListN() : FormatList(0, 0) {}
+        FormatListN() : FormatList(nullptr, 0) {}
     };
 
 } // namespace detail

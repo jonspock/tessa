@@ -110,7 +110,7 @@ class CDB {
 
     // Erase
     activeTxn = TxnBegin();
-    int ret = mdb_del(activeTxn, dbi, &datKey, 0);
+    int ret = mdb_del(activeTxn, dbi, &datKey, nullptr);
     ret |= TxnCommit();
     return (ret == 0 || ret == MDB_NOTFOUND);
   }
@@ -126,7 +126,7 @@ class CDB {
 
     // Exists
     activeTxn = TxnBegin();
-    int ret = mdb_get(activeTxn, dbi, &datKey, 0);
+    int ret = mdb_get(activeTxn, dbi, &datKey, nullptr);
 
     // if non-zero, it doesn't exist!
     return (ret == 0);

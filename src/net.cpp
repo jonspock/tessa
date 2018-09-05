@@ -399,7 +399,7 @@ void CNode::CloseSocketDisconnect() {
   if (lockRecv) vRecvMsg.clear();
 }
 
-bool CNode::DisconnectOldProtocol(int nVersionRequired, string strLastCommand) {
+bool CNode::DisconnectOldProtocol(int nVersionRequired, const string& strLastCommand) {
   fDisconnect = false;
   if (nNodeVersion < nVersionRequired) {
     LogPrintf("%s : peer=%d using obsolete version %i; disconnecting\n", __func__, id, nNodeVersion);
@@ -1847,7 +1847,7 @@ bool CAddrDB::Read(CAddrMan& addr) {
 unsigned int ReceiveFloodSize() { return 1000 * GetArg("-maxreceivebuffer", 5 * 1000); }
 unsigned int SendBufferSize() { return 1000 * GetArg("-maxsendbuffer", 1 * 1000); }
 
-CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn)
+CNode::CNode(SOCKET hSocketIn, CAddress addrIn, const std::string& addrNameIn, bool fInboundIn)
     : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000) {
   nServices = 0;
   hSocket = hSocketIn;

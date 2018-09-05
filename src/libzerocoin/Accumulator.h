@@ -49,7 +49,7 @@ class Accumulator {
   Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination d,
               int iterations = ZEROCOIN_DEFAULT_SECURITYLEVEL);
   Accumulator(const ZerocoinParams* p, const CoinDenomination d);
-  Accumulator(const ZerocoinParams* p, const CoinDenomination d, Bignum bnValue);
+  Accumulator(const ZerocoinParams* p, const Bignum& bnValue, const CoinDenomination d);
 
   /**
    * Accumulate a coin into the accumulator. Validates
@@ -70,7 +70,7 @@ class Accumulator {
    */
   const CBigNum& getValue() const { return this->value; }
 
-  void setValue(CBigNum bnValue) { this->value = bnValue; }
+  void setValue(const CBigNum& bnValue) { this->value = bnValue; }
 
   // /**
   //  * Used to set the accumulator value

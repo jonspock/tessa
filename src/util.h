@@ -59,7 +59,7 @@ void FileCommit(FILE* fileout);
 bool TruncateFile(FILE* file, unsigned int length);
 int RaiseFileDescriptorLimit(int nMinFD);
 void AllocateFileRange(FILE* file, unsigned int offset, unsigned int length);
-bool RenameOver(fs::path src, fs::path dest);
+bool RenameOver(const fs::path& src, fs::path& dest);
 bool TryCreateDirectory(const fs::path& p);
 fs::path GetDefaultDataDir();
 const fs::path& GetDataDir(bool fNetSpecific = true);
@@ -74,7 +74,7 @@ fs::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 #endif
 fs::path GetTempPath();
 void ShrinkDebugFile();
-void runCommand(std::string strCommand);
+void runCommand(const std::string& strCommand);
 
 inline bool IsSwitchChar(char c) {
 #ifdef WIN32

@@ -15,7 +15,7 @@ void zmqError(const char *str)
     LogPrint(TessaLog::ZMQ, "zmq: Error: %s, errno=%s\n", str, zmq_strerror(errno));
 }
 
-CZMQNotificationInterface::CZMQNotificationInterface() : pcontext(NULL)
+CZMQNotificationInterface::CZMQNotificationInterface() : pcontext(nullptr)
 {
 }
 

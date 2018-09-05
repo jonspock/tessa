@@ -108,7 +108,7 @@ bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidati
                                     __func__, HexStr(BEGIN(nChecksum), END(nChecksum))));
       }
 
-      Accumulator accumulator(libzerocoin::gpZerocoinParams, newSpend.getDenomination(), bnAccumulatorValue);
+      Accumulator accumulator(libzerocoin::gpZerocoinParams, bnAccumulatorValue, newSpend.getDenomination());
 
       // Check that the coin has been accumulated
       if (!newSpend.Verify(accumulator))
@@ -149,7 +149,7 @@ void RecalculateZKPMinted() {
 
     vector<libzerocoin::CoinDenomination> vDenomsBefore = pindex->vMintDenominationsInBlock;
     pindex->vMintDenominationsInBlock.clear();
-    for (auto mint : listMints) pindex->vMintDenominationsInBlock.emplace_back(mint.GetDenomination());
+    for (const auto& mint : listMints) pindex->vMintDenominationsInBlock.emplace_back(mint.GetDenomination());
 
     if (pindex->nHeight < nHeightEnd)
       pindex = chainActive.Next(pindex);

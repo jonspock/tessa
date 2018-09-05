@@ -73,7 +73,7 @@ class CZerocoinMint {
   uint256 GetHash() const;
 
   CBigNum GetValue() const { return value; }
-  void SetValue(CBigNum value) { this->value = value; }
+  void SetValue(const CBigNum& value) { this->value = value; }
   libzerocoin::CoinDenomination GetDenomination() const { return denomination; }
   int64_t GetDenominationAsAmount() const { return denomination * COIN; }
   void SetDenomination(libzerocoin::CoinDenomination denom) { this->denomination = denom; }
@@ -82,9 +82,9 @@ class CZerocoinMint {
   bool IsUsed() const { return this->isUsed; }
   void SetUsed(bool isUsed) { this->isUsed = isUsed; }
   CBigNum GetRandomness() const { return randomness; }
-  void SetRandomness(CBigNum rand) { this->randomness = rand; }
+  void SetRandomness(const CBigNum& rand) { this->randomness = rand; }
   CBigNum GetSerialNumber() const { return serialNumber; }
-  void SetSerialNumber(CBigNum serial) { this->serialNumber = serial; }
+  void SetSerialNumber(const CBigNum& serial) { this->serialNumber = serial; }
   uint256 GetTxHash() const { return this->txid; }
   void SetTxHash(uint256 txid) { this->txid = txid; }
   uint8_t GetVersion() const { return this->nMintVersion; }
@@ -164,7 +164,7 @@ class CZerocoinSpend {
  public:
   CZerocoinSpend() { SetNull(); }
 
-  CZerocoinSpend(CBigNum coinSerial, uint256 hashTx, CBigNum pubCoin, libzerocoin::CoinDenomination denomination,
+  CZerocoinSpend(const CBigNum& coinSerial, uint256 hashTx, const CBigNum& pubCoin, libzerocoin::CoinDenomination denomination,
                  unsigned int nAccumulatorChecksum) {
     this->coinSerial = coinSerial;
     this->hashTx = hashTx;
@@ -212,7 +212,7 @@ class CZerocoinSpendReceipt {
  public:
   void AddSpend(const CZerocoinSpend& spend);
   std::vector<CZerocoinSpend> GetSpends();
-  void SetStatus(std::string strStatus, int nStatus, int nNeededSpends = 0);
+  void SetStatus(const std::string& strStatus, int nStatus, int nNeededSpends = 0);
   std::string GetStatusMessage();
   int GetStatus();
   int GetNeededSpends();

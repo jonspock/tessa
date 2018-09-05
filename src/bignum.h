@@ -59,7 +59,7 @@ public:
         SetHexBool(str);
     }
     
-    explicit CBigNum(arith_uint256 n) { mpz_init(bn); setuint256(n); }
+    explicit CBigNum(arith_uint256 n) { mpz_init(bn); setuint256(std::move(n)); }
     explicit CBigNum(uint256 n) { mpz_init(bn); setuint256(n); }
 
     explicit CBigNum(const std::vector<unsigned char>& vch)

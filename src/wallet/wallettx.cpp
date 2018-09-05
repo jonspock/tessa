@@ -128,7 +128,7 @@ CAmount CWalletTx::GetImmatureCredit(bool fUseCache) const {
 }
 
 CAmount CWalletTx::GetAvailableCredit(bool fUseCache) const {
-  if (pwallet == 0) return 0;
+  if (pwallet == nullptr) return 0;
 
   // Must wait until coinbase is safely deep enough in the chain before valuing it
   if (IsCoinBase() && GetBlocksToMaturity() > 0) return 0;
@@ -152,7 +152,7 @@ CAmount CWalletTx::GetAvailableCredit(bool fUseCache) const {
 
 // Return sum of unlocked coins
 CAmount CWalletTx::GetUnlockedCredit() const {
-  if (pwallet == 0) return 0;
+  if (pwallet == nullptr) return 0;
 
   // Must wait until coinbase is safely deep enough in the chain before valuing it
   if (IsCoinBase() && GetBlocksToMaturity() > 0) return 0;
@@ -173,7 +173,7 @@ CAmount CWalletTx::GetUnlockedCredit() const {
 
 // Return sum of unlocked coins
 CAmount CWalletTx::GetLockedCredit() const {
-  if (pwallet == 0) return 0;
+  if (pwallet == nullptr) return 0;
 
   // Must wait until coinbase is safely deep enough in the chain before valuing it
   if (IsCoinBase() && GetBlocksToMaturity() > 0) return 0;
@@ -207,7 +207,7 @@ CAmount CWalletTx::GetImmatureWatchOnlyCredit(const bool& fUseCache) const {
 }
 
 CAmount CWalletTx::GetAvailableWatchOnlyCredit(const bool& fUseCache) const {
-  if (pwallet == 0) return 0;
+  if (pwallet == nullptr) return 0;
 
   // Must wait until coinbase is safely deep enough in the chain before valuing it
   if (IsCoinBase() && GetBlocksToMaturity() > 0) return 0;
@@ -229,7 +229,7 @@ CAmount CWalletTx::GetAvailableWatchOnlyCredit(const bool& fUseCache) const {
 }
 
 CAmount CWalletTx::GetLockedWatchOnlyCredit() const {
-  if (pwallet == 0) return 0;
+  if (pwallet == nullptr) return 0;
 
   // Must wait until coinbase is safely deep enough in the chain before valuing it
   if (IsCoinBase() && GetBlocksToMaturity() > 0) return 0;

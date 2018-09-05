@@ -191,7 +191,7 @@ bool CDB::Exists(CDataStream& key) {
 
   // Exists
   activeTxn = TxnBegin();
-  int dbr = mdb_get(activeTxn, dbi, &datKey, 0);
+  int dbr = mdb_get(activeTxn, dbi, &datKey, nullptr);
   dbr |= TxnCommit();
 
   // if non-zero, it doesn't exist!
@@ -206,7 +206,7 @@ bool CDB::Erase(CDataStream& key) {
 
   // Erase
   activeTxn = TxnBegin();
-  int dbr = mdb_del(activeTxn, dbi, &datKey, 0);
+  int dbr = mdb_del(activeTxn, dbi, &datKey, nullptr);
   dbr |= TxnCommit();
   return (dbr == 0 || dbr == MDB_NOTFOUND);
 }

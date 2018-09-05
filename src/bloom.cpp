@@ -34,7 +34,7 @@ CBloomFilter::CBloomFilter(unsigned int nElements, double nFPRate, unsigned int 
        */
       isFull(false),
       isEmpty(false),
-      nHashFuncs(min((unsigned int)(vData.size() * 8 / nElements * LN2), MAX_HASH_FUNCS)),
+      nHashFuncs(min((unsigned int)(vData.size() * 8.0 / nElements * LN2), MAX_HASH_FUNCS)),
       nTweak(nTweakIn),
       nFlags(nFlagsIn) {}
 

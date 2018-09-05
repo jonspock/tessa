@@ -1179,7 +1179,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   if (gArgs.IsArgSet("-onlynet")) {
     std::set<enum Network> nets;
-    for (std::string snet : gArgs.GetArgs("-onlynet")) {
+    for (const auto& snet : gArgs.GetArgs("-onlynet")) {
       enum Network net = ParseNetwork(snet);
       if (net == NET_UNROUTABLE) return InitError(strprintf(_("Unknown network specified in -onlynet: '%s'"), snet));
       nets.insert(net);
@@ -1249,13 +1249,13 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   bool fBound = false;
   if (fListen) {
     if (gArgs.IsArgSet("-bind") || gArgs.IsArgSet("-whitebind")) {
-      for (std::string strBind : gArgs.GetArgs("-bind")) {
+      for (const std::string& strBind : gArgs.GetArgs("-bind")) {
         CService addrBind;
         if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
           return InitError(strprintf(_("Cannot resolve -bind address: '%s'"), strBind));
         fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
       }
-      for (std::string strBind : gArgs.GetArgs("-whitebind")) {
+      for (const std::string& strBind : gArgs.GetArgs("-whitebind")) {
         CService addrBind;
         if (!Lookup(strBind.c_str(), addrBind, 0, false))
           return InitError(strprintf(_("Cannot resolve -whitebind address: '%s'"), strBind));
@@ -1273,14 +1273,14 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   }
 
   if (gArgs.IsArgSet("-externalip")) {
-    for (string strAddr : gArgs.GetArgs("-externalip")) {
+    for (const std::string& strAddr : gArgs.GetArgs("-externalip")) {
       CService addrLocal(strAddr, GetListenPort(), fNameLookup);
       if (!addrLocal.IsValid()) return InitError(strprintf(_("Cannot resolve -externalip address: '%s'"), strAddr));
       AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
     }
   }
 
-  for (string strDest : gArgs.GetArgs("-seednode")) AddOneShot(strDest);
+  for (const string& strDest : gArgs.GetArgs("-seednode")) AddOneShot(strDest);
 
 #if ENABLE_ZMQ
   pzmqNotificationInterface = CZMQNotificationInterface::Create();

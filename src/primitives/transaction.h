@@ -133,7 +133,7 @@ class CTxOut {
 
   uint256 GetHash() const;
 
-  bool IsDust(CFeeRate minRelayTxFee) const {
+  bool IsDust(const CFeeRate& minRelayTxFee) const {
     // "Dust" is defined in terms of CTransaction::minRelayTxFee, which has units upiv-per-kilobyte.
     // If you'd pay more than 1/3 in fees to spend something, then we consider it dust.
     // A typical txout is 34 bytes big, and will need a CTxIn of at least 148 bytes to spend

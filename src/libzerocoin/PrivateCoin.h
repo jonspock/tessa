@@ -38,8 +38,8 @@ class PrivateCoin {
  public:
   template <typename Stream> PrivateCoin(const ZerocoinParams* p, Stream& strm) : params(p) { strm >> *this; }
   PrivateCoin(const ZerocoinParams* p);
-  PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum Serial,
-              const CBigNum Randonmess);
+  PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum& Serial,
+              const CBigNum& Randonmess);
 
   CBigNum CoinFromSeed(const uint512& seedZerocoin);
 
@@ -51,9 +51,9 @@ class PrivateCoin {
   const CPrivKey& getPrivKey() const { return this->privkey; }
   ecdsa::CPubKey getPubKey() const;
 
-  void setPublicCoin(PublicCoin p) { publicCoin = p; }
-  void setRandomness(Bignum n) { randomness = n; }
-  void setSerialNumber(Bignum n) { serialNumber = n; }
+  void setPublicCoin(const PublicCoin& p) { publicCoin = p; }
+  void setRandomness(const Bignum& n) { randomness = n; }
+  void setSerialNumber(const Bignum& n) { serialNumber = n; }
   void setVersion(uint8_t nVersion) { this->version = nVersion; }
   void setPrivKey(const CPrivKey& privkey) { this->privkey = privkey; }
   bool sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;

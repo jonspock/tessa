@@ -351,7 +351,7 @@ class CNode {
   // Whether a ping is requested.
   bool fPingQueued;
 
-  CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
+  CNode(SOCKET hSocketIn, CAddress addrIn, const std::string& addrNameIn = "", bool fInboundIn = false);
   ~CNode();
 
  private:
@@ -601,13 +601,13 @@ class CNode {
     }
   }
 
-  bool HasFulfilledRequest(std::string strRequest) {
+  bool HasFulfilledRequest(const std::string& strRequest) {
     for (std::string& type : vecRequestsFulfilled)
       if (type == strRequest) return true;
     return false;
   }
 
-  void ClearFulfilledRequest(std::string strRequest) {
+  void ClearFulfilledRequest(const std::string& strRequest) {
     auto it = vecRequestsFulfilled.begin();
     while (it != vecRequestsFulfilled.end()) {
       if ((*it) == strRequest) {
@@ -618,7 +618,7 @@ class CNode {
     }
   }
 
-  void FulfilledRequest(std::string strRequest) {
+  void FulfilledRequest(const std::string& strRequest) {
     if (HasFulfilledRequest(strRequest)) return;
     vecRequestsFulfilled.push_back(strRequest);
   }
@@ -627,7 +627,7 @@ class CNode {
   void Subscribe(unsigned int nChannel, unsigned int nHops = 0);
   void CancelSubscribe(unsigned int nChannel);
   void CloseSocketDisconnect();
-  bool DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand = "");
+  bool DisconnectOldProtocol(int nVersionRequired, const std::string& strLastCommand = "");
 
   // Denial-of-service detection/prevention
   // The idea is to detect peers that are behaving

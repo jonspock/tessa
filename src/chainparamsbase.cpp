@@ -60,7 +60,7 @@ class CBaseUnitTestParams : public CBaseMainParams {
 };
 static CBaseUnitTestParams unitTestParams;
 
-static CBaseChainParams* pCurrentBaseParams = 0;
+static CBaseChainParams* pCurrentBaseParams = nullptr;
 
 const CBaseChainParams& BaseParams() {
   assert(pCurrentBaseParams);

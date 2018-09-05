@@ -40,7 +40,7 @@ void CZerocoinSpendReceipt::AddSpend(const CZerocoinSpend& spend) { vSpends.empl
 
 std::vector<CZerocoinSpend> CZerocoinSpendReceipt::GetSpends() { return vSpends; }
 
-void CZerocoinSpendReceipt::SetStatus(std::string strStatus, int nStatus, int nNeededSpends) {
+void CZerocoinSpendReceipt::SetStatus(const std::string& strStatus, int nStatus, int nNeededSpends) {
   strStatusMessage = strStatus;
   this->nStatus = nStatus;
   this->nNeededSpends = nNeededSpends;

@@ -256,7 +256,7 @@ void CreatePidFile(const fs::path& path, pid_t pid) {
 }
 #endif
 
-bool RenameOver(fs::path src, fs::path dest) {
+bool RenameOver(const fs::path& src, fs::path& dest) {
 #ifdef WIN32
   return MoveFileExA(src.string().c_str(), dest.string().c_str(), MOVEFILE_REPLACE_EXISTING) != 0;
 #else
@@ -423,7 +423,7 @@ double double_safe_multiplication(double fValue, double fmultiplicator) {
     return std::numeric_limits<double>::max();
 }
 
-void runCommand(std::string strCommand) {
+void runCommand(const std::string& strCommand) {
   int nErr = ::system(strCommand.c_str());
   if (nErr) LogPrintf("runCommand error: system(%s) returned %d\n", strCommand, nErr);
 }

@@ -30,7 +30,7 @@ class AccumulatorWitness {
    * @param checkpoint the last known accumulator value before the element was added
    * @param coin the coin we want a witness to
    */
-  AccumulatorWitness(const ZerocoinParams* p, const Accumulator& checkpoint, const PublicCoin coin)
+  AccumulatorWitness(const ZerocoinParams* p, const Accumulator& checkpoint, const PublicCoin& coin)
       : witness(checkpoint), element(coin) {}
 
   /** Adds element to the set whose's accumulation we are proving coin is a member of
@@ -51,7 +51,7 @@ class AccumulatorWitness {
    * @return the value of the witness
    */
   const CBigNum& getValue() const { return this->witness.getValue(); }
-  void resetValue(const Accumulator& checkpoint, const PublicCoin coin);
+  void resetValue(const Accumulator& checkpoint, const PublicCoin& coin);
 
   /** Checks that this is a witness to the accumulation of coin
    * @param a             the accumulator we are checking against.

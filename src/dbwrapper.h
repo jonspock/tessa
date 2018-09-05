@@ -104,7 +104,7 @@ class CDbWrapper {
 
     // Erase
     activeTxn = TxnBegin();
-    int ret = mdb_del(activeTxn, dbi, &datKey, 0);
+    int ret = mdb_del(activeTxn, dbi, &datKey, nullptr);
     ret |= TxnCommit();
     return (ret == 0 || ret == MDB_NOTFOUND);
   }
@@ -120,7 +120,7 @@ class CDbWrapper {
 
     // Exists
     MDB_txn* Txn = ReadBegin();
-    int ret = mdb_get(Txn, dbi, &datKey, 0);
+    int ret = mdb_get(Txn, dbi, &datKey, nullptr);
     // if non-zero, it doesn't exist!
     return (ret == 0);
   }

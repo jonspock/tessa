@@ -320,7 +320,7 @@ bool CZerocoinDB::EraseCoinSpend(const CBigNum& bnSerial) {
   return Erase(make_pair('s', hash));
 }
 
-bool CZerocoinDB::WipeCoins(std::string strType) {
+bool CZerocoinDB::WipeCoins(const std::string& strType) {
   if (strType != "spends" && strType != "mints") return error("%s: did not recognize type %s", __func__, strType);
 
   std::unique_ptr<rocksdb::Iterator> pcursor(NewIterator());

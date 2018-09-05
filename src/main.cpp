@@ -1968,7 +1968,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (setAddedTx.count(pSpend.second)) continue;
 
         // Search block for matching tx, turn into wtx, set merkle branch, add to wallet
-        for (CTransaction tx : block.vtx) {
+        for (const CTransaction& tx : block.vtx) {
           if (tx.GetHash() == pSpend.second) {
             CWalletTx wtx(pwalletMain, tx);
             wtx.nTimeReceived = pindex->GetBlockTime();

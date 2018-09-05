@@ -160,7 +160,7 @@ class CMinerPolicyEstimator {
  public:
   CMinerPolicyEstimator(int nEntries) : nBestSeenHeight(0) { history.resize(nEntries); }
 
-  void seenBlock(const std::vector<CTxMemPoolEntry>& entries, int nBlockHeight, const CFeeRate minRelayFee) {
+  void seenBlock(const std::vector<CTxMemPoolEntry>& entries, int nBlockHeight, const CFeeRate& minRelayFee) {
     if (nBlockHeight <= nBestSeenHeight) {
       // Ignore side chains and re-orgs; assuming they are random
       // they don't affect the estimate.
@@ -571,7 +571,7 @@ bool CTxMemPool::ReadFeeEstimates(CAutoFile& filein) {
   return true;
 }
 
-void CTxMemPool::PrioritiseTransaction(const uint256 hash, const string strHash, double dPriorityDelta,
+void CTxMemPool::PrioritiseTransaction(const uint256 hash, const string& strHash, double dPriorityDelta,
                                        const CAmount& nFeeDelta) {
   {
     LOCK(cs);

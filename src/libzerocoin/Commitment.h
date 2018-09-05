@@ -24,7 +24,7 @@ namespace libzerocoin {
  */
 class Commitment {
  public:
-  Commitment(const CBigNum& r, const CBigNum& v, const CBigNum c) {
+  Commitment(const CBigNum& r, const CBigNum& v, const CBigNum& c) {
     randomness = r;
     serial = v;
     commitmentValue = c;

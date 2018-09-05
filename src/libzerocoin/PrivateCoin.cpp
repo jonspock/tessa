@@ -53,8 +53,8 @@ bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey&
 
 PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p) { assert(p); }
 
-PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum Serial,
-                         const CBigNum Randomness)
+PrivateCoin::PrivateCoin(const ZerocoinParams* p, const CoinDenomination denomination, const CBigNum& Serial,
+                         const CBigNum& Randomness)
     : params(p) {
   // Verify that the parameters are valid
   assert(p);

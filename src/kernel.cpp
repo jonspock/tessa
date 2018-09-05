@@ -249,7 +249,7 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
 }
 
 // test hash vs target
-bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, arith_uint256 bnTargetPerCoinDay) {
+bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, const arith_uint256& bnTargetPerCoinDay) {
   // get the stake weight - weight is equal to coin amount
   arith_uint256 bnCoinDayWeight = arith_uint256(nValueIn) / 100;
 

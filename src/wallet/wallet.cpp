@@ -608,7 +608,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet) {
     mapWallet[hash] = wtxIn;
     CWalletTx& wtx = mapWallet[hash];
     wtx.BindWallet(this);
-    wtxOrdered.insert(make_pair(wtx.nOrderPos, TxPair(&wtx, (CAccountingEntry*)0)));
+    wtxOrdered.insert(make_pair(wtx.nOrderPos, TxPair(&wtx, (CAccountingEntry*)nullptr)));
     AddToSpends(hash);
   } else {
     LOCK(cs_wallet);
@@ -1796,7 +1796,7 @@ bool CWallet::AddAccountingEntry(const CAccountingEntry& acentry) {
 
   laccentries.push_back(acentry);
   CAccountingEntry& entry = laccentries.back();
-  wtxOrdered.insert(make_pair(entry.nOrderPos, TxPair((CWalletTx*)0, &entry)));
+  wtxOrdered.insert(make_pair(entry.nOrderPos, TxPair((CWalletTx*)nullptr, &entry)));
 
   return true;
 }
@@ -2103,7 +2103,7 @@ set<set<CTxDestination> > CWallet::GetAddressGroupings() {
     // make a set of all the groups hit by this new group
     set<set<CTxDestination>*> hits;
     map<CTxDestination, set<CTxDestination>*>::iterator it;
-    for (CTxDestination address : grouping)
+    for (auto& address : grouping)
       if ((it = setmap.find(address)) != setmap.end()) hits.insert((*it).second);
 
     // merge all hit groups into a new single group and delete old groups
@@ -2116,7 +2116,7 @@ set<set<CTxDestination> > CWallet::GetAddressGroupings() {
     uniqueGroupings.insert(merged);
 
     // update setmap
-    for (CTxDestination element : *merged) setmap[element] = merged;
+    for (auto& element : *merged) setmap[element] = merged;
   }
 
   set<set<CTxDestination> > ret;
@@ -2128,7 +2128,7 @@ set<set<CTxDestination> > CWallet::GetAddressGroupings() {
   return ret;
 }
 
-set<CTxDestination> CWallet::GetAccountAddresses(string strAccount) const {
+set<CTxDestination> CWallet::GetAccountAddresses(const string& strAccount) const {
   LOCK(cs_wallet);
   set<CTxDestination> result;
   for (const auto& item : mapAddressBook) {
@@ -2792,7 +2792,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
   return true;
 }
 
-bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
+bool CWallet::MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
                          CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType,
                          CBlockIndex* pindexCheckpoint) {
   // Default error status if not changed below
@@ -3166,7 +3166,7 @@ string CWallet::ResetSpentZerocoin() {
   list<CZerocoinSpend> listSpends = gWalletDB.ListSpentCoins();
   list<CZerocoinSpend> listUnconfirmedSpends;
 
-  for (CZerocoinSpend spend : listSpends) {
+  for (CZerocoinSpend& spend : listSpends) {
     CTransaction tx;
     uint256 hashBlock;
     if (!GetTransaction(spend.GetTxHash(), tx, hashBlock)) {
@@ -3178,7 +3178,7 @@ string CWallet::ResetSpentZerocoin() {
     if (hashBlock.IsNull()) listUnconfirmedSpends.push_back(spend);
   }
 
-  for (CZerocoinSpend spend : listUnconfirmedSpends) {
+  for (CZerocoinSpend& spend : listUnconfirmedSpends) {
     for (CMintMeta meta : setMints) {
       if (meta.hashSerial == GetSerialHash(spend.GetSerial())) {
         removed++;
@@ -3267,7 +3267,7 @@ string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, vector<CDetermin
         "here.");
   } else {
     // update mints with full transaction hash and then database them
-    for (CDeterministicMint dMint : vDMints) {
+    for (CDeterministicMint& dMint : vDMints) {
       dMint.SetTxHash(wtxNew.GetHash());
       zkpTracker->Add(dMint, true);
     }
@@ -3299,14 +3299,14 @@ bool CWallet::SpendZerocoin(CAmount nAmount, int nSecurityLevel, CWalletTx& wtxN
     nStatus = ZKP_COMMIT_FAILED;
 
     // reset all mints
-    for (CZerocoinMint mint : vMintsSelected) {
+    for (CZerocoinMint& mint : vMintsSelected) {
       uint256 hashPubcoin = GetPubCoinHash(mint.GetValue());
       zkpTracker->SetPubcoinNotUsed(hashPubcoin);
       pwalletMain->NotifyZerocoinChanged(pwalletMain, mint.GetValue().GetHex(), "New", CT_UPDATED);
     }
 
     // erase spends
-    for (CZerocoinSpend spend : receipt.GetSpends()) {
+    for (CZerocoinSpend& spend : receipt.GetSpends()) {
       if (!gWalletDB.EraseZerocoinSpendSerialEntry(spend.GetSerial())) {
         receipt.SetStatus("Error: It cannot delete coin serial number in wallet", ZKP_ERASE_SPENDS_FAILED);
       }
@@ -3332,7 +3332,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, int nSecurityLevel, CWalletTx& wtxN
 
   // Set spent mints as used
   uint256 txidSpend = wtxNew.GetHash();
-  for (CZerocoinMint mint : vMintsSelected) {
+  for (CZerocoinMint& mint : vMintsSelected) {
     uint256 hashPubcoin = GetPubCoinHash(mint.GetValue());
     zkpTracker->SetPubcoinUsed(hashPubcoin, txidSpend);
 
@@ -3473,7 +3473,7 @@ bool CWallet::SetHDChain(const CHDChain& chain, bool memonly) {
 
 bool CWallet::IsHDEnabled() { return !hdChain.masterKeyID.IsNull(); }
 
-CWallet* CWallet::CreateWalletFromFile(const std::string walletFile) {
+CWallet* CWallet::CreateWalletFromFile(const std::string& walletFile) {
 #warning "Need to re-enable this code"
 #ifdef DEBUG_CWFF
   // Needed to restore wallet transaction meta data after -zapwallettxes

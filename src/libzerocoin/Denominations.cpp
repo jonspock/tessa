@@ -125,12 +125,12 @@ CAmount ZerocoinDenominationToAmount(const CoinDenomination& denomination) {
   return nValue;
 }
 
-CoinDenomination get_denomination(std::string denomAmount) {
+CoinDenomination get_denomination(const std::string& denomAmount) {
   int64_t val = std::stoi(denomAmount);
   return IntToZerocoinDenomination(val);
 }
 
-int64_t get_amount(std::string denomAmount) {
+int64_t get_amount(const std::string& denomAmount) {
   int64_t nAmount = 0;
   CoinDenomination denom = get_denomination(denomAmount);
   if (denom == ZQ_ERROR) {
