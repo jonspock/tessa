@@ -1397,7 +1397,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
     // before the last block chain checkpoint. This is safe because block merkle hashes are
     // still computed and checked, and any change will be caught at the next checkpoint.
     if (fScriptChecks) {
-      int i=0;
+      int i = 0;
       for (auto& v : tx.vin) {
         const COutPoint& prevout = v.prevout;
         const CCoins* coins = inputs.AccessCoins(prevout.hash);
@@ -3506,9 +3506,7 @@ void static CheckBlockIndex() {
 
   // Build forward-pointing map of the entire block tree.
   std::multimap<CBlockIndex*, CBlockIndex*> forward;
-  for (auto& it : mapBlockIndex) {
-    forward.insert(std::make_pair(it.second->pprev, it.second));
-  }
+  for (auto& it : mapBlockIndex) { forward.insert(std::make_pair(it.second->pprev, it.second)); }
 
   assert(forward.size() == mapBlockIndex.size());
 

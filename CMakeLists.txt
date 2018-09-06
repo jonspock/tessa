@@ -379,9 +379,16 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
+  #set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
 endif()
 
+
+find_package(RocksDB)
+if (RocksDB_FOUND)
+  message(STATUS "Found RocksDB")
+else()
+  message(STATUS "FAILED to F?IND RocksDB")
+endif()  
 
 find_package(sodium)
 if (SODIUM_FOUND)
@@ -407,7 +414,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/obj
   ${Boost_INCLUDE_DIRS}
   ${GMP_INCLUDE_DIR}
-  ${ROCKSDB_ROOT_DIR}/include
+  ${ROCKSDB_INCLUDE_DIR}/include
   ${sodium_INCLUDE_DIR}
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/relic/include
@@ -473,7 +480,7 @@ add_library(secp256k1 ${SECP256})
 add_subdirectory(src/ecdsa)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
-link_directories(${ROCKSDB_ROOT_DIR}/lib)
+#link_directories(${ROCKSDB_ROOT_DIR}/lib)
 
 add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
 add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
