@@ -83,7 +83,7 @@ std::map<CoinDenomination, CAmount> getChange(const CAmount nValueTarget) {
 // Return false if exact match is not possible
 // -------------------------------------------------------------------------------------------------------
 bool getIdealSpends(const CAmount nValueTarget, const std::list<CMintMeta>& listMints,
-                    const std::map<CoinDenomination, CAmount> mapOfDenomsHeld,
+                    const std::map<CoinDenomination, CAmount>& mapOfDenomsHeld,
                     std::map<CoinDenomination, CAmount>& mapOfDenomsUsed) {
   CAmount nRemainingValue = nValueTarget;
   // Initialize

@@ -456,7 +456,7 @@ UniValue listaddressgroupings(const UniValue& params, bool fHelp) {
   map<CTxDestination, CAmount> balances = pwalletMain->GetAddressBalances();
   for (set<CTxDestination> grouping : pwalletMain->GetAddressGroupings()) {
     UniValue jsonGrouping(UniValue::VARR);
-    for (CTxDestination address : grouping) {
+    for (auto& address : grouping) {
       UniValue addressInfo(UniValue::VARR);
       addressInfo.push_back(CBitcoinAddress(address).ToString());
       addressInfo.push_back(ValueFromAmount(balances[address]));
@@ -2711,7 +2711,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
 
   CAmount nValueIn = 0;
   UniValue arrSpends(UniValue::VARR);
-  for (CZerocoinSpend spend : receipt.GetSpends()) {
+  for (CZerocoinSpend& spend : receipt.GetSpends()) {
     UniValue obj(UniValue::VOBJ);
     obj.push_back(Pair("denomination", spend.GetDenomination()));
     obj.push_back(Pair("pubcoin", spend.GetPubCoin().GetHex()));
@@ -2836,7 +2836,7 @@ UniValue resetspentzerocoin(const UniValue& params, bool fHelp) {
   list<CZerocoinSpend> listSpends = gWalletDB.ListSpentCoins();
   list<CZerocoinSpend> listUnconfirmedSpends;
 
-  for (CZerocoinSpend spend : listSpends) {
+  for (CZerocoinSpend& spend : listSpends) {
     CTransaction tx;
     uint256 hashBlock;
     if (!GetTransaction(spend.GetTxHash(), tx, hashBlock)) {
@@ -2850,7 +2850,7 @@ UniValue resetspentzerocoin(const UniValue& params, bool fHelp) {
 
   UniValue objRet(UniValue::VOBJ);
   UniValue arrRestored(UniValue::VARR);
-  for (CZerocoinSpend spend : listUnconfirmedSpends) {
+  for (CZerocoinSpend& spend : listUnconfirmedSpends) {
     for (auto& meta : setMints) {
       if (meta.hashSerial == GetSerialHash(spend.GetSerial())) {
         zkpTracker->SetPubcoinNotUsed(meta.hashPubcoin);

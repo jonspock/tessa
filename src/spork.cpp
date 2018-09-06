@@ -188,7 +188,7 @@ bool CSporkManager::SetKey(const std::string& strSecret, CKey& key, CPubKey& pub
   return true;
 }
 
-bool CSporkManager::SignMessage(const std::string& strMessage, vector<uint8_t>& vchSig, CKey key) {
+bool CSporkManager::SignMessage(const std::string& strMessage, vector<uint8_t>& vchSig, const CKey& key) {
   CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;

@@ -10,7 +10,7 @@
 /** 512-bit unsigned big integer. */
 class uint512 : public base_blob<512> {
  public:
-  uint512() {}
+  uint512() = default;
   uint512(const base_blob<512>& b) : base_blob<512>(b) {}
   // explicit uint512(const std::vector<uint8_t>& vch) : base_uint<512>(vch) {}
   explicit uint512(const std::vector<uint8_t>& vch) : base_blob<512>(vch) {}

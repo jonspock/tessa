@@ -85,7 +85,7 @@ template <unsigned int BITS> class base_blob {
  */
 class uint160 : public base_blob<160> {
  public:
-  uint160() {}
+  uint160() = default;
   explicit uint160(const std::vector<uint8_t>& vch) : base_blob<160>(vch) {}
 };
 
@@ -96,7 +96,7 @@ class uint160 : public base_blob<160> {
  */
 class uint256 : public base_blob<256> {
  public:
-  uint256() {}
+  uint256() = default;
   explicit uint256(const std::vector<uint8_t>& vch) : base_blob<256>(vch) {}
 
   /** A cheap hash function that just returns 64 bits from the result, it can be

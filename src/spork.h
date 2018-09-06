@@ -75,7 +75,7 @@ class CSporkManager {
   bool UpdateSpork(SporkID nSporkID, int64_t nValue);
   bool SetPrivKey(const std::string& strPrivKey);
   bool SetKey(const std::string& strSecret, ecdsa::CKey& key, ecdsa::CPubKey& pubkey);
-  bool SignMessage(const std::string& strMessage, std::vector<uint8_t>& vchSig, ecdsa::CKey key);
+  bool SignMessage(const std::string& strMessage, std::vector<uint8_t>& vchSig, const ecdsa::CKey& key);
   bool VerifyMessage(ecdsa::CPubKey pubkey, std::vector<uint8_t>& vchSig, const std::string& strMessage);
   bool CheckSignature(CSporkMessage& spork, bool fCheckSigner = false);
   bool Sign(CSporkMessage& spork);
