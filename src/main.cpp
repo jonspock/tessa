@@ -1073,8 +1073,8 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
   // Check for conflicts with in-memory transactions
   if (!tx.IsZerocoinSpend()) {
     LOCK(pool.cs);  // protect pool.mapNextTx
-    for (unsigned int i = 0; i < tx.vin.size(); i++) {
-      COutPoint outpoint = tx.vin[i].prevout;
+    for (auto& v : tx.vin) {
+      COutPoint outpoint = v.prevout;
       if (pool.mapNextTx.count(outpoint)) {
         // Disable replacement feature for now
         return false;
@@ -1353,8 +1353,8 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
     int nSpendHeight = pindexPrev->nHeight + 1;
     CAmount nValueIn = 0;
     CAmount nFees = 0;
-    for (unsigned int i = 0; i < tx.vin.size(); i++) {
-      const COutPoint& prevout = tx.vin[i].prevout;
+    for (auto& v : tx.vin) {
+      const COutPoint& prevout = v.prevout;
       const CCoins* coins = inputs.AccessCoins(prevout.hash);
       assert(coins);
 
@@ -1397,8 +1397,9 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
     // before the last block chain checkpoint. This is safe because block merkle hashes are
     // still computed and checked, and any change will be caught at the next checkpoint.
     if (fScriptChecks) {
-      for (unsigned int i = 0; i < tx.vin.size(); i++) {
-        const COutPoint& prevout = tx.vin[i].prevout;
+      int i=0;
+      for (auto& v : tx.vin) {
+        const COutPoint& prevout = v.prevout;
         const CCoins* coins = inputs.AccessCoins(prevout.hash);
         assert(coins);
 
@@ -1433,6 +1434,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
               strprintf("mandatory-script-verify-flag-failed (%s)", ScriptErrorString(check.GetScriptError())));
         }
       }
+      i++;
     }
   }
 
@@ -2576,7 +2578,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block) {
   if (it != mapBlockIndex.end()) return it->second;
 
   // Construct new block index object
-  CBlockIndex* pindexNew = new CBlockIndex(block);
+  auto pindexNew = new CBlockIndex(block);
   assert(pindexNew);
   // We assign the sequence id to blocks only when the full data is available,
   // to avoid miners withholding blocks but broadcasting headers, to get a
@@ -3315,8 +3317,8 @@ bool static LoadBlockIndexDB(string& strError) {
     CBlockIndex* pindex = item.second;
     if (pindex->nStatus & BLOCK_HAVE_DATA) { setBlkDataFiles.insert(pindex->nFile); }
   }
-  for (std::set<int>::iterator it = setBlkDataFiles.begin(); it != setBlkDataFiles.end(); it++) {
-    CDiskBlockPos pos(*it, 0);
+  for (auto& it : setBlkDataFiles) {
+    CDiskBlockPos pos(it, 0);
     if (CAutoFile(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION).IsNull()) { return false; }
   }
 
@@ -3378,7 +3380,7 @@ bool InitBlockIndex() {
   // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)
   if (!fReindex) {
     try {
-      CBlock& block = const_cast<CBlock&>(Params().GenesisBlock());
+      auto block = const_cast<CBlock&>(Params().GenesisBlock());
       // Start new block file
       unsigned int nBlockSize = ::GetSerializeSize(block);
       CDiskBlockPos blockPos;
@@ -3504,8 +3506,8 @@ void static CheckBlockIndex() {
 
   // Build forward-pointing map of the entire block tree.
   std::multimap<CBlockIndex*, CBlockIndex*> forward;
-  for (BlockMap::iterator it = mapBlockIndex.begin(); it != mapBlockIndex.end(); it++) {
-    forward.insert(std::make_pair(it->second->pprev, it->second));
+  for (auto& it : mapBlockIndex) {
+    forward.insert(std::make_pair(it.second->pprev, it.second));
   }
 
   assert(forward.size() == mapBlockIndex.size());
@@ -3681,7 +3683,7 @@ bool static AlreadyHave(const CInv& inv) {
 }
 
 void static ProcessGetData(CNode* pfrom) {
-  std::deque<CInv>::iterator it = pfrom->vRecvGetData.begin();
+  auto it = pfrom->vRecvGetData.begin();
 
   vector<CInv> vNotFound;
 
@@ -4148,8 +4150,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       for (unsigned int i = 0; i < vWorkQueue.size(); i++) {
         map<uint256, set<uint256> >::iterator itByPrev = mapOrphanTransactionsByPrev.find(vWorkQueue[i]);
         if (itByPrev == mapOrphanTransactionsByPrev.end()) continue;
-        for (set<uint256>::iterator mi = itByPrev->second.begin(); mi != itByPrev->second.end(); ++mi) {
-          const uint256& orphanHash = *mi;
+        for (auto& orphanHash : itByPrev->second) {
           const CTransaction& orphanTx = mapOrphanTransactions[orphanHash].tx;
           NodeId fromPeer = mapOrphanTransactions[orphanHash].fromPeer;
           bool fMissingInputs2 = false;

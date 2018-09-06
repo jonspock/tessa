@@ -26,7 +26,7 @@ class CDbWrapper {
   bool fDbEnvInit;
 
  public:
-  CDbWrapper() {}
+  CDbWrapper() = default;
   ~CDbWrapper() { Close(); }
   mutable CCriticalSection cs_db;
   bool init(const fs::path& wallet_dir, const char* pszMode = "r+");

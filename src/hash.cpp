@@ -20,7 +20,7 @@ uint32_t MurmurHash3(uint32_t nHashSeed, const std::vector<uint8_t>& vDataToHash
 
     //----------
     // body
-    const uint32_t* blocks = (const uint32_t*)(&vDataToHash[0] + nblocks * 4);
+    auto blocks = (const uint32_t*)(&vDataToHash[0] + nblocks * 4);
 
     for (int i = -nblocks; i; i++) {
       uint32_t k1 = blocks[i];
@@ -36,7 +36,7 @@ uint32_t MurmurHash3(uint32_t nHashSeed, const std::vector<uint8_t>& vDataToHash
 
     //----------
     // tail
-    const uint8_t* tail = (const uint8_t*)(&vDataToHash[0] + nblocks * 4);
+    auto tail = (const uint8_t*)(&vDataToHash[0] + nblocks * 4);
 
     uint32_t k1 = 0;
 

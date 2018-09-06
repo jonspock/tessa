@@ -16,7 +16,7 @@ template <ModulusType T> class IntegerMod {
   static const CBigNum Mod;
 
  public:
-  IntegerMod() {}
+  IntegerMod() = default;
   IntegerMod(const CBigNum& val) {
     Value = val % IntegerMod<T>::Mod;  // Make sure it's reduced at init
   }
@@ -31,7 +31,7 @@ template <ModulusType T> class IntegerMod {
     return *this;
   }
 
-  ~IntegerMod() {}
+  ~IntegerMod() = default;
 
   void setValue(const CBigNum& b) {
     Value = b % Mod;  // Make sure it's modulo Modulus

@@ -20,7 +20,7 @@ class SerialNumberGroupParams {
   /// The order of the group
   CBigNum groupOrder;
 
-  SerialNumberGroupParams() {}
+  SerialNumberGroupParams() = default;
 
   ADD_SERIALIZE_METHODS
   template <typename Stream, typename Operation> inline void SerializationOp(Stream &s, Operation ser_action) {

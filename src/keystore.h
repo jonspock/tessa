@@ -57,10 +57,10 @@ class CKeyStore {
   virtual bool HaveMultiSig() const = 0;
 };
 
-typedef std::map<ecdsa::CKeyID, ecdsa::CKey> KeyMap;
-typedef std::map<CScriptID, CScript> ScriptMap;
-typedef std::set<CScript> WatchOnlySet;
-typedef std::set<CScript> MultiSigScriptSet;
+using KeyMap = std::map<ecdsa::CKeyID, ecdsa::CKey>;
+using ScriptMap =  std::map<CScriptID, CScript>;
+using WatchOnlySet =  std::set<CScript>;
+using MultiSigScriptSet =  std::set<CScript>;
 
 /** Basic key store, that keeps keys in an address->secret map */
 class CBasicKeyStore : public CKeyStore {
@@ -91,7 +91,7 @@ class CBasicKeyStore : public CKeyStore {
   virtual bool HaveMultiSig() const;
 };
 
-typedef std::vector<uint8_t, secure_allocator<uint8_t> > CKeyingMaterial;
-typedef std::map<ecdsa::CKeyID, std::pair<ecdsa::CPubKey, std::vector<uint8_t> > > CryptedKeyMap;
+using CKeyingMaterial= std::vector<uint8_t, secure_allocator<uint8_t> >;
+using CryptedKeyMap =  std::map<ecdsa::CKeyID, std::pair<ecdsa::CPubKey, std::vector<uint8_t> > >;
 
 #endif  // BITCOIN_KEYSTORE_H

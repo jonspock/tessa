@@ -720,7 +720,7 @@ void ThreadImport(std::vector<fs::path> vImportFiles) {
  *  Ensure that Tessa is running in a usable environment with all
  *  necessary library support.
  */
-bool InitSanityCheck(void) {
+bool InitSanityCheck() {
   if (!ECC_InitSanityCheck()) {
     InitError(
         "OpenSSL appears to lack support for elliptic curve cryptography. For more "
@@ -1086,7 +1086,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
           } catch (fs::filesystem_error& error) { LogPrintf("Failed to create backup %s\n", error.what()); }
         }
         // Keep only the last several backups (nWalletBackup), including the new one of course
-        typedef std::multimap<std::time_t, fs::path> folder_set_t;
+        using folder_set_t = std::multimap<std::time_t, fs::path>;
         folder_set_t folder_set;
         fs::directory_iterator end_iter;
         fs::path backupFolder = backupDir.string();
@@ -1184,7 +1184,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
       nets.insert(net);
     }
     for (int n = 0; n < NET_MAX; n++) {
-      enum Network net = (enum Network)n;
+      auto net = (enum Network)n;
       if (!nets.count(net)) SetLimited(net);
     }
   }
@@ -1567,7 +1567,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
       if (GetBoolArg("-zapwallettxes", false) && GetArg("-zapwallettxes", "1") != "2") {
         for (const CWalletTx& wtxOld : vWtx) {
           uint256 hash = wtxOld.GetHash();
-          std::map<uint256, CWalletTx>::iterator mi = pwalletMain->mapWallet.find(hash);
+          auto mi = pwalletMain->mapWallet.find(hash);
           if (mi != pwalletMain->mapWallet.end()) {
             const CWalletTx* copyFrom = &wtxOld;
             CWalletTx* copyTo = &mi->second;

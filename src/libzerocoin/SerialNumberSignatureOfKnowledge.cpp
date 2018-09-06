@@ -84,7 +84,7 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const Zerocoi
   for (uint32_t i = 0; i < params->zkp_iterations; i++) { hasher << c[i]; }
 
   this->hash = hasher.GetHash();
-  uint8_t* hashbytes = (uint8_t*)&hash;
+  auto hashbytes = (uint8_t*)&hash;
 
   for (uint32_t i = 0; i < params->zkp_iterations; i++) {
     int bit = i % 8;
@@ -125,7 +125,7 @@ bool SerialNumberSignatureOfKnowledge::Verify(const CBigNum& coinSerialNumber, c
   CHashWriter hasher;
   hasher << *params << valueOfCommitmentToCoin << coinSerialNumber << msghash;
 
-  uint8_t* hashbytes = (uint8_t*)&this->hash;
+  auto hashbytes = (uint8_t*)&this->hash;
 
   for (uint32_t i = 0; i < params->zkp_iterations; i++) {
     CBigNum tprime;
