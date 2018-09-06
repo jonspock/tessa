@@ -71,7 +71,7 @@ add_custom_target(check)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE "Release")
-  MESSAGE("Build type set to '${CMAKE_BUILD_TYPE}'")
+  message(STATUS "Build type set to '${CMAKE_BUILD_TYPE}'")
 ENDIF()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -536,7 +536,7 @@ endif()
 
 #	miniupnpc pthread)
 
-####add_subdirectory(src/qt)
+add_subdirectory(src/qt)
 
 #---------------------------------------------------------------------------------------------------------
 # Create a target in Xcode to setup coverage script
