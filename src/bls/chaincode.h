@@ -39,9 +39,9 @@ class ChainCode {
 
   void Serialize(uint8_t *buffer) const;
 
- private:
   // Prevent direct construction, use static constructor
   ChainCode() {}
+ private:
 
   relic::bn_t chainCode;
 };

@@ -9,7 +9,7 @@
 #include "bls/pubkey.h"
 #include "bls/privkey.h"
 
-#include "base58.h"
+#include "baseBLS.h"
 #include "script/script.h"
 #include "uint256.h"
 #include "util.h"
@@ -25,10 +25,10 @@ static const string strSecret1     ("87vK7Vayi3QLsuiva5yWSuVwSMhMcRM9dBsaD6JXMD1
 static const string strSecret2     ("87FGYGFDg5SYfdD4XL593hr7do6f52czPecVsYSAXi8N4RGeS9i");
 static const string strSecret1C    ("YRYJwfAyJ9c2jhi3T2xQyLijGvM7yLTw4izDaNQLxBzgUYrQiPmJ");
 static const string strSecret2C    ("YNZyazHkwUbkmUpEYsBGWwHnHQTy2n9rJy1gS5k54YXVx3pE8n6N");
-static const CBitcoinAddress addr1 ("DBFi8XAE1rcdCQfkv9w22n8Y9RxgaJnrDD");
-static const CBitcoinAddress addr2 ("DPvKfv1FVp69yZMDzeuugvfZ9pzYiMv1bs");
-static const CBitcoinAddress addr1C("DNPrHK9ezAAUVExFDpZ7EE1xWpPskgp1gP");
-static const CBitcoinAddress addr2C("DNBVSAoc2whPFjZVAZ1pQbXPJk1LRrDC8Q");
+static const CTessaAddress addr1 ("DBFi8XAE1rcdCQfkv9w22n8Y9RxgaJnrDD");
+static const CTessaAddress addr2 ("DPvKfv1FVp69yZMDzeuugvfZ9pzYiMv1bs");
+static const CTessaAddress addr1C("DNPrHK9ezAAUVExFDpZ7EE1xWpPskgp1gP");
+static const CTessaAddress addr2C("DNBVSAoc2whPFjZVAZ1pQbXPJk1LRrDC8Q");
 
 static const string strAddressBad("Xta1praZQjyELweyMByXyiREw1ZRsjXzVP");
 
@@ -40,7 +40,7 @@ TEST_CASE("key_test1")
   // Also Chainparams - Because UnitTest should work with BTC adddresses above!
   SelectParams(CBaseChainParams::UNITTEST);
 
-  CBitcoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
+  CTessaSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
     REQUIRE( bsecret1.SetString (strSecret1));
     REQUIRE( bsecret2.SetString (strSecret2));
     REQUIRE( bsecret1C.SetString(strSecret1C));

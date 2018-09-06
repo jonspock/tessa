@@ -515,6 +515,7 @@ set(PP_EXT "LAZYR" CACHE STRING "")
 set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 
 add_subdirectory(src/relic)
+add_subdirectory(src/bech32)
 add_subdirectory(src/bls)
 
 #------------------- ------------------- ------------------- ------------------- -------------------
@@ -535,7 +536,7 @@ endif()
 
 #	miniupnpc pthread)
 
-add_subdirectory(src/qt)
+####add_subdirectory(src/qt)
 
 #---------------------------------------------------------------------------------------------------------
 # Create a target in Xcode to setup coverage script

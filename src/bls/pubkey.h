@@ -15,6 +15,7 @@
 #pragma once
 
 #include <vector>
+#include "hash.h"
 #include "blsutil.h"
 #include "uint256.h"
 #include "chaincode.h"
@@ -68,7 +69,7 @@ class CPubKey {
   static bool CheckLowS(const std::vector<uint8_t>& vchSig);
 
   // Verify a signature 
-  bool Verify(const uint256& hash, const std::vector<uint8_t>& vchSig) const;
+  bool Verify(const uint256& hash, const std::vector<uint8_t>& vchSig) const { return false; } // for now
   
   // FOR NOW: Don't allow public construction, force static methods
   CPubKey() {}
@@ -79,10 +80,10 @@ class CPubKey {
   bool IsFullyValid() const;
   bool IsCompressed() const; // { return size() == COMPRESSED_PUBLIC_KEY_SIZE; }
   uint256 GetHash() const;// { return Hash(vch, vch + size()); }
-  bool RecoverCompact(const uint256& hash, const std::vector<uint8_t>& vchSig);
+  bool RecoverCompact(const uint256& hash, const std::vector<uint8_t>& vchSig) { return false; } // for now
   bool Decompress();
 
-  CKeyID GetID() const; // { return CKeyID(Hash160(vch, vch + size())); }
+  CKeyID GetID() const { return CKeyID(Hash160(data, data + size())); }
 
     //! Initialize a public key using begin/end iterators to byte data.
   template <typename T> void Set(const T pbegin, const T pend) {
