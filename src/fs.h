@@ -6,8 +6,13 @@
 // clang-format off
 #pragma once
 
-// For now Clang doesn't yet support std::filesystem
-#if __cplusplus < 201703L || __APPLE__
+// Not ready for this yet (disable via define instead of compiler version)
+#ifdef USE_STD_FILESYSTEM
+
+#include <filesystem>
+namespace fs = std::filesystem;
+
+#else
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
@@ -15,11 +20,6 @@
 
 /** Filesystem operations and types */
 namespace fs = boost::filesystem;
-
-#else
-
-#include <filesystem>
-namespace fs = std::filesystem;
 
 #endif
 

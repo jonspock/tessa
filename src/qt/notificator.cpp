@@ -87,7 +87,7 @@ class FreedesktopImage {
   friend const QDBusArgument& operator>>(const QDBusArgument& a, FreedesktopImage& i);
 };
 
-Q_DECLARE_METATYPE(FreedesktopImage);
+Q_DECLARE_METATYPE(FreedesktopImage)
 
 // Image configuration settings
 const int CHANNELS = 4;

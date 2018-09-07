@@ -36,16 +36,16 @@ include(CheckCXXCompilerFlag)
 
 # Add path for custom modules
 set(CMAKE_MODULE_PATH
-	${CMAKE_MODULE_PATH}
-	${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
+  ${CMAKE_MODULE_PATH}
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
 )
 
 
 # If ccache is available, then use it.
 find_program(CCACHE ccache)
 if(CCACHE)
-	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
-	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE})
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE})
 endif(CCACHE)
 
 
@@ -107,7 +107,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
         set(CMAKE_XCODE_ATTRIBUTE_GCC_INSTRUMENT_PROGRAM_FLOW_ARCS "YES")
         set(CMAKE_XCODE_ATTRIBUTE_GCC_GENERATE_TEST_COVERAGE_FILES "YES")
         # Works for Clang->
-				#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -coverage")
+        #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -coverage")
     endif()
 endif()
 
@@ -118,16 +118,16 @@ include(AddCompilerFlags)
 
 add_c_compiler_flag(-Wnested-externs -Wstrict-prototypes)
 add_compiler_flag(
-	-Wall
-	-Wextra
-	-Wformat
-	-Wvla
-	-Wformat-security
-	-Wno-cast-align
+  -Wall
+  -Wextra
+  -Wformat
+  -Wvla
+  -Wformat-security
+  -Wno-cast-align
   -Wno-unused-function
   -Wpedantic
   # club added
-	-Wno-unused-parameter
+  -Wno-unused-parameter
   -Wstack-protector
   -fstack-protector-all
 )
@@ -140,7 +140,7 @@ check_cxx_compiler_flag(-std=c++17 HAVE_FLAG_STD_CXX17)
 if (HAVE_FLAG_STD_CXX17)
   set(CMAKE_CXX_STANDARD 17)
   message(STATUS "Compiler supports C++17")
-	add_definitions("-D_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR")
+  add_definitions("-D_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR")
 else()
   message(STATUS "Compiler Doesn't support C++17")
   check_cxx_compiler_flag(-std=c++14 HAVE_FLAG_STD_CXX14)
@@ -162,69 +162,70 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   add_compiler_flag(-Wrange-loop-analysis)
   # For 17 we need BOOST_NO_AUTO_PTR defined for boost
   if (HAVE_FLAG_STD_CXX17)
-	  add_definitions("-DOS_MACOSX -DENABLE_ZMQ -DBOOST_NO_AUTO_PTR")
+    add_definitions("-DOS_MACOSX -DBOOST_NO_AUTO_PTR")
   else()
-	  add_definitions("-DOS_MACOSX -DENABLE_ZMQ")
+    add_definitions("-DOS_MACOSX")
   endif()
 else()
-	add_definitions("-Wno-cpp -Wno-unused-function")
-	set(ANL anl)
+  # secp256k1 Linux gcc
+  add_definitions("-Wno-cpp -Wno-unused-function -Wno-nonnull-compare")
+  set(ANL anl)
 endif()
 
 add_definitions("-fPIC")
 
 # run autogen.sh if missing header files from configure on Linux/Mac
-if (EXISTS	"${CMAKE_CURRENT_SOURCE_DIR}/configure")
-else()	
+if (EXISTS  "${CMAKE_CURRENT_SOURCE_DIR}/configure")
+else()  
   execute_process(
-	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/autogen.sh
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	)
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/autogen.sh
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 endif()
 
 # run configure if tessa_config.h doesn't exist, For Linux add "--with-incompatible-bdb"
-if (EXISTS	"${CMAKE_CURRENT_BINARY_DIR}/src/tessa-config.h")
-else()	
-	IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	  execute_process(
-		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure 
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		)
+if (EXISTS  "${CMAKE_CURRENT_BINARY_DIR}/src/tessa-config.h")
+else()  
+  IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    execute_process(
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure 
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
 else()
-	  execute_process(
-		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure --with-unsupported-ssl --enable-module-recovery
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		)
+    execute_process(
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure --with-unsupported-ssl --enable-module-recovery
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
 endif()
-	  execute_process(
-		COMMAND make
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
-		)
+    execute_process(
+    COMMAND make
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
+    )
 endif()
 
 SET(COMMON_A
   ./src/support/cleanse.cpp
   ./src/support/lockedpool.cpp
-	./src/spork.cpp
-	./src/accumulators.cpp
-	./src/accumulatormap.cpp
-	./src/accumulatorcheckpoints.cpp
-	./src/stakeinput.cpp
-	./src/mintpool.cpp
-	./src/protocol.cpp
-	./src/netbase.cpp
-	./src/keystore.cpp
-	./src/hash.cpp
-	./src/core_write.cpp
-	./src/core_read.cpp
-	./src/compressor.cpp
-	./src/coins.cpp
-	./src/chainparams.cpp
-	./src/base58.cpp
-	./src/amount.cpp
+  ./src/spork.cpp
+  ./src/accumulators.cpp
+  ./src/accumulatormap.cpp
+  ./src/accumulatorcheckpoints.cpp
+  ./src/stakeinput.cpp
+  ./src/mintpool.cpp
+  ./src/protocol.cpp
+  ./src/netbase.cpp
+  ./src/keystore.cpp
+  ./src/hash.cpp
+  ./src/core_write.cpp
+  ./src/core_read.cpp
+  ./src/compressor.cpp
+  ./src/coins.cpp
+  ./src/chainparams.cpp
+  ./src/base58.cpp
+  ./src/amount.cpp
   ./src/logging.cpp
   ./src/fs.cpp
-	)
+  )
 
 # No longer used    
 add_custom_target(buildHeader
@@ -237,76 +238,73 @@ SET(LIB_RAND
 
 
 SET(UTIL_A
-	./src/utiltime.cpp
-	./src/utilmoneystr.cpp
-	./src/util.cpp
-	./src/sync.cpp
-	./src/uint256.cpp
-	./src/arith_uint256.cpp
-	./src/clientversion.cpp
-	./src/chainparamsbase.cpp
-	)
-
-
-
+  ./src/utiltime.cpp
+  ./src/utilmoneystr.cpp
+  ./src/util.cpp
+  ./src/sync.cpp
+  ./src/uint256.cpp
+  ./src/arith_uint256.cpp
+  ./src/clientversion.cpp
+  ./src/chainparamsbase.cpp
+  )
 
 SET(SERVER_A
-	./src/addrman.cpp
-	./src/bloom.cpp
-	./src/chain.cpp
-	./src/checkpoints.cpp
-	./src/leveldbwrapper.cpp
-	./src/dbwrapper.cpp
-	./src/init.cpp
-	./src/main.cpp
-	./src/mainzero.cpp
-	./src/mainfile.cpp
-	./src/main_functions.cpp
-	./src/warnings.cpp
+  ./src/addrman.cpp
+  ./src/bloom.cpp
+  ./src/chain.cpp
+  ./src/checkpoints.cpp
+  ./src/leveldbwrapper.cpp
+  ./src/dbwrapper.cpp
+  ./src/init.cpp
+  ./src/main.cpp
+  ./src/mainzero.cpp
+  ./src/mainfile.cpp
+  ./src/main_functions.cpp
+  ./src/warnings.cpp
   ./src/verifydb.cpp
-	./src/block.cpp
-	./src/blockundo.cpp
-	./src/zerochain.cpp
-	./src/merkleblock.cpp
-	./src/miner.cpp
-	./src/staker.cpp
-	./src/net.cpp
-	./src/noui.cpp
-	./src/pow.cpp
-	./src/rest.cpp
+  ./src/block.cpp
+  ./src/blockundo.cpp
+  ./src/zerochain.cpp
+  ./src/merkleblock.cpp
+  ./src/miner.cpp
+  ./src/staker.cpp
+  ./src/net.cpp
+  ./src/noui.cpp
+  ./src/pow.cpp
+  ./src/rest.cpp
   )
 
 SET(RPC
-	./src/rpc/protocol.cpp
-	./src/rpc/blockchain.cpp
-	./src/rpc/client.cpp
-	./src/rpc/dump.cpp
-	./src/rpc/mining.cpp
-	./src/rpc/misc.cpp
-	./src/rpc/net.cpp
-	./src/rpc/rawtransaction.cpp
-	./src/rpc/server.cpp
-	./src/rpc/wallet.cpp
-	)
+  ./src/rpc/protocol.cpp
+  ./src/rpc/blockchain.cpp
+  ./src/rpc/client.cpp
+  ./src/rpc/dump.cpp
+  ./src/rpc/mining.cpp
+  ./src/rpc/misc.cpp
+  ./src/rpc/net.cpp
+  ./src/rpc/rawtransaction.cpp
+  ./src/rpc/server.cpp
+  ./src/rpc/wallet.cpp
+  )
 
 
 SET(CONSENSUS
-	./src/utilstrencodings.cpp
-	./src/uint256.cpp
-	./src/hash.cpp
-)	
+  ./src/utilstrencodings.cpp
+  ./src/uint256.cpp
+  ./src/hash.cpp
+) 
 
 SET(CONSENSUS_CRYPTO
-	./src/crypto/chacha20.cpp
-	./src/crypto/hmac_sha512.cpp
-	./src/crypto/hmac_sha256.cpp
-	./src/crypto/ripemd160.cpp
-	./src/crypto/rfc6979_hmac_sha256.cpp
-	./src/crypto/sha256.cpp
-	./src/crypto/sha1.cpp
-	./src/crypto/sha512.cpp
-	./src/crypto/aes.cpp
-	./src/crypto/ctaes/ctaes.c
+  ./src/crypto/chacha20.cpp
+  ./src/crypto/hmac_sha512.cpp
+  ./src/crypto/hmac_sha256.cpp
+  ./src/crypto/ripemd160.cpp
+  ./src/crypto/rfc6979_hmac_sha256.cpp
+  ./src/crypto/sha256.cpp
+  ./src/crypto/sha1.cpp
+  ./src/crypto/sha512.cpp
+  ./src/crypto/aes.cpp
+  ./src/crypto/ctaes/ctaes.c
 
   ./src/crypto/argon2/argon2.c
   ./src/crypto/argon2/best.c
@@ -318,55 +316,49 @@ SET(CONSENSUS_CRYPTO
 )
 
 SET(WALLET
-  	./src/wallet/wallet_hdr.cpp
-  	./src/wallet/wallet.cpp
-	  ./src/wallet/wallettx.cpp
-	  ./src/wallet/wallet_ismine.cpp
-	  ./src/wallet/walletdb.cpp
-	  ./src/wallet/wallet_functions.cpp
-	  ./src/wallet/db.cpp
-	  ./src/wallet/crypter.cpp
-	  ./src/wallet/zerowallet.cpp
-    )
+  ./src/wallet/wallet_hdr.cpp
+  ./src/wallet/wallet.cpp
+  ./src/wallet/wallettx.cpp
+  ./src/wallet/wallet_ismine.cpp
+  ./src/wallet/walletdb.cpp
+  ./src/wallet/wallet_functions.cpp
+  ./src/wallet/db.cpp
+  ./src/wallet/crypter.cpp
+  ./src/wallet/zerowallet.cpp
+  )
   
 SET(PRIM
   ./src/primitives/block.cpp
-	./src/primitives/transaction.cpp
-	./src/primitives/zerocoin.cpp
-	./src/primitives/deterministicmint.cpp
+  ./src/primitives/transaction.cpp
+  ./src/primitives/zerocoin.cpp
+  ./src/primitives/deterministicmint.cpp
   )
 
 SET(SOURCES
-#  	./src/main_hdr.cpp
+#   ./src/main_hdr.cpp
   ./src/compat/strnlen.cpp
-	./src/compat/glibcxx_compat.cpp
-	./src/compat/glibc_sanity.cpp
-	./src/kernel.cpp
-	./src/miner.cpp
-	./src/script/bitcoinconsensus.cpp
-	./src/script/interpreter.cpp
-	./src/script/script.cpp
-	./src/script/script_error.cpp
-	./src/script/sigcache.cpp
-	./src/script/sign.cpp
-	./src/script/standard.cpp
-	./src/sporkdb.cpp
-	./src/timedata.cpp
-	./src/txdb.cpp
-	./src/txmempool.cpp
-	./src/denomination_functions.cpp
-# NEW
-	./src/zerotracker.cpp
+  ./src/compat/glibcxx_compat.cpp
+  ./src/compat/glibc_sanity.cpp
+  ./src/kernel.cpp
+  ./src/miner.cpp
+  ./src/script/bitcoinconsensus.cpp
+  ./src/script/interpreter.cpp
+  ./src/script/script.cpp
+  ./src/script/script_error.cpp
+  ./src/script/sigcache.cpp
+  ./src/script/sign.cpp
+  ./src/script/standard.cpp
+  ./src/sporkdb.cpp
+  ./src/timedata.cpp
+  ./src/txdb.cpp
+  ./src/txmempool.cpp
+  ./src/denomination_functions.cpp
+  ./src/zerotracker.cpp
   ./src/httprpc.cpp
   ./src/httpserver.cpp
   ./src/validationinterface.cpp
-	)
-
-SET(ZMQ_SOURCES
-  ./src/zmq/zmqnotificationinterface.cpp
-  ./src/zmq/zmqpublishnotifier.cpp
-  ./src/zmq/zmqabstractnotifier.cpp
   )
+
   
 SET(UNI_SOURCES
   ./src/univalue/lib/univalue_write.cpp
@@ -380,6 +372,20 @@ endif()
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   #set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
+endif()
+
+find_package(ZeroMQ)
+if (ZeroMQ_FOUND)
+  message(STATUS "Found ZMQ")
+  add_definitions("-DENABLE_ZMQ")
+
+  SET(ZMQ_SOURCES
+    ./src/zmq/zmqnotificationinterface.cpp
+    ./src/zmq/zmqpublishnotifier.cpp
+    ./src/zmq/zmqabstractnotifier.cpp
+    )
+else()
+  message(STATUS "ZMQ not found")
 endif()
 
 
@@ -472,9 +478,9 @@ add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 
 set(SECP256
-	./src/secp256k1/src/secp256k1.c
-	./src/secp256k1/src/gen_context.c
-	)
+  ./src/secp256k1/src/secp256k1.c
+  ./src/secp256k1/src/gen_context.c
+  )
 add_library(secp256k1 ${SECP256})
 
 add_subdirectory(src/ecdsa)
@@ -527,21 +533,11 @@ add_subdirectory(src/bls)
 
 #------------------- ------------------- ------------------- ------------------- -------------------
 
-SET(LIBS_LIST coin secp256k1 gmp zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} ${ANL}
-  miniupnpc event event_pthreads pthread sodium)
-
+SET(LIBS_LIST coin secp256k1 zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} ${ANL}
+  miniupnpc event event_pthreads pthread gmp sodium zmq)
 
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
-
-
-
-IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	target_link_libraries(tessad ${LIBS_LIST} zmq pthread )
-else()
-	target_link_libraries(tessad coin ${LIBS_LIST})
-endif()
-
-#	miniupnpc pthread)
+target_link_libraries(tessad ${LIBS_LIST})
 
 add_subdirectory(src/qt)
 

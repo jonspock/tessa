@@ -1,13 +1,13 @@
-Building Tessa
+Building Tessa requires cmake
 
-Use the autogen script to prepare the build environment.
 
-    ./autogen.sh
-    ./configure
+    mkdir build
+    cmake ..
     make
+
+Currently there is some redundancy with the autogen/configure stages and the cmake setup phase
 
 Always verify the signatures and checksums.
 
-See doc/build-*.md for instructions on building pivxd,
-the intended-for-services, no-graphical-interface, reference
-implementation of Tessa.
+See doc/build-*.md for instructions on building tessad, the intended-for-services, no-graphical-interface,
+reference implementation of Tessa.
