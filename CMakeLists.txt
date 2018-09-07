@@ -359,26 +359,18 @@ SET(SOURCES
   ./src/validationinterface.cpp
   )
 
-  
 SET(UNI_SOURCES
   ./src/univalue/lib/univalue_write.cpp
   ./src/univalue/lib/univalue_read.cpp
   ./src/univalue/lib/univalue.cpp
   )
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  SET(SCH_SOURCES ./src/scheduler.cpp)
-endif()
-
-IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  #set(ROCKSDB_ROOT_DIR "/usr/local/Cellar/rocksdb/${ROCKSDB_VER}/")
-endif()
+SET(SCH_SOURCES ./src/scheduler.cpp)
 
 find_package(ZeroMQ)
 if (ZeroMQ_FOUND)
-  message(STATUS "Found ZMQ")
+  message(STATUS "Found ZMQ adding define ENABLE_ZMQ")
   add_definitions("-DENABLE_ZMQ")
-
   SET(ZMQ_SOURCES
     ./src/zmq/zmqnotificationinterface.cpp
     ./src/zmq/zmqpublishnotifier.cpp
@@ -387,7 +379,6 @@ if (ZeroMQ_FOUND)
 else()
   message(STATUS "ZMQ not found")
 endif()
-
 
 find_package(RocksDB)
 if (RocksDB_FOUND)
@@ -401,7 +392,6 @@ if (SODIUM_FOUND)
   message(STATUS "Found libsodium")
   message(STATUS "Sodium include dir = ${sodium_INCLUDE_DIR}")
 endif()
-
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package( Boost COMPONENTS  filesystem thread)
@@ -486,7 +476,6 @@ add_library(secp256k1 ${SECP256})
 add_subdirectory(src/ecdsa)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
-#link_directories(${ROCKSDB_ROOT_DIR}/lib)
 
 add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
 add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
@@ -533,8 +522,8 @@ add_subdirectory(src/bls)
 
 #------------------- ------------------- ------------------- ------------------- -------------------
 
-SET(LIBS_LIST coin secp256k1 zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} ${ANL}
-  miniupnpc event event_pthreads pthread gmp sodium zmq)
+SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb rocksdb ${Boost_LIBRARIES} ${ANL}
+  miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIBRARY})
 
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 target_link_libraries(tessad ${LIBS_LIST})
