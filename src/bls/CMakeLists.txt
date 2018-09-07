@@ -27,14 +27,14 @@ add_library(bls ${BLS_HEADERS}
 
 )
 
+# For now just on Mac
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  add_executable(runtest test.cpp)
+  add_executable(runbench test-bench.cpp)
 
+  target_link_libraries(runtest bls relic_s sodium)
+  target_link_libraries(runbench bls relic_s sodium)
 
-add_executable(runtest test.cpp)
-add_executable(runbench test-bench.cpp)
-
-target_link_libraries(runtest bls relic_s sodium)
-target_link_libraries(runbench bls relic_s sodium)
-
-add_executable(bls_keytests  bls_key_tests.cpp)
-target_link_libraries(bls_keytests coin secp256k1 bls ecdsa ${Boost_LIBRARIES} event pthread relic_s sodium gmp) 
-
+  add_executable(bls_keytests  bls_key_tests.cpp)
+  target_link_libraries(bls_keytests coin secp256k1 bls ecdsa ${Boost_LIBRARIES} event pthread relic_s sodium gmp) 
+endif()

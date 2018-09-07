@@ -9,6 +9,7 @@ add_library(ecdsa ${ECDSA_HEADERS}
   ${CMAKE_CURRENT_SOURCE_DIR}/key.cpp
 )
 
-add_executable(keytests  key_tests.cpp)
-target_link_libraries(keytests coin secp256k1 ecdsa ${Boost_LIBRARIES} event pthread gmp sodium) 
-
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  add_executable(keytests  key_tests.cpp)
+  target_link_libraries(keytests coin secp256k1 ecdsa ${Boost_LIBRARIES} event pthread gmp sodium) 
+endif()
