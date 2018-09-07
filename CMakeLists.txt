@@ -168,7 +168,7 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   endif()
 else()
   # secp256k1 Linux gcc
-  add_definitions("-Wno-cpp -Wno-unused-function -Wno-nonnull-compare -Wno-implicit-fallthrough=0")
+  add_definitions("-Wno-cpp -Wno-unused-function -Wno-nonnull-compare -Wno-implicit-fallthrough")
   set(ANL anl)
 endif()
 
@@ -518,7 +518,11 @@ set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 
 add_subdirectory(src/relic)
 add_subdirectory(src/bch32)
-add_subdirectory(src/bls)
+
+# For now
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  add_subdirectory(src/bls)
+endif()
 
 #------------------- ------------------- ------------------- ------------------- -------------------
 

@@ -167,9 +167,8 @@ endif()
 
 
 add_library(qt_stuff ${QT_FILES} ${UI_HEADERS} $<$<BOOL:${DARWIN}>:../rpc/client.cpp> )
-if(CLANG_TIDY_EXE)
-##  set_target_properties(qt_stuff PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
-endif()
+# needed for linux compile integrity
+target_link_libraries(qt_stuff ${Boost_LIBRARIES})
 
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
