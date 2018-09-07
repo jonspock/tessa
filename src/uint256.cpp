@@ -8,7 +8,7 @@
 
 template <unsigned int BITS> base_blob<BITS>::base_blob(const std::vector<uint8_t>& vch) {
   assert(vch.size() == sizeof(data));
-  memcpy(data, vch.data(), sizeof(data));
+  std::memcpy(data, vch.data(), sizeof(data));
 }
 
 template <unsigned int BITS> std::string base_blob<BITS>::GetHex() const {
@@ -17,7 +17,7 @@ template <unsigned int BITS> std::string base_blob<BITS>::GetHex() const {
 }
 
 template <unsigned int BITS> void base_blob<BITS>::SetHex(const char* psz) {
-  memset(data, 0, sizeof(data));
+  std::memset(data, 0, sizeof(data));
 
   // skip leading spaces
   while (isspace(*psz)) psz++;

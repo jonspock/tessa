@@ -21,7 +21,7 @@ template <unsigned int BITS> class base_blob {
   uint8_t data[WIDTH];
 
  public:
-  base_blob() { memset(data, 0, sizeof(data)); }
+  base_blob() { std::memset(data, 0, sizeof(data)); }
 
   explicit base_blob(const std::vector<uint8_t>& vch);
 
@@ -31,9 +31,9 @@ template <unsigned int BITS> class base_blob {
     return true;
   }
 
-  void SetNull() { memset(data, 0, sizeof(data)); }
+  void SetNull() { std::memset(data, 0, sizeof(data)); }
 
-  inline int Compare(const base_blob& other) const { return memcmp(data, other.data, sizeof(data)); }
+  inline int Compare(const base_blob& other) const { return std::memcmp(data, other.data, sizeof(data)); }
 
   friend inline bool operator==(const base_blob& a, const base_blob& b) { return a.Compare(b) == 0; }
   friend inline bool operator!=(const base_blob& a, const base_blob& b) { return a.Compare(b) != 0; }

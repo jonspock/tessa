@@ -86,8 +86,8 @@ class CDbWrapper {
     ret |= TxnCommit();
 
     // Clear memory in case it was a private key
-    memset(datKey.mv_data, 0, datKey.mv_size);
-    memset(datValue.mv_data, 0, datValue.mv_size);
+    std::memset(datKey.mv_data, 0, datKey.mv_size);
+    std::memset(datValue.mv_data, 0, datValue.mv_size);
     return (ret == 0);
   }
 

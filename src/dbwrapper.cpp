@@ -181,8 +181,8 @@ bool CDbWrapper::Write(CDataStream& key, CDataStream& value, bool fOverwrite) {
   dbr |= TxnCommit();
 
   // Clear memory in case it was a private key
-  memset(datKey.mv_data, 0, datKey.mv_size);
-  memset(datValue.mv_data, 0, datValue.mv_size);
+  std::memset(datKey.mv_data, 0, datKey.mv_size);
+  std::memset(datValue.mv_data, 0, datValue.mv_size);
   return (dbr == 0);
 }
 bool CDbWrapper::Exists(CDataStream& key) {

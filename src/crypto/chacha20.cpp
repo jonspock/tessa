@@ -57,7 +57,7 @@ void ChaCha20::SetKey(const uint8_t *k, size_t keylen) {
 }
 
 ChaCha20::ChaCha20() {
-    memset(input, 0, sizeof(input));
+  std::memset(input, 0, sizeof(input));
 }
 
 ChaCha20::ChaCha20(const uint8_t *k, size_t keylen) {
