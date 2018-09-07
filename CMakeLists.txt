@@ -168,7 +168,7 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   endif()
 else()
   # secp256k1 Linux gcc
-  add_definitions("-Wno-cpp -Wno-unused-function -Wno-nonnull-compare")
+  add_definitions("-Wno-cpp -Wno-unused-function -Wno-nonnull-compare -Wno-implicit-fallthrough=0")
   set(ANL anl)
 endif()
 

@@ -162,7 +162,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	  macdockiconhandler.mm
 	  macnotificationhandler.mm
 	  )
-  set_property(TARGET mac_stuff PROPERTY CXX_STANDARD 11)
   set(MAC_LIBS mac_stuff)
 endif()
 
@@ -172,7 +171,6 @@ if(CLANG_TIDY_EXE)
 ##  set_target_properties(qt_stuff PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
 endif()
 
-set_property(TARGET qt_stuff PROPERTY CXX_STANDARD 11)
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
 SET(QT_TRANSLATIONS_FILES
@@ -192,7 +190,6 @@ QT5_ADD_RESOURCES(QRC_LOCALE_RESOURCE tessa_locale.qrc)
 add_executable(tessa-qt tessa.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} ${GUI_FORM_HEADERS})
 
 add_dependencies(tessa-qt translations_target)
-set_property(TARGET tessa-qt PROPERTY CXX_STANDARD 11)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} qrencode zmq "-framework Cocoa")
