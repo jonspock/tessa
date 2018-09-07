@@ -24,8 +24,8 @@
 
 #include <algorithm>
 
-#include "bech_addr.h"
-#include "bech32.h"
+#include "bch_addr.h"
+#include "bch32.h"
 
 static const std::string valid_checksum[] = {
     "A12UEL5L",
@@ -129,7 +129,7 @@ static const invalid_address_data invalid_address_enc[] = {
     {"bc", 16, 41},
 };
 
-static std::vector<uint8_t> bech_scriptpubkey(int witver, const std::vector<uint8_t>& witprog) {
+static std::vector<uint8_t> bch_scriptpubkey(int witver, const std::vector<uint8_t>& witprog) {
     std::vector<uint8_t> ret;
     ret.push_back(witver ? (0x80 | witver) : 0);
     ret.push_back(witprog.size());
@@ -156,13 +156,13 @@ int main(void) {
     int fail = 0;
     for (i = 0; i < sizeof(valid_checksum) / sizeof(valid_checksum[0]); ++i) {
         bool ok = true;
-        std::pair<std::string, std::vector<uint8_t> > dec = bech32::decode(valid_checksum[i]);
+        std::pair<std::string, std::vector<uint8_t> > dec = bch32::decode(valid_checksum[i]);
         if (dec.first.empty()) {
             fprintf(stderr, "Failed to parse '%s'\n", valid_checksum[i].c_str());
             ok = false;
         }
         if (ok) {
-            std::string recode = bech32::encode(dec.first, dec.second);
+            std::string recode = bch32::encode(dec.first, dec.second);
             if (recode.empty()) {
                 fprintf(stderr, "Failed to encode '%s'\n", valid_checksum[i].c_str());
             } else {
@@ -173,7 +173,7 @@ int main(void) {
         fail += !ok;
     }
     for (i = 0; i < sizeof(invalid_checksum) / sizeof(invalid_checksum[0]); ++i) {
-        std::pair<std::string, std::vector<uint8_t> > dec = bech32::decode(invalid_checksum[i]);
+        std::pair<std::string, std::vector<uint8_t> > dec = bch32::decode(invalid_checksum[i]);
         if (!dec.first.empty() || !dec.second.empty()) {
             fprintf(stderr, "Parsed an invalid code: '%s'\n", invalid_checksum[i].c_str());
             ++fail;
@@ -181,54 +181,54 @@ int main(void) {
     }
     for (i = 0; i < sizeof(valid_address) / sizeof(valid_address[0]); ++i) {
         std::string hrp = "bc";
-        std::pair<int, std::vector<uint8_t> > dec = bech_addr::decode(hrp, valid_address[i].address);
+        std::pair<int, std::vector<uint8_t> > dec = bch_addr::decode(hrp, valid_address[i].address);
         if (dec.first == -1) {
             hrp = "tb";
-            dec = bech_addr::decode(hrp, valid_address[i].address);
+            dec = bch_addr::decode(hrp, valid_address[i].address);
         }
         bool ok = true;
         if (dec.first == -1) {
             ok = false;
-            fprintf(stderr, "Failed to bech_addr::decode '%s'\n", valid_address[i].address.c_str());
+            fprintf(stderr, "Failed to bch_addr::decode '%s'\n", valid_address[i].address.c_str());
         }
         if (ok) {
-            std::vector<uint8_t> spk = bech_scriptpubkey(dec.first, dec.second);
+            std::vector<uint8_t> spk = bch_scriptpubkey(dec.first, dec.second);
             ok = spk.size() == valid_address[i].scriptPubKeyLen && memcmp(&spk[0], valid_address[i].scriptPubKey, spk.size()) == 0;
             if (!ok) {
-                fprintf(stderr, "bech_addr::decodes produces wrong result: '%s'\n", valid_address[i].address.c_str());
+                fprintf(stderr, "bch_addr::decodes produces wrong result: '%s'\n", valid_address[i].address.c_str());
             }
         }
         if (ok) {
-            std::string recode = bech_addr::encode(hrp, dec.first, dec.second);
+            std::string recode = bch_addr::encode(hrp, dec.first, dec.second);
             if (recode.empty()) {
-                fprintf(stderr, "bech_addr::encode fails on '%s'\n", valid_address[i].address.c_str());
+                fprintf(stderr, "bch_addr::encode fails on '%s'\n", valid_address[i].address.c_str());
                 ok = false;
             }
             if (ok) {
                 ok = case_insensitive_equal(valid_address[i].address, recode);
-                if (!ok) fprintf(stderr, "bech_addr::encode roundtrip fails: '%s' -> '%s'\n", valid_address[i].address.c_str(), recode.c_str());
+                if (!ok) fprintf(stderr, "bch_addr::encode roundtrip fails: '%s' -> '%s'\n", valid_address[i].address.c_str(), recode.c_str());
             }
         }
         fail += !ok;
     }
     for (i = 0; i < sizeof(invalid_address) / sizeof(invalid_address[0]); ++i) {
-        std::pair<int, std::vector<uint8_t> > dec = bech_addr::decode("bc", invalid_address[i]);
+        std::pair<int, std::vector<uint8_t> > dec = bch_addr::decode("bc", invalid_address[i]);
         bool ok = true;
         if (dec.first != -1) {
-            printf("bech_addr::decode succeeds on invalid '%s'\n", invalid_address[i].c_str());
+            printf("bch_addr::decode succeeds on invalid '%s'\n", invalid_address[i].c_str());
             ok = false;
         }
-        dec = bech_addr::decode("tb", invalid_address[i]);
+        dec = bch_addr::decode("tb", invalid_address[i]);
         if (dec.first != -1) {
-            printf("bech_addr::decode succeeds on invalid '%s'\n", invalid_address[i].c_str());
+            printf("bch_addr::decode succeeds on invalid '%s'\n", invalid_address[i].c_str());
             ok = false;
         }
         fail += !ok;
     }
     for (i = 0; i < sizeof(invalid_address_enc) / sizeof(invalid_address_enc[0]); ++i) {
-        std::string code = bech_addr::encode(invalid_address_enc[i].hrp, invalid_address_enc[i].version, std::vector<uint8_t>(invalid_address_enc[i].program_length, 0));
+        std::string code = bch_addr::encode(invalid_address_enc[i].hrp, invalid_address_enc[i].version, std::vector<uint8_t>(invalid_address_enc[i].program_length, 0));
         if (!code.empty()) {
-            printf("bech_addr::encode succeeds on invalid '%s'\n", code.c_str());
+            printf("bch_addr::encode succeeds on invalid '%s'\n", code.c_str());
             ++fail;
         }
     }

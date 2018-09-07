@@ -517,7 +517,7 @@ set(PP_EXT "LAZYR" CACHE STRING "")
 set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 
 add_subdirectory(src/relic)
-add_subdirectory(src/bech32)
+add_subdirectory(src/bch32)
 add_subdirectory(src/bls)
 
 #------------------- ------------------- ------------------- ------------------- -------------------

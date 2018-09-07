@@ -19,17 +19,17 @@
  * THE SOFTWARE.
  */
 
-#include "bech32.h"
+#include "bch32.h"
 
 namespace
 {
 
 typedef std::vector<uint8_t> data;
 
-/** The Bech32 character set for encoding. */
+/** The Bch32 character set for encoding. */
 const char* charset = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
-/** The Bech32 character set for decoding. */
+/** The Bch32 character set for decoding. */
 const int8_t charset_rev[128] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -100,10 +100,10 @@ data create_checksum(const std::string& hrp, const data& values) {
 
 }
 
-namespace bech32
+namespace bch32
 {
 
-/** Encode a Bech32 string. */
+/** Encode a Bch32 string. */
 std::string encode(const std::string& hrp, const data& values) {
     data checksum = create_checksum(hrp, values);
     data combined = cat(values, checksum);
@@ -115,7 +115,7 @@ std::string encode(const std::string& hrp, const data& values) {
     return ret;
 }
 
-/** Decode a Bech32 string. */
+/** Decode a Bch32 string. */
 std::pair<std::string, data> decode(const std::string& str) {
     bool lower = false, upper = false;
     bool ok = true;

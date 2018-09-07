@@ -19,8 +19,8 @@
  * THE SOFTWARE.
  */
 
-#include "bech_addr.h"
-#include "bech32.h"
+#include "bch_addr.h"
+#include "bch32.h"
 
 namespace
 {
@@ -53,12 +53,12 @@ bool convertbits(data& out, const data& in) {
 
 }
 
-namespace bech_addr
+namespace bch_addr
 {
 
 /** Decode an address. */
 std::pair<int, data> decode(const std::string& hrp, const std::string& addr) {
-    std::pair<std::string, data> dec = bech32::decode(addr);
+    std::pair<std::string, data> dec = bch32::decode(addr);
     if (dec.first != hrp || dec.second.size() < 1) return std::make_pair(-1, data());
     data conv;
     if (!convertbits<5, 8, false>(conv, data(dec.second.begin() + 1, dec.second.end())) ||
@@ -74,7 +74,7 @@ std::string encode(const std::string& hrp, int witver, const data& witprog) {
     data enc;
     enc.push_back(witver);
     convertbits<8, 5, true>(enc, witprog);
-    std::string ret = bech32::encode(hrp, enc);
+    std::string ret = bch32::encode(hrp, enc);
     if (decode(hrp, ret).first == -1) return "";
     return ret;
 }

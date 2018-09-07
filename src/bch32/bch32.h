@@ -23,13 +23,13 @@
 #include <vector>
 #include <string>
 
-namespace bech_addr
+namespace bch32
 {
 
-/** Decode an address. Returns (witver, witprog). witver = -1 means failure. */
-std::pair<int, std::vector<uint8_t> > decode(const std::string& hrp, const std::string& addr);
+/** Encode a Bch32 string. Returns the empty string in case of failure. */
+std::string encode(const std::string& hrp, const std::vector<uint8_t>& values);
 
-/** Encode an address. Empty string means failure. */
-std::string encode(const std::string& hrp, int witver, const std::vector<uint8_t>& witprog);
+/** Decode a Bch32 string. Returns (hrp, data). Empty hrp means failure. */
+std::pair<std::string, std::vector<uint8_t> > decode(const std::string& str);
 
 }
