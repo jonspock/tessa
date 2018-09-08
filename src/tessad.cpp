@@ -40,17 +40,14 @@
 
 static bool fDaemon;
 
-void WaitForShutdown(boost::thread_group* threadGroup) {
+void WaitForShutdown(CScheduler& scheduler) {
   bool fShutdown = ShutdownRequested();
   // Tell the main threads to shutdown.
   while (!fShutdown) {
     MilliSleep(200);
     fShutdown = ShutdownRequested();
   }
-  if (threadGroup) {
-    Interrupt(*threadGroup);
-    threadGroup->join_all();
-  }
+  Interrupt(scheduler);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -138,20 +135,20 @@ bool AppInit(int argc, char* argv[]) {
     SoftSetBoolArg("-server", true);
 
     InitLogging();
-    fRet = AppInit2(threadGroup, scheduler);
+    fRet = AppInit2(scheduler);
   } catch (std::exception& e) { PrintExceptionContinue(&e, "AppInit()"); } catch (...) {
     PrintExceptionContinue(nullptr, "AppInit()");
   }
 
   if (!fRet) {
-    Interrupt(threadGroup);
+    Interrupt(scheduler);
     // threadGroup.join_all(); was left out intentionally here, because we didn't re-test all of
     // the startup-failure cases to make sure they don't result in a hang due to some
     // thread-blocking-waiting-for-another-thread-during-startup case
   } else {
-    WaitForShutdown(&threadGroup);
+    WaitForShutdown(scheduler);
   }
-  Shutdown();
+  Shutdown(scheduler);
 
   return fRet;
 }

@@ -36,6 +36,7 @@ static const int64_t nMinDbCache = 4;
 class CCoinsViewDB : public CCoinsView {
  protected:
   CLevelDBWrapper db;
+  std::atomic<bool> interrupt = false;
 
  public:
   CCoinsViewDB(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
@@ -45,6 +46,7 @@ class CCoinsViewDB : public CCoinsView {
   uint256 GetBestBlock() const;
   bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock);
   bool GetStats(CCoinsStats& stats) const;
+  void InterruptGetStats();
 };
 
 /** Access to the block database (blocks/index/) */
@@ -55,6 +57,7 @@ class CBlockTreeDB : public CLevelDBWrapper {
  private:
   CBlockTreeDB(const CBlockTreeDB&);
   void operator=(const CBlockTreeDB&);
+  std::atomic<bool> interrupt = false;
 
  public:
   bool WriteBlockIndex(const CDiskBlockIndex& blockindex);
@@ -71,6 +74,7 @@ class CBlockTreeDB : public CLevelDBWrapper {
   bool WriteInt(const std::string& name, int nValue);
   bool ReadInt(const std::string& name, int& nValue);
   bool LoadBlockIndexGuts();
+  void InterruptLoadBlockIndexGuts();
 };
 
 class CZerocoinDB : public CLevelDBWrapper {
@@ -80,6 +84,7 @@ class CZerocoinDB : public CLevelDBWrapper {
  private:
   CZerocoinDB(const CZerocoinDB&);
   void operator=(const CZerocoinDB&);
+  std::atomic<bool> interrupt = false;
 
  public:
   bool WriteCoinMintBatch(const std::vector<std::pair<libzerocoin::PublicCoin, uint256> >& mintInfo);
@@ -96,4 +101,5 @@ class CZerocoinDB : public CLevelDBWrapper {
   bool WriteAccumulatorValue(const uint32_t& nChecksum, const CBigNum& bnValue);
   bool ReadAccumulatorValue(const uint32_t& nChecksum, CBigNum& bnValue);
   bool EraseAccumulatorValue(const uint32_t& nChecksum);
+  void InterruptWipeCoins();
 };

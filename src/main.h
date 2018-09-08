@@ -85,6 +85,8 @@ bool ProcessMessages(CNode* pfrom);
 bool SendMessages(CNode* pto, bool fSendTrickle);
 /** Run an instance of the script checking thread */
 void ThreadScriptCheck();
+/** Interrupt all script checking threads once they're out of work */
+void InterruptThreadScriptCheck();
 
 // ***TODO*** probably not the right place for these 2
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */

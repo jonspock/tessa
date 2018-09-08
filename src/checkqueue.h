@@ -127,6 +127,16 @@ template <typename T> class CCheckQueue {
   //! Worker thread
   void Thread() { Loop(); }
 
+
+  void Interrupt() {
+    {
+      std::lock_guard<std::mutex> lock(mutex);
+      fQuit = true;
+    }
+    condWorker.notify_all();
+    condMaster.notify_all();
+  }
+
   //! Wait until execution finishes, and return whether all evaluations where successful.
   bool Wait() { return Loop(true); }
 

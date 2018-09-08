@@ -38,11 +38,18 @@ static proxyType nameProxy;
 static CCriticalSection cs_proxyInfos;
 int nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 bool fNameLookup = false;
+static std::atomic<bool> netbase_interrupted(false);
+
 
 static const uint8_t pchIPv4[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
 
 // Need ample time for negotiation for very slow proxies such as Tor (milliseconds)
 static const int SOCKS5_RECV_TIMEOUT = 20 * 1000;
+
+void InterruptNetBase()
+{
+    netbase_interrupted = true;
+}
 
 enum Network ParseNetwork(std::string net) {
   std::transform(net.begin(), net.end(), net.begin(), ::tolower);
@@ -148,7 +155,7 @@ bool static LookupIntern(const char* pszName, std::vector<CNetAddr>& vIP, unsign
     // 2 seconds looks fine in our situation.
     struct timespec ts = {2, 0};
     gai_suspend(&query, 1, &ts);
-    boost::this_thread::interruption_point();
+    interruption_point(netbase_interrupted);
 
     nErr = gai_error(query);
     if (0 == nErr) aiRes = query->ar_result;
@@ -258,7 +265,7 @@ bool static InterruptibleRecv(char* data, size_t len, int timeout, SOCKET& hSock
         return false;
       }
     }
-    boost::this_thread::interruption_point();
+    interruption_point(netbase_interrupted);
     curTime = GetTimeMillis();
   }
   return len == 0;

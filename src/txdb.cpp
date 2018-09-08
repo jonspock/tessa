@@ -64,7 +64,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
 }
 
 CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe)
-    : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {}
+  : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {}
 
 bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex) {
   return Write(make_pair('b', blockindex.GetBlockHash()), blockindex);
@@ -104,7 +104,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
   ss << stats.hashBlock;
   CAmount nTotalAmount = 0;
   while (pcursor->Valid()) {
-    boost::this_thread::interruption_point();
+    if(interrupt) return error("GetStats() : interrupted");
     try {
       rocksdb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
@@ -143,6 +143,11 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
   return true;
 }
 
+void CCoinsViewDB::InterruptGetStats()
+{
+    interrupt = true;
+}
+
 bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos) { return Read(make_pair('t', txid), pos); }
 
 bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> >& vect) {
@@ -177,7 +182,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
   uint256 nPreviousCheckpoint = uint256();
   nPreviousCheckpoint.SetNull();
   while (pcursor->Valid()) {
-    boost::this_thread::interruption_point();
+    if(interrupt) return error("LoadBlockIndexGuts() : interrupted");
     try {
       rocksdb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
@@ -243,6 +248,15 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
   }
 
   return true;
+}
+
+void CBlockTreeDB::InterruptLoadBlockIndexGuts()
+{
+    interrupt = true;
+}
+void CZerocoinDB::InterruptWipeCoins()
+{
+    interrupt = true;
 }
 
 CZerocoinDB::CZerocoinDB(size_t nCacheSize, bool fMemory, bool fWipe)
@@ -332,7 +346,7 @@ bool CZerocoinDB::WipeCoins(const std::string& strType) {
   // Load mapBlockIndex
   std::set<uint256> setDelete;
   while (pcursor->Valid()) {
-    boost::this_thread::interruption_point();
+    if(interrupt) return error("WipeCoins() : interrupted");
     try {
       rocksdb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);

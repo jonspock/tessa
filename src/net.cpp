@@ -37,7 +37,10 @@
 #include <miniupnpc/upnperrors.h>
 #endif
 
-#include <boost/thread.hpp>
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+
 
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
@@ -57,7 +60,6 @@
 #endif
 #endif
 
-using namespace boost;
 using namespace std;
 
 namespace {
@@ -107,12 +109,33 @@ NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 
 static CSemaphore* semOutbound = nullptr;
-boost::condition_variable messageHandlerCondition;
+std::condition_variable messageHandlerCondition;
 
 // Signals for message handling
 static CNodeSignals g_signals;
 CNodeSignals& GetNodeSignals() { return g_signals; }
 
+static std::condition_variable net_interrupt_cond;
+static std::mutex cs_net_interrupt;
+static std::atomic<bool> net_interrupted(false);
+
+std::thread dns_address_seed_thread;
+std::thread socket_handler_thread;
+std::thread open_added_connections_thread;
+std::thread open_connections_thread;
+std::thread message_handler_thread;
+std::thread staking_handler_thread;
+
+static void InterruptibleSleep(uint64_t n)
+{
+    bool ret = false;
+    {
+        std::unique_lock<std::mutex> lock(cs_net_interrupt);
+        ret = net_interrupt_cond.wait_for(lock, std::chrono::milliseconds(n), []()->bool{return net_interrupted; });
+    }
+    interruption_point(ret);
+}
+    
 void AddOneShot(string strDest) {
   LOCK(cs_vOneShots);
   vOneShots.push_back(strDest);
@@ -165,7 +188,7 @@ bool RecvLine(SOCKET hSocket, string& strLine) {
       strLine += c;
       if (strLine.size() >= 9000) return true;
     } else if (nBytes <= 0) {
-      boost::this_thread::interruption_point();
+      interruption_point(net_interrupted);
       if (nBytes < 0) {
         int nErr = WSAGetLastError();
         if (nErr == WSAEMSGSIZE) continue;
@@ -737,7 +760,7 @@ static list<CNode*> vNodesDisconnected;
 
 void ThreadSocketHandler() {
   uint32_t nPrevNodeCount = 0;
-  while (true) {
+  while (!net_interrupted) {
     //
     // Disconnect nodes
     //
@@ -859,8 +882,8 @@ void ThreadSocketHandler() {
     }
 
     int nSelect = select(have_fds ? hSocketMax + 1 : 0, &fdsetRecv, &fdsetSend, &fdsetError, &timeout);
-    boost::this_thread::interruption_point();
-
+    if(net_interrupted)  break;
+    
     if (nSelect == SOCKET_ERROR) {
       if (have_fds) {
         int nErr = WSAGetLastError();
@@ -869,7 +892,7 @@ void ThreadSocketHandler() {
       }
       FD_ZERO(&fdsetSend);
       FD_ZERO(&fdsetError);
-      MilliSleep(timeout.tv_usec / 1000);
+      InterruptibleSleep(timeout.tv_usec / 1000);
     }
 
     //
@@ -928,7 +951,7 @@ void ThreadSocketHandler() {
       for (CNode* pnode : vNodesCopy) pnode->AddRef();
     }
     for (CNode* pnode : vNodesCopy) {
-      boost::this_thread::interruption_point();
+      if(net_interrupted) break;
 
       //
       // Receive
@@ -1000,6 +1023,12 @@ void ThreadSocketHandler() {
 }
 
 #ifdef USE_UPNP
+
+static std::condition_variable upnp_cond;
+static std::mutex cs_upnp;
+static bool upnp_interrupted = false;
+static std::thread* upnp_thread = NULL;
+
 void ThreadMapPort() {
   std::string port = strprintf("%u", GetListenPort());
   const char* multicastif = 0;
@@ -1042,34 +1071,35 @@ void ThreadMapPort() {
 
     string strDesc = "Tessa " + FormatFullVersion();
 
-    try {
-      while (true) {
+    bool interrupted = false;
+    while (!interrupted) {
 #ifndef UPNPDISCOVER_SUCCESS
-        /* miniupnpc 1.5 */
-        r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype, port.c_str(), port.c_str(), lanaddr,
-                                strDesc.c_str(), "TCP", 0);
+      /* miniupnpc 1.5 */
+      r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype, port.c_str(), port.c_str(), lanaddr,
+                              strDesc.c_str(), "TCP", 0);
 #else
-        /* miniupnpc 1.6 */
-        r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype, port.c_str(), port.c_str(), lanaddr,
-                                strDesc.c_str(), "TCP", 0, "0");
+      /* miniupnpc 1.6 */
+      r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype, port.c_str(), port.c_str(), lanaddr,
+                              strDesc.c_str(), "TCP", 0, "0");
 #endif
 
-        if (r != UPNPCOMMAND_SUCCESS)
-          LogPrintf("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n", port, port, lanaddr, r, strupnperror(r));
-        else
-          LogPrintf("UPnP Port Mapping successful.\n");
-        ;
-
-        MilliSleep(20 * 60 * 1000);  // Refresh every 20 minutes
-      }
-    } catch (boost::thread_interrupted) {
-      r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, port.c_str(), "TCP", 0);
-      LogPrintf("UPNP_DeletePortMapping() returned : %d\n", r);
-      freeUPNPDevlist(devlist);
-      devlist = 0;
-      FreeUPNPUrls(&urls);
-      throw;
+      if (r != UPNPCOMMAND_SUCCESS)
+        LogPrintf("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n", port, port, lanaddr, r, strupnperror(r));
+      else
+        LogPrintf("UPnP Port Mapping successful.\n");
+      ;
+      
+      std::unique_lock<std::mutex> lock(cs_upnp);
+      ////MilliSleep(20 * 60 * 1000);  // Refresh every 20 minutes
+      interrupted = upnp_cond.wait_for(lock, std::chrono::minutes(20), []{return upnp_interrupted; });
     }
+    if(interrupted)
+      {
+        r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, port.c_str(), "TCP", 0);
+        LogPrintf("UPNP_DeletePortMapping() returned: %d\n", r);
+        freeUPNPDevlist(devlist); devlist = 0;
+        FreeUPNPUrls(&urls);
+      }
   } else {
     LogPrintf("No valid UPnP IGDs found\n");
     freeUPNPDevlist(devlist);
@@ -1078,22 +1108,41 @@ void ThreadMapPort() {
   }
 }
 
+void InterruptMapPort()
+{
+  LogPrintf("Interrupting UPnP\n");
+  {
+    std::lock_guard<std::mutex> lock(cs_upnp);
+    upnp_interrupted = true;
+  }
+  upnp_cond.notify_all();
+}
+void StopMapPort()
+{
+  if(upnp_thread) {
+    LogPrintf("Stopping UPnP\n");
+    upnp_thread->join();
+    delete upnp_thread;
+    upnp_thread = NULL;
+  }
+  std::lock_guard<std::mutex> lock(cs_upnp);
+  upnp_interrupted = false;
+}
+
+
 void MapPort(bool fUseUPnP) {
-  static boost::thread* upnp_thread = nullptr;
+  static std::thread* upnp_thread = nullptr;
 
   if (fUseUPnP) {
     if (upnp_thread) {
-      upnp_thread->interrupt();
-      upnp_thread->join();
-      delete upnp_thread;
+      InterruptMapPort();
+      StopMapPort();
     }
     // upnp_thread = new boost::thread(std::bind(&TraceThread<void (*)()>, "upnp", &ThreadMapPort));
     upnp_thread = std::thread(([&] { TraceThread<void (*)()>("upnp", &ThreadMapPort); }));
   } else if (upnp_thread) {
-    upnp_thread->interrupt();
-    upnp_thread->join();
-    delete upnp_thread;
-    upnp_thread = nullptr;
+    InterruptMapPort();
+    StopMapPort();
   }
 }
 
@@ -1101,12 +1150,25 @@ void MapPort(bool fUseUPnP) {
 void MapPort(bool) {
   // Intentionally left blank.
 }
+void StopMapPort()
+{
+    // Intentionally left blank.
+}
+ void InterruptMapPort()
+{
+    // Intentionally left blank.
+}
+
 #endif
 
 void ThreadDNSAddressSeed() {
   // goal: only query DNS seeds if address need is acute
   if ((addrman.size() > 0) && (!GetBoolArg("-forcednsseed", false))) {
-    MilliSleep(11 * 1000);
+    {
+      std::unique_lock<std::mutex> lock(cs_net_interrupt);
+      if(net_interrupt_cond.wait_for(lock, std::chrono::seconds(11), []()->bool {return net_interrupted; }))
+        return;
+    }
 
     LOCK(cs_vNodes);
     if (vNodes.size() >= 2) {
@@ -1121,6 +1183,7 @@ void ThreadDNSAddressSeed() {
   LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
 
   for (const CDNSSeedData& seed : vSeeds) {
+    if (net_interrupted) return;
     if (HaveNameProxy()) {
       AddOneShot(seed.host);
     } else {
@@ -1181,7 +1244,7 @@ void ThreadOpenConnections() {
         OpenNetworkConnection(addr, nullptr, strAddr.c_str());
         for (int i = 0; i < 10 && i < nLoop; i++) { MilliSleep(500); }
       }
-      MilliSleep(500);
+      InterruptibleSleep(500);
     }
   }
 
@@ -1189,11 +1252,10 @@ void ThreadOpenConnections() {
   int64_t nStart = GetTime();
   while (true) {
     ProcessOneShot();
-
-    MilliSleep(500);
+    InterruptibleSleep(500);
 
     CSemaphoreGrant grant(*semOutbound);
-    boost::this_thread::interruption_point();
+    if (net_interrupted) break;
 
     // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
     if (addrman.size() == 0 && (GetTime() - nStart > 60)) {
@@ -1272,9 +1334,9 @@ void ThreadOpenAddedConnections() {
         CAddress addr;
         CSemaphoreGrant grant(*semOutbound);
         OpenNetworkConnection(addr, &grant, strAddNode.c_str());
-        MilliSleep(500);
+        InterruptibleSleep(500);
       }
-      MilliSleep(120000);  // Retry every 2 minutes
+      InterruptibleSleep(120000);
     }
   }
 
@@ -1324,7 +1386,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
   //
   // Initiate outbound network connection
   //
-  boost::this_thread::interruption_point();
+  interruption_point(net_interrupted);
   if (!pszDest) {
     if (IsLocal(addrConnect) || FindNode((CNetAddr)addrConnect) || CNode::IsBanned(addrConnect) ||
         FindNode(addrConnect.ToStringIPPort()))
@@ -1333,7 +1395,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
     return false;
 
   CNode* pnode = ConnectNode(addrConnect, pszDest);
-  boost::this_thread::interruption_point();
+  interruption_point(net_interrupted);
 
   if (!pnode) return false;
   if (grantOutbound) grantOutbound->MoveTo(pnode->grantOutbound);
@@ -1344,8 +1406,8 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
 }
 
 void ThreadMessageHandler() {
-  boost::mutex condition_mutex;
-  boost::unique_lock<boost::mutex> lock(condition_mutex);
+  std::mutex condition_mutex;
+  std::unique_lock<std::mutex> lock(condition_mutex);
 
   SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
   while (true) {
@@ -1378,14 +1440,14 @@ void ThreadMessageHandler() {
           }
         }
       }
-      boost::this_thread::interruption_point();
+      if (net_interrupted) break;
 
       // Send messages
       {
         TRY_LOCK(pnode->cs_vSend, lockSend);
         if (lockSend) g_signals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
       }
-      boost::this_thread::interruption_point();
+      if (net_interrupted) break;
     }
 
     {
@@ -1394,19 +1456,18 @@ void ThreadMessageHandler() {
     }
 
     if (fSleep)
-      messageHandlerCondition.timed_wait(
-          lock, boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(100));
+      messageHandlerCondition.wait_for(lock, std::chrono::milliseconds(100), []()->bool {return net_interrupted; });
   }
 }
 
 // ppcoin: stake minter thread
 void static ThreadStakeMinter() {
-  boost::this_thread::interruption_point();
+  interruption_point(net_interrupted);
   LogPrintf("ThreadStakeMinter started\n");
   CWallet* pwallet = pwalletMain;
   try {
     BitcoinMiner(pwallet, true);
-    boost::this_thread::interruption_point();
+    interruption_point(net_interrupted);
   } catch (std::exception& e) { LogPrintf("ThreadStakeMinter() exception \n"); } catch (...) {
     LogPrintf("ThreadStakeMinter() error \n");
   }
@@ -1503,7 +1564,7 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
   return true;
 }
 
-void static Discover(boost::thread_group& threadGroup) {
+void static Discover() {
   if (!fDiscover) return;
 
 #ifdef WIN32
@@ -1541,7 +1602,8 @@ void static Discover(boost::thread_group& threadGroup) {
 #endif
 }
 
-void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler) {
+void StartNode(CScheduler& scheduler) {
+  net_interrupted = false;
   uiInterface.InitMessage(_("Loading addresses..."));
   // Load addresses for peers.dat
   int64_t nStart = GetTimeMillis();
@@ -1575,7 +1637,7 @@ void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (pnodeLocalHost == nullptr)
     pnodeLocalHost = new CNode(INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), nLocalServices));
 
-  Discover(threadGroup);
+  Discover();
 
   //
   // Start threads
@@ -1584,29 +1646,36 @@ void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (!GetBoolArg("-dnsseed", true))
     LogPrintf("DNS seeding disabled\n");
   else
-    threadGroup.create_thread(std::bind(&TraceThread<void (*)()>, "dnsseed", &ThreadDNSAddressSeed));
+    dns_address_seed_thread = std::thread(std::bind(&TraceThread<void (*)()>, "dnsseed", &ThreadDNSAddressSeed));
 
   // Map ports with UPnP
   MapPort(GetBoolArg("-upnp", DEFAULT_UPNP));
 
   // Send and receive from sockets, accept connections
-  threadGroup.create_thread(std::bind(&TraceThread<void (*)()>, "net", &ThreadSocketHandler));
+  socket_handler_thread = std::thread(std::bind(&TraceThread<void (*)()>, "net", &ThreadSocketHandler));
 
   // Initiate outbound connections from -addnode
-  threadGroup.create_thread(std::bind(&TraceThread<void (*)()>, "addcon", &ThreadOpenAddedConnections));
+  open_added_connections_thread = std::thread(std::bind(&TraceThread<void (*)()>, "addcon", &ThreadOpenAddedConnections));
 
   // Initiate outbound connections
-  threadGroup.create_thread(std::bind(&TraceThread<void (*)()>, "opencon", &ThreadOpenConnections));
+  open_connections_thread = std::thread(std::bind(&TraceThread<void (*)()>, "opencon", &ThreadOpenConnections));
 
   // Process messages
-  threadGroup.create_thread(std::bind(&TraceThread<void (*)()>, "msghand", &ThreadMessageHandler));
+  message_handler_thread = std::thread(std::bind(&TraceThread<void (*)()>, "msghand", &ThreadMessageHandler));
 
   // Dump network addresses
   scheduler.scheduleEvery(&DumpData, DUMP_ADDRESSES_INTERVAL);
 
   // ppcoin:mint proof-of-stake blocks in the background
   if (GetBoolArg("-staking", true))
-    threadGroup.create_thread(std::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
+    staking_handler_thread = std::thread(std::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
+}
+
+void InterruptNode()
+{
+  net_interrupted = true;
+  net_interrupt_cond.notify_all();
+  messageHandlerCondition.notify_all();
 }
 
 bool StopNode() {
@@ -1619,6 +1688,19 @@ bool StopNode() {
     DumpData();
     fAddressesInitialized = false;
   }
+
+  if(dns_address_seed_thread.joinable())
+    dns_address_seed_thread.join();
+  if(socket_handler_thread.joinable())
+    socket_handler_thread.join();
+  if(open_added_connections_thread.joinable())
+    open_added_connections_thread.join();
+  if(open_connections_thread.joinable())
+    open_connections_thread.join();
+  if(message_handler_thread.joinable())
+    message_handler_thread.join();
+  if(staking_handler_thread.joinable())
+    staking_handler_thread.join();
 
   return true;
 }

@@ -52,7 +52,7 @@
 #endif
 
 #include <boost/interprocess/sync/file_lock.hpp>
-#include <boost/thread.hpp>
+#include <thread>
 
 #if ENABLE_ZMQ
 #include "zmq/zmqnotificationinterface.h"
@@ -159,16 +159,41 @@ static CCoinsViewDB* pcoinsdbview = nullptr;
 static CCoinsViewErrorCatcher* pcoinscatcher = nullptr;
 static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 
-void Interrupt(boost::thread_group& threadGroup) {
+static std::thread scheduler_thread;
+static std::vector<std::thread> script_check_threads;
+static std::thread import_thread;
+#ifdef ENABLE_WALLET
+static std::thread flush_wallet_thread;
+#endif
+
+static bool fHaveGenesis = false;
+static boost::mutex cs_GenesisWait;
+static CConditionVariable condvar_GenesisWait;
+
+
+void Interrupt(CScheduler& scheduler) {
   InterruptHTTPServer();
   InterruptHTTPRPC();
   InterruptRPC();
   InterruptREST();
-  threadGroup.interrupt_all();
+  InterruptMapPort();
+  scheduler.interrupt(false);
+  if(pblocktree)
+    pblocktree->InterruptLoadBlockIndexGuts();
+  InterruptThreadScriptCheck();
+  InterruptNetBase();
+  InterruptNode();
+#ifdef ENABLE_WALLET
+  if (pwalletMain) {
+    pwalletMain->Interrupt();
+    InterruptFlushWalletDB();
+  }
+#endif
+  condvar_GenesisWait.notify_all();
 }
 
 /** Preparing steps before shutting down or restarting the wallet */
-void PrepareShutdown() {
+void PrepareShutdown(CScheduler& scheduler) {
   fRequestShutdown = true;   // Needed when we shutdown the wallet
   fRestartRequested = true;  // Needed when we restart the wallet
   LogPrintf("%s: In progress...\n", __func__);
@@ -192,6 +217,21 @@ void PrepareShutdown() {
   StopNode();
   UnregisterNodeSignals(GetNodeSignals());
 
+  StopMapPort();
+  scheduler.stop();
+  if(scheduler_thread.joinable())
+    scheduler_thread.join();
+  for(auto&& thread : script_check_threads)
+    thread.join();
+  script_check_threads.clear();
+#ifdef ENABLE_WALLET
+  if (flush_wallet_thread.joinable())
+    flush_wallet_thread.join();
+#endif
+  if (import_thread.joinable())
+    import_thread.join();
+
+  
   if (fFeeEstimatesInitialized) { fFeeEstimatesInitialized = false; }
 
   {
@@ -241,10 +281,11 @@ void PrepareShutdown() {
  * called implicitly when the parent object is deleted. In this case we have to skip the
  * PrepareShutdown() part because it was already executed and just delete the wallet instance.
  */
-void Shutdown() {
+void Shutdown(CScheduler& scheduler) {
   // Shutdown part 1: prepare shutdown
-  if (!fRestartRequested) { PrepareShutdown(); }
+  if (!fRestartRequested) { PrepareShutdown(scheduler); }
   // Shutdown part 2: Stop TOR thread and delete wallet instance
+
   if (pwalletMain) delete pwalletMain;
   pwalletMain = nullptr;
   if (zwalletMain) delete zwalletMain;
@@ -619,9 +660,9 @@ std::string HelpMessage(HelpMessageMode mode) {
 
 std::string LicenseInfo() {
   return FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Tessa Core Developers"), COPYRIGHT_YEAR)) +
-         "\n" + "\n" + FormatParagraph(_("This is experimental software.")) + "\n" + "\n" +
-         FormatParagraph(_("Distributed under the MIT & Apache software licenses, see the accompanying file COPYING and " 
-                           "APACHE_LICENSE and <http://www.opensource.org/licenses/mit-license.php>.")) +
+         "\n" + "\n" + FormatParagraph(_("This is **EXPERIMENTAL** software.")) + "\n" + "\n" +
+         FormatParagraph(_("Distributed under the MIT, Apache software and LGPL licenses, see the accompanying files " 
+                           "Copying, LGPL Version 2.1, and APACHE_LICENSE")) +
          "\n" + "\n" + 
          "\n";
 }
@@ -630,7 +671,7 @@ static void BlockNotifyCallback(const uint256& hashNewTip) {
   std::string strCmd = GetArg("-blocknotify", "");
 
   strCmd.replace(strCmd.find("%s"),2, hashNewTip.GetHex());
-  boost::thread t(runCommand, strCmd);  // thread runs free
+  std::thread(runCommand, strCmd).detach();  // thread runs free
 }
 
 static void BlockSizeNotifyCallback(int size, const uint256& hashNewTip) {
@@ -638,7 +679,7 @@ static void BlockSizeNotifyCallback(int size, const uint256& hashNewTip) {
 
   strCmd.replace(strCmd.find("%s"),2, hashNewTip.GetHex());
   strCmd.replace(strCmd.find("%d"),2, std::to_string(size));
-  boost::thread t(runCommand, strCmd);  // thread runs free
+  std::thread(runCommand, strCmd).detach();  // thread runs free
 }
 
 struct CImportingNow {
@@ -725,7 +766,7 @@ bool InitSanityCheck() {
   return true;
 }
 
-bool AppInitServers(boost::thread_group& threadGroup) {
+bool AppInitServers() {
   RPCServer::OnStopped(&OnRPCStopped);
   RPCServer::OnPreCommand(&OnRPCPreCommand);
   if (!InitHTTPServer()) return false;
@@ -751,7 +792,7 @@ void InitLogging() {
 /** Initialize tessa.
  *  @pre Parameters should be parsed and config file should be read.
  */
-bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
+bool AppInit2(CScheduler& scheduler) {
 // ********************************************************* Step 1: setup
 #ifdef _MSC_VER
   // Turn off Microsoft heap dump noise
@@ -1027,8 +1068,10 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
   if (nScriptCheckThreads) {
-    for (int i = 0; i < nScriptCheckThreads - 1; i++) threadGroup.create_thread(&ThreadScriptCheck);
-  }
+    script_check_threads.reserve(nScriptCheckThreads-1);
+    for (int i = 0; i < nScriptCheckThreads - 1; i++)
+      script_check_threads.emplace_back(&ThreadScriptCheck);
+    }
 
   if (gArgs.IsArgSet("-sporkkey"))  // spork priv key
   {
@@ -1038,7 +1081,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
 
   // Start the lightweight task scheduler thread
   CScheduler::Function serviceLoop = [&] { scheduler.serviceQueue(); };
-  threadGroup.create_thread([serviceLoop] { TraceThread<CScheduler::Function>("scheduler", serviceLoop); });
+  scheduler_thread = std::thread(std::bind(&TraceThread<CScheduler::Function>, "scheduler", serviceLoop));
 
   /* Start the RPC server already.  It will be started in "warmup" mode
    * and not really process calls already (but it will signify connections
@@ -1047,7 +1090,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
    */
   if (fServer) {
     uiInterface.InitMessage.connect(SetRPCWarmupStatus);
-    if (!AppInitServers(threadGroup)) return InitError(_("Unable to start HTTP server. See debug log for details."));
+    if (!AppInitServers()) return InitError(_("Unable to start HTTP server. See debug log for details."));
   }
 
   int64_t nStart;
@@ -1603,7 +1646,10 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
   if (gArgs.IsArgSet("-loadblock")) {
     for (string strFile : gArgs.GetArgs("-loadblock")) vImportFiles.push_back(strFile);
   }
-  threadGroup.create_thread([vImportFiles] { ThreadImport(vImportFiles); });
+
+  auto import_bind = std::bind(ThreadImport, vImportFiles);
+  import_thread = std::thread(&TraceThread<decltype(import_bind)>, "bitcoin-import", std::move(import_bind));
+
   if (chainActive.Tip() == nullptr) {
     LogPrintf("Waiting for genesis block to be imported...\n");
     while (!fRequestShutdown && chainActive.Tip() == nullptr) MilliSleep(10);
@@ -1626,7 +1672,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler) {
     LogPrintf("mapAddressBook.size() = %u\n", pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
   }
 
-  StartNode(threadGroup, scheduler);
+  StartNode(scheduler);
 
   // Generate coins in the background
   if (pwalletMain) GenerateBitcoins(GetBoolArg("-gen", false), pwalletMain, GetArg("-genproclimit", 1));

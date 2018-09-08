@@ -36,10 +36,6 @@ class CBlockIndex;
 class CScheduler;
 class CNode;
 
-namespace boost {
-class thread_group;
-}  // namespace boost
-
 /** Time between pings automatically sent out for latency probing and keepalive (in seconds). */
 static const int PING_INTERVAL = 2 * 60;
 /** Time after which to disconnect, after waiting for a ping response (or inactivity). */
@@ -75,10 +71,14 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = nullptr, bool obf
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = nullptr,
                            const char* strDest = nullptr, bool fOneShot = false);
 void MapPort(bool fUseUPnP);
+void InterruptMapPort();
+void StopMapPort();
+
 uint16_t GetListenPort();
 bool BindListenPort(const CService& bindAddr, std::string& strError, bool fWhitelisted = false);
-void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler);
+void StartNode(CScheduler& scheduler);
 bool StopNode();
+void InterruptNode();
 void SocketSendData(CNode* pnode);
 
 typedef int NodeId;

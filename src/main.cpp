@@ -47,8 +47,7 @@
 #include "libzerocoin/PublicCoin.h"
 
 #include <sstream>
-
-#include <boost/thread.hpp>
+#include <thread>
 
 using namespace std;
 using namespace libzerocoin;
@@ -1606,6 +1605,12 @@ void ThreadScriptCheck() {
   scriptcheckqueue.Thread();
 }
 
+void InterruptThreadScriptCheck()
+{
+  scriptcheckqueue.Interrupt();
+};
+
+
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError) {
   // Tessa: recalculate Accumulator Checkpoints that failed to database properly
   if (!listMissingCheckpoints.empty() && chainActive.Height() >= Params().Zerocoin_StartHeight()) {
@@ -1617,7 +1622,8 @@ bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError
     // find each checkpoint that is missing
     CBlockIndex* pindex = chainActive[nZerocoinStart];
     while (pindex) {
-      if (ShutdownRequested()) return false;
+      interruption_point(ShutdownRequested());
+      //if (ShutdownRequested()) return false;
 
       // find checkpoints by iterating through the blockchain beginning with the first zerocoin block
       if (pindex->nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {
@@ -2446,7 +2452,8 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
   CBlockIndex* pindexNewTip = nullptr;
   CBlockIndex* pindexMostWork = nullptr;
   do {
-    boost::this_thread::interruption_point();
+    interruption_point(ShutdownRequested());
+    //boost::this_thread::interruption_point();
 
     bool fInitialDownload;
     while (true) {
@@ -3259,7 +3266,8 @@ bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex
 bool static LoadBlockIndexDB(string& strError) {
   if (!pblocktree->LoadBlockIndexGuts()) return false;
 
-  boost::this_thread::interruption_point();
+  interruption_point(ShutdownRequested());
+  //boost::this_thread::interruption_point();
 
   // Calculate nChainWork
   vector<pair<int, CBlockIndex*> > vSortedByHeight;
@@ -3413,7 +3421,8 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp) {
     CBufferedFile blkdat(fileIn, 2 * MAX_BLOCK_SIZE_CURRENT, MAX_BLOCK_SIZE_CURRENT + 8, SER_DISK, CLIENT_VERSION);
     uint64_t nRewind = blkdat.GetPos();
     while (!blkdat.eof()) {
-      boost::this_thread::interruption_point();
+      interruption_point(ShutdownRequested());
+      //boost::this_thread::interruption_point();
 
       blkdat.SetPos(nRewind);
       nRewind++;          // start one byte further next time, in case of failure
@@ -3693,7 +3702,8 @@ void static ProcessGetData(CNode* pfrom) {
 
     const CInv& inv = *it;
     {
-      boost::this_thread::interruption_point();
+      interruption_point(ShutdownRequested());
+      //boost::this_thread::interruption_point();
       it++;
 
       if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK) {
@@ -3946,7 +3956,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     int64_t nNow = GetAdjustedTime();
     int64_t nSince = nNow - 10 * 60;
     for (CAddress& addr : vAddr) {
-      boost::this_thread::interruption_point();
+      interruption_point(ShutdownRequested());
+      //boost::this_thread::interruption_point();
 
       if (addr.nTime <= 100000000 || addr.nTime > nNow + 10 * 60) addr.nTime = nNow - 5 * 24 * 60 * 60;
       pfrom->AddAddressKnown(addr);
@@ -4000,7 +4011,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     for (unsigned int nInv = 0; nInv < vInv.size(); nInv++) {
       const CInv& inv = vInv[nInv];
 
-      boost::this_thread::interruption_point();
+      interruption_point(ShutdownRequested());
+      //boost::this_thread::interruption_point();
       pfrom->AddInventoryKnown(inv);
 
       bool fAlreadyHave = AlreadyHave(inv);
@@ -4581,7 +4593,8 @@ bool ProcessMessages(CNode* pfrom) {
     bool fRet = false;
     try {
       fRet = ProcessMessage(pfrom, strCommand, vRecv, msg.nTime);
-      boost::this_thread::interruption_point();
+      interruption_point(ShutdownRequested());
+      //boost::this_thread::interruption_point();
     } catch (std::ios_base::failure& e) {
       pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));
       if (strstr(e.what(), "end of data")) {
@@ -4599,6 +4612,7 @@ bool ProcessMessages(CNode* pfrom) {
       }
     } catch (boost::thread_interrupted) { throw; } catch (std::exception& e) {
       PrintExceptionContinue(&e, "ProcessMessages()");
+    } catch (const thread_interrupted&) {
     } catch (...) { PrintExceptionContinue(nullptr, "ProcessMessages()"); }
 
     if (!fRet)
