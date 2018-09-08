@@ -25,7 +25,6 @@
 #include "fs.h"
 
 #include <thread>
-//#include <boost/thread.hpp>
 
 #ifndef WIN32
 // for posix_fallocate

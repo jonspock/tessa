@@ -24,6 +24,7 @@ class CDbWrapper {
   MDB_env* env = nullptr;
   bool fReadOnly;
   bool fDbEnvInit;
+  std::atomic<bool> interrupt = false;
 
  public:
   CDbWrapper() = default;
@@ -32,6 +33,7 @@ class CDbWrapper {
   bool init(const fs::path& wallet_dir, const char* pszMode = "r+");
   bool open(const fs::path& wallet_dir, const char* pszMode = "r+");
   void Close();
+  void Interrupt();
 
   MDB_txn* TxnBegin();
   MDB_txn* ReadBegin() const;
