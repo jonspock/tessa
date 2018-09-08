@@ -12,21 +12,24 @@
 #include <sys/stat.h>
 #endif
 
-#include <boost/thread.hpp>
-
 // Assuming same path as Environment
 bool CDB::init(const fs::path& wallet_dir, const char* pszMode) {
   if (env) return false;  // Already setup
   // check?
   if (mdb_env_create(&env)) throw std::runtime_error("Failed on creating Db Env");
   fDbEnvInit = false;
+  interrupt = false;
   return open(wallet_dir, pszMode);
+}
+void CDB::Interrupt()
+{
+    interrupt = true;
 }
 
 bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
   if (fDbEnvInit) return false;
 
-  boost::this_thread::interruption_point();
+  interruption_point(interrupt);
 
   TryCreateDirectory(wallet_dir);
 

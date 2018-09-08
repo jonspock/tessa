@@ -17,6 +17,7 @@
 
 #include <lmdb.h>
 #include <string>
+#include <atomic>
 
 class CDB {
  protected:
@@ -25,6 +26,7 @@ class CDB {
   MDB_env* env = nullptr;
   bool fReadOnly;
   bool fDbEnvInit;
+  std::atomic<bool> interrupt;
 
  public:
   CDB() {}
@@ -33,6 +35,7 @@ class CDB {
   bool init(const fs::path& wallet_dir, const char* pszMode = "r+");
   bool open(const fs::path& wallet_dir, const char* pszMode = "r+");
   void Close();
+  void Interrupt();
 
   MDB_txn* TxnBegin();
   MDB_txn* ReadBegin();

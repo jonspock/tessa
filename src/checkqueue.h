@@ -8,9 +8,8 @@
 #include <algorithm>
 #include <vector>
 
-#include <boost/thread/condition_variable.hpp>
-#include <boost/thread/locks.hpp>
-#include <boost/thread/mutex.hpp>
+#include <condition_variable>
+#include <mutex>
 
 template <typename T> class CCheckQueueControl;
 
@@ -27,13 +26,13 @@ template <typename T> class CCheckQueueControl;
 template <typename T> class CCheckQueue {
  private:
   //! Mutex to protect the inner state
-  boost::mutex mutex;
+  std::mutex mutex;
 
   //! Worker threads block on this when out of work
-  boost::condition_variable condWorker;
+  std::condition_variable condWorker;
 
   //! Master thread blocks on this when out of work
-  boost::condition_variable condMaster;
+  std::condition_variable condMaster;
 
   //! The queue of elements to be processed.
   //! As the order of booleans doesn't matter, it is used as a LIFO (stack)
@@ -63,14 +62,14 @@ template <typename T> class CCheckQueue {
 
   /** Internal function that does bulk of the verification work. */
   bool Loop(bool fMaster = false) {
-    boost::condition_variable& cond = fMaster ? condMaster : condWorker;
+    std::condition_variable& cond = fMaster ? condMaster : condWorker;
     std::vector<T> vChecks;
     vChecks.reserve(nBatchSize);
     unsigned int nNow = 0;
     bool fOk = true;
     do {
       {
-        boost::unique_lock<boost::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
         // first do the clean-up of the previous loop run (allowing us to do it in the same critsect)
         if (nNow) {
           fAllOk &= fOk;
@@ -93,7 +92,8 @@ template <typename T> class CCheckQueue {
             return fRet;
           }
           nIdle++;
-          cond.wait(lock);  // wait
+          //          cond.wait(lock);  // wait
+          cond.wait(lock, [this, fMaster]{return !queue.empty() || ((fMaster || fQuit) && nTodo == 0); }); 
           nIdle--;
         }
         // Decide how many work units to process now.
@@ -132,7 +132,7 @@ template <typename T> class CCheckQueue {
 
   //! Add a batch of checks to the queue
   void Add(std::vector<T>& vChecks) {
-    boost::unique_lock<boost::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mutex);
     for (T& check : vChecks) {
       queue.push_back(T());
       check.swap(queue.back());
@@ -147,7 +147,7 @@ template <typename T> class CCheckQueue {
   ~CCheckQueue() {}
 
   bool IsIdle() {
-    boost::unique_lock<boost::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mutex);
     return (nTotal == nIdle && nTodo == 0 && fAllOk == true);
   }
 };
