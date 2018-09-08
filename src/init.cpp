@@ -62,10 +62,10 @@
 #include <sodium/core.h>
 
 using namespace std;
-using boost::filesystem::create_directories;
-using boost::filesystem::exists;
-using boost::filesystem::filesystem_error;
-using boost::filesystem::path;
+using fs::create_directories;
+using fs::exists;
+using fs::filesystem_error;
+using fs::path;
 
 CWallet* pwalletMain = nullptr;
 CZeroWallet* zwalletMain = nullptr;
