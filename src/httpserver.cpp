@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <future>
 
 #include <signal.h>
 #include <sys/stat.h>
@@ -268,12 +269,12 @@ static void http_reject_request_cb(struct evhttp_request* req, void*) {
   evhttp_send_error(req, HTTP_SERVUNAVAIL, nullptr);
 }
 /** Event dispatcher thread */
-static void ThreadHTTP(struct event_base* base, struct evhttp* http) {
-  RenameThread("bitcoin-http");
+static bool ThreadHTTP(struct event_base* base, struct evhttp* http) {
   LogPrint(TessaLog::HTTP, "Entering http event loop\n");
   event_base_dispatch(base);
   // Event loop will be interrupted by InterruptHTTPServer()
   LogPrint(TessaLog::HTTP, "Exited http event loop\n");
+  return event_base_got_break(base) == 0;
 }
 
 /** Bind HTTP server to specified addresses */
@@ -399,15 +400,22 @@ bool InitHTTPServer() {
   return true;
 }
 
-boost::thread threadHTTP;
+std::thread threadHTTP;
+std::future<bool> threadResult;
 
 bool StartHTTPServer() {
   LogPrint(TessaLog::HTTP, "Starting HTTP server\n");
   int rpcThreads = std::max((long)GetArg("-rpcthreads", DEFAULT_HTTP_THREADS), 1L);
   LogPrintf("HTTP: starting %d worker threads\n", rpcThreads);
-  threadHTTP = boost::thread(std::bind(&ThreadHTTP, eventBase, eventHTTP));
+  std::packaged_task<bool(event_base*, evhttp*)> task(ThreadHTTP);
+  threadResult = task.get_future();
+  auto bindHTTP = std::bind(std::move(task), eventBase, eventHTTP);
+  threadHTTP = std::thread(&TraceThread<decltype(bindHTTP)>, "bitcoin-http", std::move(bindHTTP));
 
-  for (int i = 0; i < rpcThreads; i++) boost::thread(std::bind(&HTTPWorkQueueRun, workQueue));
+  for (int i = 0; i < rpcThreads; i++) {
+    auto bindHTTPWorker = std::bind(HTTPWorkQueueRun, workQueue);
+    std::thread rpc_worker(&TraceThread<decltype(bindHTTPWorker)>, "httpworker", std::move(bindHTTPWorker));
+  }
   return true;
 }
 
@@ -436,11 +444,11 @@ void StopHTTPServer() {
     // master that appears to be solved, so in the future that solution
     // could be used again (if desirable).
     // (see discussion in https://github.com/bitcoin/bitcoin/pull/6990)
-    if (!threadHTTP.try_join_for(boost::chrono::milliseconds(2000))) {
+    if (threadResult.valid() && threadResult.wait_for(std::chrono::milliseconds(2000)) == std::future_status::timeout) {
       LogPrintf("HTTP event loop did not exit within allotted time, sending loopbreak\n");
       event_base_loopbreak(eventBase);
-      threadHTTP.join();
     }
+    threadHTTP.join();
   }
   if (eventHTTP) {
     evhttp_free(eventHTTP);
