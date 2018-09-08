@@ -180,6 +180,13 @@ void Interrupt(CScheduler& scheduler) {
   scheduler.interrupt(false);
   if(pblocktree)
     pblocktree->InterruptLoadBlockIndexGuts();
+
+#warning "Check interupt stuff here"  
+  /// HACK TBD!!!!
+  //if (CVerifyDB()).InterruptInit();
+  //if (CCoinsViewDB()).InterruptGetStats();
+  //if (CZerocoinDB()).InterruptWipeCoins();
+  
   InterruptThreadScriptCheck();
   InterruptNetBase();
   InterruptNode();

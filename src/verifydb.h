@@ -15,4 +15,6 @@ class CVerifyDB {
   CVerifyDB();
   ~CVerifyDB();
   bool VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth);
+  std::atomic<bool> interrupt = false;
+  void InterruptInit();
 };

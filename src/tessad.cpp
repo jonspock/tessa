@@ -18,7 +18,7 @@
 #include "ui_interface.h"
 #include "util.h"
 
-#include <boost/thread.hpp>
+#include <thread>
 
 /* Introduction text for doxygen: */
 
@@ -55,7 +55,6 @@ void WaitForShutdown(CScheduler& scheduler) {
 // Start
 //
 bool AppInit(int argc, char* argv[]) {
-  boost::thread_group threadGroup;
   CScheduler scheduler;
 
   bool fRet = false;

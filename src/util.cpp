@@ -24,7 +24,8 @@
 // Wraps boost::filesystem inside fs namespace (future c++17)
 #include "fs.h"
 
-#include <boost/thread.hpp>
+#include <thread>
+//#include <boost/thread.hpp>
 
 #ifndef WIN32
 // for posix_fallocate
