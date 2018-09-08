@@ -28,7 +28,7 @@ void Split(ContainerT& tokens, const std::string& str, const std::string& anyOfS
         *insertIt = "";
         return;
     }
-     const auto begin = str.cbegin();
+    const auto begin = str.cbegin();
     const auto end = str.cend();
      for (auto it = begin; it < end;) {
         bool foundSeparator = false;

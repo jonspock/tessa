@@ -51,7 +51,6 @@
 #include <signal.h>
 #endif
 
-#include <boost/algorithm/string/replace.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread.hpp>
 
@@ -619,32 +618,26 @@ std::string HelpMessage(HelpMessageMode mode) {
 }
 
 std::string LicenseInfo() {
-  return FormatParagraph(strprintf(_("Copyright (C) 2009-%i The Bitcoin Core Developers"), COPYRIGHT_YEAR)) + "\n" +
-         "\n" + FormatParagraph(strprintf(_("Copyright (C) 2014-%i The Dash Core Developers"), COPYRIGHT_YEAR)) + "\n" +
-         "\n" + FormatParagraph(strprintf(_("Copyright (C) 2015-%i The PIVX Core Developers"), COPYRIGHT_YEAR)) + "\n" +
-         "\n" + FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Tessa Core Developers"), COPYRIGHT_YEAR)) +
+  return FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Tessa Core Developers"), COPYRIGHT_YEAR)) +
          "\n" + "\n" + FormatParagraph(_("This is experimental software.")) + "\n" + "\n" +
-         FormatParagraph(_("Distributed under the MIT software license, see the accompanying file COPYING or "
-                           "<http://www.opensource.org/licenses/mit-license.php>.")) +
-         "\n" + "\n" +
-         FormatParagraph(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL "
-                           "Toolkit <https://www.openssl.org/> and cryptographic software written by Eric Young and "
-                           "UPnP software written by Thomas Bernard.")) +
+         FormatParagraph(_("Distributed under the MIT & Apache software licenses, see the accompanying file COPYING and " 
+                           "APACHE_LICENSE and <http://www.opensource.org/licenses/mit-license.php>.")) +
+         "\n" + "\n" + 
          "\n";
 }
 
 static void BlockNotifyCallback(const uint256& hashNewTip) {
   std::string strCmd = GetArg("-blocknotify", "");
 
-  boost::replace_all(strCmd, "%s", hashNewTip.GetHex());
+  strCmd.replace(strCmd.find("%s"),2, hashNewTip.GetHex());
   boost::thread t(runCommand, strCmd);  // thread runs free
 }
 
 static void BlockSizeNotifyCallback(int size, const uint256& hashNewTip) {
   std::string strCmd = GetArg("-blocksizenotify", "");
 
-  boost::replace_all(strCmd, "%s", hashNewTip.GetHex());
-  boost::replace_all(strCmd, "%d", std::to_string(size));
+  strCmd.replace(strCmd.find("%s"),2, hashNewTip.GetHex());
+  strCmd.replace(strCmd.find("%d"),2, std::to_string(size));
   boost::thread t(runCommand, strCmd);  // thread runs free
 }
 

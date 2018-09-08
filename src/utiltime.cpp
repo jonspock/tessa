@@ -16,8 +16,6 @@
 #include <thread>
 #include <iomanip> // for put_time
 
-//#include <boost/date_time/posix_time/posix_time.hpp>
-
 using namespace std;
 
 static int64_t nMockTime = 0;  //! For unit testing
