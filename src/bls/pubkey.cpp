@@ -16,8 +16,8 @@
 #include <iostream>
 
 #include "bls.h"
-#include "pubkey.h"
 #include "blsutil.h"
+#include "pubkey.h"
 
 namespace bls12_381 {
 
@@ -76,9 +76,7 @@ bool operator==(CPubKey const &a, CPubKey const &b) {
 
 bool operator!=(CPubKey const &a, CPubKey const &b) { return !(a == b); }
 
-bool operator<(CPubKey const &a, CPubKey const &b) {
-  return std::memcmp(a.data, b.data, CPubKey::PUBLIC_KEY_SIZE) < 0;
-}
+bool operator<(CPubKey const &a, CPubKey const &b) { return std::memcmp(a.data, b.data, CPubKey::PUBLIC_KEY_SIZE) < 0; }
 
 std::ostream &operator<<(std::ostream &os, CPubKey const &pk) {
   BLS::AssertInitialized();
@@ -102,4 +100,4 @@ void CPubKey::CompressPoint(uint8_t *result, const relic::g1_t *point) {
   std::memcpy(result, buffer + 1, PUBLIC_KEY_SIZE);
 }
 
-}
+}  // namespace bls12_381

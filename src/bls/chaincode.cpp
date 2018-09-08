@@ -45,4 +45,4 @@ std::ostream &operator<<(std::ostream &os, ChainCode const &s) {
 
 void ChainCode::Serialize(uint8_t *buffer) const { bn_write_bin(buffer, ChainCode::CHAIN_CODE_SIZE, chainCode); }
 
-}
+}  // namespace bls12_381

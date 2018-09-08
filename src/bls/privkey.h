@@ -77,7 +77,6 @@ class CPrivKey {
     */
   }
 
-
   // Sign a message
   bls12_381::Signature Sign(uint8_t* msg, size_t len) const;
   bls12_381::Signature SignPrehashed(uint8_t* hash) const;
@@ -86,11 +85,11 @@ class CPrivKey {
   CPrivKey() {}
 
   void clear() {
-    //BLS::AssertInitialized();
+    // BLS::AssertInitialized();
     BLSUtil::SecFree(keydata);
   }
-  
-  //private:
+
+  // private:
 
   // The actual byte data
   relic::bn_t* keydata;
@@ -98,5 +97,3 @@ class CPrivKey {
   // Allocate memory for private key
   void AllocateKeyData();
 };
-
-

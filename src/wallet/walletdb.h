@@ -8,8 +8,8 @@
 
 #include "amount.h"
 #include "db.h"
-#include "fs.h"
 #include "ecdsa/key.h"
+#include "fs.h"
 #include "keystore.h"
 #include "libzerocoin/Accumulator.h"
 #include "libzerocoin/Denominations.h"

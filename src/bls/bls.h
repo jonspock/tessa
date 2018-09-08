@@ -15,10 +15,10 @@
 #pragma once
 
 #include "aggregationinfo.h"
+#include "extendedprivatekey.h"
 #include "privkey.h"
 #include "pubkey.h"
 #include "signature.h"
-#include "extendedprivatekey.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -62,8 +62,8 @@ class BLS {
   // Creates a combined public/private key that can be used to create
   // or verify aggregate signatures on the same message
   static CPubKey AggregatePubKeys(std::vector<CPubKey> const &pubKeys, bool secure);
-  static CPrivKey AggregatePrivKeys(std::vector<CPrivKey> const &privateKeys,
-                                         std::vector<CPubKey> const &pubKeys, bool secure);
+  static CPrivKey AggregatePrivKeys(std::vector<CPrivKey> const &privateKeys, std::vector<CPubKey> const &pubKeys,
+                                    bool secure);
 
   // Used for secure aggregation
   static void HashPubKeys(relic::bn_t *output, size_t numOutputs, std::vector<CPubKey> const &pubKeys);
@@ -75,17 +75,16 @@ class BLS {
 
   // Aggregates many signatures using the secure aggregation method.
   // Performs ~ n * 256 g2 operations.
-  static Signature AggregateSigsSecure(std::vector<Signature> const &sigs,
-                                          std::vector<CPubKey> const &pubKeys,
-                                          std::vector<uint8_t *> const &messageHashes);
+  static Signature AggregateSigsSecure(std::vector<Signature> const &sigs, std::vector<CPubKey> const &pubKeys,
+                                       std::vector<uint8_t *> const &messageHashes);
 
   // Internal methods
   static Signature AggregateSigsInternal(std::vector<Signature> const &sigs,
-                                            std::vector<std::vector<CPubKey> > const &pubKeys,
-                                            std::vector<std::vector<uint8_t *> > const &messageHashes);
+                                         std::vector<std::vector<CPubKey> > const &pubKeys,
+                                         std::vector<std::vector<uint8_t *> > const &messageHashes);
 
   static bool VerifyNative(relic::g2_t aggSig, relic::g1_t *pubKeys, relic::g2_t *mappedHashes, size_t len);
 
   static void CheckRelicErrors();
 };
-}
+}  // namespace bls12_381

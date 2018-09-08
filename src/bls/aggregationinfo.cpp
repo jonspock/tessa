@@ -336,4 +336,4 @@ AggregationInfo::AggregationInfo() {}
 
 AggregationInfo::~AggregationInfo() { Clear(); }
 
-}
+}  // namespace bls12_381

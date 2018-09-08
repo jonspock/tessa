@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "pubkey.h"
 #include "chaincode.h"
+#include "pubkey.h"
 
 namespace relic {
 #include "relic.h"
@@ -77,4 +77,4 @@ class ExtendedPublicKey {
   const CPubKey pk;
 };
 
-}
+}  // namespace bls12_381

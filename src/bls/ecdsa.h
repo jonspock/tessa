@@ -25,4 +25,3 @@ class ECCVerifyHandle {
   ECCVerifyHandle();
   ~ECCVerifyHandle();
 };
-

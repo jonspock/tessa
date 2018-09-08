@@ -12,20 +12,17 @@
 #include "wallettx.h"
 
 #include "accumulators.h"
-#include "base58.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "fs.h"
 #include "kernel.h"
 #include "net.h"
-#include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/sign.h"
 #include "spork.h"
 #include "stakeinput.h"
 #include "timedata.h"
 #include "txdb.h"
-#include "util.h"
 #include "utilmoneystr.h"
 #include "zerochain.h"
 
@@ -35,7 +32,6 @@
 #include "libzerocoin/PrivateCoin.h"
 #include "libzerocoin/PublicCoin.h"
 #include "primitives/deterministicmint.h"
-#include "zerowallet.h"
 #include <algorithm>
 #include <cassert>
 #include <random>
@@ -2300,7 +2296,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const {
   }
 
   // Extract block timestamps for those keys
-  for (auto& it : mapKeyFirstBlock) 
+  for (auto& it : mapKeyFirstBlock)
     mapKeyBirth[it.first] = it.second->GetBlockTime() - 7200;  // block times can be 2h off
 }
 
@@ -2792,8 +2788,8 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
   return true;
 }
 
-bool CWallet::MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
-                         CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType,
+bool CWallet::MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut,
+                         CTxIn& newTxIn, CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType,
                          CBlockIndex* pindexCheckpoint) {
   // Default error status if not changed below
   receipt.SetStatus(_("Transaction Mint Started"), ZKP_TXMINT_GENERAL);

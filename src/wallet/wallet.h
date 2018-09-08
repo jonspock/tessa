@@ -34,10 +34,10 @@
 #include "zerowallet.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <set>
 #include <stdexcept>
-#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -304,7 +304,9 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool AddKeyPubKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey);
   bool AddKeyPubKeyWithDB(CWalletDB& walletdb, const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey);
   //! Adds a key to the store, without saving it to disk (used by LoadWallet)
-  bool LoadKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
+  bool LoadKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey) {
+    return CCryptoKeyStore::AddKeyPubKey(key, pubkey);
+  }
   //! Load metadata (used by LoadWallet)
   bool LoadKeyMetadata(const ecdsa::CPubKey& pubkey, const CKeyMetadata& metadata);
 

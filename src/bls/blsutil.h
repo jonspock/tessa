@@ -65,9 +65,7 @@ class BLSUtil {
    * Securely allocates a portion of memory, using libsodium. This prevents
    * paging to disk, and zeroes out the memory when it's freed.
    */
-  template <class T> static T* SecAlloc(size_t numTs) {
-    return static_cast<T*>(sodium_malloc(sizeof(T) * numTs));
-  }
+  template <class T> static T* SecAlloc(size_t numTs) { return static_cast<T*>(sodium_malloc(sizeof(T) * numTs)); }
 
   /*
    * Frees memory allocated using SecAlloc.

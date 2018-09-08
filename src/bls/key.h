@@ -7,17 +7,16 @@
 
 #pragma once
 
-#include "support/allocators/secure.h"
-#include "pubkey.h"
 #include "privkey.h"
+#include "pubkey.h"
 #include "serialize.h"
+#include "support/allocators/secure.h"
 #include "uint256.h"
 
-#include <stdexcept>
 #include <vector>
 
 namespace bls12_381 {
-  
+
 class CPubKey;
 
 struct CExtPubKey;
@@ -96,7 +95,7 @@ class CKey {
   uint256 GetPrivKey_256();
 
   /**
-   * Convert the private key to a CPrivKey 
+   * Convert the private key to a CPrivKey
    * This is expensive.
    */
   CPrivKey GetPrivKey() const;
@@ -157,5 +156,4 @@ struct CExtKey {
   void SetMaster(const uint8_t* seed, unsigned int nSeedLen);
 };
 
-} // end namespace 
-
+}  // namespace bls12_381

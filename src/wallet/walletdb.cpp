@@ -11,6 +11,7 @@
 
 #include "base58.h"
 #include "fs.h"
+#include "primitives/deterministicmint.h"
 #include "protocol.h"
 #include "serialize.h"
 #include "sync.h"
@@ -18,7 +19,6 @@
 #include "util.h"
 #include "utiltime.h"
 #include "wallet.h"
-#include "primitives/deterministicmint.h"
 
 #include <boost/thread.hpp>
 #include <fstream>

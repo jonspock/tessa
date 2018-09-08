@@ -5,9 +5,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "crypter.h"
-#include "hash.h"
 #include "crypto/aes.h"
 #include "crypto/sha512.h"
+#include "hash.h"
 #include "init.h"
 #include "script/script.h"
 #include "script/standard.h"

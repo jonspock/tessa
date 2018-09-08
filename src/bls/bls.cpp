@@ -73,7 +73,7 @@ Signature BLS::AggregateSigsSimple(std::vector<Signature> const &sigs) {
 }
 
 Signature BLS::AggregateSigsSecure(std::vector<Signature> const &sigs, std::vector<CPubKey> const &pubKeys,
-                                      std::vector<uint8_t *> const &messageHashes) {
+                                   std::vector<uint8_t *> const &messageHashes) {
   if (sigs.size() != pubKeys.size() || sigs.size() != messageHashes.size() || sigs.size() < 1) {
     throw std::string("Must have atleast one signature, key, and message");
   }
@@ -158,8 +158,8 @@ Signature BLS::AggregateSigs(std::vector<Signature> const &sigs) {
 }
 
 Signature BLS::AggregateSigsInternal(std::vector<Signature> const &sigs,
-                                        std::vector<std::vector<CPubKey> > const &pubKeys,
-                                        std::vector<std::vector<uint8_t *> > const &messageHashes) {
+                                     std::vector<std::vector<CPubKey> > const &pubKeys,
+                                     std::vector<std::vector<uint8_t *> > const &messageHashes) {
   BLS::AssertInitialized();
   if (sigs.size() != pubKeys.size() || pubKeys.size() != messageHashes.size()) {
     throw std::string("Lengths of std::vectors must match.");
@@ -400,8 +400,8 @@ CPubKey BLS::AggregatePubKeys(std::vector<CPubKey> const &pubKeys, bool secure) 
   return ret;
 }
 
-CPrivKey BLS::AggregatePrivKeys(std::vector<CPrivKey> const &privateKeys,
-                                     std::vector<CPubKey> const &pubKeys, bool secure) {
+CPrivKey BLS::AggregatePrivKeys(std::vector<CPrivKey> const &privateKeys, std::vector<CPubKey> const &pubKeys,
+                                bool secure) {
   if (secure && pubKeys.size() != privateKeys.size()) {
     throw std::string("Number of public keys must equal number of private keys");
   }

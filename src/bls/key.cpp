@@ -52,9 +52,7 @@ bool CKey::Sign(const uint256& hash, std::vector<uint8_t>& vchSig, uint32_t test
   return true;
 }
 
-bool CKey::VerifyPubKey(const CPubKey& pubkey) const {
-  return true;
-}
+bool CKey::VerifyPubKey(const CPubKey& pubkey) const { return true; }
 
 bool CKey::SignCompact(const uint256& hash, std::vector<uint8_t>& vchSig) const {
   if (!fValid) return false;
@@ -67,9 +65,7 @@ bool CKey::Load(const CPrivKey& privkey, const CPubKey& vchPubKey, bool fSkipChe
   return false;
 }
 
-bool CKey::Derive(CKey& keyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const {
-  return true;
-}
+bool CKey::Derive(CKey& keyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const { return true; }
 
 bool CExtKey::Derive(CExtKey& out, unsigned int nChild) const {
   out.nDepth = nDepth + 1;
@@ -108,7 +104,7 @@ void CExtKey::Encode(uint8_t code[74]) const {
   code[6] = (nChild >> 16) & 0xFF;
   code[7] = (nChild >> 8) & 0xFF;
   code[8] = (nChild >> 0) & 0xFF;
-  //memcpy(code + 9, chaincode.begin(), 32);
+  // memcpy(code + 9, chaincode.begin(), 32);
   code[41] = 0;
   assert(key.size() == 32);
   memcpy(code + 42, key.begin(), 32);
@@ -122,4 +118,4 @@ void CExtKey::Decode(const uint8_t code[74]) {
   key.Set(code + 42, code + 74, true);
 }
 
-} // end namespace
+}  // namespace bls12_381

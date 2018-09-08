@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "pubkey.h"
 #include "blsutil.h"
+#include "pubkey.h"
 #include <map>
 #include <vector>
 
@@ -40,8 +40,7 @@ class AggregationInfo {
 
   static AggregationInfo FromMsg(const CPubKey &pk, const uint8_t *message, size_t len);
 
-  static AggregationInfo FromVectors(std::vector<CPubKey> const &pubKeys,
-                                     std::vector<uint8_t *> const &messageHashes,
+  static AggregationInfo FromVectors(std::vector<CPubKey> const &pubKeys, std::vector<uint8_t *> const &messageHashes,
                                      std::vector<relic::bn_t *> const &exponents);
 
   // Merge two AggregationInfo objects into one.
@@ -88,4 +87,4 @@ class AggregationInfo {
   std::vector<CPubKey> sortedPubKeys;
 };
 
-}
+}  // namespace bls12_381

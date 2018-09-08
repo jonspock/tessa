@@ -187,4 +187,4 @@ void ExtendedPrivateKey::Serialize(uint8_t* buffer) const {
 
 // Destructors in CPrivKey and ChainCode handle cleaning of memory
 ExtendedPrivateKey::~ExtendedPrivateKey() {}
-}
+}  // namespace bls12_381

@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "base58.h"
 #include "main.h"
 #include "net.h"
 #include "protocol.h"

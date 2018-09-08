@@ -16,8 +16,8 @@
 #pragma once
 
 #include "bls/key.h"
-#include "bls/pubkey.h"
 #include "bls/privkey.h"
+#include "bls/pubkey.h"
 
 #include "chainparams.h"
 #include "script/script.h"

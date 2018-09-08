@@ -15,8 +15,8 @@
 #include <string>
 
 #include "bls.h"
-#include "privkey.h"
 #include "blsutil.h"
+#include "privkey.h"
 
 using namespace bls12_381;
 using bls12_381::BLS;
@@ -118,12 +118,12 @@ uint8_t* CPrivKey::end() const {
   BLS::AssertInitialized();
   return reinterpret_cast<uint8_t*>((*keydata)->dp) + size();
 }
-  /*
+/*
 void CPrivKey::Serialize(uint8_t* buffer) const {
-  BLS::AssertInitialized();
-  bn_write_bin(buffer, CPrivKey::PRIVATE_KEY_SIZE, *keydata);
+BLS::AssertInitialized();
+bn_write_bin(buffer, CPrivKey::PRIVATE_KEY_SIZE, *keydata);
 }
-  */
+*/
 
 Signature CPrivKey::Sign(uint8_t* msg, size_t len) const {
   BLS::AssertInitialized();

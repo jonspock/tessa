@@ -7,8 +7,8 @@
 #include "baseBLS.h"
 
 #include "bls/key.h"
-#include "bls/pubkey.h"
 #include "bls/privkey.h"
+#include "bls/pubkey.h"
 #include "hash.h"
 #include "support/cleanse.h"
 #include "uint256.h"
@@ -213,9 +213,7 @@ bool CTessaAddress::Set(const CScriptID& id) {
   return true;
 }
 
-bool CTessaAddress::Set(const CTxDestination& dest) {
-  return boost::apply_visitor(CTessaAddressVisitor(this), dest);
-}
+bool CTessaAddress::Set(const CTxDestination& dest) { return boost::apply_visitor(CTessaAddressVisitor(this), dest); }
 
 bool CTessaAddress::IsValid() const { return IsValid(Params()); }
 

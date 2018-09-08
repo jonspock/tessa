@@ -41,8 +41,8 @@ class ChainCode {
 
   // Prevent direct construction, use static constructor
   ChainCode() {}
- private:
 
+ private:
   relic::bn_t chainCode;
 };
-}
+}  // namespace bls12_381

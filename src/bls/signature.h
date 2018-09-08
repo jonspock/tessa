@@ -74,7 +74,7 @@ class Signature {
   friend std::ostream &operator<<(std::ostream &os, Signature const &s);
   Signature &operator=(const Signature &rhs);
 
-  //private:
+  // private:
   // Prevent public construction, force static method
   Signature() {}
 
@@ -88,4 +88,4 @@ class Signature {
   AggregationInfo aggregationInfo;
 };
 
-}
+}  // namespace bls12_381

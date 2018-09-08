@@ -14,10 +14,10 @@
 
 #pragma once
 
-#include "privkey.h"
-#include "pubkey.h"
 #include "chaincode.h"
 #include "extendedpublickey.h"
+#include "privkey.h"
+#include "pubkey.h"
 
 namespace relic {
 #include "relic.h"
@@ -88,4 +88,4 @@ class ExtendedPrivateKey {
   const CPrivKey sk;
 };
 
-}
+}  // namespace bls12_381

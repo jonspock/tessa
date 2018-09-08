@@ -48,7 +48,7 @@ ExtendedPublicKey ExtendedPublicKey::PublicChild(uint32_t i) const {
   //  chainCode.Serialize(hmacKey);
 
   // Public key serialization, i serialization, and one 0 or 1 byte
-  size_t inputLen = CPubKey::PUBLIC_KEY_SIZE + 4 + 1;
+  const size_t inputLen = CPubKey::PUBLIC_KEY_SIZE + 4 + 1;
 
   // Hmac input includes sk or pk, int i, and byte with 0 or 1
   uint8_t hmacInput[inputLen];
@@ -121,5 +121,4 @@ void ExtendedPublicKey::Serialize(uint8_t *buffer) const {
 }
 */
 
-
-}
+}  // namespace bls12_381

@@ -542,3 +542,5 @@ if ($ENV{COVERAGE})
 endif()
 
 #add_subdirectory(src/test)
+
+include(cmake/modules/doxygen.cmake)
