@@ -9,8 +9,6 @@
 
 #include <cstdio>
 
-#include <boost/thread.hpp>
-
 #ifdef DEBUG_LOCKCONTENTION
 void PrintLockContention(const char *pszName, const char *pszFile, int nLine) {
   LogPrintf("LOCKCONTENTION: %s\n", pszName);
@@ -68,10 +66,10 @@ struct LockData {
 
   LockOrders lockorders;
   InvLockOrders invlockorders;
-  boost::mutex dd_mutex;
+  std::mutex dd_mutex;
 } static lockdata;
 
-boost::thread_specific_ptr<LockStack> lockstack;
+static thread_local std::unique_ptr<LockStack> lockstack;
 
 static void potential_deadlock_detected(const std::pair<void *, void *> &mismatch, const LockStack &s1,
                                         const LockStack &s2) {
@@ -92,11 +90,11 @@ static void potential_deadlock_detected(const std::pair<void *, void *> &mismatc
 }
 
 static void push_lock(void *c, const CLockLocation &locklocation, bool fTry) {
-  if (lockstack.get() == nullptr) lockstack.reset(new LockStack);
+  if (lockstack == nullptr) lockstack.reset(new LockStack);
 
-  boost::unique_lock<boost::mutex> lock(lockdata.dd_mutex);
+  std::lock_guard<std::mutex> lock(lockdata.dd_mutex);
 
-  (*lockstack).push_back(std::make_pair(c, locklocation));
+  lockstack->push_back(std::make_pair(c, locklocation));
 
   for (const std::pair<void *, CLockLocation> &i : (*lockstack)) {
     if (i.first == c) break;
@@ -140,7 +138,7 @@ void DeleteLock(void *cs) {
     // We're already shutting down.
     return;
   }
-  boost::unique_lock<boost::mutex> lock(lockdata.dd_mutex);
+  std::lock_guard<std::mutex> lock(lockdata.dd_mutex);
   std::pair<void *, void *> item = std::make_pair(cs, (void *)0);
   LockOrders::iterator it = lockdata.lockorders.lower_bound(item);
   while (it != lockdata.lockorders.end() && it->first.first == cs) {

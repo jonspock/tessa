@@ -31,7 +31,7 @@
 #include <unordered_set>
 
 #include <boost/thread/exceptions.hpp>
-
+#include <boost/thread/condition_variable.hpp> // for boost::thread_interrupted
 
 
 // Tessa only features
