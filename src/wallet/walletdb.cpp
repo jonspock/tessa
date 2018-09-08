@@ -20,7 +20,7 @@
 #include "utiltime.h"
 #include "wallet.h"
 
-#include <boost/thread.hpp>
+//#include <thread>
 #include <fstream>
 
 using namespace std;
@@ -563,54 +563,49 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
   bool fNoncriticalErrors = false;
   DBErrors result = DB_LOAD_OK;
 
-  try {
-    LOCK(pwallet->cs_wallet);
-    int nMinVersion = 0;
-    if (Read((string) "minversion", nMinVersion)) {
-      if (nMinVersion > CLIENT_VERSION) return DB_TOO_NEW;
-      pwallet->LoadMinVersion(nMinVersion);
-    }
+  LOCK(pwallet->cs_wallet);
+  int nMinVersion = 0;
+  if (Read((string) "minversion", nMinVersion)) {
+    if (nMinVersion > CLIENT_VERSION) return DB_TOO_NEW;
+    pwallet->LoadMinVersion(nMinVersion);
+  }
+  
+  // Get cursor
+  auto pcursor = GetCursor();
+  if (!pcursor) {
+    LogPrintf("Error getting wallet database cursor\n");
+    return DB_CORRUPT;
+  }
 
-    // Get cursor
-    auto pcursor = GetCursor();
-    if (!pcursor) {
-      LogPrintf("Error getting wallet database cursor\n");
+  while (true) {
+    // Read next record
+    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+    CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+    int ret = ReadAtCursor(pcursor, ssKey, ssValue);
+    if (ret == MDB_NOTFOUND)
+      break;
+    else if (ret != 0) {
+      LogPrintf("Error reading next record from wallet database\n");
       return DB_CORRUPT;
     }
-
-    while (true) {
-      // Read next record
-      CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-      CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-      int ret = ReadAtCursor(pcursor, ssKey, ssValue);
-      if (ret == MDB_NOTFOUND)
-        break;
-      else if (ret != 0) {
-        LogPrintf("Error reading next record from wallet database\n");
-        return DB_CORRUPT;
+    
+    // Try to be tolerant of single corrupt records:
+    string strType, strErr;
+    if (!ReadKeyValue(pwallet, ssKey, ssValue, wss, strType, strErr)) {
+      // losing keys is considered a catastrophic error, anything else
+      // we assume the user can live with:
+      if (IsKeyType(strType))
+        result = DB_CORRUPT;
+      else {
+        // Leave other errors alone, if we try to fix them we might make things worse.
+        fNoncriticalErrors = true;  // ... but do warn the user there is something wrong.
+        if (strType == "tx")
+          // Rescan if there is a bad transaction record:
+          SoftSetBoolArg("-rescan", true);
       }
-
-      // Try to be tolerant of single corrupt records:
-      string strType, strErr;
-      if (!ReadKeyValue(pwallet, ssKey, ssValue, wss, strType, strErr)) {
-        // losing keys is considered a catastrophic error, anything else
-        // we assume the user can live with:
-        if (IsKeyType(strType))
-          result = DB_CORRUPT;
-        else {
-          // Leave other errors alone, if we try to fix them we might make things worse.
-          fNoncriticalErrors = true;  // ... but do warn the user there is something wrong.
-          if (strType == "tx")
-            // Rescan if there is a bad transaction record:
-            SoftSetBoolArg("-rescan", true);
-        }
-      }
-      if (!strErr.empty()) LogPrintf("%s\n", strErr);
     }
+    if (!strErr.empty()) LogPrintf("%s\n", strErr);
     cursor_close(pcursor);
-
-  } catch (boost::thread_interrupted) { throw; } catch (...) {
-    result = DB_CORRUPT;
   }
 
   if (fNoncriticalErrors && result == DB_LOAD_OK) result = DB_NONCRITICAL_ERROR;
@@ -648,51 +643,46 @@ DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, vector<uint256>& vTxHash, vec
   bool fNoncriticalErrors = false;
   DBErrors result = DB_LOAD_OK;
 
-  try {
-    LOCK(pwallet->cs_wallet);
-    int nMinVersion = 0;
-    if (Read((string) "minversion", nMinVersion)) {
-      if (nMinVersion > CLIENT_VERSION) return DB_TOO_NEW;
-      pwallet->LoadMinVersion(nMinVersion);
-    }
+  LOCK(pwallet->cs_wallet);
+  int nMinVersion = 0;
+  if (Read((string) "minversion", nMinVersion)) {
+    if (nMinVersion > CLIENT_VERSION) return DB_TOO_NEW;
+    pwallet->LoadMinVersion(nMinVersion);
+  }
+  
+  // Get cursor
+  auto pcursor = GetCursor();
+  if (!pcursor) {
+    LogPrintf("Error getting wallet database cursor\n");
+    return DB_CORRUPT;
+  }
 
-    // Get cursor
-    auto pcursor = GetCursor();
-    if (!pcursor) {
-      LogPrintf("Error getting wallet database cursor\n");
+  while (true) {
+    // Read next record
+    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+    CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+    int ret = ReadAtCursor(pcursor, ssKey, ssValue);
+    if (ret == MDB_NOTFOUND)
+      break;
+    else if (ret != 0) {
+      LogPrintf("Error reading next record from wallet database\n");
       return DB_CORRUPT;
     }
-
-    while (true) {
-      // Read next record
-      CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-      CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-      int ret = ReadAtCursor(pcursor, ssKey, ssValue);
-      if (ret == MDB_NOTFOUND)
-        break;
-      else if (ret != 0) {
-        LogPrintf("Error reading next record from wallet database\n");
-        return DB_CORRUPT;
-      }
-
-      string strType;
-      ssKey >> strType;
-      if (strType == "tx") {
-        uint256 hash;
-        ssKey >> hash;
-
-        CWalletTx wtx;
-        ssValue >> wtx;
-
-        vTxHash.push_back(hash);
-        vWtx.push_back(wtx);
-      }
+    
+    string strType;
+    ssKey >> strType;
+    if (strType == "tx") {
+      uint256 hash;
+      ssKey >> hash;
+      
+      CWalletTx wtx;
+      ssValue >> wtx;
+      
+      vTxHash.push_back(hash);
+      vWtx.push_back(wtx);
     }
-    cursor_close(pcursor);
-
-  } catch (boost::thread_interrupted) { throw; } catch (...) {
-    result = DB_CORRUPT;
   }
+  cursor_close(pcursor);
 
   if (fNoncriticalErrors && result == DB_LOAD_OK) result = DB_NONCRITICAL_ERROR;
 
