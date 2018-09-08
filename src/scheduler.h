@@ -22,8 +22,8 @@
 //
 // CScheduler* s = new CScheduler();
 // s->scheduleFromNow(doSomething, 11); // Assuming a: void doSomething() { }
-// s->scheduleFromNow(boost::bind(Class::func, this, argument), 3);
-// boost::thread* t = new boost::thread(boost::bind(CScheduler::serviceQueue, s));
+// s->scheduleFromNow(std::bind(Class::func, this, argument), 3);
+// std::thread* t = new std::thread(std::bind(CScheduler::serviceQueue, s));
 //
 // ... then at program shutdown, clean up the thread running serviceQueue:
 // t->interrupt();
@@ -55,7 +55,6 @@ class CScheduler {
   // To keep things as simple as possible, there is no unschedule.
 
   // Services the queue 'forever'. Should be run in a thread,
-  // and interrupted using boost::interrupt_thread
   void serviceQueue();
 
   // Tell any threads running serviceQueue to stop as soon as they're

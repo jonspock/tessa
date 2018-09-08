@@ -39,7 +39,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
   /* Main elements init */
   ui->databaseCache->setMinimum(nMinDbCache);
   ui->databaseCache->setMaximum(nMaxDbCache);
-  ui->threadsScriptVerif->setMinimum(-(int)boost::thread::hardware_concurrency());
+  ui->threadsScriptVerif->setMinimum(-(int)std::thread::hardware_concurrency());
   ui->threadsScriptVerif->setMaximum(MAX_SCRIPTCHECK_THREADS);
 
 /* Network elements init */

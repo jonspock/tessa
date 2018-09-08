@@ -46,14 +46,14 @@
 
 #include <cstdint>
 #include <fstream>
+#include <thread>
 
 #ifndef WIN32
 #include <signal.h>
 #endif
 
 #include <boost/interprocess/sync/file_lock.hpp>
-#include <thread>
-#include <boost/thread.hpp>
+#include <boost/thread/thread_time.hpp>
 
 #if ENABLE_ZMQ
 #include "zmq/zmqnotificationinterface.h"
@@ -168,7 +168,7 @@ static std::thread flush_wallet_thread;
 #endif
 
 static bool fHaveGenesis = false;
-static boost::mutex cs_GenesisWait;
+static std::mutex cs_GenesisWait;
 static CConditionVariable condvar_GenesisWait;
 
 
@@ -383,7 +383,7 @@ std::string HelpMessage(HelpMessageMode mode) {
                                        DEFAULT_MAX_ORPHAN_TRANSACTIONS));
   strUsage += HelpMessageOpt("-par=<n>", strprintf(_("Set the number of script verification threads (%u to %d, 0 = "
                                                      "auto, <0 = leave that many cores free, default: %d)"),
-                                                   -(int)boost::thread::hardware_concurrency(), MAX_SCRIPTCHECK_THREADS,
+                                                   -(int)std::thread::hardware_concurrency(), MAX_SCRIPTCHECK_THREADS,
                                                    DEFAULT_SCRIPTCHECK_THREADS));
 #ifndef WIN32
   strUsage += HelpMessageOpt("-pid=<file>", strprintf(_("Specify pid file (default: %s)"), "tessad.pid"));
@@ -964,7 +964,7 @@ bool AppInit2(CScheduler& scheduler) {
 
   // -par=0 means autodetect, but nScriptCheckThreads==0 means no concurrency
   nScriptCheckThreads = GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
-  if (nScriptCheckThreads <= 0) nScriptCheckThreads += boost::thread::hardware_concurrency();
+  if (nScriptCheckThreads <= 0) nScriptCheckThreads += std::thread::hardware_concurrency();
   if (nScriptCheckThreads <= 1)
     nScriptCheckThreads = 0;
   else if (nScriptCheckThreads > MAX_SCRIPTCHECK_THREADS)
