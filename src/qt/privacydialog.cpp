@@ -204,7 +204,7 @@ void PrivacyDialog::on_pushButtonMintZKP_clicked() {
   ui->TEMintStatus->setPlainText(strStatsHeader);
 
   for (CDeterministicMint dMint : vMints) {
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+    /////    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
     strStats = strStats + QString::number(dMint.GetDenomination()) + " ";
     ui->TEMintStatus->setPlainText(strStatsHeader + strStats);
     ui->TEMintStatus->repaint();

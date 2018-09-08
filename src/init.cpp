@@ -53,6 +53,7 @@
 
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <thread>
+#include <boost/thread.hpp>
 
 #if ENABLE_ZMQ
 #include "zmq/zmqnotificationinterface.h"
@@ -190,6 +191,7 @@ void Interrupt(CScheduler& scheduler) {
   InterruptThreadScriptCheck();
   InterruptNetBase();
   InterruptNode();
+  InterruptMiner();
 #ifdef ENABLE_WALLET
   if (pwalletMain) {
     pwalletMain->Interrupt();

@@ -2453,7 +2453,6 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
   CBlockIndex* pindexMostWork = nullptr;
   do {
     interruption_point(ShutdownRequested());
-    //boost::this_thread::interruption_point();
 
     bool fInitialDownload;
     while (true) {
@@ -3267,7 +3266,6 @@ bool static LoadBlockIndexDB(string& strError) {
   if (!pblocktree->LoadBlockIndexGuts()) return false;
 
   interruption_point(ShutdownRequested());
-  //boost::this_thread::interruption_point();
 
   // Calculate nChainWork
   vector<pair<int, CBlockIndex*> > vSortedByHeight;
@@ -3422,7 +3420,6 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp) {
     uint64_t nRewind = blkdat.GetPos();
     while (!blkdat.eof()) {
       interruption_point(ShutdownRequested());
-      //boost::this_thread::interruption_point();
 
       blkdat.SetPos(nRewind);
       nRewind++;          // start one byte further next time, in case of failure
@@ -3703,7 +3700,6 @@ void static ProcessGetData(CNode* pfrom) {
     const CInv& inv = *it;
     {
       interruption_point(ShutdownRequested());
-      //boost::this_thread::interruption_point();
       it++;
 
       if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK) {
@@ -3957,7 +3953,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     int64_t nSince = nNow - 10 * 60;
     for (CAddress& addr : vAddr) {
       interruption_point(ShutdownRequested());
-      //boost::this_thread::interruption_point();
 
       if (addr.nTime <= 100000000 || addr.nTime > nNow + 10 * 60) addr.nTime = nNow - 5 * 24 * 60 * 60;
       pfrom->AddAddressKnown(addr);
@@ -4012,7 +4007,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       const CInv& inv = vInv[nInv];
 
       interruption_point(ShutdownRequested());
-      //boost::this_thread::interruption_point();
       pfrom->AddInventoryKnown(inv);
 
       bool fAlreadyHave = AlreadyHave(inv);
@@ -4594,7 +4588,6 @@ bool ProcessMessages(CNode* pfrom) {
     try {
       fRet = ProcessMessage(pfrom, strCommand, vRecv, msg.nTime);
       interruption_point(ShutdownRequested());
-      //boost::this_thread::interruption_point();
     } catch (std::ios_base::failure& e) {
       pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));
       if (strstr(e.what(), "end of data")) {
@@ -4610,8 +4603,6 @@ bool ProcessMessages(CNode* pfrom) {
       } else {
         PrintExceptionContinue(&e, "ProcessMessages()");
       }
-    } catch (boost::thread_interrupted) { throw; } catch (std::exception& e) {
-      PrintExceptionContinue(&e, "ProcessMessages()");
     } catch (const thread_interrupted&) {
     } catch (...) { PrintExceptionContinue(nullptr, "ProcessMessages()"); }
 

@@ -30,10 +30,6 @@
 #include <vector>
 #include <unordered_set>
 
-#include <boost/thread/exceptions.hpp>
-#include <boost/thread/condition_variable.hpp> // for boost::thread_interrupted
-
-
 // Tessa only features
 
 extern std::string strMiscWarning;
@@ -168,9 +164,6 @@ template <typename Callable> void TraceThread(const char* name, Callable func) {
     LogPrintf("%s thread start\n", name);
     func();
     LogPrintf("%s thread exit\n", name);
-  } catch (boost::thread_interrupted) {
-    LogPrintf("%s thread interrupt\n", name);
-    throw;
   } catch (thread_interrupted&) {
     LogPrintf("%s thread interrupt\n", name);
   } catch (std::exception& e) {

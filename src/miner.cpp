@@ -28,10 +28,13 @@
 #include "validationinterface.h"
 
 #include "libzerocoin/CoinSpend.h"
-#include <boost/thread.hpp>
+#include <thread>
 
 using namespace std;
 using namespace ecdsa;
+
+static std::atomic<bool> miner_interrupted(false);
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -117,7 +120,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
   gStaker.Setup(GetAdjustedTime());  // only initialized at startup
 
   if (fProofOfStake) {
-    boost::this_thread::interruption_point();
+    interruption_point(miner_interrupted);
     bool fStakeFound = gStaker.FindStake(GetAdjustedTime(), chainActive.Tip(), pblock, pwallet);
     if (!fStakeFound) return nullptr;
   }
@@ -617,7 +620,10 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
 
           // In regression test mode, stop mining after a block is found. This
           // allows developers to controllably generate a block on demand.
-          if (Params().MineBlocksOnDemand()) throw boost::thread_interrupted();
+          if (Params().MineBlocksOnDemand()) {
+            miner_interrupted = true;
+            interruption_point(miner_interrupted);
+          }
 
           break;
         }
@@ -651,7 +657,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
       }
 
       // Check for stop or if block needs to be rebuilt
-      boost::this_thread::interruption_point();
+      interruption_point(miner_interrupted);
       // Regtest mode doesn't require peers
       if (vNodes.empty() && Params().MiningRequiresPeers()) break;
       if (pblock->nNonce >= 0xffff0000) break;
@@ -667,13 +673,17 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
     }
   }
 }
+void InterruptMiner()
+{
+  miner_interrupted = true;
+}
 
 void static ThreadBitcoinMiner(void* parg) {
-  boost::this_thread::interruption_point();
+  interruption_point(miner_interrupted);
   auto pwallet = (CWallet*)parg;
   try {
     BitcoinMiner(pwallet, false);
-    boost::this_thread::interruption_point();
+    interruption_point(miner_interrupted);
   } catch (std::exception& e) { LogPrintf("ThreadBitcoinMiner() exception"); } catch (...) {
     LogPrintf("ThreadBitcoinMiner() exception");
   }
@@ -682,9 +692,10 @@ void static ThreadBitcoinMiner(void* parg) {
 }
 
 void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads) {
-  static boost::thread_group* minerThreads = nullptr;
+  static std::thread miner_thread;
   fGenerateBitcoins = fGenerate;
 
+  /*
   if (nThreads < 0) {
     // In regtest threads defaults to 1
     if (Params().DefaultMinerThreads())
@@ -698,9 +709,11 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads) {
     delete minerThreads;
     minerThreads = nullptr;
   }
-
+  */
+  
   if (nThreads == 0 || !fGenerate) return;
 
-  minerThreads = new boost::thread_group();
-  for (int i = 0; i < nThreads; i++) minerThreads->create_thread(std::bind(&ThreadBitcoinMiner, pwallet));
+  // Assume just 1 thread to get this going. TBD add loop later
+  auto bindMiner = std::bind(ThreadBitcoinMiner, pwallet);
+  miner_thread = std::thread(&TraceThread<decltype(bindMiner)>, "miner", std::move(bindMiner));
 }
