@@ -259,9 +259,7 @@ int CommandLineRPC(int argc, char* argv[]) {
           throw;
       }
     } while (fWait);
-  } catch (boost::thread_interrupted) { throw; } catch (std::exception& e) {
-    strPrint = string("error: ") + e.what();
-    nRet = EXIT_FAILURE;
+  } catch (const thread_interrupted&) {
   } catch (...) {
     PrintExceptionContinue(nullptr, "CommandLineRPC()");
     throw;
@@ -280,6 +278,7 @@ int main(int argc, char* argv[]) {
 
   try {
     if (!AppInitRPC(argc, argv)) return EXIT_FAILURE;
+  } catch (const thread_interrupted&) {
   } catch (std::exception& e) {
     PrintExceptionContinue(&e, "AppInitRPC()");
     return EXIT_FAILURE;
