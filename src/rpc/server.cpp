@@ -18,10 +18,8 @@
 #include "util.h"
 #include "utilstrencodings.h"
 
-#include <boost/algorithm/string/case_conv.hpp>  // for to_upper()
 #include <boost/bind.hpp>
 #include <boost/signals2/signal.hpp>
-#include <boost/thread.hpp>
 
 #include <univalue.h>
 
@@ -172,8 +170,7 @@ string CRPCTable::help(string strCommand) const {
         if (category != pcmd->category) {
           if (!category.empty()) strRet += "\n";
           category = pcmd->category;
-          string firstLetter = category.substr(0, 1);
-          boost::to_upper(firstLetter);
+          string firstLetter(1,ToUpper(category[0]));//.substr(0, 1);
           strRet += "== " + firstLetter + category.substr(1) + " ==\n";
         }
       }
