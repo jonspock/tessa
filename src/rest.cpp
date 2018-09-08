@@ -118,7 +118,7 @@ static bool rest_headers(HTTPRequest* req, const std::string& strURIPart) {
   if (path.size() != 2)
     return RESTERR(req, HTTP_BAD_REQUEST, "No header count specified. Use /rest/headers/<count>/<hash>.<ext>.");
 
-  long count = strtol(path[0].c_str(), nullptr, 10);
+  int64_t count = strtol(path[0].c_str(), nullptr, 10);
   if (count < 1 || count > 2000) return RESTERR(req, HTTP_BAD_REQUEST, "Header count out of range: " + path[0]);
 
   string hashStr = path[1];
@@ -133,7 +133,7 @@ static bool rest_headers(HTTPRequest* req, const std::string& strURIPart) {
     const CBlockIndex* pindex = (it != mapBlockIndex.end()) ? it->second : nullptr;
     while (pindex != nullptr && chainActive.Contains(pindex)) {
       headers.push_back(pindex);
-      if (headers.size() == (unsigned long)count) break;
+      if (headers.size() == (uint64_t)count) break;
       pindex = chainActive.Next(pindex);
     }
   }

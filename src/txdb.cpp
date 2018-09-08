@@ -59,7 +59,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
   if (!hashBlock.IsNull()) BatchWriteHashBestChain(batch, hashBlock);
 
   LogPrint(TessaLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n",
-           (unsigned int)changed, (unsigned int)count);
+           changed, count);
   return db.WriteBatch(batch);
 }
 
@@ -122,7 +122,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
         ss << (coins.fCoinBase ? 'c' : 'n');
         ss << VARINT(coins.nHeight);
         stats.nTransactions++;
-        for (unsigned int i = 0; i < coins.vout.size(); i++) {
+        for (size_t i = 0; i < coins.vout.size(); i++) {
           const CTxOut& out = coins.vout[i];
           if (!out.IsNull()) {
             stats.nTransactionOutputs++;
@@ -262,7 +262,7 @@ bool CZerocoinDB::WriteCoinMintBatch(const std::vector<std::pair<libzerocoin::Pu
     ++count;
   }
 
-  LogPrint(TessaLog::ZKP, "Writing %u coin mints to db.\n", (unsigned int)count);
+  LogPrint(TessaLog::ZKP, "Writing %u coin mints to db.\n", count);
   return WriteBatch(batch, true);
 }
 
@@ -296,7 +296,7 @@ bnSerial; uint256 hash = Hash(ss.begin(), ss.end()); batch.Write(make_pair('s', 
         ++count;
     }
 
-    LogPrint(TessaLog::ZKP, "Writing %u coin spends to db.\n", (unsigned int)count);
+    LogPrint(TessaLog::ZKP, "Writing %u coin spends to db.\n", count);
     return WriteBatch(batch, true);
  }
 */

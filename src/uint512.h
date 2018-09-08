@@ -19,7 +19,7 @@ class uint512 : public base_blob<512> {
   uint256 trim256() const {
     std::vector<uint8_t> vch;
     const uint8_t* p = this->begin();
-    for (unsigned int i = 0; i < 32; i++) { vch.push_back(*p++); }
+    for (uint32_t i = 0; i < 32; i++) { vch.push_back(*p++); }
     uint256 retval(vch);
     return retval;
   }

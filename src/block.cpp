@@ -35,13 +35,13 @@ bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos) {
   if (fileout.IsNull()) return error("WriteBlockToDisk : OpenBlockFile failed");
 
   // Write index header
-  unsigned int nSize = fileout.GetSerializeSize(block);
+  uint32_t nSize = fileout.GetSerializeSize(block);
   fileout << FLATDATA(Params().MessageStart()) << nSize;
 
   // Write block
-  long fileOutPos = ftell(fileout.Get());
+  int64_t fileOutPos = ftell(fileout.Get());
   if (fileOutPos < 0) return error("WriteBlockToDisk : ftell failed");
-  pos.nPos = (unsigned int)fileOutPos;
+  pos.nPos = (uint32_t)fileOutPos;
   fileout << block;
 
   return true;
@@ -77,7 +77,7 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex) {
   return true;
 }
 
-double ConvertBitsToDouble(unsigned int nBits) {
+double ConvertBitsToDouble(uint32_t nBits) {
   int nShift = (nBits >> 24) & 0xff;
 
   double dDiff = (double)0x0000ffff / (double)(nBits & 0x00ffffff);

@@ -195,7 +195,7 @@ class CAddrMan {
   CAddrInfo* Create(const CAddress& addr, const CNetAddr& addrSource, int* pnId = nullptr);
 
   //! Swap two elements in vRandom.
-  void SwapRandom(unsigned int nRandomPos1, unsigned int nRandomPos2);
+  void SwapRandom(uint32_t nRandomPos1, uint32_t nRandomPos2);
 
   //! Move an entry from the "new" table(s) to the "tried" table
   void MakeTried(CAddrInfo& info, int nId);
@@ -402,7 +402,7 @@ class CAddrMan {
     Check();
   }
 
-  unsigned int GetSerializeSize() const { return (CSizeComputer() << *this).size(); }
+  uint32_t GetSerializeSize() const { return (CSizeComputer() << *this).size(); }
 
   void Clear() {
     std::vector<int>().swap(vRandom);

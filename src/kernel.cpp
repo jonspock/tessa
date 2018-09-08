@@ -21,7 +21,7 @@ using std::unique_ptr;
 using std::vector;
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
-static map<int, unsigned int> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7u}};
+static map<int, uint32_t> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7u}};
 
 // Get time weight
 int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd) {
@@ -257,7 +257,7 @@ bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, const arith_uint
 }
 
 bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t nStakeModifier,
-                const arith_uint256& bnTarget, unsigned int nTimeBlockFrom, unsigned int& nTimeTx,
+                const arith_uint256& bnTarget, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
                 uint256& hashProofOfStake) {
   CDataStream ss(SER_GETHASH);
   ss << nStakeModifier << nTimeBlockFrom << ssUniqueID << nTimeTx;
@@ -268,7 +268,7 @@ bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t 
   return stakeTargetHit(hashProofOfStake, nValueIn, bnTarget);
 }
 
-bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockFrom, unsigned int& nTimeTx,
+bool Stake(CStakeInput* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
            uint256& hashProofOfStake) {
   if (nTimeTx < nTimeBlockFrom) return error("CheckStakeKernelHash() : nTime violation");
 
@@ -285,7 +285,7 @@ bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockF
   if (!stakeInput->GetModifier(nStakeModifier)) return error("failed to get kernel stake modifier");
 
   bool fSuccess = false;
-  unsigned int nTryTime = 0;
+  uint32_t nTryTime = 0;
   int nHeightStart = chainActive.Height();
   int nHashDrift = 30;
   CDataStream ssUniqueID = stakeInput->GetUniqueness();
@@ -357,8 +357,8 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, unique_ptr
   uint64_t nStakeModifier = 0;
   if (!stake->GetModifier(nStakeModifier)) return error("%s failed to get modifier for stake input\n", __func__);
 
-  unsigned int nBlockFromTime = blockprev.nTime;
-  unsigned int nTxTime = block.nTime;
+  uint32_t nBlockFromTime = blockprev.nTime;
+  uint32_t nTxTime = block.nTime;
   if (!CheckStake(stake->GetUniqueness(), stake->GetValue(), nStakeModifier, bnTargetPerCoinDay, nBlockFromTime,
                   nTxTime, hashProofOfStake)) {
     return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",
@@ -375,7 +375,7 @@ bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx) {
 }
 
 // Get stake modifier checksum
-unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex) {
+uint32_t GetStakeModifierChecksum(const CBlockIndex* pindex) {
   assert(pindex->pprev || pindex->GetBlockHash() == Params().HashGenesisBlock());
   // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
   CDataStream ss(SER_GETHASH);
@@ -387,7 +387,7 @@ unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex) {
 }
 
 // Check stake modifier hard checkpoints
-bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum) {
+bool CheckStakeModifierCheckpoints(int nHeight, uint32_t nStakeModifierChecksum) {
   if (Params().NetworkID() == CBaseChainParams::TESTNET) return true;  // Testnet has no checkpoints
   if (mapStakeModifierCheckpoints.count(nHeight)) {
     return nStakeModifierChecksum == mapStakeModifierCheckpoints[nHeight];
@@ -402,7 +402,7 @@ bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierCheck
 // guaranteed to be in main chain by sync-checkpoint. This rule is
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
-bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nCoinAge) {
+bool GetCoinAge(const CTransaction& tx, const uint32_t nTxTime, uint64_t& nCoinAge) {
   arith_uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
   nCoinAge = 0;
 

@@ -69,8 +69,8 @@ std::string DecodeBase58(const char* psz) {
   std::stringstream ss;
   ss << std::hex;
 
-  for (unsigned int i = 0; i < vch.size(); i++) {
-    uint8_t* c = &vch[i];
+  for (auto& v : vch) {
+    uint8_t* c = &v;
     ss << std::setw(2) << std::setfill('0') << (int)c[0];
   }
 
@@ -155,7 +155,7 @@ void CBase58Data::SetData(const std::vector<uint8_t>& vchVersionIn, const uint8_
   SetData(vchVersionIn, (void*)pbegin, pend - pbegin);
 }
 
-bool CBase58Data::SetString(const char* psz, unsigned int nVersionBytes) {
+bool CBase58Data::SetString(const char* psz, uint32_t nVersionBytes) {
   std::vector<uint8_t> vchTemp;
   bool rc58 = DecodeBase58Check(psz, vchTemp);
   if ((!rc58) || (vchTemp.size() < nVersionBytes)) {

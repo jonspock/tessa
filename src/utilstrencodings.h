@@ -76,8 +76,8 @@ template <typename T> inline std::string HexStr(const T& vch, bool fSpaces = fal
 /** Reverse the endianess of a string */
 inline std::string ReverseEndianString(const std::string& in) {
   std::string out = "";
-  unsigned int s = in.size();
-  for (unsigned int i = 0; i < s; i += 2) { out += in.substr(s - i - 2, 2); }
+  size_t s = in.size();
+  for (size_t i = 0; i < s; i += 2) { out += in.substr(s - i - 2, 2); }
 
   return out;
 }

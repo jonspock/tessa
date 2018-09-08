@@ -42,7 +42,7 @@ CBigNum RandKBitBigum(const uint32_t k) {
  * @param safe true for a safe prime
  * @return the prime
  */
-CBigNum generatePrime(const unsigned int numBits) {
+CBigNum generatePrime(const uint32_t numBits) {
   CBigNum rand = RandKBitBigum(numBits);
   CBigNum prime;
   mpz_nextprime(prime.bn, rand.bn);

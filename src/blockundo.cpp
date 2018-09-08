@@ -22,13 +22,13 @@ bool CBlockUndo::WriteToDisk(CDiskBlockPos& pos, const uint256& hashBlock) {
   if (fileout.IsNull()) return error("CBlockUndo::WriteToDisk : OpenUndoFile failed");
 
   // Write index header
-  unsigned int nSize = fileout.GetSerializeSize(*this);
+  uint32_t nSize = fileout.GetSerializeSize(*this);
   fileout << FLATDATA(Params().MessageStart()) << nSize;
 
   // Write undo data
-  long fileOutPos = ftell(fileout.Get());
+  int64_t fileOutPos = ftell(fileout.Get());
   if (fileOutPos < 0) return error("CBlockUndo::WriteToDisk : ftell failed");
-  pos.nPos = (unsigned int)fileOutPos;
+  pos.nPos = (uint32_t)fileOutPos;
   fileout << *this;
 
   // calculate & write checksum

@@ -17,7 +17,7 @@
 
 #include <cmath>
 
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock) {
+uint32_t GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock) {
   /* current difficulty formula, tessa - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
   const CBlockIndex* BlockLastSolved = pindexLast;
   const CBlockIndex* BlockReading = pindexLast;
@@ -63,7 +63,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     return bnNew.GetCompact();
   }
 
-  for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
+  for (uint32_t i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
     if (PastBlocksMax > 0 && i > PastBlocksMax) { break; }
     CountBlocks++;
 
@@ -107,7 +107,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
   return bnNew.GetCompact();
 }
 
-bool CheckProofOfWork(uint256 hash, unsigned int nBits) {
+bool CheckProofOfWork(uint256 hash, uint32_t nBits) {
   bool fNegative;
   bool fOverflow;
   arith_uint256 bnTarget;

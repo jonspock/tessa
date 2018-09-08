@@ -32,12 +32,12 @@ class CStakeInput {
 class CStake : public CStakeInput {
  private:
   CTransaction txFrom;
-  unsigned int nPosition;
+  uint32_t nPosition;
 
  public:
   CStake() { this->pindexFrom = nullptr; }
 
-  bool SetInput(CTransaction txPrev, unsigned int n);
+  bool SetInput(CTransaction txPrev, uint32_t n);
 
   CBlockIndex* GetIndexFrom() override;
   bool GetTxFrom(CTransaction& tx) override;

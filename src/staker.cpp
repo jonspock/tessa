@@ -10,7 +10,7 @@ bool CStaker::FindStake(int64_t time, CBlockIndex* pindexPrev, CBlock* pblock, C
   int64_t nSearchTime = pblock->nTime;  // search to current time
   bool fStakeFound = false;
   if (nSearchTime >= getLastCoinStakeSearchTime()) {
-    unsigned int nTxNewTime = 0;
+    uint32_t nTxNewTime = 0;
     if (pwallet->CreateCoinStake(*pwallet, pblock->nBits, nSearchTime - getLastCoinStakeSearchTime(), txCoinStake,
                                  nTxNewTime)) {
       pblock->nTime = nTxNewTime;

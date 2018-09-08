@@ -144,20 +144,20 @@ class CCoins {
   }
   friend bool operator!=(const CCoins& a, const CCoins& b) { return !(a == b); }
 
-  void CalcMaskSize(unsigned int& nBytes, unsigned int& nNonzeroBytes) const;
+  void CalcMaskSize(uint32_t& nBytes, uint32_t& nNonzeroBytes) const;
 
   bool IsCoinBase() const { return fCoinBase; }
 
   bool IsCoinStake() const { return fCoinStake; }
 
-  unsigned int GetSerializeSize() const {
-    unsigned int nSize = 0;
-    unsigned int nMaskSize = 0, nMaskCode = 0;
+  uint32_t GetSerializeSize() const {
+    uint32_t nSize = 0;
+    uint32_t nMaskSize = 0, nMaskCode = 0;
     CalcMaskSize(nMaskSize, nMaskCode);
     bool fFirst = vout.size() > 0 && !vout[0].IsNull();
     bool fSecond = vout.size() > 1 && !vout[1].IsNull();
     assert(fFirst || fSecond || nMaskCode);
-    unsigned int nCode = 8 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
+    uint32_t nCode = 8 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
                          (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
     // version
     nSize += ::GetSerializeSize(VARINT(nTransactionVersion));
@@ -175,21 +175,21 @@ class CCoins {
   }
 
   template <typename Stream> void Serialize(Stream& s) const {
-    unsigned int nMaskSize = 0, nMaskCode = 0;
+    uint32_t nMaskSize = 0, nMaskCode = 0;
     CalcMaskSize(nMaskSize, nMaskCode);
     bool fFirst = vout.size() > 0 && !vout[0].IsNull();
     bool fSecond = vout.size() > 1 && !vout[1].IsNull();
     assert(fFirst || fSecond || nMaskCode);
-    unsigned int nCode = 16 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
+    uint32_t nCode = 16 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
                          (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
     // version
     ::Serialize(s, VARINT(nTransactionVersion));
     // header code
     ::Serialize(s, VARINT(nCode));
     // spentness bitmask
-    for (unsigned int b = 0; b < nMaskSize; b++) {
+    for (uint32_t b = 0; b < nMaskSize; b++) {
       uint8_t chAvail = 0;
-      for (unsigned int i = 0; i < 8 && 2 + b * 8 + i < vout.size(); i++)
+      for (uint32_t i = 0; i < 8 && 2 + b * 8 + i < vout.size(); i++)
         if (!vout[2 + b * 8 + i].IsNull()) chAvail |= (1 << i);
       ::Serialize(s, chAvail);
     }
@@ -202,7 +202,7 @@ class CCoins {
   }
 
   template <typename Stream> void Unserialize(Stream& s) {
-    unsigned int nCode = 0;
+    uint32_t nCode = 0;
     // version
     ::Unserialize(s, VARINT(nTransactionVersion));
     // header code
@@ -212,12 +212,12 @@ class CCoins {
     std::vector<bool> vAvail(2, false);
     vAvail[0] = (nCode & 4) != 0;  // 0100
     vAvail[1] = (nCode & 8) != 0;  // 1000
-    unsigned int nMaskCode = (nCode / 16) + ((nCode & 12) != 0 ? 0 : 1);
+    uint32_t nMaskCode = (nCode / 16) + ((nCode & 12) != 0 ? 0 : 1);
     // spentness bitmask
     while (nMaskCode > 0) {
       uint8_t chAvail = 0;
       ::Unserialize(s, chAvail);
-      for (unsigned int p = 0; p < 8; p++) {
+      for (uint32_t p = 0; p < 8; p++) {
         bool f = (chAvail & (1 << p)) != 0;
         vAvail.push_back(f);
       }
@@ -225,7 +225,7 @@ class CCoins {
     }
     // txouts themself
     vout.assign(vAvail.size(), CTxOut());
-    for (unsigned int i = 0; i < vAvail.size(); i++) {
+    for (uint32_t i = 0; i < vAvail.size(); i++) {
       if (vAvail[i]) ::Unserialize(s, REF(CTxOutCompressor(vout[i])));
     }
     // coinbase height
@@ -240,7 +240,7 @@ class CCoins {
   bool Spend(int nPos);
 
   //! check whether a particular output is still available
-  bool IsAvailable(unsigned int nPos) const {
+  bool IsAvailable(uint32_t nPos) const {
     return (nPos < vout.size() && !vout[nPos].IsNull() && !vout[nPos].scriptPubKey.IsZerocoinMint());
   }
 
@@ -336,7 +336,7 @@ class CCoinsViewCache;
 /** Flags for nSequence and nLockTime locks  -already in consensus.h */
 
 /** Used as the flags parameter to sequence and nLocktime checks in non-consensus code. */
-static const unsigned int STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE | LOCKTIME_MEDIAN_TIME_PAST;
+static const uint32_t STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE | LOCKTIME_MEDIAN_TIME_PAST;
 
 /**
  * A reference to a mutable cache entry. Encapsulating it allows us to run
@@ -402,7 +402,7 @@ class CCoinsViewCache : public CCoinsViewBacked {
   bool Flush();
 
   //! Calculate the size of the cache (in number of transactions)
-  unsigned int GetCacheSize() const;
+  uint32_t GetCacheSize() const;
 
   /**
    * Amount of club coming in to a transaction

@@ -94,7 +94,7 @@ class CBase58Data {
   void SetData(const std::vector<uint8_t>& vchVersionIn, const uint8_t* pbegin, const uint8_t* pend);
 
  public:
-  bool SetString(const char* psz, unsigned int nVersionBytes = 1);
+  bool SetString(const char* psz, uint32_t nVersionBytes = 1);
   bool SetString(const std::string& str);
   std::string ToString() const;
   int CompareTo(const CBase58Data& b58) const;

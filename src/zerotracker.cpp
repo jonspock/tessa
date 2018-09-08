@@ -86,7 +86,7 @@ std::vector<uint256> CZeroTracker::GetSerialHashes() {
 CAmount CZeroTracker::GetBalance(bool fConfirmedOnly, bool fUnconfirmedOnly) const {
   CAmount nTotal = 0;
   //! zerocoin specific fields
-  std::map<libzerocoin::CoinDenomination, unsigned int> myZerocoinSupply;
+  std::map<libzerocoin::CoinDenomination, uint32_t> myZerocoinSupply;
   for (auto& denom : libzerocoin::zerocoinDenomList) { myZerocoinSupply.insert(make_pair(denom, 0)); }
 
   {

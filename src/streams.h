@@ -441,7 +441,7 @@ class CBufferedFile {
   }
 
   bool Seek(uint64_t nPos) {
-    long nLongPos = nPos;
+    int64_t nLongPos = nPos;
     if (nPos != (uint64_t)nLongPos) return false;
     if (fseek(src, nLongPos, SEEK_SET)) return false;
     nLongPos = ftell(src);

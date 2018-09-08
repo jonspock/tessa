@@ -15,7 +15,7 @@ using namespace std;
 using namespace ecdsa;
 
 //! Tessa Stake
-bool CStake::SetInput(CTransaction txPrev, unsigned int n) {
+bool CStake::SetInput(CTransaction txPrev, uint32_t n) {
   this->txFrom = txPrev;
   this->nPosition = n;
   return true;

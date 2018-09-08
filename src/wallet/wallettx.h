@@ -87,7 +87,7 @@ class CWalletTx : public CMerkleTx {
   unsigned int fTimeReceivedIsTxTime;
   unsigned int nTimeReceived;  //! time received by this node
   unsigned int nTimeSmart;
-  char fFromMe;
+  uint8_t fFromMe;
   std::string strFromAccount;
   int64_t nOrderPos;  //! position in ordered transaction list
 
@@ -161,7 +161,7 @@ class CWalletTx : public CMerkleTx {
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     if (ser_action.ForRead()) Init(nullptr);
-    char fSpent = false;
+    uint8_t fSpent = false;
 
     if (!ser_action.ForRead()) {
       mapValue["fromaccount"] = strFromAccount;

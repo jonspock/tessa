@@ -547,9 +547,9 @@ static bool ConnectThroughProxy(const proxyType& proxy, const std::string& strDe
     ProxyCredentials random_auth;
     static std::atomic_int counter;
     random_auth.username = random_auth.password = strprintf("%i", counter++);
-    if (!Socks5(strDest, (unsigned short)port, &random_auth, hSocket)) return false;
+    if (!Socks5(strDest, (uint16_t)port, &random_auth, hSocket)) return false;
   } else {
-    if (!Socks5(strDest, (unsigned short)port, nullptr, hSocket)) return false;
+    if (!Socks5(strDest, (uint16_t)port, nullptr, hSocket)) return false;
   }
 
   hSocketRet = hSocket;
@@ -946,11 +946,11 @@ void CService::Init() { port = 0; }
 
 CService::CService() { Init(); }
 
-CService::CService(const CNetAddr& cip, unsigned short portIn) : CNetAddr(cip), port(portIn) {}
+CService::CService(const CNetAddr& cip, uint16_t portIn) : CNetAddr(cip), port(portIn) {}
 
-CService::CService(const struct in_addr& ipv4Addr, unsigned short portIn) : CNetAddr(ipv4Addr), port(portIn) {}
+CService::CService(const struct in_addr& ipv4Addr, uint16_t portIn) : CNetAddr(ipv4Addr), port(portIn) {}
 
-CService::CService(const struct in6_addr& ipv6Addr, unsigned short portIn) : CNetAddr(ipv6Addr), port(portIn) {}
+CService::CService(const struct in6_addr& ipv6Addr, uint16_t portIn) : CNetAddr(ipv6Addr), port(portIn) {}
 
 CService::CService(const struct sockaddr_in& addr) : CNetAddr(addr.sin_addr), port(ntohs(addr.sin_port)) {
   assert(addr.sin_family == AF_INET);
@@ -997,7 +997,7 @@ CService::CService(const std::string& strIpPort, int portDefault, bool fAllowLoo
   if (Lookup(strIpPort.c_str(), ip, portDefault, fAllowLookup)) *this = ip;
 }
 
-unsigned short CService::GetPort() const { return port; }
+uint16_t CService::GetPort() const { return port; }
 
 bool operator==(const CService& a, const CService& b) { return (CNetAddr)a == (CNetAddr)b && a.port == b.port; }
 
@@ -1052,7 +1052,7 @@ std::string CService::ToStringIPPort() const {
 
 std::string CService::ToString() const { return ToStringIPPort(); }
 
-void CService::SetPort(unsigned short portIn) { port = portIn; }
+void CService::SetPort(uint16_t portIn) { port = portIn; }
 
 CSubNet::CSubNet() : valid(false) { memset(netmask, 0, sizeof(netmask)); }
 

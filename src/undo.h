@@ -23,11 +23,11 @@ class CTxInUndo {
   CTxOut txout;    // the txout data before being spent
   bool fCoinBase;  // if the outpoint was the last unspent: whether it belonged to a coinbase
   bool fCoinStake;
-  unsigned int nHeight;     // if the outpoint was the last unspent: its height
+  uint32_t nHeight;     // if the outpoint was the last unspent: its height
   int nTransactionVersion;  // if the outpoint was the last unspent: its version
 
   CTxInUndo() : txout(), fCoinBase(false), fCoinStake(false), nHeight(0), nTransactionVersion(0) {}
-  CTxInUndo(const CTxOut& txoutIn, bool fCoinBaseIn = false, bool fCoinStakeIn = false, unsigned int nHeightIn = 0,
+  CTxInUndo(const CTxOut& txoutIn, bool fCoinBaseIn = false, bool fCoinStakeIn = false, uint32_t nHeightIn = 0,
             int nVersionIn = 0)
       : txout(txoutIn),
         fCoinBase(fCoinBaseIn),
@@ -35,7 +35,7 @@ class CTxInUndo {
         nHeight(nHeightIn),
         nTransactionVersion(nVersionIn) {}
 
-  unsigned int GetSerializeSize() const {
+  uint32_t GetSerializeSize() const {
     return ::GetSerializeSize(VARINT(nHeight * 4 + (fCoinBase ? 2 : 0) + (fCoinStake ? 1 : 0))) +
            (nHeight > 0 ? ::GetSerializeSize(VARINT(nTransactionVersion)) : 0) +
            ::GetSerializeSize(CTxOutCompressor(REF(txout)));
@@ -48,7 +48,7 @@ class CTxInUndo {
   }
 
   template <typename Stream> void Unserialize(Stream& s) {
-    unsigned int nCode = 0;
+    uint32_t nCode = 0;
     ::Unserialize(s, VARINT(nCode));
     nHeight = nCode >> 2;
     fCoinBase = nCode & 2;

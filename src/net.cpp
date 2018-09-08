@@ -118,7 +118,7 @@ void AddOneShot(string strDest) {
   vOneShots.push_back(strDest);
 }
 
-unsigned short GetListenPort() { return (unsigned short)(GetArg("-port", Params().GetDefaultPort())); }
+uint16_t GetListenPort() { return (uint16_t)(GetArg("-port", Params().GetDefaultPort())); }
 
 // find 'best' local address for a particular peer
 bool GetLocal(CService& addr, const CNetAddr* paddrPeer) {
@@ -617,7 +617,7 @@ void CNode::copyStats(CNodeStats& stats) {
 #undef X
 
 // requires LOCK(cs_vRecvMsg)
-bool CNode::ReceiveMsgBytes(const char* pch, unsigned int nBytes) {
+bool CNode::ReceiveMsgBytes(const char* pch, uint32_t nBytes) {
   while (nBytes > 0) {
     // get current incomplete message, or create a new one
     if (vRecvMsg.empty() || vRecvMsg.back().complete()) vRecvMsg.push_back(CNetMessage(SER_NETWORK, nRecvVersion));
@@ -650,10 +650,10 @@ bool CNode::ReceiveMsgBytes(const char* pch, unsigned int nBytes) {
   return true;
 }
 
-int CNetMessage::readHeader(const char* pch, unsigned int nBytes) {
+int CNetMessage::readHeader(const char* pch, uint32_t nBytes) {
   // copy data to temporary parsing buffer
-  unsigned int nRemaining = 24 - nHdrPos;
-  unsigned int nCopy = std::min(nRemaining, nBytes);
+  uint32_t nRemaining = 24 - nHdrPos;
+  uint32_t nCopy = std::min(nRemaining, nBytes);
 
   memcpy(&hdrbuf[nHdrPos], pch, nCopy);
   nHdrPos += nCopy;
@@ -675,9 +675,9 @@ int CNetMessage::readHeader(const char* pch, unsigned int nBytes) {
   return nCopy;
 }
 
-int CNetMessage::readData(const char* pch, unsigned int nBytes) {
-  unsigned int nRemaining = hdr.nMessageSize - nDataPos;
-  unsigned int nCopy = std::min(nRemaining, nBytes);
+int CNetMessage::readData(const char* pch, uint32_t nBytes) {
+  uint32_t nRemaining = hdr.nMessageSize - nDataPos;
+  uint32_t nCopy = std::min(nRemaining, nBytes);
 
   if (vRecv.size() < nDataPos + nCopy) {
     // Allocate up to 256 KiB ahead, but never more than the total message size.
@@ -736,7 +736,7 @@ void SocketSendData(CNode* pnode) {
 static list<CNode*> vNodesDisconnected;
 
 void ThreadSocketHandler() {
-  unsigned int nPrevNodeCount = 0;
+  uint32_t nPrevNodeCount = 0;
   while (true) {
     //
     // Disconnect nodes
@@ -865,7 +865,7 @@ void ThreadSocketHandler() {
       if (have_fds) {
         int nErr = WSAGetLastError();
         LogPrintf("socket select error %s\n", NetworkErrorString(nErr));
-        for (unsigned int i = 0; i <= hSocketMax; i++) FD_SET(i, &fdsetRecv);
+        for (uint32_t i = 0; i <= hSocketMax; i++) FD_SET(i, &fdsetRecv);
       }
       FD_ZERO(&fdsetSend);
       FD_ZERO(&fdsetError);
@@ -1278,7 +1278,7 @@ void ThreadOpenAddedConnections() {
     }
   }
 
-  for (unsigned int i = 0; true; i++) {
+  for (uint32_t i = 0; true; i++) {
     list<string> lAddresses(0);
     {
       LOCK(cs_vAddedNodes);
@@ -1773,7 +1773,7 @@ CAddrDB::CAddrDB() { pathAddr = GetDataDir() / "peers.dat"; }
 
 bool CAddrDB::Write(const CAddrMan& addr) {
   // Generate random temporary filename
-  unsigned short randv = 0;
+  uint16_t randv = 0;
   GetRandBytes((uint8_t*)&randv, sizeof(randv));
   std::string tmpfn = strprintf("peers.dat.%04x", randv);
 
@@ -1844,8 +1844,8 @@ bool CAddrDB::Read(CAddrMan& addr) {
   return true;
 }
 
-unsigned int ReceiveFloodSize() { return 1000 * GetArg("-maxreceivebuffer", 5 * 1000); }
-unsigned int SendBufferSize() { return 1000 * GetArg("-maxsendbuffer", 1 * 1000); }
+uint32_t ReceiveFloodSize() { return 1000 * GetArg("-maxreceivebuffer", 5 * 1000); }
+uint32_t SendBufferSize() { return 1000 * GetArg("-maxsendbuffer", 1 * 1000); }
 
 CNode::CNode(SOCKET hSocketIn, CAddress addrIn, const std::string& addrNameIn, bool fInboundIn)
     : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000) {
@@ -1968,12 +1968,12 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend) {
   }
 
   // Set the size
-  unsigned int nSize = ssSend.size() - CMessageHeader::HEADER_SIZE;
+  uint32_t nSize = ssSend.size() - CMessageHeader::HEADER_SIZE;
   memcpy((char*)&ssSend[CMessageHeader::MESSAGE_SIZE_OFFSET], &nSize, sizeof(nSize));
 
   // Set the checksum
   uint256 hash = Hash(ssSend.begin() + CMessageHeader::HEADER_SIZE, ssSend.end());
-  unsigned int nChecksum = 0;
+  uint32_t nChecksum = 0;
   memcpy(&nChecksum, &hash, sizeof(nChecksum));
   assert(ssSend.size() >= CMessageHeader::CHECKSUM_OFFSET + sizeof(nChecksum));
   memcpy((char*)&ssSend[CMessageHeader::CHECKSUM_OFFSET], &nChecksum, sizeof(nChecksum));
@@ -1998,7 +1998,7 @@ CBanDB::CBanDB() { pathBanlist = GetDataDir() / "banlist.dat"; }
 
 bool CBanDB::Write(const banmap_t& banSet) {
   // Generate random temporary filename
-  unsigned short randv = 0;
+  uint16_t randv = 0;
   GetRandBytes((uint8_t*)&randv, sizeof(randv));
   std::string tmpfn = strprintf("banlist.dat.%04x", randv);
 

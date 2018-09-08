@@ -188,7 +188,7 @@ void TessaLog::Logger::ShrinkDebugFile() {
         fs::file_size(pathLog) > 11 * (RECENT_DEBUG_HISTORY_SIZE / 10)) {
         // Restart the file with some of the end.
         std::vector<char> vch(RECENT_DEBUG_HISTORY_SIZE, 0);
-        fseek(file, -((long)vch.size()), SEEK_END);
+        fseek(file, -((int64_t)vch.size()), SEEK_END);
         int nBytes = fread(vch.data(), 1, vch.size(), file);
         fclose(file);
 

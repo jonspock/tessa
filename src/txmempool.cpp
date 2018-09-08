@@ -25,7 +25,7 @@ CTxMemPoolEntry::CTxMemPoolEntry() : nFee(0), nTxSize(0), nModSize(0), nTime(0),
 }
 
 CTxMemPoolEntry::CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, int64_t _nTime, double _dPriority,
-                                 unsigned int _nHeight)
+                                 uint32_t _nHeight)
     : tx(_tx), nFee(_nFee), nTime(_nTime), dPriority(_dPriority), nHeight(_nHeight) {
   nTxSize = ::GetSerializeSize(tx);
 
@@ -34,7 +34,7 @@ CTxMemPoolEntry::CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, 
 
 CTxMemPoolEntry::CTxMemPoolEntry(const CTxMemPoolEntry& other) { *this = other; }
 
-double CTxMemPoolEntry::GetPriority(unsigned int currentHeight) const {
+double CTxMemPoolEntry::GetPriority(uint32_t currentHeight) const {
   CAmount nValueIn = tx.GetValueOut() + nFee;
   double deltaPriority = ((double)(currentHeight - nHeight) * nValueIn) / nModSize;
   double dResult = dPriority + deltaPriority;
@@ -250,14 +250,14 @@ class CMinerPolicyEstimator {
 
   void Write(CAutoFile& fileout) const {
     fileout << nBestSeenHeight;
-    fileout << history.size();
+    fileout << (uint64_t)history.size();
     for (const CBlockAverage& entry : history) { entry.Write(fileout); }
   }
 
   void Read(CAutoFile& filein, const CFeeRate& minRelayFee) {
     int nFileBestSeenHeight;
     filein >> nFileBestSeenHeight;
-    size_t numEntries;
+    uint64_t numEntries;
     filein >> numEntries;
     if (numEntries <= 0 || numEntries > 10000)
       throw runtime_error("Corrupt estimates file. Must have between 1 and 10k entries.");
@@ -306,12 +306,12 @@ void CTxMemPool::pruneSpent(const uint256& hashTx, CCoins& coins) {
   }
 }
 
-unsigned int CTxMemPool::GetTransactionsUpdated() const {
+uint32_t CTxMemPool::GetTransactionsUpdated() const {
   LOCK(cs);
   return nTransactionsUpdated;
 }
 
-void CTxMemPool::AddTransactionsUpdated(unsigned int n) {
+void CTxMemPool::AddTransactionsUpdated(uint32_t n) {
   LOCK(cs);
   nTransactionsUpdated += n;
 }
@@ -325,7 +325,7 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry)
     mapTx[hash] = entry;
     const CTransaction& tx = mapTx[hash].GetTx();
     if (!tx.IsZerocoinSpend()) {
-      for (unsigned int i = 0; i < tx.vin.size(); i++) mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
+      for (uint32_t i = 0; i < tx.vin.size(); i++) mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
     }
     nTransactionsUpdated++;
     totalTxSize += entry.GetTxSize();
@@ -344,7 +344,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
       // be sure to remove any children that are in the pool. This can
       // happen during chain re-orgs if origTx isn't re-accepted into
       // the mempool for any reason.
-      for (unsigned int i = 0; i < origTx.vout.size(); i++) {
+      for (uint32_t i = 0; i < origTx.vout.size(); i++) {
         auto it = mapNextTx.find(COutPoint(origTx.GetHash(), i));
         if (it == mapNextTx.end()) continue;
         txToRemove.push_back(it->second.ptx->GetHash());
@@ -356,7 +356,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
       if (!mapTx.count(hash)) continue;
       const CTransaction& tx = mapTx[hash].GetTx();
       if (fRecursive) {
-        for (unsigned int i = 0; i < tx.vout.size(); i++) {
+        for (uint32_t i = 0; i < tx.vout.size(); i++) {
           auto it = mapNextTx.find(COutPoint(hash, i));
           if (it == mapNextTx.end()) continue;
           txToRemove.push_back(it->second.ptx->GetHash());
@@ -372,7 +372,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
   }
 }
 
-void CTxMemPool::removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned int nMemPoolHeight) {
+void CTxMemPool::removeCoinbaseSpends(const CCoinsViewCache* pcoins, uint32_t nMemPoolHeight) {
   // Remove transactions spending a coinbase which are now immature
   LOCK(cs);
   list<CTransaction> transactionsToRemove;
@@ -412,7 +412,7 @@ void CTxMemPool::removeConflicts(const CTransaction& tx, std::list<CTransaction>
 /**
  * Called when a block is connected. Removes from mempool and updates the miner fee estimator.
  */
-void CTxMemPool::removeForBlock(const std::vector<CTransaction>& vtx, unsigned int nBlockHeight,
+void CTxMemPool::removeForBlock(const std::vector<CTransaction>& vtx, uint32_t nBlockHeight,
                                 std::list<CTransaction>& conflicts) {
   LOCK(cs);
   std::vector<CTxMemPoolEntry> entries;
@@ -440,8 +440,8 @@ void CTxMemPool::clear() {
 void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
   if (!fSanityCheck) return;
 
-  LogPrint(TessaLog::MEMPOOL, "Checking mempool with %u transactions and %u inputs\n", (unsigned int)mapTx.size(),
-           (unsigned int)mapNextTx.size());
+  LogPrint(TessaLog::MEMPOOL, "Checking mempool with %u transactions and %u inputs\n", (uint32_t)mapTx.size(),
+           (uint32_t)mapNextTx.size());
 
   uint64_t checkTotal = 0;
 
@@ -450,7 +450,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
   LOCK(cs);
   list<const CTxMemPoolEntry*> waitingOnDependants;
   for (std::map<uint256, CTxMemPoolEntry>::const_iterator it = mapTx.begin(); it != mapTx.end(); it++) {
-    unsigned int i = 0;
+    uint32_t i = 0;
     checkTotal += it->second.GetTxSize();
     const CTransaction& tx = it->second.GetTx();
     bool fDependsWait = false;
@@ -481,7 +481,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
       UpdateCoins(tx, state, mempoolDuplicate, undo, 1000000);
     }
   }
-  unsigned int stepsSinceLastRemove = 0;
+  uint32_t stepsSinceLastRemove = 0;
   while (!waitingOnDependants.empty()) {
     const CTxMemPoolEntry* entry = waitingOnDependants.front();
     waitingOnDependants.pop_front();

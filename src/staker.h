@@ -30,15 +30,15 @@ class CStaker {
   }
 
   // Only set, never used????
-  void setSeen(const std::pair<COutPoint, unsigned int>& v) { setStakeSeen.insert(v); }
+  void setSeen(const std::pair<COutPoint, uint32_t>& v) { setStakeSeen.insert(v); }
 
   bool FindStake(int64_t time, CBlockIndex* Tip, CBlock* pblock, CWallet* pwallet);
 
  private:
-  std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
+  std::set<std::pair<COutPoint, uint32_t> > setStakeSeen;
   int64_t nLastCoinStakeSearchTime;
   int64_t nLastCoinStakeSearchInterval;
-  // unsigned int nModifierInterval;
+  // uint32_t nModifierInterval;
   bool init;
 };
 

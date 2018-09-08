@@ -52,7 +52,7 @@ template <unsigned int BITS> class base_blob {
 
   const uint8_t* end() const { return &data[WIDTH]; }
 
-  unsigned int size() const { return sizeof(data); }
+  uint32_t size() const { return sizeof(data); }
 
   uint8_t get_byte(int i) { return data[i]; }
 
@@ -72,7 +72,7 @@ template <unsigned int BITS> class base_blob {
     return ((uint64_t)ptr[0]) | ((uint64_t)ptr[1]) << 8 | ((uint64_t)ptr[2]) << 16 | ((uint64_t)ptr[3]) << 24;
   }
 
-  unsigned int GetSerializeSize() const { return sizeof(data); }
+  uint32_t GetSerializeSize() const { return sizeof(data); }
 
   template <typename Stream> void Serialize(Stream& s) const { s.write((char*)data, sizeof(data)); }
 

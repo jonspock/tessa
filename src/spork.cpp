@@ -30,9 +30,8 @@ CSporkManager gSporkManager;
 
 // Tessa: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB() {
-  for (unsigned int i = 0; i < sporkList.size(); ++i) {
+  for (auto& sporkID : sporkList) {
     // Since not all spork IDs are in use, we have to exclude undefined IDs
-    SporkID sporkID = sporkList[i];
     std::string strSpork = GetSporkNameByID(sporkID);
     if (strSpork == "Unknown") continue;
 

@@ -76,28 +76,28 @@ public:
         return  mpz_sizeinbase(bn, 2);
     }
 
-    void setulong(unsigned long n)
+    void setulong(uint64_t n)
     {
         mpz_set_ui(bn, n);
     }
 
-    unsigned long getulong() const
+    uint64_t getulong() const
     {
         return mpz_get_ui(bn);
     }
 
-    unsigned int getuint() const
+    uint32_t getuint() const
     {
         return mpz_get_ui(bn);
     }
 
     int getint() const
     {
-        unsigned long n = getulong();
+        uint64_t n = getulong();
         if (mpz_cmp(bn, CBigNum(0).bn) >= 0) {
-            return (n > (unsigned long)std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : n);
+            return (n > (uint64_t)std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : n);
         } else {
-            return (n > (unsigned long)std::numeric_limits<int>::max() ? std::numeric_limits<int>::min() : -(int)n);
+            return (n > (uint64_t)std::numeric_limits<int>::max() ? std::numeric_limits<int>::min() : -(int)n);
         }
     }
 
@@ -193,7 +193,7 @@ public:
         return ToString(10);
     }
 
-    unsigned int GetSerializeSize() const
+    uint32_t GetSerializeSize() const
     {
         return ::GetSerializeSize(getvch());
     }
@@ -228,7 +228,7 @@ public:
      */
     CBigNum pow(const CBigNum& e) const {
         CBigNum ret;
-        long unsigned int ei = mpz_get_ui (e.bn);
+        uint64_t ei = mpz_get_ui (e.bn);
         mpz_pow_ui(ret.bn, bn, ei);
         return ret;
     }
@@ -330,13 +330,13 @@ public:
         return *this;
     }
 
-    CBigNum& operator<<=(unsigned int shift)
+    CBigNum& operator<<=(uint32_t shift)
     {
         mpz_mul_2exp(bn, bn, shift);
         return *this;
     }
 
-    CBigNum& operator>>=(unsigned int shift)
+    CBigNum& operator>>=(uint32_t shift)
     {
         mpz_div_2exp(bn, bn, shift);
         return *this;
@@ -378,7 +378,7 @@ public:
     friend inline const CBigNum operator/(const CBigNum& a, const CBigNum& b);
     friend inline const CBigNum operator%(const CBigNum& a, const CBigNum& b);
     friend inline const CBigNum operator*(const CBigNum& a, const CBigNum& b);
-    friend inline const CBigNum operator<<(const CBigNum& a, unsigned int shift);
+    friend inline const CBigNum operator<<(const CBigNum& a, uint32_t shift);
     friend inline const CBigNum operator-(const CBigNum& a);
     friend inline bool operator==(const CBigNum& a, const CBigNum& b);
     friend inline bool operator!=(const CBigNum& a, const CBigNum& b);
@@ -430,14 +430,14 @@ inline const CBigNum operator%(const CBigNum& a, const CBigNum& b)
     return r;
 }
 
-inline const CBigNum operator<<(const CBigNum& a, unsigned int shift)
+inline const CBigNum operator<<(const CBigNum& a, uint32_t shift)
 {
     CBigNum r;
     mpz_mul_2exp(r.bn, a.bn, shift);
     return r;
 }
 
-inline const CBigNum operator>>(const CBigNum& a, unsigned int shift)
+inline const CBigNum operator>>(const CBigNum& a, uint32_t shift)
 {
     CBigNum r = a;
     r >>= shift;

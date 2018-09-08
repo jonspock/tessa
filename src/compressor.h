@@ -38,7 +38,7 @@ class CScriptCompressor {
    * transactions, in which case this value becomes dependent on nVersion
    * and nHeight of the enclosing transaction.
    */
-  static const unsigned int nSpecialScripts = 6;
+  static const uint32_t nSpecialScripts = 6;
 
   CScript& script;
 
@@ -55,16 +55,16 @@ class CScriptCompressor {
   bool IsToPubKey(ecdsa::CPubKey& pubkey) const;
 
   bool Compress(std::vector<uint8_t>& out) const;
-  unsigned int GetSpecialSize(unsigned int nSize) const;
-  bool Decompress(unsigned int nSize, const std::vector<uint8_t>& out);
+  uint32_t GetSpecialSize(uint32_t nSize) const;
+  bool Decompress(uint32_t nSize, const std::vector<uint8_t>& out);
 
  public:
   CScriptCompressor(CScript& scriptIn) : script(scriptIn) {}
 
-  unsigned int GetSerializeSize() const {
+  uint32_t GetSerializeSize() const {
     std::vector<uint8_t> compr;
     if (Compress(compr)) return compr.size();
-    unsigned int nSize = script.size() + nSpecialScripts;
+    uint32_t nSize = script.size() + nSpecialScripts;
     return script.size() + VARINT(nSize).GetSerializeSize();
   }
 
@@ -74,13 +74,13 @@ class CScriptCompressor {
       s << CFlatData(compr);
       return;
     }
-    unsigned int nSize = script.size() + nSpecialScripts;
+    uint32_t nSize = script.size() + nSpecialScripts;
     s << VARINT(nSize);
     s << CFlatData(script);
   }
 
   template <typename Stream> void Unserialize(Stream& s) {
-    unsigned int nSize = 0;
+    uint32_t nSize = 0;
     s >> VARINT(nSize);
     if (nSize < nSpecialScripts) {
       std::vector<uint8_t> vch(GetSpecialSize(nSize), 0x00);

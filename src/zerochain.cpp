@@ -41,14 +41,12 @@ bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>&
     if (!tx.IsZerocoinMint()) continue;
 
     // uint256 txHash = tx.GetHash();
-    for (unsigned int i = 0; i < tx.vout.size(); i++) {
-      const CTxOut txOut = tx.vout[i];
+    for (const auto& txOut : tx.vout) {
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
-
       CValidationState state;
       libzerocoin::PublicCoin pubCoin;
       if (!TxOutToPublicCoin(txOut, pubCoin, state)) return false;
-
+      
       listPubcoins.emplace_back(pubCoin);
     }
   }
@@ -62,8 +60,7 @@ bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMin
     if (!tx.IsZerocoinMint()) continue;
 
     // uint256 txHash = tx.GetHash();
-    for (unsigned int i = 0; i < tx.vout.size(); i++) {
-      const CTxOut txOut = tx.vout[i];
+    for (const auto& txOut : tx.vout) {
       if (!txOut.scriptPubKey.IsZerocoinMint()) continue;
 
       CValidationState state;
@@ -207,9 +204,9 @@ std::string ReindexZerocoinDB() {
     if (!ReadBlockFromDisk(block, pindex)) { return _("Reindexing zerocoin failed"); }
 
     for (const CTransaction& tx : block.vtx) {
-      for (unsigned int i = 0; i < tx.vin.size(); i++) {
+      for (const auto& v : tx.vin) {
+        (void)v; // to silence unused variable warning
         if (tx.IsCoinBase()) break;
-
         if (tx.ContainsZerocoins()) {
           uint256 txid = tx.GetHash();
           // Record Serials

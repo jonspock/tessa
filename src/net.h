@@ -45,11 +45,11 @@ static const int PING_INTERVAL = 2 * 60;
 /** Time after which to disconnect, after waiting for a ping response (or inactivity). */
 static const int TIMEOUT_INTERVAL = 20 * 60;
 /** The maximum number of entries in an 'inv' protocol message */
-static const unsigned int MAX_INV_SZ = 50000;
+static const uint32_t MAX_INV_SZ = 50000;
 /** The maximum number of new addresses to accumulate before announcing. */
-static const unsigned int MAX_ADDR_TO_SEND = 100;
+static const uint32_t MAX_ADDR_TO_SEND = 100;
 /** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
-static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
+static const uint32_t MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
 /** -listen default */
 static const bool DEFAULT_LISTEN = true;
 /** -upnp default */
@@ -61,8 +61,8 @@ static const bool DEFAULT_UPNP = false;
 /** The maximum number of entries in mapAskFor */
 static const size_t MAPASKFOR_MAX_SZ = MAX_INV_SZ;
 
-unsigned int ReceiveFloodSize();
-unsigned int SendBufferSize();
+uint32_t ReceiveFloodSize();
+uint32_t SendBufferSize();
 
 void AddOneShot(std::string strDest);
 bool RecvLine(SOCKET hSocket, std::string& strLine);
@@ -75,7 +75,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = nullptr, bool obf
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = nullptr,
                            const char* strDest = nullptr, bool fOneShot = false);
 void MapPort(bool fUseUPnP);
-unsigned short GetListenPort();
+uint16_t GetListenPort();
 bool BindListenPort(const CService& bindAddr, std::string& strError, bool fWhitelisted = false);
 void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler);
 bool StopNode();
@@ -174,10 +174,10 @@ class CNetMessage {
 
   CDataStream hdrbuf;  // partially received header
   CMessageHeader hdr;  // complete header
-  unsigned int nHdrPos;
+  uint32_t nHdrPos;
 
   CDataStream vRecv;  // received message data
-  unsigned int nDataPos;
+  uint32_t nDataPos;
 
   int64_t nTime;  // time (in microseconds) of message receipt.
 
@@ -199,8 +199,8 @@ class CNetMessage {
     vRecv.SetVersion(nVersionIn);
   }
 
-  int readHeader(const char* pch, unsigned int nBytes);
-  int readData(const char* pch, unsigned int nBytes);
+  int readHeader(const char* pch, uint32_t nBytes);
+  int readData(const char* pch, uint32_t nBytes);
 };
 
 typedef enum BanReason { BanReasonUnknown = 0, BanReasonNodeMisbehaving = 1, BanReasonManuallyAdded = 2 } BanReason;
@@ -373,14 +373,14 @@ class CNode {
   }
 
   // requires LOCK(cs_vRecvMsg)
-  unsigned int GetTotalRecvSize() {
-    unsigned int total = 0;
+  uint32_t GetTotalRecvSize() {
+    uint32_t total = 0;
     for (const CNetMessage& msg : vRecvMsg) total += msg.vRecv.size() + 24;
     return total;
   }
 
   // requires LOCK(cs_vRecvMsg)
-  bool ReceiveMsgBytes(const char* pch, unsigned int nBytes);
+  bool ReceiveMsgBytes(const char* pch, uint32_t nBytes);
 
   // requires LOCK(cs_vRecvMsg)
   void SetRecvVersion(int nVersionIn) {
@@ -623,9 +623,9 @@ class CNode {
     vecRequestsFulfilled.push_back(strRequest);
   }
 
-  bool IsSubscribed(unsigned int nChannel);
-  void Subscribe(unsigned int nChannel, unsigned int nHops = 0);
-  void CancelSubscribe(unsigned int nChannel);
+  bool IsSubscribed(uint32_t nChannel);
+  void Subscribe(uint32_t nChannel, uint32_t nHops = 0);
+  void CancelSubscribe(uint32_t nChannel);
   void CloseSocketDisconnect();
   bool DisconnectOldProtocol(int nVersionRequired, const std::string& strLastCommand = "");
 

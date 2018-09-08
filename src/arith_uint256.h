@@ -37,8 +37,8 @@ template <unsigned int BITS> class base_uint {
   }
 
   base_uint(uint64_t b) {
-    pn[0] = (unsigned int)b;
-    pn[1] = (unsigned int)(b >> 32);
+    pn[0] = (uint32_t)b;
+    pn[1] = (uint32_t)(b >> 32);
     for (int i = 2; i < WIDTH; i++) pn[i] = 0;
   }
 
@@ -67,8 +67,8 @@ template <unsigned int BITS> class base_uint {
   double getdouble() const;
 
   base_uint& operator=(uint64_t b) {
-    pn[0] = (unsigned int)b;
-    pn[1] = (unsigned int)(b >> 32);
+    pn[0] = (uint32_t)b;
+    pn[1] = (uint32_t)(b >> 32);
     for (int i = 2; i < WIDTH; i++) pn[i] = 0;
     return *this;
   }
@@ -89,19 +89,19 @@ template <unsigned int BITS> class base_uint {
   }
 
   base_uint& operator^=(uint64_t b) {
-    pn[0] ^= (unsigned int)b;
-    pn[1] ^= (unsigned int)(b >> 32);
+    pn[0] ^= (uint32_t)b;
+    pn[1] ^= (uint32_t)(b >> 32);
     return *this;
   }
 
   base_uint& operator|=(uint64_t b) {
-    pn[0] |= (unsigned int)b;
-    pn[1] |= (unsigned int)(b >> 32);
+    pn[0] |= (uint32_t)b;
+    pn[1] |= (uint32_t)(b >> 32);
     return *this;
   }
 
-  base_uint& operator<<=(unsigned int shift);
-  base_uint& operator>>=(unsigned int shift);
+  base_uint& operator<<=(uint32_t shift);
+  base_uint& operator>>=(uint32_t shift);
 
   base_uint& operator+=(const base_uint& b) {
     uint64_t carry = 0;
@@ -203,13 +203,13 @@ template <unsigned int BITS> class base_uint {
 
   const uint8_t* end() const { return (uint8_t*)&pn[WIDTH]; }
 
-  unsigned int size() const { return sizeof(pn); }
+  uint32_t size() const { return sizeof(pn); }
 
   /**
    * Returns the position of the highest bit set plus one, or zero if the
    * value is zero.
    */
-  unsigned int bits() const;
+  uint32_t bits() const;
 
   uint64_t GetLow64() const {
     assert(WIDTH >= 2);

@@ -9,7 +9,7 @@
 #include "stakeinput.h"
 #include "staker.h"
 
-bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nCoinAge);
+bool GetCoinAge(const CTransaction& tx, const uint32_t nTxTime, uint64_t& nCoinAge);
 
 // Compute the hash modifier for proof-of-stake
 bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int& nStakeModifierHeight,
@@ -17,10 +17,10 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
 bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeModifier, bool& fGeneratedStakeModifier);
 
 bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t nStakeModifier,
-                const arith_uint256& bnTarget, unsigned int nTimeBlockFrom, unsigned int& nTimeTx,
+                const arith_uint256& bnTarget, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
                 uint256& hashProofOfStake);
 
-bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockFrom, unsigned int& nTimeTx,
+bool Stake(CStakeInput* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
            uint256& hashProofOfStake);
 
 // Check kernel hash target and coinstake signature
@@ -28,7 +28,7 @@ bool Stake(CStakeInput* stakeInput, unsigned int nBits, unsigned int nTimeBlockF
 bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, std::unique_ptr<CStakeInput>& stake);
 
 // Get stake modifier checksum
-unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex);
+uint32_t GetStakeModifierChecksum(const CBlockIndex* pindex);
 
 // Check stake modifier hard checkpoints
-bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum);
+bool CheckStakeModifierCheckpoints(int nHeight, uint32_t nStakeModifierChecksum);

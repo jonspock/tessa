@@ -20,7 +20,7 @@
 
 struct CDiskBlockPos {
   int nFile;
-  unsigned int nPos;
+  uint32_t nPos;
 
   ADD_SERIALIZE_METHODS
 
@@ -31,7 +31,7 @@ struct CDiskBlockPos {
 
   CDiskBlockPos() { SetNull(); }
 
-  CDiskBlockPos(int nFileIn, unsigned int nPosIn) {
+  CDiskBlockPos(int nFileIn, uint32_t nPosIn) {
     nFile = nFileIn;
     nPos = nPosIn;
   }
@@ -116,27 +116,27 @@ class CBlockIndex {
   int nFile;
 
   //! Byte offset within blk?????.dat where this block's data is stored
-  unsigned int nDataPos;
+  uint32_t nDataPos;
 
   //! Byte offset within rev?????.dat where this block's undo data is stored
-  unsigned int nUndoPos;
+  uint32_t nUndoPos;
 
   //! (memory only) Total amount of work (expected number of hashes) in the chain up to and including this block
   arith_uint256 nChainWork;
 
   //! Number of transactions in this block.
   //! Note: in a potential headers-first mode, this number cannot be relied upon
-  unsigned int nTx;
+  uint32_t nTx;
 
   //! (memory only) Number of transactions in the chain up to and including this block.
   //! This value will be non-zero only if and only if transactions for this block and all its parents are available.
   //! Change to 64-bit type when necessary; won't happen before 2030
-  unsigned int nChainTx;
+  uint32_t nChainTx;
 
   //! Verification status of this block. See enum BlockStatus
-  unsigned int nStatus;
+  uint32_t nStatus;
 
-  unsigned int nFlags;  // ppcoin: block index flags
+  uint32_t nFlags;  // ppcoin: block index flags
   enum {
     BLOCK_PROOF_OF_STAKE = (1 << 0),  // is proof-of-stake block
     BLOCK_STAKE_ENTROPY = (1 << 1),   // entropy bit for stake modifier
@@ -146,9 +146,9 @@ class CBlockIndex {
   // proof-of-stake specific fields
   arith_uint256 GetBlockTrust() const;
   uint64_t nStakeModifier;              // hash modifier for proof-of-stake
-  unsigned int nStakeModifierChecksum;  // checksum of index; in-memeory only
+  uint32_t nStakeModifierChecksum;  // checksum of index; in-memeory only
   COutPoint prevoutStake;
-  unsigned int nStakeTime;
+  uint32_t nStakeTime;
   uint256 hashProofOfStake;
   int64_t nMint;
   int64_t nMoneySupply;
@@ -156,9 +156,9 @@ class CBlockIndex {
   //! block header
   int nHeaderVersion;
   uint256 hashMerkleRoot;
-  unsigned int nTime;
-  unsigned int nBits;
-  unsigned int nNonce;
+  uint32_t nTime;
+  uint32_t nBits;
+  uint32_t nNonce;
   uint256 nAccumulatorCheckpoint;
 
   //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
@@ -299,8 +299,8 @@ class CBlockIndex {
 
   void SetProofOfStake() { nFlags |= BLOCK_PROOF_OF_STAKE; }
 
-  unsigned int GetStakeEntropyBit() const {
-    unsigned int nEntropyBit = ((GetBlockHash().GetCheapHash()) & 1);
+  uint32_t GetStakeEntropyBit() const {
+    uint32_t nEntropyBit = ((GetBlockHash().GetCheapHash()) & 1);
     if (GetBoolArg("-printstakemodifier", false))
       LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight,
                 GetBlockHash().ToString().c_str(), nEntropyBit);
@@ -308,7 +308,7 @@ class CBlockIndex {
     return nEntropyBit;
   }
 
-  bool SetStakeEntropyBit(unsigned int nEntropyBit) {
+  bool SetStakeEntropyBit(uint32_t nEntropyBit) {
     if (nEntropyBit > 1) return false;
     nFlags |= (nEntropyBit ? BLOCK_STAKE_ENTROPY : 0);
     return true;
@@ -326,7 +326,7 @@ class CBlockIndex {
    * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart
    * and going backwards.
    */
-  static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired);
+  static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, uint32_t nRequired);
 
   std::string ToString() const {
     return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s)", pprev, nHeight,
@@ -379,7 +379,7 @@ class CDiskBlockIndex : public CBlockIndex {
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
     int nType = s.GetType();
-    unsigned int nVersion = s.GetVersion();
+    uint32_t nVersion = s.GetVersion();
     if (!(nType & SER_GETHASH)) READWRITE(VARINT(nVersion));
 
     READWRITE(VARINT(nHeight));

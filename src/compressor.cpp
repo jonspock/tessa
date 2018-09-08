@@ -72,13 +72,13 @@ bool CScriptCompressor::Compress(std::vector<uint8_t>& out) const {
   return false;
 }
 
-unsigned int CScriptCompressor::GetSpecialSize(unsigned int nSize) const {
+uint32_t CScriptCompressor::GetSpecialSize(uint32_t nSize) const {
   if (nSize == 0 || nSize == 1) return 20;
   if (nSize == 2 || nSize == 3 || nSize == 4 || nSize == 5) return 32;
   return 0;
 }
 
-bool CScriptCompressor::Decompress(unsigned int nSize, const std::vector<uint8_t>& in) {
+bool CScriptCompressor::Decompress(uint32_t nSize, const std::vector<uint8_t>& in) {
   switch (nSize) {
     case 0x00:
       script.resize(25);

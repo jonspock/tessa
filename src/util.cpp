@@ -297,7 +297,7 @@ void FileCommit(FILE* fileout) {
 #endif
 }
 
-bool TruncateFile(FILE* file, unsigned int length) {
+bool TruncateFile(FILE* file, uint32_t length) {
 #if defined(WIN32)
   return _chsize(_fileno(file), length) == 0;
 #else
@@ -331,7 +331,7 @@ int RaiseFileDescriptorLimit(int nMinFD) {
  * this function tries to make a particular range of a file allocated (corresponding to disk space)
  * it is advisory, and the range specified in the arguments will never contain live data
  */
-void AllocateFileRange(FILE* file, unsigned int offset, unsigned int length) {
+void AllocateFileRange(FILE* file, uint32_t offset, uint32_t length) {
 #if defined(WIN32)
   // Windows-specific version
   HANDLE hFile = (HANDLE)_get_osfhandle(_fileno(file));
@@ -364,7 +364,7 @@ void AllocateFileRange(FILE* file, unsigned int offset, unsigned int length) {
   static const char buf[65536] = {};
   fseek(file, offset, SEEK_SET);
   while (length > 0) {
-    unsigned int now = 65536;
+    uint32_t now = 65536;
     if (length < now) now = length;
     fwrite(buf, 1, now, file);  // allowed to fail; this function is advisory anyway
     length -= now;
@@ -379,7 +379,7 @@ void ShrinkDebugFile() {
   if (file && fs::file_size(pathLog) > 10 * 1000000) {
     // Restart the file with some of the end
     std::vector<char> vch(200000, 0);
-    fseek(file, -((long)vch.size()), SEEK_END);
+    fseek(file, -((int64_t)vch.size()), SEEK_END);
     int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
     fclose(file);
 
