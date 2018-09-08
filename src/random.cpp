@@ -58,12 +58,9 @@ std::vector<uint8_t> FastRandomContext::randbytes(size_t len) {
   return ret;
 }
 
-FastRandomContext::FastRandomContext(const uint256 &seed) : requires_seed(false), bytebuf_size(0), bitbuf_size(0) {
-  rng.SetKey(seed.begin(), 32);
-}
+FastRandomContext::FastRandomContext(const uint256 &seed) : requires_seed(false) { rng.SetKey(seed.begin(), 32); }
 
-FastRandomContext::FastRandomContext(bool fDeterministic)
-    : requires_seed(!fDeterministic), bytebuf_size(0), bitbuf_size(0) {
+FastRandomContext::FastRandomContext(bool fDeterministic) : requires_seed(!fDeterministic) {
   if (!fDeterministic) { return; }
   uint256 seed;
   rng.SetKey(seed.begin(), 32);

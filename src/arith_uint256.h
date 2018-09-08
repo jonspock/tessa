@@ -220,7 +220,7 @@ template <unsigned int BITS> class base_uint {
 /** 256-bit unsigned big integer. */
 class arith_uint256 : public base_uint<256> {
  public:
-  arith_uint256() {}
+  arith_uint256() = default;
   arith_uint256(const base_uint<256>& b) : base_uint<256>(b) {}
   arith_uint256(uint64_t b) : base_uint<256>(b) {}
   explicit arith_uint256(const std::string& str) : base_uint<256>(str) {}
@@ -257,7 +257,7 @@ class arith_uint256 : public base_uint<256> {
 /** 512-bit unsigned big integer. */
 class arith_uint512 : public base_uint<512> {
  public:
-  arith_uint512() {}
+  arith_uint512() = default;
   arith_uint512(const base_uint<512>& b) : base_uint<512>(b) {}
   arith_uint512(uint64_t b) : base_uint<512>(b) {}
   explicit arith_uint512(const std::string& str) : base_uint<512>(str) {}

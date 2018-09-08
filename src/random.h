@@ -29,10 +29,10 @@ private:
     ChaCha20 rng;
 
     uint8_t bytebuf[64];
-    int bytebuf_size;
+    int bytebuf_size=0;
 
     uint64_t bitbuf;
-    int bitbuf_size;
+    int bitbuf_size=0;
 
     void RandomSeed();
 
