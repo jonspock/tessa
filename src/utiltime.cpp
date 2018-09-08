@@ -14,8 +14,9 @@
 
 #include <chrono>
 #include <thread>
+#include <iomanip> // for put_time
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace std;
 
@@ -32,19 +33,17 @@ int64_t GetTime() {
 void SetMockTime(int64_t nMockTimeIn) { nMockTime = nMockTimeIn; }
 
 int64_t GetTimeMillis() {
-  int64_t now = (boost::posix_time::microsec_clock::universal_time() -
-                 boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1)))
-                    .total_milliseconds();
-  assert(now > 0);
-  return now;
+  std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+  auto duration = now.time_since_epoch();
+  auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+  return millis;
 }
 
 int64_t GetTimeMicros() {
-  int64_t now = (boost::posix_time::microsec_clock::universal_time() -
-                 boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1)))
-                    .total_microseconds();
-  assert(now > 0);
-  return now;
+  std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+  auto duration = now.time_since_epoch();
+  auto micros = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+  return micros;
 }
 
 int64_t GetSystemTimeInSeconds() { return GetTimeMicros() / 1000000; }
@@ -59,12 +58,14 @@ int64_t GetLogTimeMicros() {
 void MilliSleep(int64_t n) { std::this_thread::sleep_for(std::chrono::milliseconds(n)); }
 
 std::string DateTimeStrFormat(const char *pszFormat, int64_t nTime) {
+  std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(nTime);
+  std::time_t ttp = std::chrono::system_clock::to_time_t(tp);
   static std::locale classic(std::locale::classic());
   // std::locale takes ownership of the pointer
-  std::locale loc(classic, new boost::posix_time::time_facet(pszFormat));
+  // std::locale loc(classic, new boost::posix_time::time_facet(pszFormat));
   std::stringstream ss;
-  ss.imbue(loc);
-  ss << boost::posix_time::from_time_t(nTime);
+  ss.imbue(classic); // was loc. 
+  ss << std::put_time(std::localtime(&ttp), pszFormat);
   return ss.str();
 }
 
