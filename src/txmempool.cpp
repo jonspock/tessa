@@ -46,7 +46,6 @@ double CTxMemPoolEntry::GetPriority(uint32_t currentHeight) const {
  */
 class CBlockAverage {
  private:
-  boost::circular_buffer<CFeeRate> feeSamples;
   boost::circular_buffer<double> prioritySamples;
 
   template <typename T> std::vector<T> buf2vec(boost::circular_buffer<T> buf) const {
@@ -55,17 +54,10 @@ class CBlockAverage {
   }
 
  public:
-  CBlockAverage() : feeSamples(100), prioritySamples(100) {}
-
-  void RecordFee(const CFeeRate& feeRate) { feeSamples.push_back(feeRate); }
+  CBlockAverage() : prioritySamples(100) {}
 
   void RecordPriority(double priority) { prioritySamples.push_back(priority); }
 
-  size_t FeeSamples() const { return feeSamples.size(); }
-  size_t GetFeeSamples(std::vector<CFeeRate>& insertInto) const {
-    for (const CFeeRate& f : feeSamples) insertInto.push_back(f);
-    return feeSamples.size();
-  }
   size_t PrioritySamples() const { return prioritySamples.size(); }
   size_t GetPrioritySamples(std::vector<double>& insertInto) const {
     for (double d : prioritySamples) insertInto.push_back(d);
@@ -76,17 +68,6 @@ class CBlockAverage {
    * Used as belt-and-suspenders check when reading to detect
    * file corruption
    */
-  static bool AreSane(const CFeeRate fee, const CFeeRate& minRelayFee) {
-    if (fee < CFeeRate(0)) return false;
-    if (fee.GetFeePerK() > minRelayFee.GetFeePerK() * 10000) return false;
-    return true;
-  }
-  static bool AreSane(const std::vector<CFeeRate>& vecFee, const CFeeRate& minRelayFee) {
-    for (CFeeRate fee : vecFee) {
-      if (!AreSane(fee, minRelayFee)) return false;
-    }
-    return true;
-  }
   static bool AreSane(const double priority) { return priority >= 0; }
   static bool AreSane(const std::vector<double> vecPriority) {
     for (double priority : vecPriority) {
@@ -96,28 +77,19 @@ class CBlockAverage {
   }
 
   void Write(CAutoFile& fileout) const {
-    std::vector<CFeeRate> vecFee = buf2vec(feeSamples);
-    fileout << vecFee;
     std::vector<double> vecPriority = buf2vec(prioritySamples);
     fileout << vecPriority;
   }
 
-  void Read(CAutoFile& filein, const CFeeRate& minRelayFee) {
-    std::vector<CFeeRate> vecFee;
-    filein >> vecFee;
-    if (AreSane(vecFee, minRelayFee))
-      feeSamples.insert(feeSamples.end(), vecFee.begin(), vecFee.end());
-    else
-      throw runtime_error("Corrupt fee value in estimates file.");
+  void Read(CAutoFile& filein) {
     std::vector<double> vecPriority;
     filein >> vecPriority;
     if (AreSane(vecPriority))
       prioritySamples.insert(prioritySamples.end(), vecPriority.begin(), vecPriority.end());
     else
       throw runtime_error("Corrupt priority value in estimates file.");
-    if (feeSamples.size() + prioritySamples.size() > 0)
-      LogPrint(TessaLog::ESTIMATEFEE, "Read %d fee samples and %d priority samples\n", feeSamples.size(),
-               prioritySamples.size());
+    if (prioritySamples.size() > 0)
+      LogPrint(TessaLog::ESTIMATEFEE, "Read %d priority samples\n", prioritySamples.size());
   }
 };
 
@@ -266,7 +238,7 @@ class CMinerPolicyEstimator {
 
     for (size_t i = 0; i < numEntries; i++) {
       CBlockAverage entry;
-      entry.Read(filein, minRelayFee);
+      entry.Read(filein);
       fileHistory.push_back(entry);
     }
 
