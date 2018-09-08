@@ -14,6 +14,7 @@
 #include "amount.h"
 #include "chain.h"
 #include "coins.h"
+#include "fs.h"
 #include "protocol.h" // For CMessageHeader::MessageStartChars
 #include "script/script_error.h"
 #include "sync.h"
@@ -30,7 +31,6 @@
 
 #include <atomic>
 
-#include <boost/filesystem/path.hpp>
 #include <unordered_map>
 
 class CBlockIndex;
@@ -277,7 +277,7 @@ FILE *OpenBlockFile(const CDiskBlockPos &pos, bool fReadOnly = false);
 /** Open an undo file (rev?????.dat) */
 FILE *OpenUndoFile(const CDiskBlockPos &pos, bool fReadOnly = false);
 /** Translation to a filesystem path */
-boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos &pos,
+fs::path GetBlockPosFilename(const CDiskBlockPos &pos,
                                             const char *prefix);
 /** Import blocks from an external file */
 bool LoadExternalBlockFile(const Config &config, FILE *fileIn,
