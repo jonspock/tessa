@@ -14,13 +14,13 @@
 #include "util.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
+#include "utilsplitstring.h"
 #include "wallet/wallet.h"
 
 #include <cstdint>
 #include <fstream>
 #include <secp256k1.h>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <univalue.h>
@@ -238,7 +238,8 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
     if (line.empty() || line[0] == '#') continue;
 
     std::vector<std::string> vstr;
-    boost::split(vstr, line, boost::is_any_of(" "));
+    Split(vstr, line, " ");
+    //boost::split(vstr, line, boost::is_any_of(" "));
     if (vstr.size() < 2) continue;
     CBitcoinSecret vchSecret;
     if (!vchSecret.SetString(vstr[0])) continue;
@@ -254,10 +255,10 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
     std::string strLabel;
     bool fLabel = true;
     for (unsigned int nStr = 2; nStr < vstr.size(); nStr++) {
-      if (boost::algorithm::starts_with(vstr[nStr], "#")) break;
+      if (vstr[nStr].substr(0,1) == "#") break;
       if (vstr[nStr] == "change=1") fLabel = false;
       if (vstr[nStr] == "reserve=1") fLabel = false;
-      if (boost::algorithm::starts_with(vstr[nStr], "label=")) {
+      if (vstr[nStr].substr(0,6) == "label=") {
         strLabel = DecodeDumpString(vstr[nStr].substr(6));
         fLabel = true;
       }

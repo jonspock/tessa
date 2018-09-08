@@ -21,11 +21,11 @@
 #include "wallet/walletdb.h"
 
 #include <cstdint>
+#include <thread>
 
 #include "libzerocoin/PrivateCoin.h"
 #include "primitives/deterministicmint.h"
 #include "spork.h"
-#include <boost/thread/thread.hpp>
 
 #include <univalue.h>
 
@@ -34,6 +34,8 @@ using namespace ecdsa;
 
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
+static std::atomic<bool> search_interrupted(false);
+
 
 std::string HelpRequiringPassphrase() {
   return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call."
@@ -3116,7 +3118,7 @@ void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
     uint256 seedMaster = zwallet->GetMasterSeed();
     uint256 hashSeed = Hash(seedMaster.begin(), seedMaster.end());
     for (int i = nCountStart; i < nCountEnd; i++) {
-      boost::this_thread::interruption_point();
+      interruption_point(search_interrupted);
       CDataStream ss(SER_GETHASH);
       ss << seedMaster << i;
       uint512 zerocoinSeed = Hash512(ss.begin(), ss.end());
@@ -3131,6 +3133,10 @@ void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
   } catch (std::exception& e) { LogPrintf("SearchThread() exception"); } catch (...) {
     LogPrintf("SearchThread() exception");
   }
+}
+void InterruptSearch()
+{
+  search_interrupted = true;
 }
 
 UniValue searchdzkp(const UniValue& params, bool fHelp) {
@@ -3158,24 +3164,18 @@ UniValue searchdzkp(const UniValue& params, bool fHelp) {
   int nRange = params[1].get_int();
   if (nRange < 1) throw JSONRPCError(RPC_INVALID_PARAMETER, "Range has to be at least 1");
 
-  int nThreads = params[2].get_int();
+  ////  int nThreads = params[2].get_int();
 
+
+  int nStart = nCount;
+  int nEnd = nStart + nRange;
   CZeroWallet* zwallet = pwalletMain->zwalletMain;
 
-  boost::thread_group* dzkpThreads = new boost::thread_group();
-  int nRangePerThread = nRange / nThreads;
-
-  int nPrevThreadEnd = nCount - 1;
-  for (int i = 0; i < nThreads; i++) {
-    int nStart = nPrevThreadEnd + 1;
-    ;
-    int nEnd = nStart + nRangePerThread;
-    nPrevThreadEnd = nEnd;
-    dzkpThreads->create_thread(boost::bind(&SearchThread, zwallet, nStart, nEnd));
-  }
-
-  dzkpThreads->join_all();
-
+  // Don't use multiple threads for now HACK TBD!!!
+  auto bindSearch = std::bind(SearchThread, zwallet, nStart, nEnd);
+  static std::thread search_thread;
+  search_thread = std::thread(&TraceThread<decltype(bindSearch)>, "search", std::move(bindSearch));
+  
   zwallet->RemoveMintsFromPool(pwalletMain->zkpTracker->GetSerialHashes());
   zwallet->SyncWithChain(false);
 

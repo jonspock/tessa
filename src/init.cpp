@@ -192,6 +192,7 @@ void Interrupt(CScheduler& scheduler) {
   InterruptNetBase();
   InterruptNode();
   InterruptMiner();
+  InterruptSearch();
 #ifdef ENABLE_WALLET
   if (pwalletMain) {
     pwalletMain->Interrupt();
