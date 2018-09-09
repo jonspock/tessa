@@ -5,6 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "mpark/variant.hpp"
 #include "script/standard.h"
 #include "ecdsa/pubkey.h"
 #include "hash.h"
@@ -241,7 +242,7 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
 }
 
 namespace {
-class CScriptVisitor : public boost::static_visitor<bool> {
+class CScriptVisitor : public mpark::variant<bool> {
  private:
   CScript* script;
 
@@ -270,7 +271,7 @@ class CScriptVisitor : public boost::static_visitor<bool> {
 CScript GetScriptForDestination(const CTxDestination& dest) {
   CScript script;
 
-  boost::apply_visitor(CScriptVisitor(&script), dest);
+  mpark::visit(CScriptVisitor(&script), dest);
   return script;
 }
 

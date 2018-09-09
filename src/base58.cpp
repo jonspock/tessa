@@ -10,8 +10,7 @@
 #include "hash.h"
 #include "support/cleanse.h"
 #include "uint256.h"
-#include <boost/variant/apply_visitor.hpp>
-#include <boost/variant/static_visitor.hpp>
+#include "mpark/variant.hpp"
 #include <cassert>
 #include <cstdint>
 #include <iomanip>
@@ -187,7 +186,7 @@ int CBase58Data::CompareTo(const CBase58Data& b58) const {
 }
 
 namespace {
-class CBitcoinAddressVisitor : public boost::static_visitor<bool> {
+  class CBitcoinAddressVisitor : public mpark::variant<bool> {
  private:
   CBitcoinAddress* addr;
 
@@ -212,7 +211,7 @@ bool CBitcoinAddress::Set(const CScriptID& id) {
 }
 
 bool CBitcoinAddress::Set(const CTxDestination& dest) {
-  return boost::apply_visitor(CBitcoinAddressVisitor(this), dest);
+  return mpark::visit(CBitcoinAddressVisitor(this), dest);
 }
 
 bool CBitcoinAddress::IsValid() const { return IsValid(Params()); }

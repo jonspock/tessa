@@ -282,7 +282,7 @@ UniValue validateaddress(const UniValue& params, bool fHelp) {
     ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
     if (mine != ISMINE_NO) {
       ret.push_back(Pair("iswatchonly", (mine & ISMINE_WATCH_ONLY) ? true : false));
-      UniValue detail = boost::apply_visitor(DescribeAddressVisitor(mine), dest);
+      UniValue detail = mpark::visit(DescribeAddressVisitor(mine), dest);
       ret.pushKVs(detail);
     }
     if (pwalletMain && pwalletMain->mapAddressBook.count(dest))

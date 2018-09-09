@@ -1487,19 +1487,24 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
           bool combineChange = false;
 
           // coin control: send change to custom address
-          if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange)) {
-            scriptChange = GetScriptForDestination(coinControl->destChange);
+          if (coinControl) {
+            try {
+              mpark::get<CNoDestination>(coinControl->destChange);
+              scriptChange = GetScriptForDestination(coinControl->destChange);
 
-            auto it = txNew.vout.begin();
-            while (it != txNew.vout.end()) {
-              if (scriptChange == it->scriptPubKey) {
-                it->nValue += nChange;
-                nChange = 0;
-                reservekey.ReturnKey();
-                combineChange = true;
-                break;
+              auto it = txNew.vout.begin();
+              while (it != txNew.vout.end()) {
+                if (scriptChange == it->scriptPubKey) {
+                  it->nValue += nChange;
+                  nChange = 0;
+                  reservekey.ReturnKey();
+                  combineChange = true;
+                  break;
+                }
+                ++it;
               }
-              ++it;
+            } catch (mpark::bad_variant_access&) {
+              LogPrintf("bad variant access");
             }
           }
 
@@ -2220,7 +2225,7 @@ void CWallet::ListLockedCoins(std::vector<COutPoint>& vOutpts) {
 
 /** @} */  // end of Actions
 
-class CAffectedKeysVisitor : public boost::static_visitor<void> {
+class CAffectedKeysVisitor { //: public mpark::variant<void> {
  private:
   const CKeyStore& keystore;
   std::vector<CKeyID>& vKeys;
@@ -2234,7 +2239,7 @@ class CAffectedKeysVisitor : public boost::static_visitor<void> {
     std::vector<CTxDestination> vDest;
     int nRequired;
     if (ExtractDestinations(script, type, vDest, nRequired)) {
-      for (const CTxDestination& dest : vDest) boost::apply_visitor(*this, dest);
+      for (const CTxDestination& dest : vDest) mpark::visit(*this, dest);
     }
   }
 
@@ -2337,8 +2342,11 @@ unsigned int CWallet::ComputeTimeSmart(const CWalletTx& wtx) const {
 }
 
 bool CWallet::AddDestData(const CTxDestination& dest, const std::string& key, const std::string& value) {
-  if (boost::get<CNoDestination>(&dest)) return false;
-
+  try {
+    mpark::get<CNoDestination>(dest);
+  } catch (mpark::bad_variant_access&) {
+    return false;
+  }
   mapAddressBook[dest].destdata.insert(std::make_pair(key, value));
   if (!fFileBacked) return true;
   return gWalletDB.WriteDestData(CBitcoinAddress(dest).ToString(), key, value);

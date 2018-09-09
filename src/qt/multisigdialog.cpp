@@ -421,7 +421,7 @@ bool MultisigDialog::createMultisigTransaction(vector<CTxIn> vUserIn, vector<CTx
     CTxDestination address;
     if (!ExtractDestination(prevPubKey, address)) { throw runtime_error("Could not find address for destination."); }
 
-    CScriptID hash = boost::get<CScriptID>(address);
+    CScriptID hash = mpark::get<CScriptID>(address);
     CScript redeemScript;
 
     if (!pwalletMain->GetCScript(hash, redeemScript)) { throw runtime_error("could not redeem"); }
@@ -586,7 +586,7 @@ bool MultisigDialog::signMultisigTx(CMutableTransaction& tx, string& errorOut, Q
         }
 
         // get redeem script related to destination
-        CScriptID hash = boost::get<CScriptID>(address);
+        CScriptID hash = mpark::get<CScriptID>(address);
         CScript redeemScript;
 
         if (!pwalletMain->GetCScript(hash, redeemScript)) { errorOut = "could not redeem"; }

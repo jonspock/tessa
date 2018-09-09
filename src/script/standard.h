@@ -9,7 +9,7 @@
 
 #include "script/interpreter.h"
 #include "uint256.h"
-#include <boost/variant.hpp>
+#include <mpark/variant.hpp>
 #include <cstdint>
 
 namespace ecdsa {
@@ -77,7 +77,7 @@ class CNoDestination {
  *  * CScriptID: TX_SCRIPTHASH destination
  *  A CTxDestination is the internal data type encoded in a CBitcoinAddress
  */
-typedef boost::variant<CNoDestination, ecdsa::CKeyID, CScriptID> CTxDestination;
+typedef mpark::variant<CNoDestination, ecdsa::CKeyID, CScriptID> CTxDestination;
 
 const char* GetTxnOutputType(txnouttype t);
 

@@ -46,7 +46,7 @@ CScript ParseScript(std::string s) {
 
   for (const auto& w : words) {
     if (w.empty()) {
-      // Empty string, ignore. (boost::split given '' will return one word)
+      // Empty string, ignore. (Split given '' will return one word)
     } else if (std::all_of(w.begin(), w.end(), ::IsDigit) ||
                (w.front() == '-' && w.size() > 1 && std::all_of(w.begin() + 1, w.end(), ::IsDigit))) {
       // Number

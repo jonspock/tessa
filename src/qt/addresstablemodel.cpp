@@ -245,15 +245,17 @@ bool AddressTableModel::setData(const QModelIndex& index, const QVariant& value,
     } else if (index.column() == Address) {
       CTxDestination newAddress = CBitcoinAddress(value.toString().toStdString()).Get();
       // Refuse to set invalid address, set error status and return false
-      if (boost::get<CNoDestination>(&newAddress)) {
+      try {
+        CNoDestination c = mpark::get<CNoDestination>(newAddress);
+      } catch (mpark::bad_variant_access&) {
         editStatus = INVALID_ADDRESS;
         return false;
       }
       // Do nothing, if old address == new address
-      else if (newAddress == curAddress) {
+      if (newAddress == curAddress) {
         editStatus = NO_CHANGES;
         return false;
-      }
+      } 
       // Check for duplicate addresses to prevent accidental deletion of addresses, if you try
       // to paste an existing address over another address (with a different label)
       else if (wallet->mapAddressBook.count(newAddress)) {

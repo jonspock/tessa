@@ -22,7 +22,7 @@
 
 #include "wallet/wallet.h"  // for CWallet::minTxFee
 
-#include <boost/thread.hpp>
+#include <thread>
 
 #include <QDataWidgetMapper>
 #include <QDir>
@@ -32,7 +32,11 @@
 #include <QTimer>
 
 OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
-  : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::OptionsDialog), model(0), mapper(0), fProxyIpValid(true) {
+    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+      ui(new Ui::OptionsDialog),
+      model(0),
+      mapper(0),
+      fProxyIpValid(true) {
   ui->setupUi(this);
   GUIUtil::restoreWindowGeometry("nOptionsDialogWindow", this->size(), this);
 
