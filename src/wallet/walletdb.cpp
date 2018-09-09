@@ -605,8 +605,9 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
       }
     }
     if (!strErr.empty()) LogPrintf("%s\n", strErr);
-    cursor_close(pcursor);
   }
+  cursor_close(pcursor);
+  
 
   if (fNoncriticalErrors && result == DB_LOAD_OK) result = DB_NONCRITICAL_ERROR;
 
