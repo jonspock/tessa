@@ -671,7 +671,7 @@ std::string HelpMessage(HelpMessageMode mode) {
 std::string LicenseInfo() {
   return FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Tessa Core Developers"), COPYRIGHT_YEAR)) +
          "\n" + "\n" + FormatParagraph(_("This is **EXPERIMENTAL** software.")) + "\n" + "\n" +
-         FormatParagraph(_("Distributed under the MIT, Apache software and LGPL licenses, see the accompanying files " 
+         FormatParagraph(_("Distributed under the MIT, Apache software, Boost Software and LGPL licenses, see the accompanying files " 
                            "Copying, LGPL Version 2.1, and APACHE_LICENSE")) +
          "\n" + "\n" + 
          "\n";
