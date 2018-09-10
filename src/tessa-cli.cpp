@@ -14,6 +14,7 @@
 #include "utilstrencodings.h"
 
 #include "fs.h"
+#include "fs_utils.h"
 
 #include <event2/buffer.h>
 #include <event2/event.h>

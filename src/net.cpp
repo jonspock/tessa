@@ -17,6 +17,7 @@
 #include "chainparams.h"
 #include "clientversion.h"
 #include "fs.h"
+#include "fs_utils.h"
 #include "main.h"
 #include "miner.h"
 #include "primitives/transaction.h"
@@ -125,6 +126,33 @@ std::thread open_added_connections_thread;
 std::thread open_connections_thread;
 std::thread message_handler_thread;
 std::thread staking_handler_thread;
+
+
+// 2 Classes here just used in this file
+
+/** Access to the (IP) address database (peers.dat) */
+class CAddrDB {
+ private:
+  fs::path pathAddr;
+
+ public:
+  CAddrDB();
+  bool Write(const CAddrMan& addr);
+  bool Read(CAddrMan& addr);
+};
+
+/** Access to the banlist database (banlist.dat) */
+class CBanDB {
+ private:
+  fs::path pathBanlist;
+
+ public:
+  CBanDB();
+  bool Write(const banmap_t& banSet);
+  bool Read(banmap_t& banSet);
+};
+
+
 
 static void InterruptibleSleep(uint64_t n)
 {

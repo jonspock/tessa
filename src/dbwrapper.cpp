@@ -6,6 +6,8 @@
 
 #include "dbwrapper.h"
 #include "util.h"
+#include "fs.h"
+#include "fs_utils.h"
 #include <cstdint>
 
 #ifndef WIN32

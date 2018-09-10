@@ -15,6 +15,7 @@
 #include "rpc/client.h"
 #include "rpc/server.h"
 #include "ui_rpcconsole.h"
+#include "fs_utils.h"
 #include "util.h"
 
 #include "wallet/wallet.h"

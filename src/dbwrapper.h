@@ -7,7 +7,7 @@
 #pragma once
 
 #include "clientversion.h"
-#include "fs.h"
+#include "fs_utils.h"
 #include "serialize.h"
 #include "streams.h"
 #include "sync.h"

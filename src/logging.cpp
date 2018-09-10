@@ -10,6 +10,7 @@
 #include "util.h"
 #include "utiltime.h"
 #include "fs.h"
+#include "fs_utils.h"
 
 bool fLogIPs = DEFAULT_LOGIPS;
 

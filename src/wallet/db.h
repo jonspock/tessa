@@ -9,7 +9,7 @@
 #define KEY_RES 100
 
 #include "clientversion.h"
-#include "fs.h"
+#include "fs_utils.h"
 #include "serialize.h"
 #include "streams.h"
 #include "sync.h"

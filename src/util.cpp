@@ -23,6 +23,7 @@
 #include "utiltime.h"
 // Wraps boost::filesystem inside fs namespace (future c++17)
 #include "fs.h"
+#include "fs_utils.h"
 
 #include <thread>
 

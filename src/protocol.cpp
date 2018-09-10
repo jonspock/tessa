@@ -10,6 +10,7 @@
 
 #include "chainparams.h"
 #include "util.h"
+#include "fs_utils.h"
 #include "utilstrencodings.h"
 
 #ifndef WIN32

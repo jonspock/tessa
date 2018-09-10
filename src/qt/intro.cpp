@@ -10,6 +10,7 @@
 
 #include "guiutil.h"
 
+#include "fs_utils.h"
 #include "fs.h"
 #include "util.h"
 

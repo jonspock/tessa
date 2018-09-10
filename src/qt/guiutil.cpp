@@ -11,7 +11,7 @@
 #include "bitcoinunits.h"
 #include "qvalidatedlineedit.h"
 #include "walletmodel.h"
-
+#include "fs_utils.h"
 #include "init.h"
 #include "main.h"
 #include "primitives/transaction.h"

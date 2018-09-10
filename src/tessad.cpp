@@ -8,6 +8,7 @@
 
 #include "clientversion.h"
 #include "fs.h"
+#include "fs_utils.h"
 #include "httprpc.h"
 #include "httpserver.h"
 #include "init.h"

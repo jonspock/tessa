@@ -225,6 +225,7 @@ SET(COMMON_A
   ./src/amount.cpp
   ./src/logging.cpp
   ./src/fs.cpp
+  ./src/fs_utils.cpp
   )
 
 # No longer used    

@@ -7,6 +7,8 @@
 
 #include "txdb.h"
 
+#include "fs.h"
+#include "fs_utils.h"
 #include "accumulators.h"
 #include "libzerocoin/CoinSpend.h"
 #include "main.h"

@@ -15,7 +15,7 @@
 #include "bitcoinunits.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
-
+#include "fs_utils.h" // GetDataDir()
 #include "main.h"  // for MAX_SCRIPTCHECK_THREADS
 #include "netbase.h"
 #include "txdb.h"  // for -dbcache defaults

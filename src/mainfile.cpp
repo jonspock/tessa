@@ -13,6 +13,7 @@
 #include "ui_interface.h"
 
 #include "fs.h"
+#include "fs_utils.h"
 // for StartShutdown()
 #include "init.h"
 #include "staker.h"

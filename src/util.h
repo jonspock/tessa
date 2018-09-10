@@ -17,18 +17,17 @@
 #endif
 
 #include "compat.h"
-#include "fs.h"
 #include "logging.h"
+#include "sync.h"
 #include "tinyformat.h"
 #include "utiltime.h"
-#include "sync.h"
 
+#include <cstdint>
 #include <exception>
 #include <map>
-#include <cstdint>
 #include <string>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 // Tessa only features
 
@@ -55,20 +54,7 @@ void FileCommit(FILE* fileout);
 bool TruncateFile(FILE* file, uint32_t length);
 int RaiseFileDescriptorLimit(int nMinFD);
 void AllocateFileRange(FILE* file, uint32_t offset, uint32_t length);
-bool RenameOver(const fs::path& src, fs::path& dest);
-bool TryCreateDirectory(const fs::path& p);
-fs::path GetDefaultDataDir();
-const fs::path& GetDataDir(bool fNetSpecific = true);
-fs::path GetConfigFile();
-#ifndef WIN32
-fs::path GetPidFile();
-void CreatePidFile(const fs::path& path, pid_t pid);
-#endif
 void ReadConfigFile();
-#ifdef WIN32
-fs::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
-#endif
-fs::path GetTempPath();
 void ShrinkDebugFile();
 void runCommand(const std::string& strCommand);
 
@@ -145,13 +131,10 @@ std::string HelpMessageOpt(const std::string& option, const std::string& message
 void SetThreadPriority(int nPriority);
 void RenameThread(const char* name);
 
-class thread_interrupted
-{};
+class thread_interrupted {};
 
-inline void interruption_point(bool interrupt)
-{
-    if(interrupt)
-        throw thread_interrupted();
+inline void interruption_point(bool interrupt) {
+  if (interrupt) throw thread_interrupted();
 }
 
 /**
@@ -164,9 +147,7 @@ template <typename Callable> void TraceThread(const char* name, Callable func) {
     LogPrintf("%s thread start\n", name);
     func();
     LogPrintf("%s thread exit\n", name);
-  } catch (thread_interrupted&) {
-    LogPrintf("%s thread interrupt\n", name);
-  } catch (std::exception& e) {
+  } catch (thread_interrupted&) { LogPrintf("%s thread interrupt\n", name); } catch (std::exception& e) {
     PrintExceptionContinue(&e, name);
     throw;
   } catch (...) {

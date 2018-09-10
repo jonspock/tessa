@@ -20,6 +20,7 @@
 #include "compat/sanity.h"
 #include "ecdsa/key.h"
 #include "fs.h"
+#include "fs_utils.h"
 #include "httprpc.h"
 #include "httpserver.h"
 #include "main.h"

@@ -5,6 +5,7 @@
 #include "leveldbwrapper.h"
 
 #include "fs.h"
+#include "fs_utils.h"
 #include "util.h"
 
 #include <rocksdb/cache.h>

@@ -16,6 +16,7 @@
 #include "guiutil.h"
 #include "intro.h"
 #include "net.h"
+#include "fs_utils.h"
 #include "networkstyle.h"
 #include "optionsmodel.h"
 #include "splashscreen.h"

@@ -9,6 +9,7 @@
 #include "rpc/protocol.h"
 
 #include "fs.h"
+#include "fs_utils.h"
 #include "random.h"
 #include "tinyformat.h"
 #include "util.h"

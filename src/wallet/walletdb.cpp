@@ -11,6 +11,7 @@
 
 #include "base58.h"
 #include "fs.h"
+#include "fs_utils.h"
 #include "primitives/deterministicmint.h"
 #include "protocol.h"
 #include "serialize.h"
