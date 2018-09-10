@@ -10,7 +10,7 @@
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/script_error.h"
-
+#include "coins.h"
 /**
  * Closure representing one script verification
  * Note that this stores references to the spending transaction

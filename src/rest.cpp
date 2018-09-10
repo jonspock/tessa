@@ -16,6 +16,7 @@
 #include "txmempool.h"
 #include "utilsplitstring.h"
 #include "utilstrencodings.h"
+#include "blockmap.h"
 #include "version.h"
 
 #include <boost/dynamic_bitset.hpp>

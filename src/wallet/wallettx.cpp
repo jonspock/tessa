@@ -7,6 +7,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "init.h"
+#include "uint256.h"
+#include "blockmap.h"
+#include "net.h" // need all of that?
 #include "main_externs.h"
 #include "wallet.h"
 #include <cassert>

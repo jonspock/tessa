@@ -14,8 +14,11 @@
 #include "rpc/server.h"
 #include "sync.h"
 #include "txdb.h"
+#include "txmempool.h"
+
 #include "util.h"
 #include "utilmoneystr.h"
+#include "utilstrencodings.h"
 
 #include <cstdint>
 #include <univalue.h>

@@ -9,10 +9,12 @@
 #include "mainzero.h"
 #include "accumulatormap.h"
 #include "accumulators.h"
+#include "chainparams.h"
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/PublicCoin.h"
 #include "primitives/zerocoin.h"
 #include "utilmoneystr.h"
+#include "utilstrencodings.h"
 #include "zerochain.h"
 
 #include <sstream>

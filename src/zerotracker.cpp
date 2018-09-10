@@ -2,7 +2,8 @@
 // Copyright (c) 2018 The Tessacoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
+#include "txmempool.h"
+#include "chainparams.h"
 #include "zerotracker.h"
 #include "accumulators.h"
 #include "main.h"

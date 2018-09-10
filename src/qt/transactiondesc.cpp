@@ -7,6 +7,7 @@
 
 #include "transactiondesc.h"
 #include "main_functions.h"
+#include "blockmap.h"
 
 #include "bitcoinunits.h"
 #include "guiutil.h"

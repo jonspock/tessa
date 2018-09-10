@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "txdb.h"
-
+#include "chainparams.h"
 #include "fs.h"
 #include "fs_utils.h"
 #include "accumulators.h"

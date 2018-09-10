@@ -8,6 +8,7 @@
 #include "rpc/server.h"
 
 #include "clientversion.h"
+#include "chainparams.h"
 #include "main.h"
 #include "net.h"
 #include "netbase.h"

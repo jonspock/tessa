@@ -20,7 +20,7 @@
 #include "sync.h"
 #include "uint256.h"
 #include "utilstrencodings.h"
-
+#include "nodeid.h"
 #include <deque>
 #include <cstdint>
 
@@ -79,8 +79,6 @@ void StartNode(CScheduler& scheduler);
 bool StopNode();
 void InterruptNode();
 void SocketSendData(CNode* pnode);
-
-typedef int NodeId;
 
 // Signals for message handling
 struct CNodeSignals {

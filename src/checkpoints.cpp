@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "checkpoints.h"
-
+#include "blockmap.h"
 #include "chainparams.h"
 #include "main.h"
 #include "uint256.h"

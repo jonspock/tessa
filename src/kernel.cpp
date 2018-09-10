@@ -5,6 +5,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "kernel.h"
+#include "blockmap.h"
 #include "chainparams.h"
 #include "db.h"
 #include "script/interpreter.h"

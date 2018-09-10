@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "zerochain.h"
+#include "chainparams.h"
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/PublicCoin.h"
 #include "main.h"

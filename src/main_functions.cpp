@@ -1,3 +1,4 @@
+#include "chain.h"
 #include "main_functions.h"
 #include "main_externs.h"
 #include "timedata.h"

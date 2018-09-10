@@ -5,6 +5,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spork.h"
+#include "blockmap.h"
+#include "ecdsa/key.h"
 #include "base58.h"
 #include "main.h"
 #include "net.h"
@@ -27,6 +29,7 @@ class CSporkMessage;
 class CSporkManager;
 
 CSporkManager gSporkManager;
+std::map<uint256, int64_t> mapRejectedBlocks;
 
 // Tessa: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB() {

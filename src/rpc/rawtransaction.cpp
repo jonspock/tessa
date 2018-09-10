@@ -22,6 +22,7 @@
 #include "uint256.h"
 #include "utilmoneystr.h"
 #include "wallet/wallet.h"
+#include "blockmap.h"
 
 #include <cstdint>
 

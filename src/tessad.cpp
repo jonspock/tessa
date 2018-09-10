@@ -7,6 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "clientversion.h"
+#include "chainparams.h"
 #include "fs.h"
 #include "fs_utils.h"
 #include "httprpc.h"

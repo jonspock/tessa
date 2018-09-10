@@ -17,6 +17,7 @@
 #include "main_functions.h"
 #include "mainfile.h"
 #include "scriptcheck.h"
+#include "nodeid.h"
 
 class CBloomFilter;
 class CInv;
@@ -27,8 +28,15 @@ class CoinSpend;
 class PublicCoin;
 }  // namespace libzerocoin
 
+class CZerocoinMint;
+struct CMintMeta;
+class CBigNum;
+
 struct CBlockTemplate;
 struct CNodeStateStats;
+
+struct CNodeSignals;
+class CNode;
 
 #include "validationstate.h"
 #include "verifydb.h"

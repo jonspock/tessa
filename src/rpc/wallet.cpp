@@ -19,6 +19,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "wallet/walletdb.h"
+#include "blockmap.h"
 
 #include <cstdint>
 #include <thread>

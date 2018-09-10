@@ -11,6 +11,7 @@
 #include "walletkey.h"
 #include "wallettx.h"
 
+#include "chainparams.h"
 #include "accumulators.h"
 #include "checkpoints.h"
 #include "coincontrol.h"

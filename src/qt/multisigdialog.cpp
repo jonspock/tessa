@@ -5,7 +5,7 @@
 
 #include "multisigdialog.h"
 #include "ui_multisigdialog.h"
-
+#include "net.h"
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
 #include "base58.h"

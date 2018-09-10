@@ -49,6 +49,10 @@
 #include <sstream>
 #include <thread>
 
+//#include "script/script.h"
+#include "script/sigcache.h"
+//#include "script/standard.h"
+
 using namespace std;
 using namespace libzerocoin;
 
@@ -95,7 +99,6 @@ struct COrphanTx {
 };
 map<uint256, COrphanTx> mapOrphanTransactions;
 map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
-map<uint256, int64_t> mapRejectedBlocks;
 map<uint256, int64_t> mapZerocoinspends;  // txid, time received
 CBlockIndex* pindexBestInvalid = nullptr;
 

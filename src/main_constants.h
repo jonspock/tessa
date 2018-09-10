@@ -7,8 +7,12 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-#include "consensus/consensus.h"
+#include "consensus/consensus.h" // Mostly other defs
 #include "primitives/block.h"
+
+/** The maximum allowed size for a serialized block, in bytes (network rule) */
+static const unsigned int MAX_BLOCK_SIZE_CURRENT = 2000000;
+static const unsigned int MAX_BLOCK_SIZE_LEGACY = 1000000;
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
 static const uint32_t DEFAULT_BLOCK_MAX_SIZE = 750000;

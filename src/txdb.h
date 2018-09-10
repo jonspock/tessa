@@ -8,6 +8,7 @@
 #pragma once
 
 #include "blockfileinfo.h"
+#include "blockmap.h"
 #include "disktxpos.h"
 #include "leveldbwrapper.h"
 #include "main.h"
