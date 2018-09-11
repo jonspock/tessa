@@ -5,6 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "chain.h"
 #include "init.h"
 #include "main.h"
 #include "rpc/server.h"
@@ -12,9 +13,9 @@
 #include "script/standard.h"
 #include "sync.h"
 #include "util.h"
+#include "utilsplitstring.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
-#include "utilsplitstring.h"
 #include "wallet/wallet.h"
 
 #include <cstdint>
@@ -239,7 +240,7 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
 
     std::vector<std::string> vstr;
     Split(vstr, line, " ");
-    //boost::split(vstr, line, boost::is_any_of(" "));
+    // boost::split(vstr, line, boost::is_any_of(" "));
     if (vstr.size() < 2) continue;
     CBitcoinSecret vchSecret;
     if (!vchSecret.SetString(vstr[0])) continue;
@@ -255,10 +256,10 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
     std::string strLabel;
     bool fLabel = true;
     for (unsigned int nStr = 2; nStr < vstr.size(); nStr++) {
-      if (vstr[nStr].substr(0,1) == "#") break;
+      if (vstr[nStr].substr(0, 1) == "#") break;
       if (vstr[nStr] == "change=1") fLabel = false;
       if (vstr[nStr] == "reserve=1") fLabel = false;
-      if (vstr[nStr].substr(0,6) == "label=") {
+      if (vstr[nStr].substr(0, 6) == "label=") {
         strLabel = DecodeDumpString(vstr[nStr].substr(6));
         fLabel = true;
       }

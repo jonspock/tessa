@@ -12,11 +12,11 @@
 #include "bitcoingui.h"
 
 #include "clientmodel.h"
+#include "fs_utils.h"
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "intro.h"
 #include "net.h"
-#include "fs_utils.h"
 #include "networkstyle.h"
 #include "optionsmodel.h"
 #include "splashscreen.h"
@@ -31,6 +31,7 @@
 #include "scheduler.h"
 #include "ui_interface.h"
 #include "util.h"
+#include "utiltime.h"
 
 #include "wallet/wallet.h"
 
@@ -370,7 +371,7 @@ void BitcoinApplication::initializeResult(int retval) {
 
     if (pwalletMain) {
       walletModel = new WalletModel(pwalletMain, optionsModel);
-    
+
       MilliSleep(5000);
 
       window->addWallet(BitcoinGUI::DEFAULT_WALLET, walletModel);
@@ -416,9 +417,9 @@ int main(int argc, char* argv[]) {
   // Command-line options take precedence:
   ParseParameters(argc, argv);
 
-// Do not refer to data directory yet, this can be overridden by Intro::pickDataDirectory
+  // Do not refer to data directory yet, this can be overridden by Intro::pickDataDirectory
 
-/// 2. Basic Qt initialization (not dependent on parameters or configuration)
+  /// 2. Basic Qt initialization (not dependent on parameters or configuration)
 
   Q_INIT_RESOURCE(tessa_locale);
   Q_INIT_RESOURCE(tessa);
@@ -508,7 +509,6 @@ int main(int argc, char* argv[]) {
     // of the server.
     // - Do this after creating app and setting up translations, so errors are
     // translated properly.
-
   }
 
   /// 9. Main GUI initialization

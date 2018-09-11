@@ -8,11 +8,13 @@
 
 #include "wallet.h"
 #include "init.h"
+#include "main.h"
 #include "walletkey.h"
 #include "wallettx.h"
 
-#include "chainparams.h"
 #include "accumulators.h"
+#include "chain.h"
+#include "chainparams.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "fs.h"
@@ -20,11 +22,12 @@
 #include "net.h"
 #include "script/script.h"
 #include "script/sign.h"
-#include "spork.h"
 #include "stakeinput.h"
 #include "timedata.h"
 #include "txdb.h"
 #include "utilmoneystr.h"
+#include "utiltime.h"
+#include "validationstate.h"
 #include "zerochain.h"
 
 #include "denomination_functions.h"
@@ -657,7 +660,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet) {
     std::string strCmd = GetArg("-walletnotify", "");
 
     if (!strCmd.empty()) {
-      strCmd.replace(strCmd.find("%s"),2, wtxIn.GetHash().GetHex());
+      strCmd.replace(strCmd.find("%s"), 2, wtxIn.GetHash().GetHex());
       std::thread(runCommand, strCmd).detach();  // thread runs free
     }
   }
@@ -1504,9 +1507,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
                 }
                 ++it;
               }
-            } catch (mpark::bad_variant_access&) {
-              LogPrintf("bad variant access");
-            }
+            } catch (mpark::bad_variant_access&) { LogPrintf("bad variant access"); }
           }
 
           // no coin control: send change to newly generated address
@@ -2226,7 +2227,7 @@ void CWallet::ListLockedCoins(std::vector<COutPoint>& vOutpts) {
 
 /** @} */  // end of Actions
 
-class CAffectedKeysVisitor { //: public mpark::variant<void> {
+class CAffectedKeysVisitor {  //: public mpark::variant<void> {
  private:
   const CKeyStore& keystore;
   std::vector<CKeyID>& vKeys;
@@ -2345,9 +2346,7 @@ unsigned int CWallet::ComputeTimeSmart(const CWalletTx& wtx) const {
 bool CWallet::AddDestData(const CTxDestination& dest, const std::string& key, const std::string& value) {
   try {
     mpark::get<CNoDestination>(dest);
-  } catch (mpark::bad_variant_access&) {
-    return false;
-  }
+  } catch (mpark::bad_variant_access&) { return false; }
   mapAddressBook[dest].destdata.insert(std::make_pair(key, value));
   if (!fFileBacked) return true;
   return gWalletDB.WriteDestData(CBitcoinAddress(dest).ToString(), key, value);

@@ -6,17 +6,17 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "txdb.h"
+#include "accumulators.h"
 #include "chainparams.h"
 #include "fs.h"
 #include "fs_utils.h"
-#include "accumulators.h"
 #include "libzerocoin/CoinSpend.h"
 #include "main.h"
+#include "mainfile.h"
 #include "pow.h"
 #include "staker.h"
 #include "uint256.h"
 #include <cstdint>
-
 
 using namespace std;
 
@@ -59,13 +59,12 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
   }
   if (!hashBlock.IsNull()) BatchWriteHashBestChain(batch, hashBlock);
 
-  LogPrint(TessaLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n",
-           changed, count);
+  LogPrint(TessaLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n", changed, count);
   return db.WriteBatch(batch);
 }
 
 CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe)
-  : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {}
+    : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {}
 
 bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex) {
   return Write(make_pair('b', blockindex.GetBlockHash()), blockindex);
@@ -105,7 +104,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
   ss << stats.hashBlock;
   CAmount nTotalAmount = 0;
   while (pcursor->Valid()) {
-    if(interrupt) return error("GetStats() : interrupted");
+    if (interrupt) return error("GetStats() : interrupted");
     try {
       rocksdb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
@@ -144,10 +143,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
   return true;
 }
 
-void CCoinsViewDB::InterruptGetStats()
-{
-    interrupt = true;
-}
+void CCoinsViewDB::InterruptGetStats() { interrupt = true; }
 
 bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos) { return Read(make_pair('t', txid), pos); }
 
@@ -183,7 +179,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
   uint256 nPreviousCheckpoint = uint256();
   nPreviousCheckpoint.SetNull();
   while (pcursor->Valid()) {
-    if(interrupt) return error("LoadBlockIndexGuts() : interrupted");
+    if (interrupt) return error("LoadBlockIndexGuts() : interrupted");
     try {
       rocksdb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
@@ -251,14 +247,8 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
   return true;
 }
 
-void CBlockTreeDB::InterruptLoadBlockIndexGuts()
-{
-    interrupt = true;
-}
-void CZerocoinDB::InterruptWipeCoins()
-{
-    interrupt = true;
-}
+void CBlockTreeDB::InterruptLoadBlockIndexGuts() { interrupt = true; }
+void CZerocoinDB::InterruptWipeCoins() { interrupt = true; }
 
 CZerocoinDB::CZerocoinDB(size_t nCacheSize, bool fMemory, bool fWipe)
     : CLevelDBWrapper(GetDataDir() / "zerocoin", nCacheSize, fMemory, fWipe) {}
@@ -347,7 +337,7 @@ bool CZerocoinDB::WipeCoins(const std::string& strType) {
   // Load mapBlockIndex
   std::set<uint256> setDelete;
   while (pcursor->Valid()) {
-    if(interrupt) return error("WipeCoins() : interrupted");
+    if (interrupt) return error("WipeCoins() : interrupted");
     try {
       rocksdb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);

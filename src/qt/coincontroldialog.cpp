@@ -39,7 +39,9 @@ int CoinControlDialog::nSplitBlockDummy;
 CCoinControl* CoinControlDialog::coinControl = new CCoinControl();
 
 CoinControlDialog::CoinControlDialog(QWidget* parent, bool fMultisigEnabled)
-  : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::CoinControlDialog), model(0) {
+    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+      ui(new Ui::CoinControlDialog),
+      model(0) {
   ui->setupUi(this);
   this->fMultisigEnabled = fMultisigEnabled;
 
@@ -109,7 +111,7 @@ CoinControlDialog::CoinControlDialog(QWidget* parent, bool fMultisigEnabled)
   connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this,
           SLOT(viewItemChanged(QTreeWidgetItem*, int)));
 
-// click on header
+  // click on header
   ui->treeWidget->header()->setSectionsClickable(true);
   connect(ui->treeWidget->header(), SIGNAL(sectionClicked(int)), this, SLOT(headerSectionClicked(int)));
 
@@ -412,10 +414,10 @@ void CoinControlDialog::viewItemChanged(QTreeWidgetItem* item, int column) {
       updateDialogLabels();
     }
   }
-// todo: this is a temporary qt5 fix: when clicking a parent node in tree mode, the parent node
-//       including all childs are partially selected. But the parent node should be fully selected
-//       as well as the childs. Childs should never be partially selected in the first place.
-//       Please remove this ugly fix, once the bug is solved upstream.
+  // todo: this is a temporary qt5 fix: when clicking a parent node in tree mode, the parent node
+  //       including all childs are partially selected. But the parent node should be fully selected
+  //       as well as the childs. Childs should never be partially selected in the first place.
+  //       Please remove this ugly fix, once the bug is solved upstream.
   else if (column == COLUMN_CHECKBOX && item->childCount() > 0) {
     if (item->checkState(COLUMN_CHECKBOX) == Qt::PartiallyChecked &&
         item->child(0)->checkState(COLUMN_CHECKBOX) == Qt::PartiallyChecked)
@@ -668,7 +670,7 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog) {
 
   // how many satoshis the estimated fee can vary per byte we guess wrong
   double dFeeVary =
-        (double)std::max(CWallet::minTxFee.GetFeePerK(), mempool.estimateFee(nTxConfirmTarget).GetFeePerK()) / 1000;
+      (double)std::max(CWallet::minTxFee.GetFeePerK(), mempool.estimateFee(nTxConfirmTarget).GetFeePerK()) / 1000;
   QString toolTip4 = tr("Can vary +/- %1 upiv per input.").arg(dFeeVary);
 
   l3->setToolTip(toolTip4);

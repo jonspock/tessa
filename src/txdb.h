@@ -11,9 +11,8 @@
 #include "blockmap.h"
 #include "disktxpos.h"
 #include "leveldbwrapper.h"
-#include "main.h"
+#include "coins.h"
 #include "primitives/zerocoin.h"
-//#include "libzerocoin/CoinSpend.h"
 
 #include <map>
 #include <string>

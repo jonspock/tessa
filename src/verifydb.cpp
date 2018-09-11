@@ -8,7 +8,7 @@
 #include "verifydb.h"
 #include "blockdisk.h"
 #include "blockundo.h"
-#include "main_externs.h"
+#include "tessa_externs.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "validationstate.h"
@@ -39,7 +39,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
   int nGoodTransactions = 0;
   CValidationState state;
   for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
-    if(interrupt) return error("VerifyDB() : interrupted");
+    if (interrupt) return error("VerifyDB() : interrupted");
     uiInterface.ShowProgress(_("Verifying blocks..."),
                              std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) /
                                                             (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100)))));
@@ -88,7 +88,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
   if (nCheckLevel >= 4) {
     CBlockIndex* pindex = pindexState;
     while (pindex != chainActive.Tip()) {
-      if(interrupt) return error("VerifyDB() : interrupted");
+      if (interrupt) return error("VerifyDB() : interrupted");
       uiInterface.ShowProgress(_("Verifying blocks..."),
                                std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) /
                                                                     (double)nCheckDepth * 50))));

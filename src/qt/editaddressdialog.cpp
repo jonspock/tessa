@@ -83,9 +83,10 @@ void EditAddressDialog::accept() {
         // No changes were made during edit operation. Just reject.
         break;
       case AddressTableModel::INVALID_ADDRESS:
-        QMessageBox::warning(this, windowTitle(),
-                             tr("The entered address \"%1\" is not a valid Tessa address.").arg(ui->addressEdit->text()),
-                             QMessageBox::Ok, QMessageBox::Ok);
+        QMessageBox::warning(
+            this, windowTitle(),
+            tr("The entered address \"%1\" is not a valid Tessa address.").arg(ui->addressEdit->text()),
+            QMessageBox::Ok, QMessageBox::Ok);
         break;
       case AddressTableModel::DUPLICATE_ADDRESS:
         QMessageBox::warning(

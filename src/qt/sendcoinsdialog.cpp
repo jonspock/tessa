@@ -19,7 +19,7 @@
 #include "walletmodel.h"
 
 #include "base58.h"
-#include "main_externs.h"
+#include "tessa_externs.h"
 #include "ui_interface.h"
 #include "utilmoneystr.h"
 #include "wallet/coincontrol.h"
@@ -97,9 +97,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent)
   ui->checkZKP->hide();
 }
 
-void SendCoinsDialog::setClientModel(ClientModel* clientModel) {
-  this->clientModel = clientModel;
-}
+void SendCoinsDialog::setClientModel(ClientModel* clientModel) { this->clientModel = clientModel; }
 
 void SendCoinsDialog::setModel(WalletModel* model) {
   this->model = model;
@@ -128,9 +126,7 @@ void SendCoinsDialog::setModel(WalletModel* model) {
   }
 }
 
-SendCoinsDialog::~SendCoinsDialog() {
-  delete ui;
-}
+SendCoinsDialog::~SendCoinsDialog() { delete ui; }
 
 void SendCoinsDialog::on_sendButton_clicked() {
   if (!model || !model->getOptionsModel()) return;
@@ -196,13 +192,13 @@ void SendCoinsDialog::on_sendButton_clicked() {
     QString recipientElement;
 
     if (rcp.label.length() > 0)  // label with address
-      {
-        recipientElement = tr("%1 to %2").arg(amount, GUIUtil::HtmlEscape(rcp.label));
-        recipientElement.append(QString(" (%1)").arg(address));
-      } else  // just address
-      {
-        recipientElement = tr("%1 to %2").arg(amount, address);
-      }
+    {
+      recipientElement = tr("%1 to %2").arg(amount, GUIUtil::HtmlEscape(rcp.label));
+      recipientElement.append(QString(" (%1)").arg(address));
+    } else  // just address
+    {
+      recipientElement = tr("%1 to %2").arg(amount, address);
+    }
 
     if (CoinControlDialog::coinControl->fSplitBlock) {
       recipientElement.append(
@@ -443,7 +439,6 @@ void SendCoinsDialog::updateDisplayUnit() {
              model->getZerocoinBalance(), model->getUnconfirmedZerocoinBalance(), model->getImmatureZerocoinBalance(),
              model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
   coinControlUpdateLabels();
- 
 }
 
 void SendCoinsDialog::processSendCoinsReturn(const WalletModel::SendCoinsReturn& sendCoinsReturn, const QString& msgArg,

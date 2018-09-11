@@ -12,15 +12,17 @@
 #include "tessa-config.h"
 #endif
 
-#include "main_constants.h"
-#include "main_externs.h"
-#include "main_functions.h"
-#include "mainfile.h"
-#include "scriptcheck.h"
+#include "tessa_constants.h"
+#include "tessa_externs.h"
 #include "nodeid.h"
+#include "primitives/block.h"
 
+class uint256;
+class CScriptCheck;
 class CBloomFilter;
 class CInv;
+class CTxUndo;
+
 class CValidationInterface;
 class CValidationState;
 namespace libzerocoin {
@@ -28,18 +30,15 @@ class CoinSpend;
 class PublicCoin;
 }  // namespace libzerocoin
 
+class CNode;
 class CZerocoinMint;
-struct CMintMeta;
 class CBigNum;
 
+struct CMintMeta;
 struct CBlockTemplate;
 struct CNodeStateStats;
-
+struct CDiskBlockPos;
 struct CNodeSignals;
-class CNode;
-
-#include "validationstate.h"
-#include "verifydb.h"
 
 /** Register a wallet to receive updates from core */
 void RegisterValidationInterface(CValidationInterface* pwalletIn);
@@ -80,8 +79,6 @@ bool InitBlockIndex();
 bool LoadBlockIndex(std::string& strError);
 /** Unload database information */
 void UnloadBlockIndex();
-/** See whether the protocol update is enforced for connected nodes */
-int ActiveProtocol();
 /** Process protocol messages received from a given node */
 bool ProcessMessages(CNode* pfrom);
 /**

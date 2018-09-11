@@ -7,8 +7,8 @@
 
 #include "checkpoints.h"
 #include "blockmap.h"
+#include "chain.h"
 #include "chainparams.h"
-#include "main.h"
 #include "uint256.h"
 
 #include "reverse_iterate.h"

@@ -8,6 +8,7 @@
 #include "walletmodel.h"
 #include "externs.h"
 
+#include "chain.h"
 #include "addresstablemodel.h"
 #include "guiconstants.h"
 #include "recentrequeststablemodel.h"
@@ -230,10 +231,10 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
     if (rcp.amount <= 0) { return InvalidAmount; }
     setAddress.insert(rcp.address);
     ++nAddresses;
-    
+
     CScript scriptPubKey = GetScriptForDestination(CBitcoinAddress(rcp.address.toStdString()).Get());
     vecSend.push_back(std::pair<CScript, CAmount>(scriptPubKey, rcp.amount));
-    
+
     total += rcp.amount;
   }
   if (setAddress.size() != nAddresses) { return DuplicateAddress; }
@@ -306,7 +307,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction& tran
     std::string strAddress = rcp.address.toStdString();
     CTxDestination dest = CBitcoinAddress(strAddress).Get();
     std::string strLabel = rcp.label.toStdString();
-    
+
     updateAddressBookLabels(dest, strLabel, "send");
     emit coinsSent(wallet, rcp, transaction_array);
   }
@@ -369,9 +370,7 @@ bool WalletModel::changePassphrase(const SecureString& oldPass, const SecureStri
   return retval;
 }
 
-bool WalletModel::backupWallet(const QString& filename) {
-  return true;
-}
+bool WalletModel::backupWallet(const QString& filename) { return true; }
 
 // Handlers for core signals
 static void NotifyKeyStoreStatusChanged(WalletModel* walletmodel, CCryptoKeyStore* wallet) {

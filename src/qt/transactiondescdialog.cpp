@@ -16,7 +16,8 @@
 #include <QString>
 
 TransactionDescDialog::TransactionDescDialog(const QModelIndex& idx, QWidget* parent)
-  : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::TransactionDescDialog) {
+    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+      ui(new Ui::TransactionDescDialog) {
   ui->setupUi(this);
 
   /* Open CSS when configured */

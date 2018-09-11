@@ -6,14 +6,15 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "transactiondesc.h"
-#include "main_functions.h"
 #include "blockmap.h"
+#include "main_functions.h"
 
 #include "bitcoinunits.h"
 #include "guiutil.h"
 #include "transactionrecord.h"
 
 #include "base58.h"
+#include "chain.h"
 #include "db.h"
 #include "main.h"
 #include "script/script.h"

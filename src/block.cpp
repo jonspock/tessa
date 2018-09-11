@@ -20,6 +20,7 @@
 #include "txdb.h"
 #include "txmempool.h"
 #include "util.h"
+#include "utiltime.h"
 
 #include <sstream>
 

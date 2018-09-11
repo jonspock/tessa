@@ -9,6 +9,9 @@
 #include <cstdint>
 #include <string>
 
+#include "sync.h"
+// from sync.h  CCriticalSection, CConditionVariable, CWaitableCriticalSection;
+
 class CBlockIndex;
 class CBlockTreeDB;
 class CChain;
@@ -18,6 +21,7 @@ class CTxMemPool;
 class CFeeRate;
 class CCoinsViewCache;
 class uint256;
+class CScript;
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;

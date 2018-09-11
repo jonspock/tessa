@@ -10,6 +10,8 @@
 #include "primitives/deterministicmint.h"
 #include "txdb.h"
 #include "uint512.h"
+#include "utiltime.h"
+#include "validationstate.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "zerochain.h"

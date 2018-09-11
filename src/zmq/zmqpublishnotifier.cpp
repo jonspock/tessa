@@ -6,6 +6,7 @@
 #include "chainparams.h"
 #include "zmqpublishnotifier.h"
 #include "main.h"
+#include "chain.h"
 #include "util.h"
 #include "crypto/common.h"
 

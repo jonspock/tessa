@@ -42,6 +42,7 @@ fs::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 fs::path GetTempPath();
 bool TryCreateDirectory(const fs::path& p);
 bool RenameOver(const fs::path& src, fs::path& dest);
+void ClearDatadirCache();
 
 /** Translation to a filesystem path */
 fs::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix);

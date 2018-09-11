@@ -333,11 +333,6 @@ class CCoinsViewBacked : public CCoinsView {
 
 class CCoinsViewCache;
 
-/** Flags for nSequence and nLockTime locks  -already in consensus.h */
-
-/** Used as the flags parameter to sequence and nLocktime checks in non-consensus code. */
-static const uint32_t STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE | LOCKTIME_MEDIAN_TIME_PAST;
-
 /**
  * A reference to a mutable cache entry. Encapsulating it allows us to run
  *  cleanup code after the modification is finished, and keeping track of

@@ -1,9 +1,9 @@
 #include "warnings.h"
-#include "main_externs.h"
+#include "tessa_externs.h"
 #include "ui_interface.h"
+#include "utiltime.h"
 
-// Need?
-#include "main.h"
+#include "main.h"  // for IsInitialBlockDownload
 
 #if defined(HAVE_CONFIG_H)
 #include "tessa-config.h"

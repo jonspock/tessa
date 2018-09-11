@@ -5,13 +5,17 @@
 
 #pragma once
 
-#include "streams.h"
-// cblockindex
-#include "chain.h"
+#include "amount.h"
+#include "primitives/transaction.h"
 
+class uint256;
+class CBlockIndex;
+class CTxIn;
+class CTxOut;
 class CKeyStore;
 class CWallet;
 class CWalletTx;
+class CDataStream;
 
 class CStakeInput {
  protected:

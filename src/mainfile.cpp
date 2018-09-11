@@ -6,17 +6,17 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "uint256.h"
-#include "net.h" // all needed?
-#include "main_externs.h"
 #include "blockmap.h"
+#include "net.h"  // all needed?
+#include "tessa_externs.h"
+#include "uint256.h"
 // for "_"
 #include "util.h"
 // for AbortNode
-#include "ui_interface.h"
 #include "chain.h"
 #include "fs.h"
 #include "fs_utils.h"
+#include "ui_interface.h"
 // for StartShutdown()
 #include "init.h"
 #include "staker.h"

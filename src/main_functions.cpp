@@ -1,6 +1,7 @@
-#include "chain.h"
 #include "main_functions.h"
-#include "main_externs.h"
+#include "chain.h"
+#include "tessa_constants.h"  // for LOCKTIME_THRESHOLD
+#include "tessa_externs.h"
 #include "timedata.h"
 
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight, int64_t nBlockTime) {

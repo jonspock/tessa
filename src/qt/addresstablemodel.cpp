@@ -255,7 +255,7 @@ bool AddressTableModel::setData(const QModelIndex& index, const QVariant& value,
       if (newAddress == curAddress) {
         editStatus = NO_CHANGES;
         return false;
-      } 
+      }
       // Check for duplicate addresses to prevent accidental deletion of addresses, if you try
       // to paste an existing address over another address (with a different label)
       else if (wallet->mapAddressBook.count(newAddress)) {

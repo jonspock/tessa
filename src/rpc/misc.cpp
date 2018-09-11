@@ -7,6 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "base58.h"
+#include "chain.h"
 #include "clientversion.h"
 #include "init.h"
 #include "main.h"
@@ -17,6 +18,7 @@
 #include "staker.h"
 #include "timedata.h"
 #include "util.h"
+#include "utiltime.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 

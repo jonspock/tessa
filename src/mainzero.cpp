@@ -12,9 +12,12 @@
 #include "chainparams.h"
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/PublicCoin.h"
+#include "main.h"
 #include "primitives/zerocoin.h"
+#include "txdb.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
+#include "validationstate.h"
 #include "zerochain.h"
 
 #include <sstream>

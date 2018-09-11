@@ -8,6 +8,7 @@
 #pragma once
 
 #include "coins.h"
+#include <atomic>
 
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB {

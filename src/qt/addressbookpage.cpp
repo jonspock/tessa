@@ -24,7 +24,11 @@
 #include <QSortFilterProxyModel>
 
 AddressBookPage::AddressBookPage(Mode mode, Tabs tab, QWidget* parent)
-  : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::AddressBookPage), model(0), mode(mode), tab(tab) {
+    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+      ui(new Ui::AddressBookPage),
+      model(0),
+      mode(mode),
+      tab(tab) {
   ui->setupUi(this);
 
 #ifdef Q_OS_MAC  // Icons on push buttons are very uncommon on Mac
@@ -127,7 +131,7 @@ void AddressBookPage::setModel(AddressTableModel* model) {
   ui->tableView->setModel(proxyModel);
   ui->tableView->sortByColumn(0, Qt::AscendingOrder);
 
-// Set column widths
+  // Set column widths
   ui->tableView->horizontalHeader()->setSectionResizeMode(AddressTableModel::Label, QHeaderView::Stretch);
   ui->tableView->horizontalHeader()->setSectionResizeMode(AddressTableModel::Address, QHeaderView::ResizeToContents);
 

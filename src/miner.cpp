@@ -11,7 +11,7 @@
 #include "ecdsa/key.h"
 #include "hash.h"
 #include "init.h"
-#include "main.h"
+#include "main.h"  // for CBlockTemplate
 #include "net.h"
 #include "pow.h"
 #include "primitives/block.h"
@@ -20,21 +20,22 @@
 #include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "utiltime.h"
 #include "wallet/wallet.h"
 
 #include "accumulators.h"
 #include "ecdsa/blocksignature.h"
-#include "spork.h"
 #include "validationinterface.h"
+#include "validationstate.h"
 
 #include "libzerocoin/CoinSpend.h"
 #include <thread>
+#include <cmath> // for std::pow
 
 using namespace std;
 using namespace ecdsa;
 
 static std::atomic<bool> miner_interrupted(false);
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -673,10 +674,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
     }
   }
 }
-void InterruptMiner()
-{
-  miner_interrupted = true;
-}
+void InterruptMiner() { miner_interrupted = true; }
 
 void static ThreadBitcoinMiner(void* parg) {
   interruption_point(miner_interrupted);
@@ -710,7 +708,7 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads) {
     minerThreads = nullptr;
   }
   */
-  
+
   if (nThreads == 0 || !fGenerate) return;
 
   // Assume just 1 thread to get this going. TBD add loop later

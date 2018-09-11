@@ -18,11 +18,13 @@
 #include "clientversion.h"
 #include "fs.h"
 #include "fs_utils.h"
-#include "main.h"
+#include "main_functions.h"  // For ActiveProtocol
 #include "miner.h"
 #include "primitives/transaction.h"
 #include "scheduler.h"
+#include "tessa_constants.h"  // REJECT message codes
 #include "ui_interface.h"
+#include "utiltime.h"
 #include "wallet/wallet.h"
 
 #ifdef WIN32
@@ -41,7 +43,6 @@
 #include <condition_variable>
 #include <mutex>
 #include <thread>
-
 
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
@@ -127,7 +128,6 @@ std::thread open_connections_thread;
 std::thread message_handler_thread;
 std::thread staking_handler_thread;
 
-
 // 2 Classes here just used in this file
 
 /** Access to the (IP) address database (peers.dat) */
@@ -152,18 +152,15 @@ class CBanDB {
   bool Read(banmap_t& banSet);
 };
 
-
-
-static void InterruptibleSleep(uint64_t n)
-{
-    bool ret = false;
-    {
-        std::unique_lock<std::mutex> lock(cs_net_interrupt);
-        ret = net_interrupt_cond.wait_for(lock, std::chrono::milliseconds(n), []()->bool{return net_interrupted; });
-    }
-    interruption_point(ret);
+static void InterruptibleSleep(uint64_t n) {
+  bool ret = false;
+  {
+    std::unique_lock<std::mutex> lock(cs_net_interrupt);
+    ret = net_interrupt_cond.wait_for(lock, std::chrono::milliseconds(n), []() -> bool { return net_interrupted; });
+  }
+  interruption_point(ret);
 }
-    
+
 void AddOneShot(string strDest) {
   LOCK(cs_vOneShots);
   vOneShots.push_back(strDest);
@@ -910,8 +907,8 @@ void ThreadSocketHandler() {
     }
 
     int nSelect = select(have_fds ? hSocketMax + 1 : 0, &fdsetRecv, &fdsetSend, &fdsetError, &timeout);
-    if(net_interrupted)  break;
-    
+    if (net_interrupted) break;
+
     if (nSelect == SOCKET_ERROR) {
       if (have_fds) {
         int nErr = WSAGetLastError();
@@ -979,7 +976,7 @@ void ThreadSocketHandler() {
       for (CNode* pnode : vNodesCopy) pnode->AddRef();
     }
     for (CNode* pnode : vNodesCopy) {
-      if(net_interrupted) break;
+      if (net_interrupted) break;
 
       //
       // Receive
@@ -1116,18 +1113,18 @@ void ThreadMapPort() {
       else
         LogPrintf("UPnP Port Mapping successful.\n");
       ;
-      
+
       std::unique_lock<std::mutex> lock(cs_upnp);
       ////MilliSleep(20 * 60 * 1000);  // Refresh every 20 minutes
-      interrupted = upnp_cond.wait_for(lock, std::chrono::minutes(20), []{return upnp_interrupted; });
+      interrupted = upnp_cond.wait_for(lock, std::chrono::minutes(20), [] { return upnp_interrupted; });
     }
-    if(interrupted)
-      {
-        r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, port.c_str(), "TCP", 0);
-        LogPrintf("UPNP_DeletePortMapping() returned: %d\n", r);
-        freeUPNPDevlist(devlist); devlist = 0;
-        FreeUPNPUrls(&urls);
-      }
+    if (interrupted) {
+      r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, port.c_str(), "TCP", 0);
+      LogPrintf("UPNP_DeletePortMapping() returned: %d\n", r);
+      freeUPNPDevlist(devlist);
+      devlist = 0;
+      FreeUPNPUrls(&urls);
+    }
   } else {
     LogPrintf("No valid UPnP IGDs found\n");
     freeUPNPDevlist(devlist);
@@ -1136,8 +1133,7 @@ void ThreadMapPort() {
   }
 }
 
-void InterruptMapPort()
-{
+void InterruptMapPort() {
   LogPrintf("Interrupting UPnP\n");
   {
     std::lock_guard<std::mutex> lock(cs_upnp);
@@ -1145,9 +1141,8 @@ void InterruptMapPort()
   }
   upnp_cond.notify_all();
 }
-void StopMapPort()
-{
-  if(upnp_thread) {
+void StopMapPort() {
+  if (upnp_thread) {
     LogPrintf("Stopping UPnP\n");
     upnp_thread->join();
     delete upnp_thread;
@@ -1156,7 +1151,6 @@ void StopMapPort()
   std::lock_guard<std::mutex> lock(cs_upnp);
   upnp_interrupted = false;
 }
-
 
 void MapPort(bool fUseUPnP) {
   static std::thread* upnp_thread = nullptr;
@@ -1177,13 +1171,11 @@ void MapPort(bool fUseUPnP) {
 void MapPort(bool) {
   // Intentionally left blank.
 }
-void StopMapPort()
-{
-    // Intentionally left blank.
+void StopMapPort() {
+  // Intentionally left blank.
 }
- void InterruptMapPort()
-{
-    // Intentionally left blank.
+void InterruptMapPort() {
+  // Intentionally left blank.
 }
 
 #endif
@@ -1193,8 +1185,7 @@ void ThreadDNSAddressSeed() {
   if ((addrman.size() > 0) && (!GetBoolArg("-forcednsseed", false))) {
     {
       std::unique_lock<std::mutex> lock(cs_net_interrupt);
-      if(net_interrupt_cond.wait_for(lock, std::chrono::seconds(11), []()->bool {return net_interrupted; }))
-        return;
+      if (net_interrupt_cond.wait_for(lock, std::chrono::seconds(11), []() -> bool { return net_interrupted; })) return;
     }
 
     LOCK(cs_vNodes);
@@ -1483,7 +1474,7 @@ void ThreadMessageHandler() {
     }
 
     if (fSleep)
-      messageHandlerCondition.wait_for(lock, std::chrono::milliseconds(100), []()->bool {return net_interrupted; });
+      messageHandlerCondition.wait_for(lock, std::chrono::milliseconds(100), []() -> bool { return net_interrupted; });
   }
 }
 
@@ -1682,7 +1673,8 @@ void StartNode(CScheduler& scheduler) {
   socket_handler_thread = std::thread(std::bind(&TraceThread<void (*)()>, "net", &ThreadSocketHandler));
 
   // Initiate outbound connections from -addnode
-  open_added_connections_thread = std::thread(std::bind(&TraceThread<void (*)()>, "addcon", &ThreadOpenAddedConnections));
+  open_added_connections_thread =
+      std::thread(std::bind(&TraceThread<void (*)()>, "addcon", &ThreadOpenAddedConnections));
 
   // Initiate outbound connections
   open_connections_thread = std::thread(std::bind(&TraceThread<void (*)()>, "opencon", &ThreadOpenConnections));
@@ -1698,8 +1690,7 @@ void StartNode(CScheduler& scheduler) {
     staking_handler_thread = std::thread(std::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
 }
 
-void InterruptNode()
-{
+void InterruptNode() {
   net_interrupted = true;
   net_interrupt_cond.notify_all();
   messageHandlerCondition.notify_all();
@@ -1716,18 +1707,12 @@ bool StopNode() {
     fAddressesInitialized = false;
   }
 
-  if(dns_address_seed_thread.joinable())
-    dns_address_seed_thread.join();
-  if(socket_handler_thread.joinable())
-    socket_handler_thread.join();
-  if(open_added_connections_thread.joinable())
-    open_added_connections_thread.join();
-  if(open_connections_thread.joinable())
-    open_connections_thread.join();
-  if(message_handler_thread.joinable())
-    message_handler_thread.join();
-  if(staking_handler_thread.joinable())
-    staking_handler_thread.join();
+  if (dns_address_seed_thread.joinable()) dns_address_seed_thread.join();
+  if (socket_handler_thread.joinable()) socket_handler_thread.join();
+  if (open_added_connections_thread.joinable()) open_added_connections_thread.join();
+  if (open_connections_thread.joinable()) open_connections_thread.join();
+  if (message_handler_thread.joinable()) message_handler_thread.join();
+  if (staking_handler_thread.joinable()) staking_handler_thread.join();
 
   return true;
 }

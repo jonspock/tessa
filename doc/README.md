@@ -1,40 +1,40 @@
-Club Core
+Tessa Core
 =====================
 
 Setup
 ---------------------
-[Club Core](http://club.org/wallet) is the original Club client and it builds the backbone of the network. However, it downloads and stores the entire history of Club transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
+[Tessa Core](http://tessa.org/wallet) is the original Tessa client and it builds the backbone of the network. However, it downloads and stores the entire history of Tessa transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
 
 Running
 ---------------------
-The following are some helpful notes on how to run Club on your native platform.
+The following are some helpful notes on how to run Tessa on your native platform.
 
 ### Unix
 
 Unpack the files into a directory and run:
 
-- bin/32/club-qt (GUI, 32-bit) or bin/32/clubd (headless, 32-bit)
-- bin/64/club-qt (GUI, 64-bit) or bin/64/clubd (headless, 64-bit)
+- bin/32/tessa-qt (GUI, 32-bit) or bin/32/tessad (headless, 32-bit)
+- bin/64/tessa-qt (GUI, 64-bit) or bin/64/tessad (headless, 64-bit)
 
 ### Windows
 
-Unpack the files into a directory, and then run club-qt.exe.
+Unpack the files into a directory, and then run tessa-qt.exe.
 
 ### OSX
 
-Drag Club-Qt to your applications folder, and then run Club-Qt.
+Drag Tessa-Qt to your applications folder, and then run Tessa-Qt.
 
 ### Need Help?
 
-* See the documentation at the [Club Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO***
+* See the documentation at the [Tessa Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO***
 for help and more information.
-* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [Club Forum](http://forum.club.org/).
-* Join our Discord server [Discord Server](https://discord.club.org)
-* Join one of our Slack groups [Club Slack Groups](https://club.org/slack-logins/) (Main community is replaced by Discord).
+* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [Tessa Forum](http://forum.tessa.org/).
+* Join our Discord server [Discord Server](https://discord.tessa.org)
+* Join one of our Slack groups [Tessa Slack Groups](https://tessa.org/slack-logins/) (Main community is replaced by Discord).
 
 Building
 ---------------------
-The following are developer notes on how to build Club on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build Tessa on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [OSX Build Notes](build-osx.md)
 - [Unix Build Notes](build-unix.md)
@@ -42,7 +42,7 @@ The following are developer notes on how to build Club on your native platform. 
 
 Development
 ---------------------
-The Club repo's [root README](https://github.com/Club-Project/Club/blob/master/README.md) contains relevant information on the development process and automated testing.
+The Tessa repo's [root README](https://github.com/Tessa-Project/Tessa/blob/master/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Multiwallet Qt Development](multiwallet-qt.md)
@@ -56,8 +56,8 @@ The Club repo's [root README](https://github.com/Club-Project/Club/blob/master/R
 
 ### Resources
 
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [Club](http://forum.club.org/) forum.
-* Join the [Club-Dev](https://club-dev.slack.com/) Slack group ([Sign-Up](https://club-dev.herokuapp.com/)).
+* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [Tessa](http://forum.tessa.org/) forum.
+* Join the [Tessa-Dev](https://tessa-dev.slack.com/) Slack group ([Sign-Up](https://tessa-dev.herokuapp.com/)).
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

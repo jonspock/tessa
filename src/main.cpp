@@ -32,6 +32,7 @@
 #include "pow.h"
 #include "primitives/zerocoin.h"
 #include "reverse_iterate.h"
+#include "scriptcheck.h"
 #include "spork.h"
 #include "sporkdb.h"
 #include "staker.h"
@@ -39,8 +40,10 @@
 #include "txmempool.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "utiltime.h"
 #include "validationinterface.h"
 #include "zerochain.h"
+#include "script/sigcache.h"
 
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"
@@ -48,10 +51,8 @@
 
 #include <sstream>
 #include <thread>
+#include <cmath>
 
-//#include "script/script.h"
-#include "script/sigcache.h"
-//#include "script/standard.h"
 
 using namespace std;
 using namespace libzerocoin;
@@ -1608,11 +1609,7 @@ void ThreadScriptCheck() {
   scriptcheckqueue.Thread();
 }
 
-void InterruptThreadScriptCheck()
-{
-  scriptcheckqueue.Interrupt();
-};
-
+void InterruptThreadScriptCheck() { scriptcheckqueue.Interrupt(); };
 
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError) {
   // Tessa: recalculate Accumulator Checkpoints that failed to database properly
@@ -1626,7 +1623,7 @@ bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError
     CBlockIndex* pindex = chainActive[nZerocoinStart];
     while (pindex) {
       interruption_point(ShutdownRequested());
-      //if (ShutdownRequested()) return false;
+      // if (ShutdownRequested()) return false;
 
       // find checkpoints by iterating through the blockchain beginning with the first zerocoin block
       if (pindex->nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {

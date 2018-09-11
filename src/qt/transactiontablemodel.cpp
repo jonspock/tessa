@@ -78,7 +78,8 @@ class TransactionTablePriv {
      Call with transaction that was added, removed or changed.
    */
   void updateWallet(const uint256& hash, int status, bool showTransaction) {
-    //qDebug() << "TransactionTablePriv::updateWallet : " + QString::fromStdString(hash.ToString()) + " " + QString::number(status);
+    // qDebug() << "TransactionTablePriv::updateWallet : " + QString::fromStdString(hash.ToString()) + " " +
+    // QString::number(status);
 
     // Find bounds of this transaction in model
     QList<TransactionRecord>::iterator lower =
@@ -93,11 +94,11 @@ class TransactionTablePriv {
       if (showTransaction && !inModel) status = CT_NEW;     /* Not in model, but want to show, treat as new */
       if (!showTransaction && inModel) status = CT_DELETED; /* In model, but want to hide, treat as deleted */
     }
-/*
-    qDebug() << "    inModel=" + QString::number(inModel) + " Index=" + QString::number(lowerIndex) + "-" +
-                    QString::number(upperIndex) + " showTransaction=" + QString::number(showTransaction) +
-                    " derivedStatus=" + QString::number(status);
-*/
+    /*
+        qDebug() << "    inModel=" + QString::number(inModel) + " Index=" + QString::number(lowerIndex) + "-" +
+                        QString::number(upperIndex) + " showTransaction=" + QString::number(showTransaction) +
+                        " derivedStatus=" + QString::number(status);
+    */
     switch (status) {
       case CT_NEW:
         if (inModel) {

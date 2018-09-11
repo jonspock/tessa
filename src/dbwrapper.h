@@ -14,6 +14,7 @@
 #include "version.h"
 
 #include <lmdb.h>
+#include <atomic>
 #include <string>
 
 class CDbWrapper {

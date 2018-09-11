@@ -5,9 +5,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "db.h"
-#include "util.h"
 #include "fs.h"
 #include "fs_utils.h"
+#include "util.h"
 #include <cstdint>
 
 #ifndef WIN32
@@ -23,10 +23,7 @@ bool CDB::init(const fs::path& wallet_dir, const char* pszMode) {
   interrupt = false;
   return open(wallet_dir, pszMode);
 }
-void CDB::Interrupt()
-{
-    interrupt = true;
-}
+void CDB::Interrupt() { interrupt = true; }
 
 bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
   if (fDbEnvInit) return false;

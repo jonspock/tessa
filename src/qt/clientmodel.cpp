@@ -6,9 +6,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "clientmodel.h"
-#include "externs.h"
-
 #include "bantablemodel.h"
+#include "chain.h"
+#include "externs.h"
 #include "guiconstants.h"
 #include "peertablemodel.h"
 
@@ -19,6 +19,7 @@
 #include "net.h"
 #include "ui_interface.h"
 #include "util.h"
+#include "utiltime.h"
 
 #include <stdint.h>
 

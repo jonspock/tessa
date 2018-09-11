@@ -128,7 +128,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent)
 #endif
   setWindowTitle(windowTitle);
 
-
   rpcConsole = new RPCConsole(enableWallet ? this : 0);
   if (enableWallet) {
     /** Create wallet frame*/
@@ -744,7 +743,6 @@ void BitcoinGUI::gotoMultisigSpend() {
 void BitcoinGUI::gotoMultisigSign() {
   if (walletFrame) walletFrame->gotoMultisigDialog(2);
 }
-
 
 void BitcoinGUI::gotoMultiSendDialog() {
   multiSendAction->setChecked(true);

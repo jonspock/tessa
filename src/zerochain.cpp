@@ -10,6 +10,7 @@
 #include "main.h"
 #include "txdb.h"
 #include "util.h"
+#include "validationstate.h"
 
 // 6 comes from OPCODE (1) + vch.size() (1) + BIGNUM size (4)
 #define SCRIPT_OFFSET 6
@@ -47,7 +48,7 @@ bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>&
       CValidationState state;
       libzerocoin::PublicCoin pubCoin;
       if (!TxOutToPublicCoin(txOut, pubCoin, state)) return false;
-      
+
       listPubcoins.emplace_back(pubCoin);
     }
   }
@@ -206,7 +207,7 @@ std::string ReindexZerocoinDB() {
 
     for (const CTransaction& tx : block.vtx) {
       for (const auto& v : tx.vin) {
-        (void)v; // to silence unused variable warning
+        (void)v;  // to silence unused variable warning
         if (tx.IsCoinBase()) break;
         if (tx.ContainsZerocoins()) {
           uint256 txid = tx.GetHash();

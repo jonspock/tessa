@@ -9,8 +9,8 @@
 #include "protocol.h"
 
 #include "chainparams.h"
-#include "util.h"
 #include "fs_utils.h"
+#include "util.h"
 #include "utilstrencodings.h"
 
 #ifndef WIN32

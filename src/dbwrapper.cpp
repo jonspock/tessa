@@ -5,9 +5,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "dbwrapper.h"
-#include "util.h"
 #include "fs.h"
 #include "fs_utils.h"
+#include "util.h"
 #include <cstdint>
 
 #ifndef WIN32

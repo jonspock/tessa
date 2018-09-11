@@ -1,4 +1,5 @@
 #include "staker.h"
+#include "pow.h"
 #include "wallet/wallet.h"
 
 CStaker gStaker;

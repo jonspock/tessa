@@ -11,9 +11,9 @@
 #include "base58.h"
 #include "init.h"
 #include "main.h"
-#include "main_externs.h"
 #include "random.h"
 #include "sync.h"
+#include "tessa_externs.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "utilstrencodings.h"
@@ -170,7 +170,7 @@ string CRPCTable::help(string strCommand) const {
         if (category != pcmd->category) {
           if (!category.empty()) strRet += "\n";
           category = pcmd->category;
-          string firstLetter(1,ToUpper(category[0]));//.substr(0, 1);
+          string firstLetter(1, ToUpper(category[0]));  //.substr(0, 1);
           strRet += "== " + firstLetter + category.substr(1) + " ==\n";
         }
       }

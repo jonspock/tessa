@@ -12,6 +12,7 @@
 #include "base58.h"
 #include "fs.h"
 #include "fs_utils.h"
+#include "main.h"
 #include "primitives/deterministicmint.h"
 #include "protocol.h"
 #include "serialize.h"
@@ -19,6 +20,7 @@
 #include "txdb.h"
 #include "util.h"
 #include "utiltime.h"
+#include "validationstate.h"
 #include "wallet.h"
 
 //#include <thread>
@@ -570,7 +572,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
     if (nMinVersion > CLIENT_VERSION) return DB_TOO_NEW;
     pwallet->LoadMinVersion(nMinVersion);
   }
-  
+
   // Get cursor
   auto pcursor = GetCursor();
   if (!pcursor) {
@@ -589,7 +591,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
       LogPrintf("Error reading next record from wallet database\n");
       return DB_CORRUPT;
     }
-    
+
     // Try to be tolerant of single corrupt records:
     string strType, strErr;
     if (!ReadKeyValue(pwallet, ssKey, ssValue, wss, strType, strErr)) {
@@ -608,7 +610,6 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
     if (!strErr.empty()) LogPrintf("%s\n", strErr);
   }
   cursor_close(pcursor);
-  
 
   if (fNoncriticalErrors && result == DB_LOAD_OK) result = DB_NONCRITICAL_ERROR;
 
@@ -651,7 +652,7 @@ DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, vector<uint256>& vTxHash, vec
     if (nMinVersion > CLIENT_VERSION) return DB_TOO_NEW;
     pwallet->LoadMinVersion(nMinVersion);
   }
-  
+
   // Get cursor
   auto pcursor = GetCursor();
   if (!pcursor) {
@@ -670,16 +671,16 @@ DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, vector<uint256>& vTxHash, vec
       LogPrintf("Error reading next record from wallet database\n");
       return DB_CORRUPT;
     }
-    
+
     string strType;
     ssKey >> strType;
     if (strType == "tx") {
       uint256 hash;
       ssKey >> hash;
-      
+
       CWalletTx wtx;
       ssValue >> wtx;
-      
+
       vTxHash.push_back(hash);
       vWtx.push_back(wtx);
     }

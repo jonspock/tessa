@@ -9,14 +9,15 @@
 #include "bantablemodel.h"
 #include "chainparams.h"
 #include "clientmodel.h"
+#include "fs_utils.h"
 #include "guiutil.h"
 #include "main.h"
 #include "peertablemodel.h"
 #include "rpc/client.h"
 #include "rpc/server.h"
 #include "ui_rpcconsole.h"
-#include "fs_utils.h"
 #include "util.h"
+#include "utiltime.h"
 
 #include "wallet/wallet.h"
 #include <univalue.h>
@@ -30,7 +31,6 @@
 #include <QThread>
 #include <QTime>
 #include <QTimer>
-
 
 // TODO: add a scrollback limit, as there is currently none
 // TODO: make it possible to filter out categories (esp debug messages when implemented)
@@ -236,7 +236,7 @@ void RPCExecutor::request(const QString& command) {
 }
 
 RPCConsole::RPCConsole(QWidget* parent)
-  : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
       ui(new Ui::RPCConsole),
       clientModel(0),
       historyPtr(0),

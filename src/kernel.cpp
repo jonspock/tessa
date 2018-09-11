@@ -6,12 +6,17 @@
 
 #include "kernel.h"
 #include "blockmap.h"
+#include "chain.h"
 #include "chainparams.h"
 #include "db.h"
+#include "main.h"
+#include "primitives/block.h"
 #include "script/interpreter.h"
+#include "script/standard.h"  // for const
 #include "stakeinput.h"
 #include "timedata.h"
 #include "util.h"
+#include "utiltime.h"
 
 using std::make_pair;
 using std::map;
@@ -258,8 +263,7 @@ bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, const arith_uint
 }
 
 bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t nStakeModifier,
-                const arith_uint256& bnTarget, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
-                uint256& hashProofOfStake) {
+                const arith_uint256& bnTarget, uint32_t nTimeBlockFrom, uint32_t& nTimeTx, uint256& hashProofOfStake) {
   CDataStream ss(SER_GETHASH);
   ss << nStakeModifier << nTimeBlockFrom << ssUniqueID << nTimeTx;
   hashProofOfStake = Hash(ss.begin(), ss.end());

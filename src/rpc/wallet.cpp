@@ -9,8 +9,11 @@
 #include "wallet/wallet.h"
 #include "amount.h"
 #include "base58.h"
+#include "blockmap.h"
 #include "core_io.h"
+#include "chain.h"
 #include "init.h"
+#include "main.h"
 #include "net.h"
 #include "netbase.h"
 #include "rpc/server.h"
@@ -18,15 +21,14 @@
 #include "uint512.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "utiltime.h"
 #include "wallet/walletdb.h"
-#include "blockmap.h"
 
 #include <cstdint>
 #include <thread>
 
 #include "libzerocoin/PrivateCoin.h"
 #include "primitives/deterministicmint.h"
-#include "spork.h"
 
 #include <univalue.h>
 
@@ -36,7 +38,6 @@ using namespace ecdsa;
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 static std::atomic<bool> search_interrupted(false);
-
 
 std::string HelpRequiringPassphrase() {
   return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call."
@@ -3135,10 +3136,7 @@ void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
     LogPrintf("SearchThread() exception");
   }
 }
-void InterruptSearch()
-{
-  search_interrupted = true;
-}
+void InterruptSearch() { search_interrupted = true; }
 
 UniValue searchdzkp(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 3)
@@ -3167,7 +3165,6 @@ UniValue searchdzkp(const UniValue& params, bool fHelp) {
 
   ////  int nThreads = params[2].get_int();
 
-
   int nStart = nCount;
   int nEnd = nStart + nRange;
   CZeroWallet* zwallet = pwalletMain->zwalletMain;
@@ -3176,7 +3173,7 @@ UniValue searchdzkp(const UniValue& params, bool fHelp) {
   auto bindSearch = std::bind(SearchThread, zwallet, nStart, nEnd);
   static std::thread search_thread;
   search_thread = std::thread(&TraceThread<decltype(bindSearch)>, "search", std::move(bindSearch));
-  
+
   zwallet->RemoveMintsFromPool(pwalletMain->zkpTracker->GetSerialHashes());
   zwallet->SyncWithChain(false);
 

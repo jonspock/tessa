@@ -1,28 +1,28 @@
 Translations
 ============
 
-The Club Core project has been designed to support multiple localisations. This makes adding new phrases, and completely new languages easily achievable. For managing all application translations, Club Core makes use of the Transifex online translation management tool.
+The Tessa Core project has been designed to support multiple localisations. This makes adding new phrases, and completely new languages easily achievable. For managing all application translations, Tessa Core makes use of the Transifex online translation management tool.
 
 ### Helping to translate (using Transifex)
 Transifex is setup to monitor the GitHub repo for updates, and when code containing new translations is found, Transifex will process any changes. It may take several hours after a pull-request has been merged, to appear in the Transifex web interface.
 
-Multiple language support is critical in assisting Club's global adoption, and growth. One of Club's greatest strengths is cross-border money transfers, any help making that easier is greatly appreciated.
+Multiple language support is critical in assisting Tessa's global adoption, and growth. One of Tessa's greatest strengths is cross-border money transfers, any help making that easier is greatly appreciated.
 
-See the [Transifex Club project](https://www.transifex.com/club-project/club-project-translations/) to assist in translations.
+See the [Transifex Tessa project](https://www.transifex.com/tessa-project/tessa-project-translations/) to assist in translations.
 
 ### Writing code with translations
 We use automated scripts to help extract translations in both Qt, and non-Qt source files. It is rarely necessary to manually edit the files in `src/qt/locale/`. The translation source files must adhere to the following format:
-`club_xx_YY.ts or club_xx.ts`
+`tessa_xx_YY.ts or tessa_xx.ts`
 
-`src/qt/locale/club_en.ts` is treated in a special way. It is used as the source for all other translations. Whenever a string in the source code is changed, this file must be updated to reflect those changes. A custom script is used to extract strings from the non-Qt parts. This script makes use of `gettext`, so make sure that utility is installed (ie, `apt-get install gettext` on Ubuntu/Debian). Once this has been updated, `lupdate` (included in the Qt SDK) is used to update `club_en.ts`.
+`src/qt/locale/tessa_en.ts` is treated in a special way. It is used as the source for all other translations. Whenever a string in the source code is changed, this file must be updated to reflect those changes. A custom script is used to extract strings from the non-Qt parts. This script makes use of `gettext`, so make sure that utility is installed (ie, `apt-get install gettext` on Ubuntu/Debian). Once this has been updated, `lupdate` (included in the Qt SDK) is used to update `tessa_en.ts`.
 
-To automatically regenerate the `club_en.ts` file, run the following commands:
+To automatically regenerate the `tessa_en.ts` file, run the following commands:
 ```sh
 cd src/
 make translate
 ```
 
-`contrib/club-qt.pro` takes care of generating `.qm` (binary compiled) files from `.ts` (source files) files. It’s mostly automated, and you shouldn’t need to worry about it.
+`contrib/tessa-qt.pro` takes care of generating `.qm` (binary compiled) files from `.ts` (source files) files. It’s mostly automated, and you shouldn’t need to worry about it.
 
 **Example Qt translation**
 ```cpp
@@ -36,14 +36,14 @@ When an updated source file is merged into the GitHub repo, Transifex will autom
 
 To create the pull-request, use the following commands:
 ```
-git add src/qt/clubstrings.cpp src/qt/locale/club_en.ts
+git add src/qt/tessastrings.cpp src/qt/locale/tessa_en.ts
 git commit
 ```
 
 ### Creating a Transifex account
 Visit the [Transifex Signup](https://www.transifex.com/signup/) page to create an account. Take note of your username and password, as they will be required to configure the command-line tool.
 
-You can find the Club translation project at [https://www.transifex.com/club-project/club-project-translations/](https://www.transifex.com/club-project/club-project-translations/).
+You can find the Tessa translation project at [https://www.transifex.com/tessa-project/tessa-project-translations/](https://www.transifex.com/tessa-project/tessa-project-translations/).
 
 ### Installing the Transifex client command-line tool
 The client it used to fetch updated translations. If you are having problems, or need more details, see [http://docs.transifex.com/developer/client/setup](http://docs.transifex.com/developer/client/setup)
@@ -68,16 +68,16 @@ username = USERNAME
 
 Please see [http://docs.transifex.com/developer/client/setup#windows](http://docs.transifex.com/developer/client/setup#windows) for details on installation.
 
-The Transifex Club project config file is included as part of the repo. It can be found at `.tx/config`, however you shouldn’t need change anything.
+The Transifex Tessa project config file is included as part of the repo. It can be found at `.tx/config`, however you shouldn’t need change anything.
 
 ### Synchronising translations
 To assist in updating translations, we have created a script to help.
 
 1. `python contrib/devtools/update-translations.py`
-2. Update `src/qt/club_locale.qrc` manually or via
-   `ls src/qt/locale/*ts|xargs -n1 basename|sed 's/\(club_\(.*\)\).ts/<file alias="\2">locale\/\1.qm<\/file>/'`
+2. Update `src/qt/tessa_locale.qrc` manually or via
+   `ls src/qt/locale/*ts|xargs -n1 basename|sed 's/\(tessa_\(.*\)\).ts/<file alias="\2">locale\/\1.qm<\/file>/'`
 3. Update `src/Makefile.qt.include` manually or via
-   `ls src/qt/locale/*ts|xargs -n1 basename|sed 's/\(club_\(.*\)\).ts/  qt\/locale\/\1.ts \\/'`
+   `ls src/qt/locale/*ts|xargs -n1 basename|sed 's/\(tessa_\(.*\)\).ts/  qt\/locale\/\1.ts \\/'`
 4. `git add` new translations from `src/qt/locale/`
 
 **Do not directly download translations** one by one from the Transifex website, as we do a few post-processing steps before committing the translations.
@@ -85,7 +85,7 @@ To assist in updating translations, we have created a script to help.
 ### Handling Plurals (in source files)
 When new plurals are added to the source file, it's important to do the following steps:
 
-1. Open `club_en.ts` in Qt Linguist (included in the Qt SDK)
+1. Open `tessa_en.ts` in Qt Linguist (included in the Qt SDK)
 2. Search for `%n`, which will take you to the parts in the translation that use plurals
 3. Look for empty `English Translation (Singular)` and `English Translation (Plural)` fields
 4. Add the appropriate strings for the singular and plural form of the base string
@@ -94,11 +94,11 @@ When new plurals are added to the source file, it's important to do the followin
 7. Save the source file
 
 ### Translating a new language
-To create a new language template, you will need to edit the languages manifest file `src/qt/club_locale.qrc` and add a new entry. Below is an example of the English language entry.
+To create a new language template, you will need to edit the languages manifest file `src/qt/tessa_locale.qrc` and add a new entry. Below is an example of the English language entry.
 
 ```xml
 <qresource prefix="/translations">
-    <file alias="en">locale/club_en.qm</file>
+    <file alias="en">locale/tessa_en.qm</file>
     ...
 </qresource>
 ```

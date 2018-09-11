@@ -69,13 +69,10 @@ void CScheduler::interrupt(bool drain) {
   newTaskScheduled.notify_all();
 }
 
-void CScheduler::stop()
-{
+void CScheduler::stop() {
   std::unique_lock<std::mutex> lock(newTaskMutex);
-  while(nThreadsServicingQueue)
-    newTaskScheduled.wait(lock);
+  while (nThreadsServicingQueue) newTaskScheduled.wait(lock);
 }
-
 
 void CScheduler::schedule(CScheduler::Function f, std::chrono::system_clock::time_point t) {
   {

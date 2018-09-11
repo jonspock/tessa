@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "keystore.h"
 #include "primitives/transaction.h"
 #include "serialize.h"
 #include "uint256.h"

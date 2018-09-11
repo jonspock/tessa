@@ -7,12 +7,13 @@
 
 #include "txmempool.h"
 
-#include "clientversion.h"
 #include "chainparams.h"
+#include "clientversion.h"
 #include "main.h"
 #include "streams.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "validationstate.h"
 #include "version.h"
 #include <algorithm>
 #include <random>

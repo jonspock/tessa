@@ -3,12 +3,12 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "blockmap.h"
 #include "stakeinput.h"
 #include "accumulators.h"
+#include "blockmap.h"
 #include "chain.h"
 #include "kernel.h"
-#include "main.h"
+#include "main.h"  // GetTransaction
 #include "primitives/deterministicmint.h"
 #include "wallet/wallet.h"
 

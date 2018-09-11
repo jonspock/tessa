@@ -15,9 +15,9 @@
 #include "sync.h"
 #include "version.h"
 
+#include <atomic>
 #include <lmdb.h>
 #include <string>
-#include <atomic>
 
 class CDB {
  protected:

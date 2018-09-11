@@ -10,8 +10,8 @@
 
 #include "guiutil.h"
 
-#include "fs_utils.h"
 #include "fs.h"
+#include "fs_utils.h"
 #include "util.h"
 
 #include <QFileDialog>
@@ -94,7 +94,11 @@ void FreespaceChecker::check() {
   emit reply(replyStatus, replyMessage, freeBytesAvailable);
 }
 
-Intro::Intro(QWidget* parent) : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::Intro), thread(0), signalled(false) {
+Intro::Intro(QWidget* parent)
+    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+      ui(new Ui::Intro),
+      thread(0),
+      signalled(false) {
   ui->setupUi(this);
   ui->sizeWarningLabel->setText(ui->sizeWarningLabel->text().arg(BLOCK_CHAIN_SIZE / GB_BYTES));
   startThread();

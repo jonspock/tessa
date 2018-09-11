@@ -12,6 +12,7 @@
 #include "uint256.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include "utiltime.h"
 
 #ifdef HAVE_GETADDRINFO_A
 #include <netdb.h>
@@ -40,16 +41,12 @@ int nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 bool fNameLookup = false;
 static std::atomic<bool> netbase_interrupted(false);
 
-
 static const uint8_t pchIPv4[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
 
 // Need ample time for negotiation for very slow proxies such as Tor (milliseconds)
 static const int SOCKS5_RECV_TIMEOUT = 20 * 1000;
 
-void InterruptNetBase()
-{
-    netbase_interrupted = true;
-}
+void InterruptNetBase() { netbase_interrupted = true; }
 
 enum Network ParseNetwork(std::string net) {
   std::transform(net.begin(), net.end(), net.begin(), ::tolower);

@@ -13,11 +13,11 @@
 #include "ui_optionsdialog.h"
 
 #include "bitcoinunits.h"
+#include "fs_utils.h"  // GetDataDir()
 #include "guiutil.h"
-#include "optionsmodel.h"
-#include "fs_utils.h" // GetDataDir()
 #include "main.h"  // for MAX_SCRIPTCHECK_THREADS
 #include "netbase.h"
+#include "optionsmodel.h"
 #include "txdb.h"  // for -dbcache defaults
 
 #include "wallet/wallet.h"  // for CWallet::minTxFee

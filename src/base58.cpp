@@ -8,9 +8,9 @@
 
 #include "ecdsa/key.h"
 #include "hash.h"
+#include "mpark/variant.hpp"
 #include "support/cleanse.h"
 #include "uint256.h"
-#include "mpark/variant.hpp"
 #include <cassert>
 #include <cstdint>
 #include <iomanip>
@@ -186,7 +186,7 @@ int CBase58Data::CompareTo(const CBase58Data& b58) const {
 }
 
 namespace {
-  class CBitcoinAddressVisitor : public mpark::variant<bool> {
+class CBitcoinAddressVisitor : public mpark::variant<bool> {
  private:
   CBitcoinAddress* addr;
 
@@ -210,9 +210,7 @@ bool CBitcoinAddress::Set(const CScriptID& id) {
   return true;
 }
 
-bool CBitcoinAddress::Set(const CTxDestination& dest) {
-  return mpark::visit(CBitcoinAddressVisitor(this), dest);
-}
+bool CBitcoinAddress::Set(const CTxDestination& dest) { return mpark::visit(CBitcoinAddressVisitor(this), dest); }
 
 bool CBitcoinAddress::IsValid() const { return IsValid(Params()); }
 

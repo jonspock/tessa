@@ -8,7 +8,13 @@
 
 #pragma once
 #include "consensus/consensus.h" // Mostly other defs
-#include "primitives/block.h"
+
+/** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
+static const unsigned int LOCKTIME_THRESHOLD = 500000000;  // Tue Nov  5 00:53:20 1985 UTC
+
+/** Flags for nSequence and nLockTime locks  -already in consensus.h */
+/** Used as the flags parameter to sequence and nLocktime checks in non-consensus code. */
+static const uint32_t STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE | LOCKTIME_MEDIAN_TIME_PAST;
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE_CURRENT = 2000000;

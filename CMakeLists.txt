@@ -372,6 +372,7 @@ find_package(ZeroMQ)
 if (ZeroMQ_FOUND)
   message(STATUS "Found ZMQ adding define ENABLE_ZMQ")
   add_definitions("-DENABLE_ZMQ")
+  SET(ENABLE_ZMQ 1)
   SET(ZMQ_SOURCES
     ./src/zmq/zmqnotificationinterface.cpp
     ./src/zmq/zmqpublishnotifier.cpp

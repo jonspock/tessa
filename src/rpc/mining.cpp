@@ -8,6 +8,7 @@
 
 #include "amount.h"
 #include "base58.h"
+#include "blockmap.h"
 #include "chainparams.h"
 #include "core_io.h"
 #include "db.h"
@@ -18,8 +19,9 @@
 #include "pow.h"
 #include "rpc/server.h"
 #include "util.h"
+#include "utiltime.h"
+#include "validationstate.h"
 #include "wallet/wallet.h"
-#include "blockmap.h"
 
 #include <cstdint>
 #include <univalue.h>

@@ -15,7 +15,7 @@
 #include "askpassphrasedialog.h"
 #include "base58.h"
 #include "init.h"
-#include "main_externs.h"
+#include "tessa_externs.h"
 #include "wallet/wallet.h"
 
 #include <string>
@@ -24,7 +24,9 @@
 #include <QClipboard>
 
 SignVerifyMessageDialog::SignVerifyMessageDialog(QWidget* parent)
-  : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::SignVerifyMessageDialog), model(0) {
+    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+      ui(new Ui::SignVerifyMessageDialog),
+      model(0) {
   ui->setupUi(this);
 
   ui->signatureOut_SM->setPlaceholderText(tr("Click \"Sign Message\" to generate signature"));

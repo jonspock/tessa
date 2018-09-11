@@ -15,10 +15,12 @@
 #include "sync.h"
 #include "txdb.h"
 #include "txmempool.h"
+#include "verifydb.h"
 
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
+#include "validationstate.h"
 
 #include <cstdint>
 #include <univalue.h>

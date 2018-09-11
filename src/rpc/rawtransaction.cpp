@@ -7,6 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "base58.h"
+#include "blockmap.h"
 #include "core_io.h"
 #include "init.h"
 #include "keystore.h"
@@ -21,8 +22,8 @@
 #include "script/standard.h"
 #include "uint256.h"
 #include "utilmoneystr.h"
+#include "validationstate.h"
 #include "wallet/wallet.h"
-#include "blockmap.h"
 
 #include <cstdint>
 

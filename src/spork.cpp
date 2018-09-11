@@ -5,9 +5,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spork.h"
+#include "base58.h"
 #include "blockmap.h"
 #include "ecdsa/key.h"
-#include "base58.h"
 #include "main.h"
 #include "net.h"
 #include "protocol.h"
@@ -15,6 +15,8 @@
 #include "sync.h"
 #include "timedata.h"
 #include "util.h"
+#include "utiltime.h"
+#include "validationstate.h"
 
 using namespace std;
 using namespace ecdsa;

@@ -6,11 +6,12 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "init.h"
-#include "uint256.h"
 #include "blockmap.h"
-#include "net.h" // need all of that?
-#include "main_externs.h"
+#include "init.h"
+#include "net.h"  // need all of that?
+#include "chain.h"
+#include "tessa_externs.h"
+#include "uint256.h"
 #include "wallet.h"
 #include <cassert>
 

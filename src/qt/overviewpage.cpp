@@ -208,7 +208,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   CAmount availableTotalBalance = pivAvailableBalance + matureZerocoinBalance;
   CAmount sumTotalBalance = nTotalBalance + zerocoinBalance;
   CAmount nAvailableWatchBalance = watchOnlyBalance - watchImmatureBalance - nWatchOnlyLockedBalance;
- 
+
   // Tessa labels
   ui->labelBalance->setText(
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, pivAvailableBalance, false, BitcoinUnits::separatorAlways));

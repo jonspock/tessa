@@ -263,7 +263,6 @@ void WalletView::gotoVerifyMessageTab(QString addr) {
   if (!addr.isEmpty()) signVerifyMessageDialog->setAddress_VM(addr);
 }
 
-
 void WalletView::gotoMultiSendDialog() {
   MultiSendDialog* multiSendDialog = new MultiSendDialog(this);
   multiSendDialog->setModel(walletModel);
@@ -296,8 +295,7 @@ void WalletView::encryptWallet(bool status) {
   updateEncryptionStatus();
 }
 
-void WalletView::backupWallet() {
-}
+void WalletView::backupWallet() {}
 
 void WalletView::changePassphrase() {
   AskPassphraseDialog dlg(AskPassphraseDialog::Mode::ChangePass, this, walletModel,

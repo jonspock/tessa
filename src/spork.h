@@ -6,11 +6,9 @@
 
 #pragma once
 
-#include "main.h"
 #include "net.h"
 #include "protocol.h"
 #include "sync.h"
-#include "util.h"
 
 namespace ecdsa {
   class CPubKey;

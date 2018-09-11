@@ -9,10 +9,10 @@
 #include "chainparams.h"
 #include "init.h"
 #include "main.h"
-#include "main_constants.h"
 #include "rand_bignum.h"
-#include "spork.h"
+#include "tessa_constants.h"
 #include "txdb.h"
+#include "utiltime.h"
 
 using namespace libzerocoin;
 using namespace std;

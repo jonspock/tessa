@@ -7,6 +7,7 @@
 #include "bitcoinunits.h"
 #include "chainparams.h"
 #include "clientmodel.h"
+#include "coins.h"
 #include "core_io.h"
 #include "guiutil.h"
 #include "main.h"

@@ -7,8 +7,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "fs_utils.h"
-#include "fs.h"
 #include "chainparamsbase.h"
+#include "fs.h"
 #include "util.h"
 
 #ifndef WIN32
@@ -90,6 +90,11 @@ fs::path GetDefaultDataDir() {
 static fs::path pathCached;
 static fs::path pathCachedNetSpecific;
 static CCriticalSection csPathCached;
+
+void ClearDatadirCache() {
+  pathCached = fs::path();
+  pathCachedNetSpecific = fs::path();
+}
 
 const fs::path& GetDataDir(bool fNetSpecific) {
   LOCK(csPathCached);
@@ -176,4 +181,3 @@ fs::path GetSpecialFolderPath(int nFolder, bool fCreate) {
 #endif
 
 fs::path GetTempPath() { return fs::temp_directory_path(); }
-

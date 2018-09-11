@@ -104,12 +104,11 @@ check_builtin_exist(__builtin_clzll HAVE_DECL___BUILTIN_CLZLL)
 # Various system libraries
 check_symbol_exists(strnlen "string.h" HAVE_DECL_STRNLEN)
 
-# Activate wallet
-set(ENABLE_WALLET ${BUILD_BITCOIN_WALLET})
+# Activate wallet - not used
+# set(ENABLE_WALLET ${BUILD_BITCOIN_WALLET})
 
 # Activate ZeroMQ
-set(ENABLE_ZMQ ${BUILD_BITCOIN_ZMQ})
-
+set(ENABLE_ZMQ ${ENABLE_ZMQ})
 
 # Generate the config
 configure_file(tessa-config.h.in tessa-config.h ESCAPE_QUOTES)

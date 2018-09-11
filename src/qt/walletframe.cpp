@@ -144,8 +144,7 @@ void WalletFrame::encryptWallet(bool status) {
   if (walletView) walletView->encryptWallet(status);
 }
 
-void WalletFrame::backupWallet() {
-}
+void WalletFrame::backupWallet() {}
 
 void WalletFrame::changePassphrase() {
   WalletView* walletView = currentWalletView();

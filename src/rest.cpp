@@ -5,6 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "blockmap.h"
 #include "chain.h"
 #include "httpserver.h"
 #include "main.h"
@@ -16,7 +17,6 @@
 #include "txmempool.h"
 #include "utilsplitstring.h"
 #include "utilstrencodings.h"
-#include "blockmap.h"
 #include "version.h"
 
 #include <boost/dynamic_bitset.hpp>

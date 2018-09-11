@@ -171,116 +171,8 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread) {
   strMiscWarning = message;
 }
 
-fs::path GetDefaultDataDir() {
-// Windows < Vista: C:\Documents and Settings\Username\Application Data\Tessa
-// Windows >= Vista: C:\Users\Username\AppData\Roaming\Tessa
-// Mac: ~/Library/Application Support/Tessa
-// Unix: ~/.tessa
-#ifdef WIN32
-  // Windows
-  return GetSpecialFolderPath(CSIDL_APPDATA) / "Tessa";
-#else
-  fs::path pathRet;
-  char* pszHome = getenv("HOME");
-  if (pszHome == nullptr || strlen(pszHome) == 0)
-    pathRet = fs::path("/");
-  else
-    pathRet = fs::path(pszHome);
-#ifdef MAC_OSX
-  // Mac
-  pathRet /= "Library/Application Support";
-  TryCreateDirectory(pathRet);
-  return pathRet / "Tessa";
-#else
-  // Unix
-  return pathRet / ".tessa";
-#endif
-#endif
-}
-
-static fs::path pathCached;
-static fs::path pathCachedNetSpecific;
-static CCriticalSection csPathCached;
-
-const fs::path& GetDataDir(bool fNetSpecific) {
-  LOCK(csPathCached);
-
-  fs::path& path = fNetSpecific ? pathCachedNetSpecific : pathCached;
-
-  // This can be called during exceptions by LogPrintf(), so we cache the
-  // value so we don't have to do memory allocations after that.
-  if (!path.empty()) return path;
-
-  if (gArgs.IsArgSet("-datadir")) {
-    path = fs::system_complete(gArgs.GetArg("-datadir", ""));
-    if (!fs::is_directory(path)) {
-      path = "";
-      return path;
-    }
-  } else {
-    path = GetDefaultDataDir();
-  }
-  if (fNetSpecific) path /= BaseParams().DataDir();
-
-  fs::create_directories(path);
-
-  return path;
-}
-
-void ClearDatadirCache() {
-  pathCached = fs::path();
-  pathCachedNetSpecific = fs::path();
-}
-
-fs::path GetConfigFile() {
-  fs::path pathConfigFile(GetArg("-conf", "tessa.conf"));
-  if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
-
-  return pathConfigFile;
-}
 
 void ReadConfigFile() { gArgs.ReadConfigFile(); }
-
-#ifndef WIN32
-fs::path GetPidFile() {
-  fs::path pathPidFile(GetArg("-pid", "tessad.pid"));
-  if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
-  return pathPidFile;
-}
-
-void CreatePidFile(const fs::path& path, pid_t pid) {
-  FILE* file = fopen(path.string().c_str(), "w");
-  if (file) {
-    fprintf(file, "%d\n", pid);
-    fclose(file);
-  }
-}
-#endif
-
-bool RenameOver(const fs::path& src, fs::path& dest) {
-#ifdef WIN32
-  return MoveFileExA(src.string().c_str(), dest.string().c_str(), MOVEFILE_REPLACE_EXISTING) != 0;
-#else
-  int rc = std::rename(src.string().c_str(), dest.string().c_str());
-  return (rc == 0);
-#endif /* WIN32 */
-}
-
-/**
- * Ignores exceptions thrown by Boost's create_directory if the requested directory exists.
- * Specifically handles case where path p exists, but it wasn't possible for the user to
- * write to the parent directory.
- */
-bool TryCreateDirectory(const fs::path& p) {
-  try {
-    return fs::create_directory(p);
-  } catch (fs::filesystem_error) {
-    if (!fs::exists(p) || !fs::is_directory(p)) throw;
-  }
-
-  // create_directory didn't create the directory, it had to have existed already
-  return false;
-}
 
 void FileCommit(FILE* fileout) {
   fflush(fileout);  // harmless if redundantly called
@@ -403,8 +295,6 @@ fs::path GetSpecialFolderPath(int nFolder, bool fCreate) {
   return fs::path("");
 }
 #endif
-
-fs::path GetTempPath() { return fs::temp_directory_path(); }
 
 double double_safe_addition(double fValue, double fIncrement) {
   double fLimit = std::numeric_limits<double>::max() - fValue;

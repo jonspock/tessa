@@ -4,19 +4,23 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "privacydialog.h"
-#include "externs.h"
-#include "ui_privacydialog.h"
-
+#include "accumulators.h"
 #include "addressbookpage.h"
 #include "addresstablemodel.h"
 #include "askpassphrasedialog.h"
 #include "bitcoinunits.h"
 #include "coincontroldialog.h"
+#include "externs.h"
 #include "libzerocoin/Denominations.h"
+#include "main.h"
 #include "optionsmodel.h"
+#include "primitives/deterministicmint.h"
 #include "sendcoinsentry.h"
 #include "spork.h"
 #include "timedata.h"
+#include "ui_privacydialog.h"
+#include "utilmoneystr.h"
+#include "utiltime.h"
 #include "wallet/coincontrol.h"
 #include "walletmodel.h"
 #include "zerocontroldialog.h"
@@ -24,9 +28,6 @@
 #include <QClipboard>
 #include <QSettings>
 #include <QtWidgets>
-#include <accumulators.h>
-#include <primitives/deterministicmint.h>
-#include <utilmoneystr.h>
 
 using namespace std;
 
@@ -340,7 +341,8 @@ void PrivacyDialog::sendZKP() {
     QString strFeeWarning =
         "You've entered an amount with fractional digits and want the change to be converted to Zerocoin.<br /><br "
         "/><b>";
-    strFeeWarning += QString::number(dzFee, 'f', 8) + " Tessa </b>will be added to the standard transaction fees!<br />";
+    strFeeWarning +=
+        QString::number(dzFee, 'f', 8) + " Tessa </b>will be added to the standard transaction fees!<br />";
     QMessageBox::StandardButton retval =
         QMessageBox::question(this, tr("Confirm additional Fees"), strFeeWarning,
                               QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);

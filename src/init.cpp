@@ -36,7 +36,10 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "utiltime.h"
 #include "validationinterface.h"
+#include "validationstate.h"
+#include "verifydb.h"
 #include "zerochain.h"
 
 #include "accumulators.h"
@@ -164,14 +167,10 @@ static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 static std::thread scheduler_thread;
 static std::vector<std::thread> script_check_threads;
 static std::thread import_thread;
-#ifdef ENABLE_WALLET
-static std::thread flush_wallet_thread;
-#endif
 
 static bool fHaveGenesis = false;
 static std::mutex cs_GenesisWait;
 static CConditionVariable condvar_GenesisWait;
-
 
 void Interrupt(CScheduler& scheduler) {
   InterruptHTTPServer();
@@ -180,26 +179,19 @@ void Interrupt(CScheduler& scheduler) {
   InterruptREST();
   InterruptMapPort();
   scheduler.interrupt(false);
-  if(pblocktree)
-    pblocktree->InterruptLoadBlockIndexGuts();
+  if (pblocktree) pblocktree->InterruptLoadBlockIndexGuts();
 
-#warning "Check interupt stuff here"  
+#warning "Check interupt stuff here"
   /// HACK TBD!!!!
-  //if (CVerifyDB()).InterruptInit();
-  //if (CCoinsViewDB()).InterruptGetStats();
-  //if (CZerocoinDB()).InterruptWipeCoins();
-  
+  // if (CVerifyDB()).InterruptInit();
+  // if (CCoinsViewDB()).InterruptGetStats();
+  // if (CZerocoinDB()).InterruptWipeCoins();
+
   InterruptThreadScriptCheck();
   InterruptNetBase();
   InterruptNode();
   InterruptMiner();
   InterruptSearch();
-#ifdef ENABLE_WALLET
-  if (pwalletMain) {
-    pwalletMain->Interrupt();
-    InterruptFlushWalletDB();
-  }
-#endif
   condvar_GenesisWait.notify_all();
 }
 
@@ -230,19 +222,10 @@ void PrepareShutdown(CScheduler& scheduler) {
 
   StopMapPort();
   scheduler.stop();
-  if(scheduler_thread.joinable())
-    scheduler_thread.join();
-  for(auto&& thread : script_check_threads)
-    thread.join();
+  if (scheduler_thread.joinable()) scheduler_thread.join();
+  for (auto&& thread : script_check_threads) thread.join();
   script_check_threads.clear();
-#ifdef ENABLE_WALLET
-  if (flush_wallet_thread.joinable())
-    flush_wallet_thread.join();
-#endif
-  if (import_thread.joinable())
-    import_thread.join();
-
-  
+  if (import_thread.joinable()) import_thread.join();
   if (fFeeEstimatesInitialized) { fFeeEstimatesInitialized = false; }
 
   {
@@ -539,8 +522,6 @@ std::string HelpMessage(HelpMessageMode mode) {
     strUsage += HelpMessageOpt("-dropmessagestest=<n>", _("Randomly drop 1 of every <n> network messages"));
     strUsage += HelpMessageOpt("-fuzzmessagestest=<n>", _("Randomly fuzz 1 of every <n> network messages"));
     strUsage +=
-        HelpMessageOpt("-flushwallet", strprintf(_("Run a thread to flush wallet periodically (default: %u)"), 1));
-    strUsage +=
         HelpMessageOpt("-maxreorg", strprintf(_("Use a custom max chain reorganization depth (default: %u)"), 100));
     strUsage += HelpMessageOpt("-stopafterblockimport",
                                strprintf(_("Stop running after importing blocks from disk (default: %u)"), 0));
@@ -670,26 +651,26 @@ std::string HelpMessage(HelpMessageMode mode) {
 }
 
 std::string LicenseInfo() {
-  return FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Tessa Core Developers"), COPYRIGHT_YEAR)) +
-         "\n" + "\n" + FormatParagraph(_("This is **EXPERIMENTAL** software.")) + "\n" + "\n" +
-         FormatParagraph(_("Distributed under the MIT, Apache software, Boost Software and LGPL licenses, see the accompanying files " 
-                           "Copying, LGPL Version 2.1, and APACHE_LICENSE")) +
-         "\n" + "\n" + 
-         "\n";
+  return FormatParagraph(strprintf(_("Copyright (C) 2017-%i The Tessa Core Developers"), COPYRIGHT_YEAR)) + "\n" +
+         "\n" + FormatParagraph(_("This is **EXPERIMENTAL** software.")) + "\n" + "\n" +
+         FormatParagraph(_(
+             "Distributed under the MIT, Apache software, Boost Software and LGPL licenses, see the accompanying files "
+             "Copying, LGPL Version 2.1, and APACHE_LICENSE")) +
+         "\n" + "\n" + "\n";
 }
 
 static void BlockNotifyCallback(const uint256& hashNewTip) {
   std::string strCmd = GetArg("-blocknotify", "");
 
-  strCmd.replace(strCmd.find("%s"),2, hashNewTip.GetHex());
+  strCmd.replace(strCmd.find("%s"), 2, hashNewTip.GetHex());
   std::thread(runCommand, strCmd).detach();  // thread runs free
 }
 
 static void BlockSizeNotifyCallback(int size, const uint256& hashNewTip) {
   std::string strCmd = GetArg("-blocksizenotify", "");
 
-  strCmd.replace(strCmd.find("%s"),2, hashNewTip.GetHex());
-  strCmd.replace(strCmd.find("%d"),2, std::to_string(size));
+  strCmd.replace(strCmd.find("%s"), 2, hashNewTip.GetHex());
+  strCmd.replace(strCmd.find("%d"), 2, std::to_string(size));
   std::thread(runCommand, strCmd).detach();  // thread runs free
 }
 
@@ -1079,10 +1060,9 @@ bool AppInit2(CScheduler& scheduler) {
 
   LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
   if (nScriptCheckThreads) {
-    script_check_threads.reserve(nScriptCheckThreads-1);
-    for (int i = 0; i < nScriptCheckThreads - 1; i++)
-      script_check_threads.emplace_back(&ThreadScriptCheck);
-    }
+    script_check_threads.reserve(nScriptCheckThreads - 1);
+    for (int i = 0; i < nScriptCheckThreads - 1; i++) script_check_threads.emplace_back(&ThreadScriptCheck);
+  }
 
   if (gArgs.IsArgSet("-sporkkey"))  // spork priv key
   {

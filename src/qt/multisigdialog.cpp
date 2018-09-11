@@ -4,8 +4,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "multisigdialog.h"
-#include "ui_multisigdialog.h"
-#include "net.h"
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
 #include "base58.h"
@@ -16,12 +14,14 @@
 #include "init.h"
 #include "keystore.h"
 #include "main.h"  // AcceptToMemoryPool
-#include "main_externs.h"
+#include "net.h"
 #include "primitives/transaction.h"
 #include "qvalidatedlineedit.h"
 #include "script/interpreter.h"
 #include "script/script.h"
 #include "script/sign.h"
+#include "tessa_externs.h"
+#include "ui_multisigdialog.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
 #include "validationstate.h"
@@ -44,7 +44,10 @@ using namespace ecdsa;
 
 extern bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow);
 
-MultisigDialog::MultisigDialog(QWidget* parent) : QDialog(parent,Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint), ui(new Ui::MultisigDialog), model(0) {
+MultisigDialog::MultisigDialog(QWidget* parent)
+    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+      ui(new Ui::MultisigDialog),
+      model(0) {
   ui->setupUi(this);
   multisigTx = CMutableTransaction();
 

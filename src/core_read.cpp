@@ -35,8 +35,8 @@ CScript ParseScript(std::string s) {
       string strName(name);
       mapOpNames[strName] = (opcodetype)op;
       // Convenience: OP_ADD and just ADD are both recognized:
-      strName.replace(strName.find("OP_"),3,"");
-      //replace_first(strName, "OP_", "");
+      strName.replace(strName.find("OP_"), 3, "");
+      // replace_first(strName, "OP_", "");
       mapOpNames[strName] = (opcodetype)op;
     }
   }
