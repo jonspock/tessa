@@ -11,6 +11,7 @@
 #include "sync.h"
 #include <cstdint>
 #include <set>
+#include <vector>
 
 namespace ecdsa {
   class CPubKey;
