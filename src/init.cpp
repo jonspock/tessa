@@ -103,7 +103,7 @@ enum BindFlags {
   BF_WHITELIST = (1U << 2),
 };
 
-CClientUIInterface uiInterface;
+//CClientUIInterface uiInterface;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1080,7 +1080,7 @@ bool AppInit2(CScheduler& scheduler) {
    * be disabled when initialisation is finished.
    */
   if (fServer) {
-    uiInterface.InitMessage.connect(SetRPCWarmupStatus);
+    uiInterface.InitMessage_connect(SetRPCWarmupStatus);
     if (!AppInitServers()) return InitError(_("Unable to start HTTP server. See debug log for details."));
   }
 
@@ -1625,9 +1625,9 @@ bool AppInit2(CScheduler& scheduler) {
   }  // (!fDisableWallet)
   // ********************************************************* Step 9: import blocks
 
-  if (gArgs.IsArgSet("-blocknotify")) uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
+  if (gArgs.IsArgSet("-blocknotify")) uiInterface.NotifyBlockTip_connect(BlockNotifyCallback);
 
-  if (gArgs.IsArgSet("-blocksizenotify")) uiInterface.NotifyBlockSize.connect(BlockSizeNotifyCallback);
+  if (gArgs.IsArgSet("-blocksizenotify")) uiInterface.NotifyBlockSize_connect(BlockSizeNotifyCallback);
 
   // scan for better chains in the block chain database, that are not yet connected in the active best chain
   CValidationState state;

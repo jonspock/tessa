@@ -226,6 +226,7 @@ SET(COMMON_A
   ./src/logging.cpp
   ./src/fs.cpp
   ./src/fs_utils.cpp
+  ./src/ui_interface.cpp
   )
 
 # No longer used    
