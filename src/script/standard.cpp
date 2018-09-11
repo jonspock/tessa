@@ -5,10 +5,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "mpark/variant.hpp"
 #include "script/standard.h"
 #include "ecdsa/pubkey.h"
 #include "hash.h"
+#include "mpark/variant.hpp"
 #include "script/script.h"
 #include "util.h"
 #include "utilstrencodings.h"

@@ -91,8 +91,7 @@ void SplitHostPort(std::string in, int& portOut, std::string& hostOut) {
     hostOut = in;
 }
 
-bool static LookupIntern(const char* pszName, std::vector<CNetAddr>& vIP, uint32_t nMaxSolutions,
-                         bool fAllowLookup) {
+bool static LookupIntern(const char* pszName, std::vector<CNetAddr>& vIP, uint32_t nMaxSolutions, bool fAllowLookup) {
   vIP.clear();
 
   {

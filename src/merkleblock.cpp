@@ -68,8 +68,8 @@ void CPartialMerkleTree::TraverseAndBuild(int height, uint32_t pos, const std::v
   }
 }
 
-uint256 CPartialMerkleTree::TraverseAndExtract(int height, uint32_t pos, uint32_t& nBitsUsed,
-                                               uint32_t& nHashUsed, std::vector<uint256>& vMatch) {
+uint256 CPartialMerkleTree::TraverseAndExtract(int height, uint32_t pos, uint32_t& nBitsUsed, uint32_t& nHashUsed,
+                                               std::vector<uint256>& vMatch) {
   if (nBitsUsed >= vBits.size()) {
     // overflowed the bits array - failure
     fBad = true;

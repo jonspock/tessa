@@ -103,7 +103,7 @@ enum BindFlags {
   BF_WHITELIST = (1U << 2),
 };
 
-//CClientUIInterface uiInterface;
+// CClientUIInterface uiInterface;
 
 //////////////////////////////////////////////////////////////////////////////
 //

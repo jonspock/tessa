@@ -7,9 +7,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "blockmap.h"
+#include "chain.h"
 #include "init.h"
 #include "net.h"  // need all of that?
-#include "chain.h"
 #include "tessa_externs.h"
 #include "uint256.h"
 #include "wallet.h"

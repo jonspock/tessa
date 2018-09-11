@@ -29,8 +29,8 @@
 #include "validationstate.h"
 
 #include "libzerocoin/CoinSpend.h"
+#include <cmath>  // for std::pow
 #include <thread>
-#include <cmath> // for std::pow
 
 using namespace std;
 using namespace ecdsa;

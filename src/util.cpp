@@ -171,7 +171,6 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread) {
   strMiscWarning = message;
 }
 
-
 void ReadConfigFile() { gArgs.ReadConfigFile(); }
 
 void FileCommit(FILE* fileout) {

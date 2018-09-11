@@ -32,6 +32,7 @@
 #include "pow.h"
 #include "primitives/zerocoin.h"
 #include "reverse_iterate.h"
+#include "script/sigcache.h"
 #include "scriptcheck.h"
 #include "spork.h"
 #include "sporkdb.h"
@@ -43,16 +44,14 @@
 #include "utiltime.h"
 #include "validationinterface.h"
 #include "zerochain.h"
-#include "script/sigcache.h"
 
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"
 #include "libzerocoin/PublicCoin.h"
 
+#include <cmath>
 #include <sstream>
 #include <thread>
-#include <cmath>
-
 
 using namespace std;
 using namespace libzerocoin;
@@ -318,8 +317,7 @@ CBlockIndex* LastCommonAncestor(CBlockIndex* pa, CBlockIndex* pb) {
 
 /** Update pindexLastCommonBlock and add not-in-flight missing successors to vBlocks, until it has
  *  at most count entries. */
-void FindNextBlocksToDownload(NodeId nodeid, uint32_t count, std::vector<CBlockIndex*>& vBlocks,
-                              NodeId& nodeStaller) {
+void FindNextBlocksToDownload(NodeId nodeid, uint32_t count, std::vector<CBlockIndex*>& vBlocks, NodeId& nodeStaller) {
   if (count == 0) return;
 
   vBlocks.reserve(vBlocks.size() + count);
@@ -2690,8 +2688,8 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
   return true;
 }
 
-bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, uint32_t nAddSize, uint32_t nHeight,
-                  uint64_t nTime, bool fKnown = false) {
+bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, uint32_t nAddSize, uint32_t nHeight, uint64_t nTime,
+                  bool fKnown = false) {
   LOCK(cs_LastBlockFile);
 
   uint32_t nFile = fKnown ? pos.nFile : nLastBlockFile;
@@ -4198,8 +4196,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       AddOrphanTx(tx, pfrom->GetId());
 
       // DoS prevention: do not allow mapOrphanTransactions to grow unbounded
-      uint32_t nMaxOrphanTx =
-          (uint32_t)std::max((int64_t)0, GetArg("-maxorphantx", DEFAULT_MAX_ORPHAN_TRANSACTIONS));
+      uint32_t nMaxOrphanTx = (uint32_t)std::max((int64_t)0, GetArg("-maxorphantx", DEFAULT_MAX_ORPHAN_TRANSACTIONS));
       uint32_t nEvicted = LimitOrphanTxSize(nMaxOrphanTx);
       if (nEvicted > 0) LogPrint(TessaLog::MEMPOOL, "mapOrphan overflow, removed %u tx\n", nEvicted);
     } else if (pfrom->fWhitelisted) {

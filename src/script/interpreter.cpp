@@ -829,7 +829,7 @@ class CTransactionSignatureSerializer {
  private:
   const CTransaction& txTo;   //! reference to the spending transaction (the one being serialized)
   const CScript& scriptCode;  //! output script being consumed
-  const uint32_t nIn;     //! input index of txTo being signed
+  const uint32_t nIn;         //! input index of txTo being signed
   const bool fAnyoneCanPay;   //! whether the hashtype has the SIGHASH_ANYONECANPAY flag set
   const bool fHashSingle;     //! whether the hashtype is SIGHASH_SINGLE
   const bool fHashNone;       //! whether the hashtype is SIGHASH_NONE
