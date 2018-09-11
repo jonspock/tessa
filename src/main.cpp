@@ -16,6 +16,7 @@
 #include "blockundo.h"
 
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include "accumulatormap.h"
 #include "accumulators.h"
@@ -49,6 +50,10 @@
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"
 #include "libzerocoin/PublicCoin.h"
+
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 
 #include <cmath>
 #include <sstream>
@@ -409,19 +414,19 @@ bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats) {
 }
 
 void RegisterNodeSignals(CNodeSignals& nodeSignals) {
-  nodeSignals.GetHeight.connect(&GetHeight);
-  nodeSignals.ProcessMessages.connect(&ProcessMessages);
-  nodeSignals.SendMessages.connect(&SendMessages);
-  nodeSignals.InitializeNode.connect(&InitializeNode);
-  nodeSignals.FinalizeNode.connect(&FinalizeNode);
+  nodeSignals.GetHeight_connect(&GetHeight);
+  nodeSignals.ProcessMessages_connect(&ProcessMessages);
+  nodeSignals.SendMessages_connect(&SendMessages);
+  nodeSignals.InitializeNode_connect(&InitializeNode);
+  nodeSignals.FinalizeNode_connect(&FinalizeNode);
 }
 
 void UnregisterNodeSignals(CNodeSignals& nodeSignals) {
-  nodeSignals.GetHeight.disconnect(&GetHeight);
-  nodeSignals.ProcessMessages.disconnect(&ProcessMessages);
-  nodeSignals.SendMessages.disconnect(&SendMessages);
-  nodeSignals.InitializeNode.disconnect(&InitializeNode);
-  nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
+  nodeSignals.GetHeight_disconnect(&GetHeight);
+  nodeSignals.ProcessMessages_disconnect(&ProcessMessages);
+  nodeSignals.SendMessages_disconnect(&SendMessages);
+  nodeSignals.InitializeNode_disconnect(&InitializeNode);
+  nodeSignals.FinalizeNode_disconnect(&FinalizeNode);
 }
 
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator) {

@@ -7,7 +7,13 @@
 
 #pragma once
 
-#include <boost/signals2/signal.hpp>
+#include <functional>
+
+namespace boost {
+  namespace signals2 {
+    class connection;
+  }
+} // namespace boost
 
 class CBlock;
 struct CBlockLocator;
@@ -45,27 +51,33 @@ class CValidationInterface {
   friend void ::UnregisterAllValidationInterfaces();
 };
 
+#define ADD_VAL_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                              \
+    rtype signal_name(__VA_ARGS__);                                                        \
+    using signal_name##Sig = rtype(__VA_ARGS__);                                           \
+    boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
+    void signal_name##_disconnect_all_slots();                                             \
+    void signal_name##_disconnect(std::function<signal_name##Sig> fn);
+
+// Signals for message handling
 struct CMainSignals {
-  /** Notifies listeners of updated block chain tip */
-  boost::signals2::signal<void(const CBlockIndex *)> UpdatedBlockTip;
-  /** Notifies listeners of updated transaction data (transaction, and optionally the block it is found in. */
-  boost::signals2::signal<void(const CTransaction &, const CBlock *)> SyncTransaction;
-  /** Notifies listeners of an updated transaction lock without new data. */
-  boost::signals2::signal<void(const CTransaction &)> NotifyTransactionLock;
-  /** Notifies listeners of an updated transaction without new data (for now: a coinbase potentially becoming visible).
-   */
-  boost::signals2::signal<bool(const uint256 &)> UpdatedTransaction;
-  /** Notifies listeners of a new active block chain. */
-  boost::signals2::signal<void(const CBlockLocator &)> SetBestChain;
-  /** Notifies listeners about an inventory item being seen on the network. */
-  boost::signals2::signal<void(const uint256 &)> Inventory;
-  /** Tells listeners to broadcast their data. */
-  boost::signals2::signal<void()> Broadcast;
-  /** Notifies listeners of a block validation result */
-  boost::signals2::signal<void(const CBlock &, const CValidationState &)> BlockChecked;
-  /** Notifies listeners that a key for mining is required (coinbase) */
-  /** Notifies listeners that a block has been successfully mined */
-  boost::signals2::signal<void(const uint256 &)> BlockFound;
+  // Notifies listeners of updated block chain tip
+  ADD_VAL_SIGNALS_DECL_WRAPPER(UpdatedBlockTip, void, const CBlockIndex *)
+  // Notifies listeners of updated transaction data (transaction, and optionally the block it is found in.
+  ADD_VAL_SIGNALS_DECL_WRAPPER(SyncTransaction, void, const CTransaction&, const CBlock *)
+  // Notifies listeners of an updated transaction lock without new data. 
+  ADD_VAL_SIGNALS_DECL_WRAPPER(NotifyTransactionLock, void, const CTransaction&)
+  // Notifies listeners of an updated transaction without new data (for now: a coinbase potentially becoming visible).
+  ADD_VAL_SIGNALS_DECL_WRAPPER(UpdatedTransaction, bool, const uint256&)
+  // Notifies listeners of a new active block chain.
+  ADD_VAL_SIGNALS_DECL_WRAPPER(SetBestChain, void, const CBlockLocator&)
+  // Notifies listeners about an inventory item being seen on the network.
+  ADD_VAL_SIGNALS_DECL_WRAPPER(Inventory, void, const uint256&)
+  // Tells listeners to broadcast their data. 
+  ADD_VAL_SIGNALS_DECL_WRAPPER(Broadcast, void, void)
+  // Notifies listeners of a block validation result 
+  ADD_VAL_SIGNALS_DECL_WRAPPER(BlockChecked, void, const CBlock& , const CValidationState &)
+  // Notifies listeners that a block has been successfully mined
+  ADD_VAL_SIGNALS_DECL_WRAPPER(BlockFound, void, const uint256&)
 };
 
 CMainSignals &GetMainSignals();

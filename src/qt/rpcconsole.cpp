@@ -20,6 +20,7 @@
 #include "utiltime.h"
 
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 #include <univalue.h>
 
 #include <QDir>

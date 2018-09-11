@@ -25,6 +25,9 @@
 #include "walletframe.h"
 #include "walletmodel.h"
 
+#include "wallet/wallet.h"
+#include "wallet/wallettx.h"
+
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
 #endif
@@ -32,6 +35,11 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "util.h"
+
+#include <boost/bind.hpp>
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 
 #include <iostream>
 

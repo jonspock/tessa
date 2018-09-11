@@ -14,6 +14,7 @@
 #include "core_io.h"
 #include "init.h"
 #include "main.h"
+#include "output.h"
 #include "net.h"
 #include "netbase.h"
 #include "rpc/server.h"
@@ -23,12 +24,15 @@
 #include "utilmoneystr.h"
 #include "utiltime.h"
 #include "wallet/walletdb.h"
+#include "wallet/wallettx.h"
 
 #include <cstdint>
 #include <thread>
 
 #include "libzerocoin/PrivateCoin.h"
 #include "primitives/deterministicmint.h"
+
+#include <boost/bind.hpp>
 
 #include <univalue.h>
 

@@ -21,9 +21,18 @@
 #include "spork.h"
 #include "sync.h"
 #include "ui_interface.h"
+#include "output.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 #include "wallet/walletdb.h"  // for BackupWallet
 #include <stdint.h>
+
+
+#include <boost/bind.hpp>
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
+
 
 #include <QDebug>
 #include <QSet>
@@ -461,28 +470,28 @@ static void NotifyWalletBacked(WalletModel* model, const bool& fSuccess, const s
 
 void WalletModel::subscribeToCoreSignals() {
   // Connect signals to wallet
-  wallet->NotifyStatusChanged.connect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
-  wallet->NotifyAddressBookChanged.connect(boost::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
-  wallet->NotifyTransactionChanged.connect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
-  wallet->ShowProgress.connect(boost::bind(ShowProgress, this, _1, _2));
-  wallet->NotifyWatchonlyChanged.connect(boost::bind(NotifyWatchonlyChanged, this, _1));
-  wallet->NotifyMultiSigChanged.connect(boost::bind(NotifyMultiSigChanged, this, _1));
-  wallet->NotifyZerocoinChanged.connect(boost::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
-  wallet->NotifyZkpReset.connect(boost::bind(NotifyZkpReset, this));
-  wallet->NotifyWalletBacked.connect(boost::bind(NotifyWalletBacked, this, _1, _2));
+  wallet->NotifyStatusChanged_connect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
+  wallet->NotifyAddressBookChanged_connect(boost::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
+  wallet->NotifyTransactionChanged_connect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
+  wallet->ShowProgress_connect(boost::bind(ShowProgress, this, _1, _2));
+  wallet->NotifyWatchonlyChanged_connect(boost::bind(NotifyWatchonlyChanged, this, _1));
+  wallet->NotifyMultiSigChanged_connect(boost::bind(NotifyMultiSigChanged, this, _1));
+  wallet->NotifyZerocoinChanged_connect(boost::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
+  wallet->NotifyZkpReset_connect(boost::bind(NotifyZkpReset, this));
+  wallet->NotifyWalletBacked_connect(boost::bind(NotifyWalletBacked, this, _1, _2));
 }
 
 void WalletModel::unsubscribeFromCoreSignals() {
   // Disconnect signals from wallet
-  wallet->NotifyStatusChanged.disconnect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
-  wallet->NotifyAddressBookChanged.disconnect(boost::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
-  wallet->NotifyTransactionChanged.disconnect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
-  wallet->ShowProgress.disconnect(boost::bind(ShowProgress, this, _1, _2));
-  wallet->NotifyWatchonlyChanged.disconnect(boost::bind(NotifyWatchonlyChanged, this, _1));
-  wallet->NotifyMultiSigChanged.disconnect(boost::bind(NotifyMultiSigChanged, this, _1));
-  wallet->NotifyZerocoinChanged.disconnect(boost::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
-  wallet->NotifyZkpReset.disconnect(boost::bind(NotifyZkpReset, this));
-  wallet->NotifyWalletBacked.disconnect(boost::bind(NotifyWalletBacked, this, _1, _2));
+  wallet->NotifyStatusChanged_disconnect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
+  wallet->NotifyAddressBookChanged_disconnect(boost::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
+  wallet->NotifyTransactionChanged_disconnect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
+  wallet->ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
+  wallet->NotifyWatchonlyChanged_disconnect(boost::bind(NotifyWatchonlyChanged, this, _1));
+  wallet->NotifyMultiSigChanged_disconnect(boost::bind(NotifyMultiSigChanged, this, _1));
+  wallet->NotifyZerocoinChanged_disconnect(boost::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
+  wallet->NotifyZkpReset_disconnect(boost::bind(NotifyZkpReset, this));
+  wallet->NotifyWalletBacked_disconnect(boost::bind(NotifyWalletBacked, this, _1, _2));
 }
 
 // WalletModel::UnlockContext implementation

@@ -11,6 +11,7 @@
 #include "chain.h"
 #include "timedata.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 // TxInToZerocoinSpend
 #include "libzerocoin/CoinSpend.h"
 #include "main.h"

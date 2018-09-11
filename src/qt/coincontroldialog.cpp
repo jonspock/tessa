@@ -16,9 +16,11 @@
 #include "walletmodel.h"
 
 #include "main.h"
+#include "output.h"
 #include "multisigdialog.h"
 #include "wallet/coincontrol.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include <QApplication>
 #include <QCheckBox>

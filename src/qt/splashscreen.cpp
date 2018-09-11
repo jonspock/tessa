@@ -15,6 +15,11 @@
 #include "version.h"
 
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
+
+#include <boost/bind.hpp>
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
 
 #include <QApplication>
 #include <QCloseEvent>
@@ -101,7 +106,7 @@ static void ShowProgress(SplashScreen* splash, const std::string& title, int nPr
 }
 
 static void ConnectWallet(SplashScreen* splash, CWallet* wallet) {
-  if (wallet) wallet->ShowProgress.connect(boost::bind(ShowProgress, splash, _1, _2));
+  if (wallet) wallet->ShowProgress_connect(boost::bind(ShowProgress, splash, _1, _2));
 }
 
 void SplashScreen::subscribeToCoreSignals() {
@@ -116,7 +121,7 @@ void SplashScreen::unsubscribeFromCoreSignals() {
   uiInterface.InitMessage_disconnect(boost::bind(InitMessage, this, _1));
   uiInterface.ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
 
-  if (pwalletMain) pwalletMain->ShowProgress.disconnect(boost::bind(ShowProgress, this, _1, _2));
+  if (pwalletMain) pwalletMain->ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
 }
 
 void SplashScreen::showMessage(const QString& message, int alignment, const QColor& color) {

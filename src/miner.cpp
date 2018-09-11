@@ -23,6 +23,7 @@
 #include "utilmoneystr.h"
 #include "utiltime.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include "accumulators.h"
 #include "ecdsa/blocksignature.h"

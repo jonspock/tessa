@@ -14,6 +14,7 @@
 #include "libzerocoin/CoinSpend.h"
 #include "main.h"
 #include "net.h"
+#include "output.h"
 #include "primitives/transaction.h"
 #include "rpc/server.h"
 #include "script/script.h"
@@ -24,6 +25,7 @@
 #include "utilmoneystr.h"
 #include "validationstate.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include <cstdint>
 

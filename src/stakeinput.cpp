@@ -11,6 +11,7 @@
 #include "main.h"  // GetTransaction
 #include "primitives/deterministicmint.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 using namespace std;
 using namespace ecdsa;

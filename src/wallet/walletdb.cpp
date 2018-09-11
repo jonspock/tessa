@@ -22,6 +22,7 @@
 #include "utiltime.h"
 #include "validationstate.h"
 #include "wallet.h"
+#include "wallettx.h"
 
 //#include <thread>
 #include <fstream>

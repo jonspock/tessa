@@ -11,6 +11,8 @@
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "walletmodel.h"
+#include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include "support/allocators/secure.h"
 

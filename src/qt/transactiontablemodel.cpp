@@ -20,6 +20,12 @@
 #include "uint256.h"
 #include "util.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
+
+#include <boost/bind.hpp>
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 
 #include <QColor>
 #include <QDateTime>
@@ -644,12 +650,12 @@ static void ShowProgress(TransactionTableModel* ttm, const std::string& title, i
 
 void TransactionTableModel::subscribeToCoreSignals() {
   // Connect signals to wallet
-  wallet->NotifyTransactionChanged.connect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
-  wallet->ShowProgress.connect(boost::bind(ShowProgress, this, _1, _2));
+  wallet->NotifyTransactionChanged_connect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
+  wallet->ShowProgress_connect(boost::bind(ShowProgress, this, _1, _2));
 }
 
 void TransactionTableModel::unsubscribeFromCoreSignals() {
   // Disconnect signals from wallet
-  wallet->NotifyTransactionChanged.disconnect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
-  wallet->ShowProgress.disconnect(boost::bind(ShowProgress, this, _1, _2));
+  wallet->NotifyTransactionChanged_disconnect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
+  wallet->ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
 }

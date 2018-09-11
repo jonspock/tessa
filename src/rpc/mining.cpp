@@ -22,6 +22,7 @@
 #include "utiltime.h"
 #include "validationstate.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include <cstdint>
 #include <univalue.h>

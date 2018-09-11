@@ -26,6 +26,7 @@
 #include "utilstrencodings.h"
 #include "validationstate.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include <QArgument>
 #include <QClipboard>

@@ -21,6 +21,7 @@
 #include "txdb.h"  // for -dbcache defaults
 
 #include "wallet/wallet.h"  // for CWallet::minTxFee
+#include "wallet/wallettx.h"
 
 #include <thread>
 

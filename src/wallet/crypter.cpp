@@ -13,8 +13,12 @@
 #include "script/standard.h"
 #include "uint256.h"
 #include "util.h"
+#include "utilstrencodings.h"
 
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
+
+#include <boost/signals2/signal.hpp>
 
 using namespace std;
 using namespace ecdsa;
@@ -344,3 +348,20 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &see
 
   //    return error("Failed to decrypt deterministic seed %s", IsLocked() ? "Wallet is locked!" : "");
 }
+
+
+struct CCryptoKeyStoreSignalSigs {
+  boost::signals2::signal<CCryptoKeyStore::NotifyStatusChangedSig> NotifyStatusChanged;
+} g_crypter_signals;
+
+#define ADD_SIGNALS_IMPL_WRAPPER(signal_name)                                                      \
+  boost::signals2::connection CCryptoKeyStore::signal_name##_connect(std::function<signal_name##Sig> fn) { \
+    return g_crypter_signals.signal_name.connect(fn);                                               \
+  }                                                                                                \
+  void CCryptoKeyStore::signal_name##_disconnect(std::function<signal_name##Sig> fn) {                     \
+    return g_crypter_signals.signal_name.disconnect(&fn);                                           \
+  }
+
+ADD_SIGNALS_IMPL_WRAPPER(NotifyStatusChanged);
+
+void CCryptoKeyStore::NotifyStatusChanged(CCryptoKeyStore *wallet) { g_crypter_signals.NotifyStatusChanged(wallet); }

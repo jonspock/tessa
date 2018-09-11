@@ -6,13 +6,14 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "wallet.h"
+#include "wallettx.h"
 #include "blockmap.h"
 #include "chain.h"
 #include "init.h"
 #include "net.h"  // need all of that?
 #include "tessa_externs.h"
 #include "uint256.h"
-#include "wallet.h"
 #include <cassert>
 
 using namespace std;

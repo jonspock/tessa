@@ -22,6 +22,7 @@
 #include "util.h"
 
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 #include "wallet/walletdb.h"
 
 #include <QNetworkProxy>

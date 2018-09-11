@@ -13,6 +13,7 @@
 
 #include "support/allocators/secure.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 #include "ecdsa/key.h"
 
 #include <map>

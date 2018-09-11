@@ -7,6 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
+#include "output.h"
 #include "init.h"
 #include "main.h"
 #include "walletkey.h"
@@ -39,8 +40,9 @@
 #include <algorithm>
 #include <cassert>
 #include <random>
-
 #include <thread>
+
+#include <boost/signals2/signal.hpp>
 
 #define KEY_RES_SIZE 200
 
@@ -3646,3 +3648,62 @@ CWallet* CWallet::CreateWalletFromFile(const std::string& walletFile) {
 #endif
   return walletInstance;
 }
+
+struct CWalletSignalSigs {
+  boost::signals2::signal<CWallet::NotifyZkpResetSig> NotifyZkpReset;
+  boost::signals2::signal<CWallet::NotifyZerocoinChangedSig> NotifyZerocoinChanged;
+  boost::signals2::signal<CWallet::NotifyAddressBookChangedSig> NotifyAddressBookChanged;
+  boost::signals2::signal<CWallet::NotifyTransactionChangedSig> NotifyTransactionChanged;
+  boost::signals2::signal<CWallet::NotifyWatchonlyChangedSig> NotifyWatchonlyChanged;
+  boost::signals2::signal<CWallet::NotifyMultiSigChangedSig> NotifyMultiSigChanged;
+  boost::signals2::signal<CWallet::NotifyWalletBackedSig> NotifyWalletBacked;
+  boost::signals2::signal<CWallet::ShowProgressSig> ShowProgress;
+} g_wallet_signals;
+
+#define ADD_SIGNALS_IMPL_WRAPPER(signal_name)                                                      \
+  boost::signals2::connection CWallet::signal_name##_connect(std::function<signal_name##Sig> fn) { \
+    return g_wallet_signals.signal_name.connect(fn);                                               \
+  }                                                                                                \
+  void CWallet::signal_name##_disconnect(std::function<signal_name##Sig> fn) {                     \
+    return g_wallet_signals.signal_name.disconnect(&fn);                                           \
+  }
+
+#define ADD_SIGNALS_IMPL_CONST_WRAPPER(signal_name)                           \
+  boost::signals2::connection CWallet::signal_name##_connect(std::function<signal_name##Sig> fn) const { \
+    return g_wallet_signals.signal_name.connect(fn);                                               \
+  }                                                                                                \
+  void CWallet::signal_name##_disconnect(std::function<signal_name##Sig> fn) const {                     \
+    return g_wallet_signals.signal_name.disconnect(&fn);                                           \
+  }
+
+ADD_SIGNALS_IMPL_WRAPPER(NotifyZkpReset);
+ADD_SIGNALS_IMPL_WRAPPER(NotifyZerocoinChanged);
+ADD_SIGNALS_IMPL_WRAPPER(NotifyAddressBookChanged);
+ADD_SIGNALS_IMPL_WRAPPER(NotifyTransactionChanged);
+ADD_SIGNALS_IMPL_WRAPPER(NotifyWatchonlyChanged);
+ADD_SIGNALS_IMPL_WRAPPER(NotifyMultiSigChanged);
+ADD_SIGNALS_IMPL_WRAPPER(ShowProgress);
+ADD_SIGNALS_IMPL_CONST_WRAPPER(NotifyWalletBacked);
+
+void CWallet::NotifyZkpReset() { g_wallet_signals.NotifyZkpReset(); }
+void CWallet::NotifyZerocoinChanged(CWallet* wallet, const std::string& pubCoin, const std::string& isUsed,
+                                    ChangeType status) {
+  g_wallet_signals.NotifyZerocoinChanged(wallet, pubCoin, isUsed, status);
+}
+
+void CWallet::NotifyAddressBookChanged(CWallet* wallet, const CTxDestination& address, const std::string& label,
+                                       bool isMine, const std::string& purpose, ChangeType status) {
+  g_wallet_signals.NotifyAddressBookChanged(wallet, address, label, isMine, purpose, status);
+}
+
+void CWallet::NotifyTransactionChanged(CWallet* wallet, const uint256& hashTx, ChangeType status) {
+  g_wallet_signals.NotifyTransactionChanged(wallet, hashTx, status);
+}
+
+void CWallet::ShowProgress(const std::string& title, int nProgress) { g_wallet_signals.ShowProgress(title, nProgress); }
+
+void CWallet::NotifyWatchonlyChanged(bool f) { g_wallet_signals.NotifyWatchonlyChanged(f); }
+
+void CWallet::NotifyWalletBacked(bool f, const std::string& s) const { g_wallet_signals.NotifyWalletBacked(f, s); }
+
+void CWallet::NotifyMultiSigChanged(bool f) { g_wallet_signals.NotifyMultiSigChanged(f); }

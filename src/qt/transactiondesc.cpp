@@ -22,6 +22,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include <stdint.h>
 #include <string>

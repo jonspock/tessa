@@ -46,6 +46,7 @@
 #include "db.h"
 #include "ecdsa/ecdsa.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 #include "wallet/walletdb.h"
 
 #include <cstdint>
@@ -64,6 +65,10 @@
 #endif
 
 #include <sodium/core.h>
+
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 
 using namespace std;
 using fs::create_directories;

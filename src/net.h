@@ -5,8 +5,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NET_H
-#define BITCOIN_NET_H
+#pragma once
 
 #include "bloom.h"
 #include "compat.h"
@@ -28,7 +27,11 @@
 #include <arpa/inet.h>
 #endif
 
-#include <boost/signals2/signal.hpp>
+namespace boost {
+  namespace signals2 {
+    class connection;
+  }
+} // namespace boost
 
 class CAddrMan;
 class CBlockIndex;
@@ -80,13 +83,19 @@ bool StopNode();
 void InterruptNode();
 void SocketSendData(CNode* pnode);
 
+#define ADD_NET_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                              \
+    rtype signal_name(__VA_ARGS__);                                                        \
+    using signal_name##Sig = rtype(__VA_ARGS__);                                           \
+    boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
+    void signal_name##_disconnect(std::function<signal_name##Sig> fn);
+
 // Signals for message handling
 struct CNodeSignals {
-  boost::signals2::signal<int()> GetHeight;
-  boost::signals2::signal<bool(CNode*)> ProcessMessages;
-  boost::signals2::signal<bool(CNode*, bool)> SendMessages;
-  boost::signals2::signal<void(NodeId, const CNode*)> InitializeNode;
-  boost::signals2::signal<void(NodeId)> FinalizeNode;
+  ADD_NET_SIGNALS_DECL_WRAPPER(GetHeight, int, void)
+  ADD_NET_SIGNALS_DECL_WRAPPER(ProcessMessages, bool, CNode*)
+  ADD_NET_SIGNALS_DECL_WRAPPER(SendMessages, bool, CNode*, bool)
+  ADD_NET_SIGNALS_DECL_WRAPPER(InitializeNode, void, NodeId, const CNode*)
+  ADD_NET_SIGNALS_DECL_WRAPPER(FinalizeNode, void, NodeId)
 };
 
 CNodeSignals& GetNodeSignals();
@@ -685,4 +694,3 @@ void RelayInv(CInv& inv);
 
 void DumpBanlist();
 
-#endif  // BITCOIN_NET_H

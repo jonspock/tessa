@@ -13,6 +13,7 @@
 #include "askpassphrasedialog.h"
 #include "base58.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 
 #include <QDebug>
 #include <QFont>

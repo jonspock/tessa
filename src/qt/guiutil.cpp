@@ -19,6 +19,8 @@
 #include "script/standard.h"
 #include "util.h"
 #include "utiltime.h"
+#include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 #include "walletmodel.h"
 
 #ifdef WIN32

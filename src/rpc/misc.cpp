@@ -20,6 +20,7 @@
 #include "util.h"
 #include "utiltime.h"
 #include "wallet/wallet.h"
+#include "wallet/wallettx.h"
 #include "wallet/walletdb.h"
 
 #include <cstdint>
@@ -142,7 +143,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
 
 UniValue mnsync(const UniValue& params, bool fHelp) { return "failure"; }
 
-class DescribeAddressVisitor : public boost::static_visitor<UniValue> {
+class DescribeAddressVisitor : public mpark::variant<UniValue> {
  private:
   isminetype mine;
 
