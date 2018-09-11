@@ -32,7 +32,7 @@
 class CMessageHeader {
  public:
   CMessageHeader();
-  CMessageHeader(const char* pszCommand, unsigned int nMessageSizeIn);
+  CMessageHeader(const char* pszCommand, uint32_t nMessageSizeIn);
 
   std::string GetCommand() const;
   bool IsValid() const;
@@ -59,8 +59,8 @@ class CMessageHeader {
   };
   char pchMessageStart[MESSAGE_START_SIZE];
   char pchCommand[COMMAND_SIZE];
-  unsigned int nMessageSize;
-  unsigned int nChecksum;
+  uint32_t nMessageSize;
+  uint32_t nChecksum;
 };
 
 /** nServices flags */
@@ -112,7 +112,7 @@ class CAddress : public CService {
   uint64_t nServices;
 
   // disk and network only
-  unsigned int nTime;
+  uint32_t nTime;
 
   // memory only
   int64_t nLastTry;

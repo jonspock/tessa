@@ -68,10 +68,10 @@ class CTxIn {
   uint32_t nSequence;
   CScript prevPubKey;
 
-  CTxIn() { nSequence = std::numeric_limits<unsigned int>::max(); }
+  CTxIn() { nSequence = std::numeric_limits<uint32_t>::max(); }
 
   explicit CTxIn(COutPoint prevoutIn, CScript scriptSigIn = CScript(),
-                 uint32_t nSequenceIn = std::numeric_limits<unsigned int>::max());
+                 uint32_t nSequenceIn = std::numeric_limits<uint32_t>::max());
   CTxIn(uint256 hashPrevTx, uint32_t nOut, CScript scriptSigIn = CScript(),
         uint32_t nSequenceIn = std::numeric_limits<uint32_t>::max());
 
@@ -179,7 +179,7 @@ class CTransaction {
   std::vector<CTxIn> vin;
   std::vector<CTxOut> vout;
   const uint32_t nLockTime;
-  // const unsigned int nTime;
+  // const uint32_t nTime;
 
   /** Construct a CTransaction that qualifies as IsNull() */
   CTransaction();
@@ -211,10 +211,10 @@ class CTransaction {
   // inputs must be known to compute value in.
 
   // Compute priority, given priority of inputs and (optionally) tx size
-  double ComputePriority(double dPriorityInputs, unsigned int nTxSize = 0) const;
+  double ComputePriority(double dPriorityInputs, uint32_t nTxSize = 0) const;
 
   // Compute modified tx size for priority calculation (optionally given tx size)
-  unsigned int CalculateModifiedSize(unsigned int nTxSize = 0) const;
+  uint32_t CalculateModifiedSize(unsigned int nTxSize = 0) const;
 
   bool IsZerocoinSpend() const {
     return (vin.size() > 0 && (vin[0].prevout.hash).IsNull() && vin[0].scriptSig[0] == OP_ZEROCOINSPEND);

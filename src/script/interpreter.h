@@ -73,7 +73,7 @@ enum {
 
 };
 
-uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsigned int nIn, int nHashType);
+uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, uint32_t nIn, int nHashType);
 
 class BaseSignatureChecker {
  public:
@@ -88,14 +88,14 @@ class BaseSignatureChecker {
 class TransactionSignatureChecker : public BaseSignatureChecker {
  private:
   const CTransaction* txTo;
-  unsigned int nIn;
+  uint32_t nIn;
 
  protected:
   virtual bool VerifySignature(const std::vector<uint8_t>& vchSig, const ecdsa::CPubKey& vchPubKey,
                                const uint256& sighash) const;
 
  public:
-  TransactionSignatureChecker(const CTransaction* txToIn, unsigned int nInIn) : txTo(txToIn), nIn(nInIn) {}
+  TransactionSignatureChecker(const CTransaction* txToIn, uint32_t nInIn) : txTo(txToIn), nIn(nInIn) {}
   bool CheckSig(const std::vector<uint8_t>& scriptSig, const std::vector<uint8_t>& vchPubKey,
                 const CScript& scriptCode) const;
 };
@@ -105,13 +105,13 @@ class MutableTransactionSignatureChecker : public TransactionSignatureChecker {
   const CTransaction txTo;
 
  public:
-  MutableTransactionSignatureChecker(const CMutableTransaction* txToIn, unsigned int nInIn)
+  MutableTransactionSignatureChecker(const CMutableTransaction* txToIn, uint32_t nInIn)
       : TransactionSignatureChecker(&txTo, nInIn), txTo(*txToIn) {}
 };
 
-bool EvalScript(std::vector<std::vector<uint8_t> >& stack, const CScript& script, unsigned int flags,
+bool EvalScript(std::vector<std::vector<uint8_t> >& stack, const CScript& script, uint32_t flags,
                 const BaseSignatureChecker& checker, ScriptError* error = nullptr);
-bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, unsigned int flags,
+bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, uint32_t flags,
                   const BaseSignatureChecker& checker, ScriptError* error = nullptr);
 
 #endif  // BITCOIN_SCRIPT_INTERPRETER_H

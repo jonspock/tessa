@@ -99,7 +99,7 @@ CoinDenomination AmountToClosestDenomination(CAmount nAmount, CAmount& nRemainin
 
   CAmount nConvert = nAmount / COIN;
   CoinDenomination denomination = ZQ_ERROR;
-  for (unsigned int i = 0; i < zerocoinDenomList.size(); i++) {
+  for (uint32_t i = 0; i < zerocoinDenomList.size(); i++) {
     denomination = zerocoinDenomList[i];
 
     // exact match

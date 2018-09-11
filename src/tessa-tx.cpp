@@ -154,7 +154,7 @@ static void MutateTxLocktime(CMutableTransaction& tx, const string& cmdVal) {
   int64_t newLocktime = atoi64(cmdVal);
   if (newLocktime < 0LL || newLocktime > 0xffffffffLL) throw runtime_error("Invalid TX locktime requested");
 
-  tx.nLockTime = (unsigned int)newLocktime;
+  tx.nLockTime = (uint32_t)newLocktime;
 }
 
 static void MutateTxAddInput(CMutableTransaction& tx, const string& strInput) {
@@ -168,9 +168,9 @@ static void MutateTxAddInput(CMutableTransaction& tx, const string& strInput) {
   if ((strTxid.size() != 64) || !IsHex(strTxid)) throw runtime_error("invalid TX input txid");
   uint256 txid(strTxid);
 
-  static const unsigned int minTxOutSz = 9;
-  unsigned int nMaxSize = MAX_BLOCK_SIZE_LEGACY;
-  static const unsigned int maxVout = nMaxSize / minTxOutSz;
+  static const uint32_t minTxOutSz = 9;
+  uint32_t nMaxSize = MAX_BLOCK_SIZE_LEGACY;
+  static const uint32_t maxVout = nMaxSize / minTxOutSz;
 
   // extract and validate vout
   string strVout = strInput.substr(pos + 1, string::npos);
@@ -249,7 +249,7 @@ static void MutateTxDelOutput(CMutableTransaction& tx, const string& strOutIdx) 
   tx.vout.erase(tx.vout.begin() + outIdx);
 }
 
-static const unsigned int N_SIGHASH_OPTS = 6;
+static const uint32_t N_SIGHASH_OPTS = 6;
 static const struct {
   const char* flagStr;
   int flags;
@@ -265,7 +265,7 @@ static const struct {
 static bool findSighashFlags(int& flags, const string& flagStr) {
   flags = 0;
 
-  for (unsigned int i = 0; i < N_SIGHASH_OPTS; i++) {
+  for (uint32_t i = 0; i < N_SIGHASH_OPTS; i++) {
     if (flagStr == sighashOptions[i].flagStr) {
       flags = sighashOptions[i].flags;
       return true;
@@ -310,7 +310,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr) {
   UniValue keysObj = registers["privatekeys"];
   fGivenKeys = true;
 
-  for (unsigned int kidx = 0; kidx < keysObj.size(); kidx++) {
+  for (uint32_t kidx = 0; kidx < keysObj.size(); kidx++) {
     if (!keysObj[kidx].isStr()) throw runtime_error("privatekey not a string");
     CBitcoinSecret vchSecret;
     bool fGood = vchSecret.SetString(keysObj[kidx].getValStr());
@@ -324,7 +324,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr) {
   if (!registers.count("prevtxs")) throw runtime_error("prevtxs register variable must be set.");
   UniValue prevtxsObj = registers["prevtxs"];
   {
-    for (unsigned int previdx = 0; previdx < prevtxsObj.size(); previdx++) {
+    for (uint32_t previdx = 0; previdx < prevtxsObj.size(); previdx++) {
       UniValue prevOut = prevtxsObj[previdx];
       if (!prevOut.isObject()) throw runtime_error("expected prevtxs internal object");
 
@@ -347,7 +347,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr) {
           err = err + coins->vout[nOut].scriptPubKey.ToString() + "\nvs:\n" + scriptPubKey.ToString();
           throw runtime_error(err);
         }
-        if ((unsigned int)nOut >= coins->vout.size()) coins->vout.resize(nOut + 1);
+        if ((uint32_t)nOut >= coins->vout.size()) coins->vout.resize(nOut + 1);
         coins->vout[nOut].scriptPubKey = scriptPubKey;
         coins->vout[nOut].nValue = 0;  // we don't know the actual output value
       }
@@ -368,7 +368,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr) {
   bool fHashSingle = ((nHashType & ~SIGHASH_ANYONECANPAY) == SIGHASH_SINGLE);
 
   // Sign what we can:
-  for (unsigned int i = 0; i < mergedTx.vin.size(); i++) {
+  for (uint32_t i = 0; i < mergedTx.vin.size(); i++) {
     CTxIn& txin = mergedTx.vin[i];
     const CCoins* coins = view.AccessCoins(txin.prevout.hash);
     if (!coins || !coins->IsAvailable(txin.prevout.n)) {

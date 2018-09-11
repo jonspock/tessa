@@ -139,7 +139,7 @@ void CDbWrapper::TxnAbort() {
   activeTxn = nullptr;
 }
 
-int CDbWrapper::ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, unsigned int fFlags) const {
+int CDbWrapper::ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, uint32_t fFlags) const {
   // Read at cursor
   MDB_val datKey;
   if (fFlags == MDB_SET || fFlags == MDB_SET_RANGE || fFlags == MDB_GET_BOTH || fFlags == MDB_GET_BOTH_RANGE) {

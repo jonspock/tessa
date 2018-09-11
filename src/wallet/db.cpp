@@ -138,7 +138,7 @@ void CDB::TxnAbort() {
   activeTxn = nullptr;
 }
 
-int CDB::ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, unsigned int fFlags) {
+int CDB::ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, uint32_t fFlags) {
   // Read at cursor
   MDB_val datKey;
   if (fFlags == MDB_SET || fFlags == MDB_SET_RANGE || fFlags == MDB_GET_BOTH || fFlags == MDB_GET_BOTH_RANGE) {

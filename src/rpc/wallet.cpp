@@ -1655,10 +1655,10 @@ UniValue keypoolrefill(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   // 0 is interpreted by TopUpKeyPool() as the default keypool size given by -keypool
-  unsigned int kpSize = 0;
+  uint32_t kpSize = 0;
   if (params.size() > 0) {
     if (params[0].get_int() < 0) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid size.");
-    kpSize = (unsigned int)params[0].get_int();
+    kpSize = (uint32_t)params[0].get_int();
   }
 
   EnsureWalletIsUnlocked();
@@ -1923,7 +1923,7 @@ UniValue lockunspent(const UniValue& params, bool fHelp) {
   }
 
   UniValue outputs = params[1].get_array();
-  for (unsigned int idx = 0; idx < outputs.size(); idx++) {
+  for (uint32_t idx = 0; idx < outputs.size(); idx++) {
     const UniValue& output = outputs[idx];
     if (!output.isObject()) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected object");
     const UniValue& o = output.get_obj();
@@ -2196,7 +2196,7 @@ UniValue printMultiSend() {
 
   if (pwalletMain->vDisabledAddresses.size() >= 1) {
     UniValue disAdd(UniValue::VOBJ);
-    for (unsigned int i = 0; i < pwalletMain->vDisabledAddresses.size(); i++) {
+    for (uint32_t i = 0; i < pwalletMain->vDisabledAddresses.size(); i++) {
       disAdd.push_back(Pair("Disabled From Sending", pwalletMain->vDisabledAddresses[i]));
     }
     ret.push_back(disAdd);
@@ -2205,7 +2205,7 @@ UniValue printMultiSend() {
   ret.push_back("MultiSend Addresses to Send To:");
 
   UniValue vMS(UniValue::VOBJ);
-  for (unsigned int i = 0; i < pwalletMain->vMultiSend.size(); i++) {
+  for (uint32_t i = 0; i < pwalletMain->vMultiSend.size(); i++) {
     vMS.push_back(Pair("Address " + std::to_string(i), pwalletMain->vMultiSend[i].first));
     vMS.push_back(Pair("Percent", pwalletMain->vMultiSend[i].second));
   }
@@ -2242,9 +2242,9 @@ UniValue printAddresses() {
   return ret;
 }
 
-unsigned int sumMultiSend() {
-  unsigned int sum = 0;
-  for (unsigned int i = 0; i < pwalletMain->vMultiSend.size(); i++) sum += pwalletMain->vMultiSend[i].second;
+uint32_t sumMultiSend() {
+  uint32_t sum = 0;
+  for (uint32_t i = 0; i < pwalletMain->vMultiSend.size(); i++) sum += pwalletMain->vMultiSend[i].second;
   return sum;
 }
 
@@ -2370,7 +2370,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
   if (pwalletMain->IsLocked())
     throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED,
                        "Error: Please enter the wallet passphrase with walletpassphrase first.");
-  unsigned int nPercent = (unsigned int)std::stoi(params[1].get_str());
+  uint32_t nPercent = (uint32_t)std::stoi(params[1].get_str());
 
   LOCK(pwalletMain->cs_wallet);
   {
@@ -2383,7 +2383,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
       throw JSONRPCError(RPC_INVALID_PARAMETER,
                          "Failed to add to MultiSend vector, the sum of your MultiSend is greater than 100%");
 
-    for (unsigned int i = 0; i < pwalletMain->vMultiSend.size(); i++) {
+    for (uint32_t i = 0; i < pwalletMain->vMultiSend.size(); i++) {
       if (pwalletMain->vMultiSend[i].first == strAddress)
         throw JSONRPCError(RPC_INVALID_PARAMETER,
                            "Failed to add to MultiSend vector, cannot use the same address twice");
@@ -2595,7 +2595,7 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
 
   if (params.size() == 2) {
     UniValue outputs = params[1].get_array();
-    for (unsigned int idx = 0; idx < outputs.size(); idx++) {
+    for (uint32_t idx = 0; idx < outputs.size(); idx++) {
       const UniValue& output = outputs[idx];
       if (!output.isObject()) throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected object");
       const UniValue& o = output.get_obj();
@@ -2728,7 +2728,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
 
   CAmount nValueOut = 0;
   UniValue vout(UniValue::VARR);
-  for (unsigned int i = 0; i < wtx.vout.size(); i++) {
+  for (uint32_t i = 0; i < wtx.vout.size(); i++) {
     const CTxOut& txout = wtx.vout[i];
     UniValue out(UniValue::VOBJ);
     out.push_back(Pair("value", ValueFromAmount(txout.nValue)));

@@ -46,7 +46,7 @@ std::string CTxIn::ToString() const {
       str += strprintf(", coinbase %s", HexStr(scriptSig));
   else
     str += strprintf(", scriptSig=%s", scriptSig.ToString().substr(0, 24));
-  if (nSequence != std::numeric_limits<unsigned int>::max()) str += strprintf(", nSequence=%u", nSequence);
+  if (nSequence != std::numeric_limits<uint32_t>::max()) str += strprintf(", nSequence=%u", nSequence);
   str += ")";
   return str;
 }
@@ -99,7 +99,7 @@ CTransaction &CTransaction::operator=(const CTransaction &tx) {
   *const_cast<int *>(&nTransactionVersion) = tx.nTransactionVersion;
   *const_cast<std::vector<CTxIn> *>(&vin) = tx.vin;
   *const_cast<std::vector<CTxOut> *>(&vout) = tx.vout;
-  *const_cast<unsigned int *>(&nLockTime) = tx.nLockTime;
+  *const_cast<uint32_t *>(&nLockTime) = tx.nLockTime;
   *const_cast<uint256 *>(&hash) = tx.hash;
   return *this;
 }
@@ -150,7 +150,7 @@ bool CTransaction::UsesUTXO(const COutPoint out) {
 std::list<COutPoint> CTransaction::GetOutPoints() const {
   std::list<COutPoint> listOutPoints;
   uint256 txHash = GetHash();
-  for (unsigned int i = 0; i < vout.size(); i++) listOutPoints.emplace_back(COutPoint(txHash, i));
+  for (uint32_t i = 0; i < vout.size(); i++) listOutPoints.emplace_back(COutPoint(txHash, i));
   return listOutPoints;
 }
 
@@ -175,14 +175,14 @@ int CTransaction::GetZerocoinMintCount() const {
   return nCount;
 }
 
-double CTransaction::ComputePriority(double dPriorityInputs, unsigned int nTxSize) const {
+double CTransaction::ComputePriority(double dPriorityInputs, uint32_t nTxSize) const {
   nTxSize = CalculateModifiedSize(nTxSize);
   if (nTxSize == 0) return 0.0;
 
   return dPriorityInputs / nTxSize;
 }
 
-unsigned int CTransaction::CalculateModifiedSize(unsigned int nTxSize) const {
+uint32_t CTransaction::CalculateModifiedSize(unsigned int nTxSize) const {
   // In order to avoid disincentivizing cleaning up the UTXO set we don't count
   // the constant overhead for each txin and up to 110 bytes of scriptSig (which
   // is enough to cover a compressed pubkey p2sh redemption) for priority.
@@ -190,7 +190,7 @@ unsigned int CTransaction::CalculateModifiedSize(unsigned int nTxSize) const {
   // risk encouraging people to create junk outputs to redeem later.
   if (nTxSize == 0) nTxSize = ::GetSerializeSize(*this);
   for (const auto &v : vin) {
-    unsigned int offset = 41U + std::min(110U, (unsigned int)v.scriptSig.size());
+    uint32_t offset = 41U + std::min(110U, (unsigned int)v.scriptSig.size());
     if (nTxSize > offset) nTxSize -= offset;
   }
   return nTxSize;

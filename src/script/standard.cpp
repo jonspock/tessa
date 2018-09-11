@@ -222,7 +222,7 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
 
   if (typeRet == TX_MULTISIG) {
     nRequiredRet = vSolutions.front()[0];
-    for (unsigned int i = 1; i < vSolutions.size() - 1; i++) {
+    for (uint32_t i = 1; i < vSolutions.size() - 1; i++) {
       CPubKey pubKey(vSolutions[i]);
       if (!pubKey.IsValid()) continue;
 

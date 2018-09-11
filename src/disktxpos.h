@@ -12,7 +12,7 @@
 #include "serialize.h"
 
 struct CDiskTxPos : public CDiskBlockPos {
-  unsigned int nTxOffset;  // after header
+  uint32_t nTxOffset;  // after header
 
   ADD_SERIALIZE_METHODS
 
@@ -21,7 +21,7 @@ struct CDiskTxPos : public CDiskBlockPos {
     READWRITE(VARINT(nTxOffset));
   }
 
-  CDiskTxPos(const CDiskBlockPos& blockIn, unsigned int nTxOffsetIn)
+  CDiskTxPos(const CDiskBlockPos& blockIn, uint32_t nTxOffsetIn)
       : CDiskBlockPos(blockIn.nFile, blockIn.nPos), nTxOffset(nTxOffsetIn) {}
 
   CDiskTxPos() { SetNull(); }

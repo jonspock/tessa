@@ -45,7 +45,7 @@
 /**
  * Settings
  */
-extern unsigned int nTxConfirmTarget;
+extern uint32_t nTxConfirmTarget;
 extern bool bSpendZeroConfChange;
 extern bool bdisableSystemnotifications;
 extern bool fSendFreeTransactions;
@@ -53,7 +53,7 @@ extern bool fPayAtLeastCustomFee;
 
 static const CAmount DEFAULT_TRANSACTION_FEE = 0;
 //! Largest (in bytes) free transaction we're willing to create
-static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
+static const uint32_t MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
 //! -custombackupthreshold default
 static const int DEFAULT_CUSTOMBACKUPTHRESHOLD = 1;
 
@@ -79,10 +79,10 @@ enum AvailableCoinsType {
  */
 class CWallet : public CCryptoKeyStore, public CValidationInterface {
  private:
-  bool SelectCoins(const CAmount& nTargetValue, std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet,
+  bool SelectCoins(const CAmount& nTargetValue, std::set<std::pair<const CWalletTx*, uint32_t> >& setCoinsRet,
                    CAmount& nValueRet, const CCoinControl* coinControl = nullptr,
                    AvailableCoinsType coin_type = ALL_COINS, bool useIX = true) const;
-  // it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >&
+  // it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,uint32_t> >&
   // setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = nullptr, AvailableCoinsType coin_type=ALL_COINS,
   // bool useIX = true) const;
 
@@ -175,13 +175,13 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   std::set<int64_t> setKeyPool;
   std::map<ecdsa::CKeyID, CKeyMetadata> mapKeyMetadata;
 
-  typedef std::map<unsigned int, CMasterKey> MasterKeyMap;
+  typedef std::map<uint32_t, CMasterKey> MasterKeyMap;
   MasterKeyMap mapMasterKeys;
-  unsigned int nMasterKeyMaxID;
+  uint32_t nMasterKeyMaxID;
 
   // Stake Settings
-  unsigned int nHashDrift;
-  unsigned int nHashInterval;
+  uint32_t nHashDrift;
+  uint32_t nHashInterval;
   uint64_t nStakeSplitThreshold;
   int nStakeSetUpdateTime;
 
@@ -286,10 +286,10 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   std::map<CBitcoinAddress, std::vector<COutput> > AvailableCoinsByAddress(bool fConfirmed = true,
                                                                            CAmount maxCoinValue = 0);
   bool SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins,
-                          std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet) const;
+                          std::set<std::pair<const CWalletTx*, uint32_t> >& setCoinsRet, CAmount& nValueRet) const;
 
-  bool IsSpent(const uint256& hash, unsigned int n) const;
-  bool IsLockedCoin(uint256 hash, unsigned int n) const;
+  bool IsSpent(const uint256& hash, uint32_t n) const;
+  bool IsLockedCoin(uint256 hash, uint32_t n) const;
   void LockCoin(COutPoint& output);
   void UnlockCoin(COutPoint& output);
   void UnlockAllCoins();
@@ -350,7 +350,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool EncryptWallet(const SecureString& strWalletPassphrase);
 
   void GetKeyBirthTimes(std::map<ecdsa::CKeyID, int64_t>& mapKeyBirth) const;
-  unsigned int ComputeTimeSmart(const CWalletTx& wtx) const;
+  uint32_t ComputeTimeSmart(const CWalletTx& wtx) const;
 
   /**
    * Increment the next transaction order id
@@ -391,16 +391,16 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
   bool AddAccountingEntry(const CAccountingEntry& c);
   bool ConvertList(std::vector<CTxIn> vCoins, std::vector<int64_t>& vecAmounts);
-  bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval,
-                       CMutableTransaction& txNew, unsigned int& nTxNewTime);
+  bool CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t nSearchInterval,
+                       CMutableTransaction& txNew, uint32_t& nTxNewTime);
   bool MultiSend();
   void AutoCombineDust();
 
   static CFeeRate minTxFee;
-  static CAmount GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);
+  static CAmount GetMinimumFee(uint32_t nTxBytes, uint32_t nConfirmTarget, const CTxMemPool& pool);
 
   bool NewKeyPool();
-  bool TopUpKeyPool(unsigned int kpSize = 0);
+  bool TopUpKeyPool(uint32_t kpSize = 0);
   void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool);
   void KeepKey(int64_t nIndex);
   void ReturnKey(int64_t nIndex);
@@ -477,7 +477,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
     }
   }
 
-  unsigned int GetKeyPoolSize() {
+  uint32_t GetKeyPoolSize() {
     AssertLockHeld(cs_wallet);  // setKeyPool
     return setKeyPool.size();
   }

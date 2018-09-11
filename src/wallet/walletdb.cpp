@@ -85,7 +85,7 @@ bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<uint
   return true;
 }
 
-bool CWalletDB::WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey) {
+bool CWalletDB::WriteMasterKey(uint32_t nID, const CMasterKey& kMasterKey) {
   return Write(std::make_pair(std::string("mkey"), nID), kMasterKey, true);
 }
 
@@ -115,7 +115,7 @@ bool CWalletDB::WriteStakeSplitThreshold(uint64_t nStakeSplitThreshold) {
 // presstab HyperStake
 bool CWalletDB::WriteMultiSend(std::vector<std::pair<std::string, int> > vMultiSend) {
   bool ret = true;
-  for (unsigned int i = 0; i < vMultiSend.size(); i++) {
+  for (uint32_t i = 0; i < vMultiSend.size(); i++) {
     std::pair<std::string, int> pMultiSend;
     pMultiSend = vMultiSend[i];
     if (!Write(std::make_pair(std::string("multisend"), i), pMultiSend, true)) ret = false;
@@ -125,7 +125,7 @@ bool CWalletDB::WriteMultiSend(std::vector<std::pair<std::string, int> > vMultiS
 // presstab HyperStake
 bool CWalletDB::EraseMultiSend(std::vector<std::pair<std::string, int> > vMultiSend) {
   bool ret = true;
-  for (unsigned int i = 0; i < vMultiSend.size(); i++) {
+  for (uint32_t i = 0; i < vMultiSend.size(); i++) {
     std::pair<std::string, int> pMultiSend;
     pMultiSend = vMultiSend[i];
     if (!Erase(std::make_pair(std::string("multisend"), i))) ret = false;
@@ -142,7 +142,7 @@ bool CWalletDB::WriteMSettings(bool fMultiSendStake, bool fObsolete, int nLastMu
 // presstab HyperStake
 bool CWalletDB::WriteMSDisabledAddresses(std::vector<std::string> vDisabledAddresses) {
   bool ret = true;
-  for (unsigned int i = 0; i < vDisabledAddresses.size(); i++) {
+  for (uint32_t i = 0; i < vDisabledAddresses.size(); i++) {
     if (!Write(std::make_pair(std::string("mdisabled"), i), vDisabledAddresses[i])) ret = false;
   }
   return ret;
@@ -150,7 +150,7 @@ bool CWalletDB::WriteMSDisabledAddresses(std::vector<std::string> vDisabledAddre
 // presstab HyperStake
 bool CWalletDB::EraseMSDisabledAddresses(std::vector<std::string> vDisabledAddresses) {
   bool ret = true;
-  for (unsigned int i = 0; i < vDisabledAddresses.size(); i++) {
+  for (uint32_t i = 0; i < vDisabledAddresses.size(); i++) {
     if (!Erase(std::make_pair(std::string("mdisabled"), i))) ret = false;
   }
   return ret;
@@ -208,7 +208,7 @@ void CWalletDB::ListAccountCreditDebit(const string& strAccount, list<CAccountin
 
   auto pcursor = GetCursor();
   if (!pcursor) throw runtime_error("CWalletDB::ListAccountCreditDebit() : cannot create DB cursor");
-  unsigned int fFlags = MDB_SET_RANGE;
+  uint32_t fFlags = MDB_SET_RANGE;
   while (true) {
     // Read next record
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
@@ -299,9 +299,9 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet) {
 
 class CWalletScanState {
  public:
-  unsigned int nKeys;
-  unsigned int nCKeys;
-  unsigned int nKeyMeta;
+  uint32_t nKeys;
+  uint32_t nCKeys;
+  uint32_t nKeyMeta;
   bool fIsEncrypted;
   bool fAnyUnordered;
   int nFileVersion;
@@ -447,7 +447,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
         return false;
       }
     } else if (strType == "mkey") {
-      unsigned int nID;
+      uint32_t nID;
       ssKey >> nID;
       CMasterKey kMasterKey;
       ssValue >> kMasterKey;
@@ -513,7 +513,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
       ssValue >> pwallet->nStakeSplitThreshold;
     } else if (strType == "multisend")  // presstab HyperStake
     {
-      unsigned int i;
+      uint32_t i;
       ssKey >> i;
       std::pair<std::string, int> pMultiSend;
       ssValue >> pMultiSend;
@@ -818,7 +818,7 @@ std::map<uint256, std::vector<pair<uint256, uint32_t> > > CWalletDB::MapMintPool
   std::map<uint256, std::vector<pair<uint256, uint32_t> > > mapPool;
   auto pcursor = GetCursor();
   if (!pcursor) throw runtime_error(std::string(__func__) + " : cannot create DB cursor");
-  unsigned int fFlags = MDB_SET_RANGE;
+  uint32_t fFlags = MDB_SET_RANGE;
   for (;;) {
     // Read next record
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
@@ -869,7 +869,7 @@ std::list<CDeterministicMint> CWalletDB::ListDeterministicMints() {
   std::list<CDeterministicMint> listMints;
   auto pcursor = GetCursor();
   if (!pcursor) throw runtime_error(std::string(__func__) + " : cannot create DB cursor");
-  unsigned int fFlags = MDB_SET_RANGE;
+  uint32_t fFlags = MDB_SET_RANGE;
   for (;;) {
     // Read next record
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
@@ -906,7 +906,7 @@ std::list<CZerocoinSpend> CWalletDB::ListSpentCoins() {
   std::list<CZerocoinSpend> listCoinSpend;
   auto pcursor = GetCursor();
   if (!pcursor) throw runtime_error(std::string(__func__) + " : cannot create DB cursor");
-  unsigned int fFlags = MDB_SET_RANGE;
+  uint32_t fFlags = MDB_SET_RANGE;
   for (;;) {
     // Read next record
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
@@ -952,7 +952,7 @@ std::list<CDeterministicMint> CWalletDB::ListArchivedDeterministicMints() {
   std::list<CDeterministicMint> listMints;
   auto pcursor = GetCursor();
   if (!pcursor) throw runtime_error(std::string(__func__) + " : cannot create DB cursor");
-  unsigned int fFlags = MDB_SET_RANGE;
+  uint32_t fFlags = MDB_SET_RANGE;
   for (;;) {
     // Read next record
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);

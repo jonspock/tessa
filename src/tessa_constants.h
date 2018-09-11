@@ -10,15 +10,15 @@
 #include "consensus/consensus.h" // Mostly other defs
 
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
-static const unsigned int LOCKTIME_THRESHOLD = 500000000;  // Tue Nov  5 00:53:20 1985 UTC
+static const uint32_t LOCKTIME_THRESHOLD = 500000000;  // Tue Nov  5 00:53:20 1985 UTC
 
 /** Flags for nSequence and nLockTime locks  -already in consensus.h */
 /** Used as the flags parameter to sequence and nLocktime checks in non-consensus code. */
 static const uint32_t STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE | LOCKTIME_MEDIAN_TIME_PAST;
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
-static const unsigned int MAX_BLOCK_SIZE_CURRENT = 2000000;
-static const unsigned int MAX_BLOCK_SIZE_LEGACY = 1000000;
+static const uint32_t MAX_BLOCK_SIZE_CURRENT = 2000000;
+static const uint32_t MAX_BLOCK_SIZE_LEGACY = 1000000;
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
 static const uint32_t DEFAULT_BLOCK_MAX_SIZE = 750000;

@@ -35,7 +35,7 @@ inline bool set_error(ScriptError* ret, const ScriptError serror) {
 }  // namespace
 
 bool CastToBool(const valtype& vch) {
-  for (unsigned int i = 0; i < vch.size(); i++) {
+  for (uint32_t i = 0; i < vch.size(); i++) {
     if (vch[i] != 0) {
       // Can be negative zero
       if (i == vch.size() - 1 && vch[i] == 0x80) return false;
@@ -112,13 +112,13 @@ bool static IsValidSignatureEncoding(const std::vector<uint8_t>& sig) {
   if (sig[1] != sig.size() - 3) return false;
 
   // Extract the length of the R element.
-  unsigned int lenR = sig[3];
+  uint32_t lenR = sig[3];
 
   // Make sure the length of the S element is still inside the signature.
   if (5 + lenR >= sig.size()) return false;
 
   // Extract the length of the S element.
-  unsigned int lenS = sig[5 + lenR];
+  uint32_t lenS = sig[5 + lenR];
 
   // Verify that the length of the signature matches the sum of the length
   // of the elements.
@@ -175,7 +175,7 @@ bool static IsDefinedHashtypeSignature(const valtype& vchSig) {
   return true;
 }
 
-bool static CheckSignatureEncoding(const valtype& vchSig, unsigned int flags, ScriptError* serror) {
+bool static CheckSignatureEncoding(const valtype& vchSig, uint32_t flags, ScriptError* serror) {
   // Empty signature. Not strictly DER encoded, but allowed to provide a
   // compact way to provide an invalid signature for use with CHECK(MULTI)SIG
   if (vchSig.size() == 0) { return true; }
@@ -191,7 +191,7 @@ bool static CheckSignatureEncoding(const valtype& vchSig, unsigned int flags, Sc
   return true;
 }
 
-bool static CheckPubKeyEncoding(const valtype& vchSig, unsigned int flags, ScriptError* serror) {
+bool static CheckPubKeyEncoding(const valtype& vchSig, uint32_t flags, ScriptError* serror) {
   if ((flags & SCRIPT_VERIFY_STRICTENC) != 0 && !IsCompressedOrUncompressedPubKey(vchSig)) {
     return set_error(serror, SCRIPT_ERR_PUBKEYTYPE);
   }
@@ -221,7 +221,7 @@ bool static CheckMinimalPush(const valtype& data, opcodetype opcode) {
   return true;
 }
 
-bool EvalScript(vector<vector<uint8_t> >& stack, const CScript& script, unsigned int flags,
+bool EvalScript(vector<vector<uint8_t> >& stack, const CScript& script, uint32_t flags,
                 const BaseSignatureChecker& checker, ScriptError* serror) {
   static const CScriptNum bnZero(0);
   static const CScriptNum bnOne(1);
@@ -829,13 +829,13 @@ class CTransactionSignatureSerializer {
  private:
   const CTransaction& txTo;   //! reference to the spending transaction (the one being serialized)
   const CScript& scriptCode;  //! output script being consumed
-  const unsigned int nIn;     //! input index of txTo being signed
+  const uint32_t nIn;     //! input index of txTo being signed
   const bool fAnyoneCanPay;   //! whether the hashtype has the SIGHASH_ANYONECANPAY flag set
   const bool fHashSingle;     //! whether the hashtype is SIGHASH_SINGLE
   const bool fHashNone;       //! whether the hashtype is SIGHASH_NONE
 
  public:
-  CTransactionSignatureSerializer(const CTransaction& txToIn, const CScript& scriptCodeIn, unsigned int nInIn,
+  CTransactionSignatureSerializer(const CTransaction& txToIn, const CScript& scriptCodeIn, uint32_t nInIn,
                                   int nHashTypeIn)
       : txTo(txToIn),
         scriptCode(scriptCodeIn),
@@ -849,7 +849,7 @@ class CTransactionSignatureSerializer {
     auto it = scriptCode.begin();
     auto itBegin = it;
     opcodetype opcode;
-    unsigned int nCodeSeparators = 0;
+    uint32_t nCodeSeparators = 0;
     while (scriptCode.GetOp(it, opcode)) {
       if (opcode == OP_CODESEPARATOR) nCodeSeparators++;
     }
@@ -865,7 +865,7 @@ class CTransactionSignatureSerializer {
   }
 
   /** Serialize an input of txTo */
-  template <typename S> void SerializeInput(S& s, unsigned int nInput) const {
+  template <typename S> void SerializeInput(S& s, uint32_t nInput) const {
     // In case of SIGHASH_ANYONECANPAY, only the input being signed is serialized
     if (fAnyoneCanPay) nInput = nIn;
     // Serialize the prevout
@@ -885,7 +885,7 @@ class CTransactionSignatureSerializer {
   }
 
   /** Serialize an output of txTo */
-  template <typename S> void SerializeOutput(S& s, unsigned int nOutput) const {
+  template <typename S> void SerializeOutput(S& s, uint32_t nOutput) const {
     if (fHashSingle && nOutput != nIn)
       // Do not lock-in the txout payee at other indices as txin
       ::Serialize(s, CTxOut());
@@ -898,13 +898,13 @@ class CTransactionSignatureSerializer {
     // Serialize nVersion
     ::Serialize(s, txTo.nTransactionVersion);
     // Serialize vin
-    unsigned int nInputs = fAnyoneCanPay ? 1 : txTo.vin.size();
+    uint32_t nInputs = fAnyoneCanPay ? 1 : txTo.vin.size();
     ::WriteCompactSize(s, nInputs);
-    for (unsigned int nInput = 0; nInput < nInputs; nInput++) SerializeInput(s, nInput);
+    for (uint32_t nInput = 0; nInput < nInputs; nInput++) SerializeInput(s, nInput);
     // Serialize vout
-    unsigned int nOutputs = fHashNone ? 0 : (fHashSingle ? nIn + 1 : txTo.vout.size());
+    uint32_t nOutputs = fHashNone ? 0 : (fHashSingle ? nIn + 1 : txTo.vout.size());
     ::WriteCompactSize(s, nOutputs);
-    for (unsigned int nOutput = 0; nOutput < nOutputs; nOutput++) SerializeOutput(s, nOutput);
+    for (uint32_t nOutput = 0; nOutput < nOutputs; nOutput++) SerializeOutput(s, nOutput);
     // Serialize nLockTime
     ::Serialize(s, txTo.nLockTime);
   }
@@ -912,7 +912,7 @@ class CTransactionSignatureSerializer {
 
 }  // namespace
 
-uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsigned int nIn, int nHashType) {
+uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, uint32_t nIn, int nHashType) {
   if (nIn >= txTo.vin.size()) {
     //  nIn out of range
     return uint256S("1");
@@ -958,7 +958,7 @@ bool TransactionSignatureChecker::CheckSig(const vector<uint8_t>& vchSigIn, cons
   return true;
 }
 
-bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, unsigned int flags,
+bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, uint32_t flags,
                   const BaseSignatureChecker& checker, ScriptError* serror) {
   set_error(serror, SCRIPT_ERR_UNKNOWN_ERROR);
 

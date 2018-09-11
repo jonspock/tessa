@@ -17,9 +17,9 @@
 
 class uint256;
 
-const unsigned int WALLET_CRYPTO_KEY_SIZE = 32;
-const unsigned int WALLET_CRYPTO_SALT_SIZE = 8;
-const unsigned int WALLET_CRYPTO_IV_SIZE = 16;
+const uint32_t WALLET_CRYPTO_KEY_SIZE = 32;
+const uint32_t WALLET_CRYPTO_SALT_SIZE = 8;
+const uint32_t WALLET_CRYPTO_IV_SIZE = 16;
 
 /**
  * Private key encryption is done based on a CMasterKey,
@@ -43,8 +43,8 @@ class CMasterKey {
   std::vector<uint8_t> vchSalt;
   //! 0 = EVP_sha512()
   //! 1 = scrypt()
-  unsigned int nDerivationMethod;
-  unsigned int nDeriveIterations;
+  uint32_t nDerivationMethod;
+  uint32_t nDeriveIterations;
   //! Use this for more parameters to key derivation, such as the various
   //! parameters to scrypt
   std::vector<uint8_t> vchOtherDerivationParameters;
@@ -82,7 +82,7 @@ class CCrypter {
 
  public:
   bool SetKeyFromPassphrase(const SecureString &strKeyData, const std::vector<uint8_t> &chSalt,
-                            const unsigned int nRounds, const unsigned int nDerivationMethod);
+                            const uint32_t nRounds, const uint32_t nDerivationMethod);
   bool Encrypt(const CKeyingMaterial &vchPlaintext, std::vector<uint8_t> &vchCiphertext) const;
   bool Decrypt(const std::vector<uint8_t> &vchCiphertext, CKeyingMaterial &vchPlaintext) const;
   bool SetKey(const CKeyingMaterial &chNewKey, const std::vector<uint8_t> &chNewIV);

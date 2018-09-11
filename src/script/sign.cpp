@@ -32,7 +32,7 @@ bool SignN(const vector<valtype>& multisigdata, const CKeyStore& keystore, uint2
            CScript& scriptSigRet) {
   int nSigned = 0;
   int nRequired = multisigdata.front()[0];
-  for (unsigned int i = 1; i < multisigdata.size() - 1 && nSigned < nRequired; i++) {
+  for (uint32_t i = 1; i < multisigdata.size() - 1 && nSigned < nRequired; i++) {
     const valtype& pubkey = multisigdata[i];
     ecdsa::CKeyID keyID = ecdsa::CPubKey(pubkey).GetID();
     if (Sign1(keyID, keystore, hash, nHashType, scriptSigRet)) ++nSigned;
@@ -94,7 +94,7 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
   return false;
 }
 
-bool SignSignature(const CKeyStore& keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn,
+bool SignSignature(const CKeyStore& keystore, const CScript& fromPubKey, CMutableTransaction& txTo, uint32_t nIn,
                    int nHashType) {
   assert(nIn < txTo.vin.size());
   CTxIn& txin = txTo.vin[nIn];
@@ -127,7 +127,7 @@ bool SignSignature(const CKeyStore& keystore, const CScript& fromPubKey, CMutabl
                       MutableTransactionSignatureChecker(&txTo, nIn));
 }
 
-bool SignSignature(const CKeyStore& keystore, const CTransaction& txFrom, CMutableTransaction& txTo, unsigned int nIn,
+bool SignSignature(const CKeyStore& keystore, const CTransaction& txFrom, CMutableTransaction& txTo, uint32_t nIn,
                    int nHashType) {
   assert(nIn < txTo.vin.size());
   CTxIn& txin = txTo.vin[nIn];
@@ -143,7 +143,7 @@ static CScript PushAll(const vector<valtype>& values) {
   return result;
 }
 
-static CScript CombineMultisig(const CScript& scriptPubKey, const CTransaction& txTo, unsigned int nIn,
+static CScript CombineMultisig(const CScript& scriptPubKey, const CTransaction& txTo, uint32_t nIn,
                                const vector<valtype>& vSolutions, const vector<valtype>& sigs1,
                                const vector<valtype>& sigs2) {
   // Combine all the signatures we've got:
@@ -157,11 +157,11 @@ static CScript CombineMultisig(const CScript& scriptPubKey, const CTransaction& 
 
   // Build a map of pubkey -> signature by matching sigs to pubkeys:
   assert(vSolutions.size() > 1);
-  unsigned int nSigsRequired = vSolutions.front()[0];
-  unsigned int nPubKeys = vSolutions.size() - 2;
+  uint32_t nSigsRequired = vSolutions.front()[0];
+  uint32_t nPubKeys = vSolutions.size() - 2;
   map<valtype, valtype> sigs;
   for (const valtype& sig : allsigs) {
-    for (unsigned int i = 0; i < nPubKeys; i++) {
+    for (uint32_t i = 0; i < nPubKeys; i++) {
       const valtype& pubkey = vSolutions[i + 1];
       if (sigs.count(pubkey)) continue;  // Already got a sig for this pubkey
 
@@ -172,22 +172,22 @@ static CScript CombineMultisig(const CScript& scriptPubKey, const CTransaction& 
     }
   }
   // Now build a merged CScript:
-  unsigned int nSigsHave = 0;
+  uint32_t nSigsHave = 0;
   CScript result;
   result << OP_0;  // pop-one-too-many workaround
-  for (unsigned int i = 0; i < nPubKeys && nSigsHave < nSigsRequired; i++) {
+  for (uint32_t i = 0; i < nPubKeys && nSigsHave < nSigsRequired; i++) {
     if (sigs.count(vSolutions[i + 1])) {
       result << sigs[vSolutions[i + 1]];
       ++nSigsHave;
     }
   }
   // Fill any missing with OP_0:
-  for (unsigned int i = nSigsHave; i < nSigsRequired; i++) result << OP_0;
+  for (uint32_t i = nSigsHave; i < nSigsRequired; i++) result << OP_0;
 
   return result;
 }
 
-static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction& txTo, unsigned int nIn,
+static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction& txTo, uint32_t nIn,
                                  const txnouttype txType, const vector<valtype>& vSolutions, vector<valtype>& sigs1,
                                  vector<valtype>& sigs2) {
   switch (txType) {
@@ -228,7 +228,7 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
   return CScript();
 }
 
-CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction& txTo, unsigned int nIn,
+CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction& txTo, uint32_t nIn,
                           const CScript& scriptSig1, const CScript& scriptSig2) {
   txnouttype txType;
   vector<vector<uint8_t> > vSolutions;

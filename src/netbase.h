@@ -83,7 +83,7 @@ class CNetAddr {
   enum Network GetNetwork() const;
   std::string ToString() const;
   std::string ToStringIP() const;
-  unsigned int GetByte(int n) const;
+  uint32_t GetByte(int n) const;
   uint64_t GetHash() const;
   bool GetInAddr(struct in_addr* pipv4Addr) const;
   std::vector<uint8_t> GetGroup() const;
@@ -199,11 +199,11 @@ bool GetProxy(enum Network net, proxyType& proxyInfoOut);
 bool IsProxy(const CNetAddr& addr);
 bool SetNameProxy(const proxyType& addrProxy);
 bool HaveNameProxy();
-bool LookupHost(const char* pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions = 0,
+bool LookupHost(const char* pszName, std::vector<CNetAddr>& vIP, uint32_t nMaxSolutions = 0,
                 bool fAllowLookup = true);
 bool Lookup(const char* pszName, CService& addr, int portDefault = 0, bool fAllowLookup = true);
 bool Lookup(const char* pszName, std::vector<CService>& vAddr, int portDefault = 0, bool fAllowLookup = true,
-            unsigned int nMaxSolutions = 0);
+            uint32_t nMaxSolutions = 0);
 bool LookupNumeric(const char* pszName, CService& addr, int portDefault = 0);
 bool ConnectSocket(const CService& addr, SOCKET& hSocketRet, int nTimeout, bool* outProxyConnectionFailed = nullptr);
 bool ConnectSocketByName(CService& addr, SOCKET& hSocketRet, const char* pszDest, int portDefault, int nTimeout,

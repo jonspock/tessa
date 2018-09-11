@@ -496,12 +496,12 @@ UniValue gettxout(const UniValue& params, bool fHelp) {
   } else {
     if (!pcoinsTip->GetCoins(hash, coins)) return NullUniValue;
   }
-  if (n < 0 || (unsigned int)n >= coins.vout.size() || coins.vout[n].IsNull()) return NullUniValue;
+  if (n < 0 || (uint32_t)n >= coins.vout.size() || coins.vout[n].IsNull()) return NullUniValue;
 
   BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
   CBlockIndex* pindex = it->second;
   ret.push_back(Pair("bestblock", pindex->GetBlockHash().GetHex()));
-  if ((unsigned int)coins.nHeight == MEMPOOL_HEIGHT)
+  if ((uint32_t)coins.nHeight == MEMPOOL_HEIGHT)
     ret.push_back(Pair("confirmations", 0));
   else
     ret.push_back(Pair("confirmations", pindex->nHeight - coins.nHeight + 1));
@@ -718,7 +718,7 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp) {
     for (const CTransaction& tx : block.vtx) {
       if (tx.IsCoinBase() || tx.IsCoinStake()) continue;
 
-      for (unsigned int j = 0; j < tx.vin.size(); j++) {
+      for (uint32_t j = 0; j < tx.vin.size(); j++) {
         if (tx.vin[j].scriptSig.IsZerocoinSpend()) {
           nValueIn += tx.vin[j].nSequence * COIN;
           continue;
@@ -732,7 +732,7 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp) {
         nValueIn += txPrev.vout[prevout.n].nValue;
       }
 
-      for (unsigned int j = 0; j < tx.vout.size(); j++) { nValueOut += tx.vout[j].nValue; }
+      for (uint32_t j = 0; j < tx.vout.size(); j++) { nValueOut += tx.vout[j].nValue; }
 
       nFees += nValueIn - nValueOut;
       nBytes += tx.GetSerializeSize();

@@ -20,13 +20,13 @@
 
 using namespace std;
 
-CBloomFilter::CBloomFilter(unsigned int nElements, double nFPRate, unsigned int nTweakIn, uint8_t nFlagsIn)
+CBloomFilter::CBloomFilter(uint32_t nElements, double nFPRate, uint32_t nTweakIn, uint8_t nFlagsIn)
     : /**
        * The ideal size for a bloom filter with a given number of elements and false positive rate is:
        * - nElements * log(fp rate) / ln(2)^2
        * We ignore filter parameters which will create a bloom filter larger than the protocol limits
        */
-      vData(min((unsigned int)(-1 / LN2SQUARED * nElements * log(nFPRate)), MAX_BLOOM_FILTER_SIZE * 8) / 8),
+      vData(min((uint32_t)(-1 / LN2SQUARED * nElements * log(nFPRate)), MAX_BLOOM_FILTER_SIZE * 8) / 8),
       /**
        * The ideal number of hash functions is filter size * ln(2) / number of elements
        * Again, we ignore filter parameters which will create a bloom filter with more hash functions than the protocol
@@ -34,19 +34,19 @@ CBloomFilter::CBloomFilter(unsigned int nElements, double nFPRate, unsigned int 
        */
       isFull(false),
       isEmpty(false),
-      nHashFuncs(min((unsigned int)(vData.size() * 8.0 / nElements * LN2), MAX_HASH_FUNCS)),
+      nHashFuncs(min((uint32_t)(vData.size() * 8.0 / nElements * LN2), MAX_HASH_FUNCS)),
       nTweak(nTweakIn),
       nFlags(nFlagsIn) {}
 
-inline unsigned int CBloomFilter::Hash(unsigned int nHashNum, const std::vector<uint8_t>& vDataToHash) const {
+inline uint32_t CBloomFilter::Hash(uint32_t nHashNum, const std::vector<uint8_t>& vDataToHash) const {
   // 0xFBA4C795 chosen as it guarantees a reasonable bit difference between nHashNum values.
   return MurmurHash3(nHashNum * 0xFBA4C795 + nTweak, vDataToHash) % (vData.size() * 8);
 }
 
 void CBloomFilter::insert(const vector<uint8_t>& vKey) {
   if (isFull) return;
-  for (unsigned int i = 0; i < nHashFuncs; i++) {
-    unsigned int nIndex = Hash(i, vKey);
+  for (uint32_t i = 0; i < nHashFuncs; i++) {
+    uint32_t nIndex = Hash(i, vKey);
     // Sets bit nIndex of vData
     vData[nIndex >> 3] |= (1 << (7 & nIndex));
   }
@@ -68,8 +68,8 @@ void CBloomFilter::insert(const uint256& hash) {
 bool CBloomFilter::contains(const vector<uint8_t>& vKey) const {
   if (isFull) return true;
   if (isEmpty) return false;
-  for (unsigned int i = 0; i < nHashFuncs; i++) {
-    unsigned int nIndex = Hash(i, vKey);
+  for (uint32_t i = 0; i < nHashFuncs; i++) {
+    uint32_t nIndex = Hash(i, vKey);
     // Checks bit nIndex of vData
     if (!(vData[nIndex >> 3] & (1 << (7 & nIndex)))) return false;
   }
@@ -107,7 +107,7 @@ bool CBloomFilter::IsRelevantAndUpdate(const CTransaction& tx) {
   const uint256& hash = tx.GetHash();
   if (contains(hash)) fFound = true;
 
-  for (unsigned int i = 0; i < tx.vout.size(); i++) {
+  for (uint32_t i = 0; i < tx.vout.size(); i++) {
     const CTxOut& txout = tx.vout[i];
     // Match if the filter contains any arbitrary script data element in any scriptPubKey in tx
     // If this matches, also add the specific output that was matched.
@@ -155,7 +155,7 @@ bool CBloomFilter::IsRelevantAndUpdate(const CTransaction& tx) {
 void CBloomFilter::UpdateEmptyFull() {
   bool full = true;
   bool empty = true;
-  for (unsigned int i = 0; i < vData.size(); i++) {
+  for (uint32_t i = 0; i < vData.size(); i++) {
     full &= vData[i] == 0xff;
     empty &= vData[i] == 0;
   }

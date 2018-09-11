@@ -84,9 +84,9 @@ class CWalletTx : public CMerkleTx {
  public:
   mapValue_t mapValue;
   std::vector<std::pair<std::string, std::string> > vOrderForm;
-  unsigned int fTimeReceivedIsTxTime;
-  unsigned int nTimeReceived;  //! time received by this node
-  unsigned int nTimeSmart;
+  uint32_t fTimeReceivedIsTxTime;
+  uint32_t nTimeReceived;  //! time received by this node
+  uint32_t nTimeSmart;
   uint8_t fFromMe;
   std::string strFromAccount;
   int64_t nOrderPos;  //! position in ordered transaction list
@@ -186,7 +186,7 @@ class CWalletTx : public CMerkleTx {
 
       ReadOrderPos(nOrderPos, mapValue);
 
-      nTimeSmart = mapValue.count("timesmart") ? (unsigned int)std::atoi(mapValue["timesmart"].c_str()) : 0;
+      nTimeSmart = mapValue.count("timesmart") ? (uint32_t)std::atoi(mapValue["timesmart"].c_str()) : 0;
     }
 
     mapValue.erase("fromaccount");

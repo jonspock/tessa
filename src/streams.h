@@ -32,7 +32,7 @@ class CDataStream {
  protected:
   typedef CSerializeData vector_type;
   vector_type vch;
-  unsigned int nReadPos;
+  uint32_t nReadPos;
 
  public:
   int nType;
@@ -115,7 +115,7 @@ class CDataStream {
 
   void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last) {
     assert(last - first >= 0);
-    if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos) {
+    if (it == vch.begin() + nReadPos && (uint32_t)(last - first) <= nReadPos) {
       // special case for inserting at the front when there's room
       nReadPos -= (last - first);
       memcpy(&vch[nReadPos], &first[0], last - first);
@@ -125,7 +125,7 @@ class CDataStream {
 
   void insert(iterator it, const char* first, const char* last) {
     assert(last - first >= 0);
-    if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos) {
+    if (it == vch.begin() + nReadPos && (uint32_t)(last - first) <= nReadPos) {
       // special case for inserting at the front when there's room
       nReadPos -= (last - first);
       memcpy(&vch[nReadPos], &first[0], last - first);
@@ -188,7 +188,7 @@ class CDataStream {
 
   CDataStream& read(char* pch, size_t nSize) {
     // Read from the beginning of the buffer
-    unsigned int nReadPosNext = nReadPos + nSize;
+    uint32_t nReadPosNext = nReadPos + nSize;
     if (nReadPosNext >= vch.size()) {
       if (nReadPosNext > vch.size()) { throw std::ios_base::failure("CDataStream::read() : end of data"); }
       memcpy(pch, &vch[nReadPos], nSize);
@@ -204,7 +204,7 @@ class CDataStream {
   CDataStream& ignore(int nSize) {
     // Ignore from the beginning of the buffer
     assert(nSize >= 0);
-    unsigned int nReadPosNext = nReadPos + nSize;
+    uint32_t nReadPosNext = nReadPos + nSize;
     if (nReadPosNext >= vch.size()) {
       if (nReadPosNext > vch.size()) throw std::ios_base::failure("CDataStream::ignore() : end of data");
       nReadPos = 0;
@@ -226,7 +226,7 @@ class CDataStream {
     if (!vch.empty()) s.write((char*)&vch[0], vch.size() * sizeof(vch[0]));
   }
 
-  template <typename T> unsigned int GetSerializeSize(const T& obj) {
+  template <typename T> uint32_t GetSerializeSize(const T& obj) {
     // Tells the size of the object if serialized to this stream
     return ::GetSerializeSize(obj);
   }
@@ -325,7 +325,7 @@ class CAutoFile {
     return (*this);
   }
 
-  template <typename T> unsigned int GetSerializeSize(const T& obj) {
+  template <typename T> uint32_t GetSerializeSize(const T& obj) {
     // Tells the size of the object if serialized to this stream
     return ::GetSerializeSize(obj);
   }
@@ -370,9 +370,9 @@ class CBufferedFile {
  protected:
   // read data from the source to fill the buffer
   bool Fill() {
-    unsigned int pos = nSrcPos % vchBuf.size();
-    unsigned int readNow = vchBuf.size() - pos;
-    unsigned int nAvail = vchBuf.size() - (nSrcPos - nReadPos) - nRewind;
+    uint32_t pos = nSrcPos % vchBuf.size();
+    uint32_t readNow = vchBuf.size() - pos;
+    uint32_t nAvail = vchBuf.size() - (nSrcPos - nReadPos) - nRewind;
     if (nAvail < readNow) readNow = nAvail;
     if (readNow == 0) return false;
     size_t read = fread((void*)&vchBuf[pos], 1, readNow, src);
@@ -411,7 +411,7 @@ class CBufferedFile {
     if (nSize + nRewind > vchBuf.size()) throw std::ios_base::failure("Read larger than buffer size");
     while (nSize > 0) {
       if (nReadPos == nSrcPos) Fill();
-      unsigned int pos = nReadPos % vchBuf.size();
+      uint32_t pos = nReadPos % vchBuf.size();
       size_t nNow = nSize;
       if (nNow + pos > vchBuf.size()) nNow = vchBuf.size() - pos;
       if (nNow + nReadPos > nSrcPos) nNow = nSrcPos - nReadPos;

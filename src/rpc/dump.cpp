@@ -58,7 +58,7 @@ std::string static EncodeDumpString(const std::string& str) {
 
 std::string DecodeDumpString(const std::string& str) {
   std::stringstream ret;
-  for (unsigned int pos = 0; pos < str.length(); pos++) {
+  for (uint32_t pos = 0; pos < str.length(); pos++) {
     uint8_t c = str[pos];
     if (c == '%' && pos + 2 < str.length()) {
       c = (((str[pos + 1] >> 6) * 9 + ((str[pos + 1] - '0') & 15)) << 4) |
@@ -255,7 +255,7 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
     int64_t nTime = DecodeDumpTime(vstr[1]);
     std::string strLabel;
     bool fLabel = true;
-    for (unsigned int nStr = 2; nStr < vstr.size(); nStr++) {
+    for (uint32_t nStr = 2; nStr < vstr.size(); nStr++) {
       if (vstr[nStr].substr(0, 1) == "#") break;
       if (vstr[nStr] == "change=1") fLabel = false;
       if (vstr[nStr] == "reserve=1") fLabel = false;

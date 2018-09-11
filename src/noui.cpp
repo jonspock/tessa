@@ -17,7 +17,7 @@
 
 #include <boost/signals2/signal.hpp>
 
-static bool noui_ThreadSafeMessageBox(const std::string& message, const std::string& caption, unsigned int style) {
+static bool noui_ThreadSafeMessageBox(const std::string& message, const std::string& caption, uint32_t style) {
   bool fSecure = style & CClientUIInterface::SECURE;
   style &= ~CClientUIInterface::SECURE;
 

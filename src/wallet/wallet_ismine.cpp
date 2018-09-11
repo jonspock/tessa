@@ -16,8 +16,8 @@ using namespace std;
 
 typedef vector<uint8_t> valtype;
 
-unsigned int HaveKeys(const vector<valtype>& pubkeys, const CKeyStore& keystore) {
-  unsigned int nResult = 0;
+uint32_t HaveKeys(const vector<valtype>& pubkeys, const CKeyStore& keystore) {
+  uint32_t nResult = 0;
   for (const valtype& pubkey : pubkeys) {
     ecdsa::CKeyID keyID = ecdsa::CPubKey(pubkey).GetID();
     if (keystore.HaveKey(keyID)) ++nResult;

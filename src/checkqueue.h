@@ -52,20 +52,20 @@ template <typename T> class CCheckQueue {
    * This includes elements that are not anymore in queue, but still in
    * worker's own batches.
    */
-  unsigned int nTodo;
+  uint32_t nTodo;
 
   //! Whether we're shutting down.
   bool fQuit;
 
   //! The maximum number of elements to be processed in one batch
-  unsigned int nBatchSize;
+  uint32_t nBatchSize;
 
   /** Internal function that does bulk of the verification work. */
   bool Loop(bool fMaster = false) {
     std::condition_variable& cond = fMaster ? condMaster : condWorker;
     std::vector<T> vChecks;
     vChecks.reserve(nBatchSize);
-    unsigned int nNow = 0;
+    uint32_t nNow = 0;
     bool fOk = true;
     do {
       {
@@ -101,9 +101,9 @@ template <typename T> class CCheckQueue {
         //   all workers finish approximately simultaneously.
         // * Try to account for idle jobs which will instantly start helping.
         // * Don't do batches smaller than 1 (duh), or larger than nBatchSize.
-        nNow = std::max(1U, std::min(nBatchSize, (unsigned int)queue.size() / (nTotal + nIdle + 1)));
+        nNow = std::max(1U, std::min(nBatchSize, (uint32_t)queue.size() / (nTotal + nIdle + 1)));
         vChecks.resize(nNow);
-        for (unsigned int i = 0; i < nNow; i++) {
+        for (uint32_t i = 0; i < nNow; i++) {
           // We want the lock on the mutex to be as short as possible, so swap jobs from the global
           // queue to the local batch vector instead of copying.
           vChecks[i].swap(queue.back());
@@ -121,7 +121,7 @@ template <typename T> class CCheckQueue {
 
  public:
   //! Create a new check queue
-  CCheckQueue(unsigned int nBatchSizeIn)
+  CCheckQueue(uint32_t nBatchSizeIn)
       : nIdle(0), nTotal(0), fAllOk(true), nTodo(0), fQuit(false), nBatchSize(nBatchSizeIn) {}
 
   //! Worker thread

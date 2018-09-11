@@ -127,19 +127,19 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
   }
 
   // Largest block you're willing to create:
-  unsigned int nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
+  uint32_t nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
   // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
-  unsigned int nBlockMaxSizeNetwork = MAX_BLOCK_SIZE_CURRENT;
-  nBlockMaxSize = std::max((unsigned int)1000, std::min((nBlockMaxSizeNetwork - 1000), nBlockMaxSize));
+  uint32_t nBlockMaxSizeNetwork = MAX_BLOCK_SIZE_CURRENT;
+  nBlockMaxSize = std::max((uint32_t)1000, std::min((nBlockMaxSizeNetwork - 1000), nBlockMaxSize));
 
   // How much of the block should be dedicated to high-priority transactions,
   // included regardless of the fees they pay
-  unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", DEFAULT_BLOCK_PRIORITY_SIZE);
+  uint32_t nBlockPrioritySize = GetArg("-blockprioritysize", DEFAULT_BLOCK_PRIORITY_SIZE);
   nBlockPrioritySize = std::min(nBlockMaxSize, nBlockPrioritySize);
 
   // Minimum block size you want to create; block will be filled with free transactions
   // until there are no more or the block reaches this size:
-  unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
+  uint32_t nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
   nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
 
   // Collect memory pool transactions into the block
@@ -236,7 +236,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       if (fMissingInputs) continue;
 
       // Priority is sum(valuein * age) / modified_txsize
-      unsigned int nTxSize = ::GetSerializeSize(tx);
+      uint32_t nTxSize = ::GetSerializeSize(tx);
       dPriority = tx.ComputePriority(dPriority, nTxSize);
 
       uint256 hash = tx.GetHash();
@@ -272,12 +272,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       vecPriority.pop_back();
 
       // Size limits
-      unsigned int nTxSize = ::GetSerializeSize(tx);
+      uint32_t nTxSize = ::GetSerializeSize(tx);
       if (nBlockSize + nTxSize >= nBlockMaxSize) continue;
 
       // Legacy limits on sigOps:
-      unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
-      unsigned int nTxSigOps = GetLegacySigOpCount(tx);
+      uint32_t nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
+      uint32_t nTxSigOps = GetLegacySigOpCount(tx);
       if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps) continue;
 
       // Skip free transactions if we're past the minimum block size:
@@ -438,7 +438,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
   return pblocktemplate.release();
 }
 
-void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) {
+void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, uint32_t& nExtraNonce) {
   // Update nExtraNonce
   static uint256 hashPrevBlock;
   if (hashPrevBlock != pblock->hashPrevBlock) {
@@ -446,7 +446,7 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
     hashPrevBlock = pblock->hashPrevBlock;
   }
   ++nExtraNonce;
-  unsigned int nHeight = pindexPrev->nHeight + 1;  // Height first in coinbase required for block.version=2
+  uint32_t nHeight = pindexPrev->nHeight + 1;  // Height first in coinbase required for block.version=2
   CMutableTransaction txCoinbase(pblock->vtx[0]);
   txCoinbase.vin[0].scriptSig = (CScript() << nHeight << CScriptNum(nExtraNonce)) + COINBASE_FLAGS;
   assert(txCoinbase.vin[0].scriptSig.size() <= 100);
@@ -518,7 +518,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
 
   // Each thread has its own key and counter
   CReserveKey reservekey(pwallet);
-  unsigned int nExtraNonce = 0;
+  uint32_t nExtraNonce = 0;
 
   while (fGenerateBitcoins || fProofOfStake) {
     if (fProofOfStake) {
@@ -557,7 +557,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
               chainActive.Tip()->nHeight))  // search our map of hashed blocks, see if bestblock has been hashed yet
       {
         if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] <
-            max(pwallet->nHashInterval, (unsigned int)1))  // wait half of the nHashDrift with max wait of 3 minutes
+            max(pwallet->nHashInterval, (uint32_t)1))  // wait half of the nHashDrift with max wait of 3 minutes
         {
           MilliSleep(5000);
           continue;
@@ -571,7 +571,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
     //
     // Create new block
     //
-    unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
+    uint32_t nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) continue;
 
@@ -606,7 +606,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
     int64_t nStart = GetTime();
     arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
     while (true) {
-      unsigned int nHashesDone = 0;
+      uint32_t nHashesDone = 0;
 
       uint256 hash;
       while (true) {

@@ -12,7 +12,7 @@
 bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos);
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos);
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex);
-double ConvertBitsToDouble(unsigned int nBits);
+double ConvertBitsToDouble(uint32_t nBits);
 int64_t GetBlockValue(int nHeight);
 bool IsInitialBlockDownload();
 

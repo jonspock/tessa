@@ -75,7 +75,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry) 
   }
   entry.push_back(Pair("vin", vin));
   UniValue vout(UniValue::VARR);
-  for (unsigned int i = 0; i < tx.vout.size(); i++) {
+  for (uint32_t i = 0; i < tx.vout.size(); i++) {
     const CTxOut& txout = tx.vout[i];
     UniValue out(UniValue::VOBJ);
     out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
@@ -242,7 +242,7 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
   set<CBitcoinAddress> setAddress;
   if (params.size() > 2) {
     UniValue inputs = params[2].get_array();
-    for (unsigned int inx = 0; inx < inputs.size(); inx++) {
+    for (uint32_t inx = 0; inx < inputs.size(); inx++) {
       const UniValue& input = inputs[inx];
       CBitcoinAddress address(input.get_str());
       if (!address.IsValid())
@@ -345,7 +345,7 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp) {
 
   CMutableTransaction rawTx;
 
-  for (unsigned int idx = 0; idx < inputs.size(); idx++) {
+  for (uint32_t idx = 0; idx < inputs.size(); idx++) {
     const UniValue& input = inputs[idx];
     const UniValue& o = input.get_obj();
 
@@ -596,7 +596,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
   if (params.size() > 2 && !params[2].isNull()) {
     fGivenKeys = true;
     UniValue keys = params[2].get_array();
-    for (unsigned int idx = 0; idx < keys.size(); idx++) {
+    for (uint32_t idx = 0; idx < keys.size(); idx++) {
       UniValue k = keys[idx];
       CBitcoinSecret vchSecret;
       bool fGood = vchSecret.SetString(k.get_str());
@@ -611,7 +611,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
   // Add previous txouts given in the RPC call:
   if (params.size() > 1 && !params[1].isNull()) {
     UniValue prevTxs = params[1].get_array();
-    for (unsigned int idx = 0; idx < prevTxs.size(); idx++) {
+    for (uint32_t idx = 0; idx < prevTxs.size(); idx++) {
       const UniValue& p = prevTxs[idx];
       if (!p.isObject())
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "expected object with {\"txid'\",\"vout\",\"scriptPubKey\"}");
@@ -635,7 +635,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
           err = err + coins->vout[nOut].scriptPubKey.ToString() + "\nvs:\n" + scriptPubKey.ToString();
           throw JSONRPCError(RPC_DESERIALIZATION_ERROR, err);
         }
-        if ((unsigned int)nOut >= coins->vout.size()) coins->vout.resize(nOut + 1);
+        if ((uint32_t)nOut >= coins->vout.size()) coins->vout.resize(nOut + 1);
         coins->vout[nOut].scriptPubKey = scriptPubKey;
         coins->vout[nOut].nValue = 0;  // we don't know the actual output value
       }
@@ -681,7 +681,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
   UniValue vErrors(UniValue::VARR);
 
   // Sign what we can:
-  for (unsigned int i = 0; i < mergedTx.vin.size(); i++) {
+  for (uint32_t i = 0; i < mergedTx.vin.size(); i++) {
     CTxIn& txin = mergedTx.vin[i];
     const CCoins* coins = view.AccessCoins(txin.prevout.hash);
     if (coins == nullptr || !coins->IsAvailable(txin.prevout.n)) {

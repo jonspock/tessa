@@ -69,7 +69,7 @@ CCriticalSection cs_main;
 
 BlockMap mapBlockIndex;
 map<uint256, uint256> mapProofOfStake;
-map<unsigned int, unsigned int> mapHashedBlocks;
+map<uint32_t, uint32_t> mapHashedBlocks;
 CChain chainActive;
 CBlockIndex* pindexBestHeader = nullptr;
 int64_t nTimeBestReceived = 0;
@@ -82,7 +82,7 @@ bool fTxIndex = true;
 bool fIsBareMultisigStd = true;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
-unsigned int nCoinCacheSize = 5000;
+uint32_t nCoinCacheSize = 5000;
 
 int64_t nReserveBalance = 0;
 
@@ -318,7 +318,7 @@ CBlockIndex* LastCommonAncestor(CBlockIndex* pa, CBlockIndex* pb) {
 
 /** Update pindexLastCommonBlock and add not-in-flight missing successors to vBlocks, until it has
  *  at most count entries. */
-void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBlockIndex*>& vBlocks,
+void FindNextBlocksToDownload(NodeId nodeid, uint32_t count, std::vector<CBlockIndex*>& vBlocks,
                               NodeId& nodeStaller) {
   if (count == 0) return;
 
@@ -362,7 +362,7 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
     vToFetch.resize(nToFetch);
     pindexWalk = state->pindexBestKnownBlock->GetAncestor(pindexWalk->nHeight + nToFetch);
     vToFetch[nToFetch - 1] = pindexWalk;
-    for (unsigned int i = nToFetch - 1; i > 0; i--) { vToFetch[i - 1] = vToFetch[i]->pprev; }
+    for (uint32_t i = nToFetch - 1; i > 0; i--) { vToFetch[i - 1] = vToFetch[i]->pprev; }
 
     // Iterate over those blocks in vToFetch (in forward direction), adding the ones that
     // are not yet downloaded and not in flight to vBlocks. In the mean time, update
@@ -458,7 +458,7 @@ bool AddOrphanTx(const CTransaction& tx, NodeId peer) {
   // have been mined or received.
   // 10,000 orphans, each of which is at most 5,000 bytes big is
   // at most 500 megabytes of orphans:
-  unsigned int sz = tx.GetSerializeSize();
+  uint32_t sz = tx.GetSerializeSize();
   if (sz > 5000) {
     LogPrint(TessaLog::MEMPOOL, "ignoring large orphan tx (size: %u, hash: %s)\n", sz, hash.ToString());
     return false;
@@ -498,8 +498,8 @@ void EraseOrphansFor(NodeId peer) {
   if (nErased > 0) LogPrint(TessaLog::MEMPOOL, "Erased %d orphan tx from peer %d\n", nErased, peer);
 }
 
-unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans) {
-  unsigned int nEvicted = 0;
+uint32_t LimitOrphanTxSize(uint32_t nMaxOrphans) {
+  uint32_t nEvicted = 0;
   while (mapOrphanTransactions.size() > nMaxOrphans) {
     // Evict a random orphan:
     uint256 randomhash = GetRandHash();
@@ -544,8 +544,8 @@ bool IsStandardTx(const CTransaction& tx, string& reason) {
   // almost as much to process as they cost the sender in fees, because
   // computing signature hashes is O(ninputs*txsize). Limiting transactions
   // to MAX_STANDARD_TX_SIZE mitigates CPU exhaustion attacks.
-  unsigned int sz = tx.GetSerializeSize();
-  unsigned int nMaxSize = tx.ContainsZerocoins() ? MAX_ZEROCOIN_TX_SIZE : MAX_STANDARD_TX_SIZE;
+  uint32_t sz = tx.GetSerializeSize();
+  uint32_t nMaxSize = tx.ContainsZerocoins() ? MAX_ZEROCOIN_TX_SIZE : MAX_STANDARD_TX_SIZE;
   if (sz >= nMaxSize) {
     reason = "tx-size";
     return false;
@@ -570,7 +570,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason) {
     }
   }
 
-  unsigned int nDataOut = 0;
+  uint32_t nDataOut = 0;
   txnouttype whichType;
   for (const CTxOut& txout : tx.vout) {
     if (!::IsStandard(txout.scriptPubKey, whichType)) {
@@ -612,7 +612,7 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
     return true;  // coinbase has no inputs and zerocoinspend has a special input
   // todo should there be a check for a 'standard' zerocoinspend here?
 
-  for (unsigned int i = 0; i < tx.vin.size(); i++) {
+  for (uint32_t i = 0; i < tx.vin.size(); i++) {
     const CTxOut& prev = mapInputs.GetOutputFor(tx.vin[i]);
 
     vector<vector<uint8_t> > vSolutions;
@@ -643,30 +643,30 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
         nArgsExpected += tmpExpected;
       } else {
         // Any other Script with less than 15 sigops OK:
-        unsigned int sigops = subscript.GetSigOpCount(true);
+        uint32_t sigops = subscript.GetSigOpCount(true);
         // ... extra data left on the stack after execution is OK, too:
         return (sigops <= MAX_P2SH_SIGOPS);
       }
     }
 
-    if (stack.size() != (unsigned int)nArgsExpected) return false;
+    if (stack.size() != (uint32_t)nArgsExpected) return false;
   }
 
   return true;
 }
 
-unsigned int GetLegacySigOpCount(const CTransaction& tx) {
-  unsigned int nSigOps = 0;
+uint32_t GetLegacySigOpCount(const CTransaction& tx) {
+  uint32_t nSigOps = 0;
   for (const CTxIn& txin : tx.vin) { nSigOps += txin.scriptSig.GetSigOpCount(false); }
   for (const CTxOut& txout : tx.vout) { nSigOps += txout.scriptPubKey.GetSigOpCount(false); }
   return nSigOps;
 }
 
-unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs) {
+uint32_t GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs) {
   if (tx.IsCoinBase() || tx.IsZerocoinSpend()) return 0;
 
-  unsigned int nSigOps = 0;
-  for (unsigned int i = 0; i < tx.vin.size(); i++) {
+  uint32_t nSigOps = 0;
+  for (uint32_t i = 0; i < tx.vin.size(); i++) {
     const CTxOut& prevout = inputs.GetOutputFor(tx.vin[i]);
     if (prevout.scriptPubKey.IsPayToScriptHash()) nSigOps += prevout.scriptPubKey.GetSigOpCount(tx.vin[i].scriptSig);
   }
@@ -699,7 +699,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
     return state.DoS(10, error("CheckTransaction() : vout empty"), REJECT_INVALID, "bad-txns-vout-empty");
 
   // Size limits
-  unsigned int nMaxSize = MAX_ZEROCOIN_TX_SIZE;
+  uint32_t nMaxSize = MAX_ZEROCOIN_TX_SIZE;
 
   if (::GetSerializeSize(tx) > nMaxSize)
     return state.DoS(100, error("CheckTransaction() : size limits failed"), REJECT_INVALID, "bad-txns-oversize");
@@ -808,7 +808,7 @@ bool CheckFinalTx(const CTransaction& tx, int flags) {
   return IsFinalTx(tx, nBlockHeight, nBlockTime);
 }
 
-CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowFree) {
+CAmount GetMinRelayFee(const CTransaction& tx, uint32_t nBytes, bool fAllowFree) {
   {
     LOCK(mempool.cs);
     uint256 hash = tx.GetHash();
@@ -863,7 +863,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
   // Check for conflicts with in-memory transactions
   if (!tx.IsZerocoinSpend()) {
     LOCK(pool.cs);  // protect pool.mapNextTx
-    for (unsigned int i = 0; i < tx.vin.size(); i++) {
+    for (uint32_t i = 0; i < tx.vin.size(); i++) {
       COutPoint outpoint = tx.vin[i].prevout;
       if (pool.mapNextTx.count(outpoint)) {
         // Disable replacement feature for now
@@ -953,8 +953,8 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     // MAX_BLOCK_SIGOPS; we still consider this an invalid rather than
     // merely non-standard transaction.
     if (!tx.IsZerocoinSpend()) {
-      unsigned int nSigOps = GetLegacySigOpCount(tx);
-      unsigned int nMaxSigOps = MAX_TX_SIGOPS_CURRENT;
+      uint32_t nSigOps = GetLegacySigOpCount(tx);
+      uint32_t nMaxSigOps = MAX_TX_SIGOPS_CURRENT;
       nSigOps += GetP2SHSigOpCount(tx, view);
       if (nSigOps > nMaxSigOps)
         return state.DoS(
@@ -968,7 +968,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     if (!tx.IsZerocoinSpend()) view.GetPriority(tx, chainActive.Height());
 
     CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
-    unsigned int nSize = entry.GetTxSize();
+    uint32_t nSize = entry.GetTxSize();
 
     // Don't accept it if it can't get into a block
     // but prioritise dstx and don't check fees for it
@@ -1132,8 +1132,8 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
     // itself can contain sigops MAX_TX_SIGOPS is less than
     // MAX_BLOCK_SIGOPS; we still consider this an invalid rather than
     // merely non-standard transaction.
-    unsigned int nSigOps = GetLegacySigOpCount(tx);
-    unsigned int nMaxSigOps = MAX_TX_SIGOPS_CURRENT;
+    uint32_t nSigOps = GetLegacySigOpCount(tx);
+    uint32_t nMaxSigOps = MAX_TX_SIGOPS_CURRENT;
     nSigOps += GetP2SHSigOpCount(tx, view);
     if (nSigOps > nMaxSigOps)
       return state.DoS(0, error("AcceptableInputs : too many sigops %s, %d > %d", hash.ToString(), nSigOps, nMaxSigOps),
@@ -1144,7 +1144,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
     double dPriority = view.GetPriority(tx, chainActive.Height());
 
     CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
-    unsigned int nSize = entry.GetTxSize();
+    uint32_t nSize = entry.GetTxSize();
 
     // Don't accept it if it can't get into a block
     // but prioritise dstx and don't check fees for it
@@ -1341,7 +1341,7 @@ bool CScriptCheck::operator()() {
 }
 
 bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks,
-                 unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks) {
+                 uint32_t flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks) {
   if (!tx.IsCoinBase() && !tx.IsZerocoinSpend()) {
     if (pvChecks) pvChecks->reserve(tx.vin.size());
 
@@ -1536,7 +1536,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
         return error(
             "DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d",
             txundo.vprevout.size(), tx.vin.size());
-      for (unsigned int j = tx.vin.size(); j-- > 0;) {
+      for (uint32_t j = tx.vin.size(); j-- > 0;) {
         const COutPoint& out = tx.vin[j].prevout;
         const CTxInUndo& undo = txundo.vprevout[j];
         CCoinsModifier coins = view.ModifyCoins(out.hash);
@@ -1600,7 +1600,7 @@ void static FlushBlockFile(bool fFinalize = false) {
   }
 }
 
-bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, unsigned int nAddSize);
+bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, uint32_t nAddSize);
 
 static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
@@ -1777,7 +1777,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   int64_t nTimeStart = GetTimeMicros();
   CAmount nFees = 0;
   int nInputs = 0;
-  unsigned int nSigOps = 0;
+  uint32_t nSigOps = 0;
   CDiskTxPos pos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
   std::vector<std::pair<uint256, CDiskTxPos> > vPos;
   std::vector<pair<CoinSpend, uint256> > vSpends;
@@ -1787,10 +1787,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   blockundo.vtxundo.reserve(block.vtx.size() - 1);
   CAmount nValueOut = 0;
   CAmount nValueIn = 0;
-  unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
+  uint32_t nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
   vector<uint256> vSpendsInBlock;
   uint256 hashBlock = block.GetHash();
-  for (unsigned int i = 0; i < block.vtx.size(); i++) {
+  for (uint32_t i = 0; i < block.vtx.size(); i++) {
     const CTransaction& tx = block.vtx[i];
 
     nInputs += tx.vin.size();
@@ -1876,7 +1876,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
       nValueIn += view.GetValueIn(tx);
 
       std::vector<CScriptCheck> vChecks;
-      unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_DERSIG;
+      uint32_t flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_DERSIG;
       if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : nullptr))
         return false;
       control.Add(vChecks);
@@ -2263,7 +2263,7 @@ bool DisconnectBlockAndInputs(CValidationState& state, CTransaction txLock) {
   // List of what to disconnect (typically nothing)
   vector<CBlockIndex*> vDisconnect;
 
-  for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0 && !foundConflictingTx && i < 6; i++) {
+  for (uint32_t i = 1; BlockReading && BlockReading->nHeight > 0 && !foundConflictingTx && i < 6; i++) {
     vDisconnect.push_back(BlockReading);
     pindexNew = BlockReading->pprev;  // new best block
 
@@ -2690,11 +2690,11 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
   return true;
 }
 
-bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight,
+bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, uint32_t nAddSize, uint32_t nHeight,
                   uint64_t nTime, bool fKnown = false) {
   LOCK(cs_LastBlockFile);
 
-  unsigned int nFile = fKnown ? pos.nFile : nLastBlockFile;
+  uint32_t nFile = fKnown ? pos.nFile : nLastBlockFile;
   if (vinfoBlockFile.size() <= nFile) { vinfoBlockFile.resize(nFile + 1); }
 
   if (!fKnown) {
@@ -2716,8 +2716,8 @@ bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAdd
     vinfoBlockFile[nFile].nSize += nAddSize;
 
   if (!fKnown) {
-    unsigned int nOldChunks = (pos.nPos + BLOCKFILE_CHUNK_SIZE - 1) / BLOCKFILE_CHUNK_SIZE;
-    unsigned int nNewChunks = (vinfoBlockFile[nFile].nSize + BLOCKFILE_CHUNK_SIZE - 1) / BLOCKFILE_CHUNK_SIZE;
+    uint32_t nOldChunks = (pos.nPos + BLOCKFILE_CHUNK_SIZE - 1) / BLOCKFILE_CHUNK_SIZE;
+    uint32_t nNewChunks = (vinfoBlockFile[nFile].nSize + BLOCKFILE_CHUNK_SIZE - 1) / BLOCKFILE_CHUNK_SIZE;
     if (nNewChunks > nOldChunks) {
       if (CheckDiskSpace(nNewChunks * BLOCKFILE_CHUNK_SIZE - pos.nPos)) {
         FILE* file = OpenBlockFile(pos);
@@ -2736,18 +2736,18 @@ bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAdd
   return true;
 }
 
-bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, unsigned int nAddSize) {
+bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, uint32_t nAddSize) {
   pos.nFile = nFile;
 
   LOCK(cs_LastBlockFile);
 
-  unsigned int nNewSize;
+  uint32_t nNewSize;
   pos.nPos = vinfoBlockFile[nFile].nUndoSize;
   nNewSize = vinfoBlockFile[nFile].nUndoSize += nAddSize;
   setDirtyFileInfo.insert(nFile);
 
-  unsigned int nOldChunks = (pos.nPos + UNDOFILE_CHUNK_SIZE - 1) / UNDOFILE_CHUNK_SIZE;
-  unsigned int nNewChunks = (nNewSize + UNDOFILE_CHUNK_SIZE - 1) / UNDOFILE_CHUNK_SIZE;
+  uint32_t nOldChunks = (pos.nPos + UNDOFILE_CHUNK_SIZE - 1) / UNDOFILE_CHUNK_SIZE;
+  uint32_t nNewChunks = (nNewSize + UNDOFILE_CHUNK_SIZE - 1) / UNDOFILE_CHUNK_SIZE;
   if (nNewChunks > nOldChunks) {
     if (CheckDiskSpace(nNewChunks * UNDOFILE_CHUNK_SIZE - pos.nPos)) {
       FILE* file = OpenUndoFile(pos);
@@ -2817,14 +2817,14 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
   // because we receive the wrong transactions for it.
 
   // Size limits
-  unsigned int nMaxBlockSize = MAX_BLOCK_SIZE_CURRENT;
+  uint32_t nMaxBlockSize = MAX_BLOCK_SIZE_CURRENT;
   if (block.vtx.empty() || block.vtx.size() > nMaxBlockSize || ::GetSerializeSize(block) > nMaxBlockSize)
     return state.DoS(100, error("CheckBlock() : size limits failed"), REJECT_INVALID, "bad-blk-length");
 
   // First transaction must be coinbase, the rest must not be
   if (block.vtx.empty() || !block.vtx[0].IsCoinBase())
     return state.DoS(100, error("CheckBlock() : first tx is not coinbase"), REJECT_INVALID, "bad-cb-missing");
-  for (unsigned int i = 1; i < block.vtx.size(); i++)
+  for (uint32_t i = 1; i < block.vtx.size(); i++)
     if (block.vtx[i].IsCoinBase())
       return state.DoS(100, error("CheckBlock() : more than one coinbase"), REJECT_INVALID, "bad-cb-multiple");
 
@@ -2836,7 +2836,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     // Second transaction must be coinstake, the rest must not be
     if (block.vtx.empty() || !block.vtx[1].IsCoinStake())
       return state.DoS(100, error("CheckBlock() : second tx is not coinstake"));
-    for (unsigned int i = 2; i < block.vtx.size(); i++)
+    for (uint32_t i = 2; i < block.vtx.size(); i++)
       if (block.vtx[i].IsCoinStake()) return state.DoS(100, error("CheckBlock() : more than one coinstake"));
   }
 
@@ -2862,9 +2862,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
   }
 
-  unsigned int nSigOps = 0;
+  uint32_t nSigOps = 0;
   for (const CTransaction& tx : block.vtx) { nSigOps += GetLegacySigOpCount(tx); }
-  unsigned int nMaxBlockSigOps = fZerocoinActive ? MAX_BLOCK_SIGOPS_CURRENT : MAX_BLOCK_SIGOPS_LEGACY;
+  uint32_t nMaxBlockSigOps = fZerocoinActive ? MAX_BLOCK_SIGOPS_CURRENT : MAX_BLOCK_SIGOPS_LEGACY;
   if (nSigOps > nMaxBlockSigOps)
     return state.DoS(100, error("CheckBlock() : out-of-bounds SigOpCount"), REJECT_INVALID, "bad-blk-sigops", true);
 
@@ -2875,7 +2875,7 @@ bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev) {
   if (pindexPrev == nullptr)
     return error("%s : null pindexPrev for block %s", __func__, block.GetHash().ToString().c_str());
 
-  unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev, &block);
+  uint32_t nBitsRequired = GetNextWorkRequired(pindexPrev, &block);
 
   if (block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
     double n1 = ConvertBitsToDouble(block.nBits);
@@ -3116,7 +3116,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
   // Write block to history file
   try {
-    unsigned int nBlockSize = ::GetSerializeSize(block);
+    uint32_t nBlockSize = ::GetSerializeSize(block);
     CDiskBlockPos blockPos;
     if (dbp != nullptr) blockPos = *dbp;
     if (!FindBlockPos(state, blockPos, nBlockSize + 8, nHeight, block.GetBlockTime(), dbp != nullptr))
@@ -3130,10 +3130,10 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
   return true;
 }
 
-bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired) {
-  unsigned int nToCheck = Params().ToCheckBlockUpgradeMajority();
-  unsigned int nFound = 0;
-  for (unsigned int i = 0; i < nToCheck && nFound < nRequired && pstart != nullptr; i++) {
+bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, uint32_t nRequired) {
+  uint32_t nToCheck = Params().ToCheckBlockUpgradeMajority();
+  uint32_t nFound = 0;
+  for (uint32_t i = 0; i < nToCheck && nFound < nRequired && pstart != nullptr; i++) {
     if (pstart->nHeaderVersion >= minVersion) ++nFound;
     pstart = pstart->pprev;
   }
@@ -3388,7 +3388,7 @@ bool InitBlockIndex() {
     try {
       auto block = const_cast<CBlock&>(Params().GenesisBlock());
       // Start new block file
-      unsigned int nBlockSize = ::GetSerializeSize(block);
+      uint32_t nBlockSize = ::GetSerializeSize(block);
       CDiskBlockPos blockPos;
       CValidationState state;
       if (!FindBlockPos(state, blockPos, nBlockSize + 8, 0, block.GetBlockTime()))
@@ -3424,7 +3424,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp) {
       blkdat.SetPos(nRewind);
       nRewind++;          // start one byte further next time, in case of failure
       blkdat.SetLimit();  // remove former limit
-      unsigned int nSize = 0;
+      uint32_t nSize = 0;
       try {
         // locate a header
         uint8_t buf[MESSAGE_START_SIZE];
@@ -3739,7 +3739,7 @@ void static ProcessGetData(CNode* pfrom) {
               // they must either disconnect and retry or request the full block.
               // Thus, the protocol spec specified allows for us to provide duplicate txn here,
               // however we MUST always provide at least what the remote peer needs
-              typedef std::pair<unsigned int, uint256> PairType;
+              typedef std::pair<uint32_t, uint256> PairType;
               for (PairType& pair : merkleBlock.vMatchedTxn)
                 if (!pfrom->setInventoryKnown.count(CInv(MSG_TX, pair.second)))
                   pfrom->PushMessage("tx", block.vtx[pair.first]);
@@ -3971,7 +3971,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
           hashRand = Hash(BEGIN(hashRand), END(hashRand));
           multimap<uint256, CNode*> mapMix;
           for (CNode* pnode : vNodes) {
-            unsigned int nPointer;
+            uint32_t nPointer;
             memcpy(&nPointer, &pnode, sizeof(nPointer));
             uint256 hashKey = ArithToUint256(UintToArith256(hashRand) ^ nPointer);
             hashKey = Hash(BEGIN(hashKey), END(hashKey));
@@ -4003,7 +4003,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     std::vector<CInv> vToFetch;
 
-    for (unsigned int nInv = 0; nInv < vInv.size(); nInv++) {
+    for (uint32_t nInv = 0; nInv < vInv.size(); nInv++) {
       const CInv& inv = vInv[nInv];
 
       interruption_point(ShutdownRequested());
@@ -4151,7 +4151,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
       // Recursively process any orphan transactions that depended on this one
       set<NodeId> setMisbehaving;
-      for (unsigned int i = 0; i < vWorkQueue.size(); i++) {
+      for (uint32_t i = 0; i < vWorkQueue.size(); i++) {
         map<uint256, set<uint256> >::iterator itByPrev = mapOrphanTransactionsByPrev.find(vWorkQueue[i]);
         if (itByPrev == mapOrphanTransactionsByPrev.end()) continue;
         for (auto& orphanHash : itByPrev->second) {
@@ -4198,9 +4198,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       AddOrphanTx(tx, pfrom->GetId());
 
       // DoS prevention: do not allow mapOrphanTransactions to grow unbounded
-      unsigned int nMaxOrphanTx =
-          (unsigned int)std::max((int64_t)0, GetArg("-maxorphantx", DEFAULT_MAX_ORPHAN_TRANSACTIONS));
-      unsigned int nEvicted = LimitOrphanTxSize(nMaxOrphanTx);
+      uint32_t nMaxOrphanTx =
+          (uint32_t)std::max((int64_t)0, GetArg("-maxorphantx", DEFAULT_MAX_ORPHAN_TRANSACTIONS));
+      uint32_t nEvicted = LimitOrphanTxSize(nMaxOrphanTx);
       if (nEvicted > 0) LogPrint(TessaLog::MEMPOOL, "mapOrphan overflow, removed %u tx\n", nEvicted);
     } else if (pfrom->fWhitelisted) {
       // Always relay transactions received from whitelisted peers, even
@@ -4231,14 +4231,14 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     std::vector<CBlockHeader> headers;
 
     // Bypass the normal CBlock deserialization, as we don't want to risk deserializing 2000 full blocks.
-    unsigned int nCount = ReadCompactSize(vRecv);
+    uint32_t nCount = ReadCompactSize(vRecv);
     if (nCount > MAX_HEADERS_RESULTS) {
       LOCK(cs_main);
       Misbehaving(pfrom->GetId(), 20);
       return error("headers message size = %u", nCount);
     }
     headers.resize(nCount);
-    for (unsigned int n = 0; n < nCount; n++) {
+    for (uint32_t n = 0; n < nCount; n++) {
       vRecv >> headers[n];
       ReadCompactSize(vRecv);  // ignore tx count; assume it is 0.
     }
@@ -4570,12 +4570,12 @@ bool ProcessMessages(CNode* pfrom) {
     string strCommand = hdr.GetCommand();
 
     // Message size
-    unsigned int nMessageSize = hdr.nMessageSize;
+    uint32_t nMessageSize = hdr.nMessageSize;
 
     // Checksum
     CDataStream& vRecv = msg.vRecv;
     uint256 hash = Hash(vRecv.begin(), vRecv.begin() + nMessageSize);
-    unsigned int nChecksum = 0;
+    uint32_t nChecksum = 0;
     memcpy(&nChecksum, &hash, sizeof(nChecksum));
     if (nChecksum != hdr.nChecksum) {
       LogPrintf("ProcessMessages(%s, %u bytes): CHECKSUM ERROR nChecksum=%08x hdr.nChecksum=%08x\n",

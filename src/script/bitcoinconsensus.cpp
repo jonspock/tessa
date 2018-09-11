@@ -54,8 +54,8 @@ ECCryptoClosure instance_of_eccryptoclosure;
 
 }  // namespace
 
-int bitcoinconsensus_verify_script(const uint8_t* scriptPubKey, unsigned int scriptPubKeyLen, const uint8_t* txTo,
-                                   unsigned int txToLen, unsigned int nIn, unsigned int flags,
+int bitcoinconsensus_verify_script(const uint8_t* scriptPubKey, uint32_t scriptPubKeyLen, const uint8_t* txTo,
+                                   uint32_t txToLen, unsigned int nIn, unsigned int flags,
                                    bitcoinconsensus_error* err) {
   try {
     TxInputStream stream(SER_NETWORK, PROTOCOL_VERSION, txTo, txToLen);
@@ -74,7 +74,7 @@ int bitcoinconsensus_verify_script(const uint8_t* scriptPubKey, unsigned int scr
   }
 }
 
-unsigned int bitcoinconsensus_version() {
+uint32_t bitcoinconsensus_version() {
   // Just use the API version for now
   return BITCOINCONSENSUS_API_VER;
 }

@@ -91,7 +91,7 @@ void SplitHostPort(std::string in, int& portOut, std::string& hostOut) {
     hostOut = in;
 }
 
-bool static LookupIntern(const char* pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions,
+bool static LookupIntern(const char* pszName, std::vector<CNetAddr>& vIP, uint32_t nMaxSolutions,
                          bool fAllowLookup) {
   vIP.clear();
 
@@ -182,7 +182,7 @@ bool static LookupIntern(const char* pszName, std::vector<CNetAddr>& vIP, unsign
   return (vIP.size() > 0);
 }
 
-bool LookupHost(const char* pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup) {
+bool LookupHost(const char* pszName, std::vector<CNetAddr>& vIP, uint32_t nMaxSolutions, bool fAllowLookup) {
   std::string strHost(pszName);
   if (strHost.empty()) return false;
   if ((strHost[0] == '[') && (strHost[strHost.size() - 1] == ']')) { strHost = strHost.substr(1, strHost.size() - 2); }
@@ -191,7 +191,7 @@ bool LookupHost(const char* pszName, std::vector<CNetAddr>& vIP, unsigned int nM
 }
 
 bool Lookup(const char* pszName, std::vector<CService>& vAddr, int portDefault, bool fAllowLookup,
-            unsigned int nMaxSolutions) {
+            uint32_t nMaxSolutions) {
   if (pszName[0] == 0) return false;
   int port = portDefault;
   std::string hostname = "";
@@ -201,7 +201,7 @@ bool Lookup(const char* pszName, std::vector<CService>& vAddr, int portDefault, 
   bool fRet = LookupIntern(hostname.c_str(), vIP, nMaxSolutions, fAllowLookup);
   if (!fRet) return false;
   vAddr.resize(vIP.size());
-  for (unsigned int i = 0; i < vIP.size(); i++) vAddr[i] = CService(vIP[i], port);
+  for (uint32_t i = 0; i < vIP.size(); i++) vAddr[i] = CService(vIP[i], port);
   return true;
 }
 
@@ -620,7 +620,7 @@ bool CNetAddr::SetSpecial(const std::string& strName) {
     std::vector<uint8_t> vchAddr = DecodeBase32(strName.substr(0, strName.size() - 6).c_str());
     if (vchAddr.size() != 16 - sizeof(pchOnionCat)) return false;
     memcpy(ip, pchOnionCat, sizeof(pchOnionCat));
-    for (unsigned int i = 0; i < 16 - sizeof(pchOnionCat); i++) ip[i + sizeof(pchOnionCat)] = vchAddr[i];
+    for (uint32_t i = 0; i < 16 - sizeof(pchOnionCat); i++) ip[i + sizeof(pchOnionCat)] = vchAddr[i];
     return true;
   }
   return false;
@@ -644,7 +644,7 @@ CNetAddr::CNetAddr(const std::string& strIp, bool fAllowLookup) {
   if (LookupHost(strIp.c_str(), vIP, 1, fAllowLookup)) *this = vIP[0];
 }
 
-unsigned int CNetAddr::GetByte(int n) const { return ip[15 - n]; }
+uint32_t CNetAddr::GetByte(int n) const { return ip[15 - n]; }
 
 bool CNetAddr::IsIPv4() const { return (memcmp(ip, pchIPv4, sizeof(pchIPv4)) == 0); }
 

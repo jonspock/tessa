@@ -56,7 +56,7 @@ void RPCServer::OnPostCommand(std::function<void(const CRPCCommand&)> slot) {
 }
 
 void RPCTypeCheck(const UniValue& params, const list<UniValue::VType>& typesExpected, bool fAllowNull) {
-  unsigned int i = 0;
+  uint32_t i = 0;
   for (UniValue::VType t : typesExpected) {
     if (params.size() <= i) break;
 
@@ -355,7 +355,7 @@ static const CRPCCommand vRPCCommands[] = {
 };
 
 CRPCTable::CRPCTable() {
-  unsigned int vcidx;
+  uint32_t vcidx;
   for (vcidx = 0; vcidx < (sizeof(vRPCCommands) / sizeof(vRPCCommands[0])); vcidx++) {
     const CRPCCommand* pcmd;
 
@@ -454,7 +454,7 @@ static UniValue JSONRPCExecOne(const UniValue& req) {
 
 std::string JSONRPCExecBatch(const UniValue& vReq) {
   UniValue ret(UniValue::VARR);
-  for (unsigned int reqIdx = 0; reqIdx < vReq.size(); reqIdx++) ret.push_back(JSONRPCExecOne(vReq[reqIdx]));
+  for (uint32_t reqIdx = 0; reqIdx < vReq.size(); reqIdx++) ret.push_back(JSONRPCExecOne(vReq[reqIdx]));
 
   return ret.write() + "\n";
 }

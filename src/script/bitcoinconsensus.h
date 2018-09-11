@@ -53,11 +53,11 @@ enum {
 /// txTo correctly spends the scriptPubKey pointed to by scriptPubKey under
 /// the additional constraints specified by flags.
 /// If not NULL, err will contain an error/success code for the operation
-EXPORT_SYMBOL int bitcoinconsensus_verify_script(const uint8_t *scriptPubKey, unsigned int scriptPubKeyLen,
-                                                 const uint8_t *txTo, unsigned int txToLen, unsigned int nIn,
-                                                 unsigned int flags, bitcoinconsensus_error *err);
+EXPORT_SYMBOL int bitcoinconsensus_verify_script(const uint8_t *scriptPubKey, uint32_t scriptPubKeyLen,
+                                                 const uint8_t *txTo, uint32_t txToLen, unsigned int nIn,
+                                                 uint32_t flags, bitcoinconsensus_error *err);
 
-EXPORT_SYMBOL unsigned int bitcoinconsensus_version();
+EXPORT_SYMBOL uint32_t bitcoinconsensus_version();
 
 #ifdef __cplusplus
 }  // extern "C"

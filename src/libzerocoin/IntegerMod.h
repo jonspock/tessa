@@ -133,7 +133,7 @@ template <ModulusType T> class IntegerMod {
     return ret;
   }
 
-  unsigned int GetSerializeSize() const { return ::GetSerializeSize(getvch()); }
+  uint32_t GetSerializeSize() const { return ::GetSerializeSize(getvch()); }
 
   template <typename Stream> void Serialize(Stream& s) const { ::Serialize(s, getvch()); }
 

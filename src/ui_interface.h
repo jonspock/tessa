@@ -80,7 +80,7 @@ class CClientUIInterface {
 
   
   /** Show message box. */
-  ADD_SIGNALS_DECL_WRAPPER(ThreadSafeMessageBox, bool, const std::string& message, const std::string& caption, unsigned int style)
+  ADD_SIGNALS_DECL_WRAPPER(ThreadSafeMessageBox, bool, const std::string& message, const std::string& caption, uint32_t style)
 
   /** Progress message during initialization. */
   ADD_SIGNALS_DECL_WRAPPER(InitMessage, void, const std::string& message)

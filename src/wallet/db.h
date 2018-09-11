@@ -136,7 +136,7 @@ class CDB {
   }
 
   MDB_cursor* GetCursor();
-  int ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, unsigned int fFlags = MDB_NEXT);
+  int ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, uint32_t fFlags = MDB_NEXT);
 
  public:
   bool Verify();

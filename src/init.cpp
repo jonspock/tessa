@@ -306,7 +306,7 @@ bool static InitWarning(const std::string& str) {
   return true;
 }
 
-bool static Bind(const CService& addr, unsigned int flags) {
+bool static Bind(const CService& addr, uint32_t flags) {
   if (!(flags & BF_EXPLICIT) && IsLimited(addr)) return false;
   std::string strError;
   if (!BindListenPort(addr, strError, (flags & BF_WHITELIST) != 0)) {
@@ -698,7 +698,7 @@ void ThreadImport(std::vector<fs::path> vImportFiles) {
       if (!fs::exists(GetBlockPosFilename(pos, "blk"))) break;  // No block files left to reindex
       FILE* file = OpenBlockFile(pos, true);
       if (!file) break;  // This error is logged in OpenBlockFile
-      LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
+      LogPrintf("Reindexing block file blk%05u.dat...\n", (uint32_t)nFile);
       LoadExternalBlockFile(file, &pos);
       nFile++;
     }
@@ -1326,7 +1326,7 @@ bool AppInit2(CScheduler& scheduler) {
   if (!exists(blocksDir)) {
     create_directories(blocksDir);
     bool linked = false;
-    for (unsigned int i = 1; i < 10000; i++) {
+    for (uint32_t i = 1; i < 10000; i++) {
       path source = GetDataDir() / strprintf("blk%04u.dat", i);
       if (!exists(source)) break;
       path dest = blocksDir / strprintf("blk%05u.dat", i - 1);

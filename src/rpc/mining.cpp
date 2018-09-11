@@ -153,7 +153,7 @@ UniValue setgenerate(const UniValue& params, bool fHelp) {
       nHeight = nHeightStart;
       nHeightEnd = nHeightStart + nGenerate;
     }
-    unsigned int nExtraNonce = 0;
+    uint32_t nExtraNonce = 0;
     UniValue blockHashes(UniValue::VARR);
     while (nHeight < nHeightEnd) {
       unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwalletMain, false));
@@ -418,13 +418,13 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp) {
 
   if (IsInitialBlockDownload()) throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Tessa is downloading blocks...");
 
-  static unsigned int nTransactionsUpdatedLast;
+  static uint32_t nTransactionsUpdatedLast;
 
   if (!lpval.isNull()) {
     // Wait to respond until either the best block changes, OR a minute has passed and there are more transactions
     uint256 hashWatchedChain;
     std::chrono::steady_clock::time_point checktxtime;
-    unsigned int nTransactionsUpdatedLastLP;
+    uint32_t nTransactionsUpdatedLastLP;
 
     if (lpval.isStr()) {
       // Format: <hashBestChain><nTransactionsUpdatedLast>

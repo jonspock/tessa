@@ -129,7 +129,7 @@ class CDbWrapper {
   }
 
   MDB_cursor* GetCursor() const;
-  int ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, unsigned int fFlags = MDB_NEXT) const;
+  int ReadAtCursor(MDB_cursor* pcursor, CDataStream& ssKey, CDataStream& ssValue, uint32_t fFlags = MDB_NEXT) const;
 
   bool Verify();
   bool TxnCommit();

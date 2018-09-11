@@ -21,7 +21,7 @@
 
 typedef std::vector<uint8_t> valtype;
 
-static const unsigned int MAX_SCRIPT_ELEMENT_SIZE = 520;  // bytes
+static const uint32_t MAX_SCRIPT_ELEMENT_SIZE = 520;  // bytes
 
 template <typename T> std::vector<uint8_t> ToByteVector(const T& in) {
   return std::vector<uint8_t>(in.begin(), in.end());
@@ -383,7 +383,7 @@ class CScript : public std::vector<uint8_t> {
       insert(end(), (uint8_t*)&nSize, (uint8_t*)&nSize + sizeof(nSize));
     } else {
       insert(end(), OP_PUSHDATA4);
-      unsigned int nSize = b.size();
+      uint32_t nSize = b.size();
       insert(end(), (uint8_t*)&nSize, (uint8_t*)&nSize + sizeof(nSize));
     }
     insert(end(), b.begin(), b.end());
@@ -430,11 +430,11 @@ class CScript : public std::vector<uint8_t> {
 
     // Read instruction
     if (end() - pc < 1) return false;
-    unsigned int opcode = *pc++;
+    uint32_t opcode = *pc++;
 
     // Immediate operand
     if (opcode <= OP_PUSHDATA4) {
-      unsigned int nSize = 0;
+      uint32_t nSize = 0;
       if (opcode < OP_PUSHDATA1) {
         nSize = opcode;
       } else if (opcode == OP_PUSHDATA1) {
@@ -450,7 +450,7 @@ class CScript : public std::vector<uint8_t> {
         memcpy(&nSize, &pc[0], 4);
         pc += 4;
       }
-      if (end() - pc < 0 || (unsigned int)(end() - pc) < nSize) return false;
+      if (end() - pc < 0 || (uint32_t)(end() - pc) < nSize) return false;
       if (pvchRet) pvchRet->assign(pc, pc + nSize);
       pc += nSize;
     }
@@ -499,13 +499,13 @@ class CScript : public std::vector<uint8_t> {
    * counted more accurately, assuming they are of the form
    *  ... OP_N CHECKMULTISIG ...
    */
-  unsigned int GetSigOpCount(bool fAccurate) const;
+  uint32_t GetSigOpCount(bool fAccurate) const;
 
   /**
    * Accurately count sigOps, including sigOps in
    * pay-to-script-hash transactions:
    */
-  unsigned int GetSigOpCount(const CScript& scriptSig) const;
+  uint32_t GetSigOpCount(const CScript& scriptSig) const;
 
   bool IsNormalPaymentScript() const;
   bool IsPayToScriptHash() const;

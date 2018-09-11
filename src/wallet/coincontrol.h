@@ -38,7 +38,7 @@ class CCoinControl {
 
   bool HasSelected() const { return (setSelected.size() > 0); }
 
-  bool IsSelected(const uint256& hash, unsigned int n) const {
+  bool IsSelected(const uint256& hash, uint32_t n) const {
     COutPoint outpt(hash, n);
     return (setSelected.count(outpt) > 0);
   }
@@ -51,7 +51,7 @@ class CCoinControl {
 
   void ListSelected(std::vector<COutPoint>& vOutpoints) { vOutpoints.assign(setSelected.begin(), setSelected.end()); }
 
-  unsigned int QuantitySelected() { return setSelected.size(); }
+  uint32_t QuantitySelected() { return setSelected.size(); }
 
   void SetSelection(std::set<COutPoint> setSelected) {
     this->setSelected.clear();

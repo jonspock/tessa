@@ -19,14 +19,14 @@ class CScriptCheck {
  private:
   CScript scriptPubKey;
   const CTransaction* ptxTo;
-  unsigned int nIn;
-  unsigned int nFlags;
+  uint32_t nIn;
+  uint32_t nFlags;
   bool cacheStore;
   ScriptError error;
 
  public:
   CScriptCheck() : ptxTo(nullptr), nIn(0), nFlags(0), cacheStore(false), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
-  CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn,
+  CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, uint32_t nInIn, uint32_t nFlagsIn,
                bool cacheIn)
       : scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey),
         ptxTo(&txToIn),

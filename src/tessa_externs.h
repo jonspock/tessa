@@ -38,7 +38,7 @@ extern int nScriptCheckThreads;
 extern bool fTxIndex;
 extern bool fIsBareMultisigStd;
 extern bool fCheckBlockIndex;
-extern unsigned int nCoinCacheSize;
+extern uint32_t nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
 extern bool fVerifyingBlocks;
 extern bool fDisableWallet;
@@ -48,7 +48,7 @@ extern bool fLargeWorkInvalidChainFound;
 
 extern int64_t nReserveBalance;
 
-extern std::map<unsigned int, unsigned int> mapHashedBlocks;
+extern std::map<uint32_t, uint32_t> mapHashedBlocks;
 extern std::map<uint256, int64_t> mapZerocoinspends;  // txid, time received
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */

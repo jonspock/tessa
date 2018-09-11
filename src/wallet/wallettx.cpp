@@ -141,7 +141,7 @@ CAmount CWalletTx::GetAvailableCredit(bool fUseCache) const {
 
   CAmount nCredit = 0;
   uint256 hashTx = GetHash();
-  for (unsigned int i = 0; i < vout.size(); i++) {
+  for (uint32_t i = 0; i < vout.size(); i++) {
     if (!pwallet->IsSpent(hashTx, i)) {
       const CTxOut& txout = vout[i];
       nCredit += pwallet->GetCredit(txout, ISMINE_SPENDABLE);
@@ -163,7 +163,7 @@ CAmount CWalletTx::GetUnlockedCredit() const {
 
   CAmount nCredit = 0;
   uint256 hashTx = GetHash();
-  for (unsigned int i = 0; i < vout.size(); i++) {
+  for (uint32_t i = 0; i < vout.size(); i++) {
     const CTxOut& txout = vout[i];
 
     if (pwallet->IsSpent(hashTx, i) || pwallet->IsLockedCoin(hashTx, i)) continue;
@@ -184,7 +184,7 @@ CAmount CWalletTx::GetLockedCredit() const {
 
   CAmount nCredit = 0;
   uint256 hashTx = GetHash();
-  for (unsigned int i = 0; i < vout.size(); i++) {
+  for (uint32_t i = 0; i < vout.size(); i++) {
     const CTxOut& txout = vout[i];
 
     // Skip spent coins
@@ -219,7 +219,7 @@ CAmount CWalletTx::GetAvailableWatchOnlyCredit(const bool& fUseCache) const {
   if (fUseCache && fAvailableWatchCreditCached) return nAvailableWatchCreditCached;
 
   CAmount nCredit = 0;
-  for (unsigned int i = 0; i < vout.size(); i++) {
+  for (uint32_t i = 0; i < vout.size(); i++) {
     if (!pwallet->IsSpent(GetHash(), i)) {
       const CTxOut& txout = vout[i];
       nCredit += pwallet->GetCredit(txout, ISMINE_WATCH_ONLY);
@@ -240,7 +240,7 @@ CAmount CWalletTx::GetLockedWatchOnlyCredit() const {
 
   CAmount nCredit = 0;
   uint256 hashTx = GetHash();
-  for (unsigned int i = 0; i < vout.size(); i++) {
+  for (uint32_t i = 0; i < vout.size(); i++) {
     const CTxOut& txout = vout[i];
 
     // Skip spent coins
@@ -271,7 +271,7 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived, list<COutputEntry>&
   }
 
   // Sent/received.
-  for (unsigned int i = 0; i < vout.size(); ++i) {
+  for (uint32_t i = 0; i < vout.size(); ++i) {
     const CTxOut& txout = vout[i];
     isminetype fIsMine = pwallet->IsMine(txout);
     // Only need to handle txouts if AT LEAST one of these is true:

@@ -279,8 +279,8 @@ const char* GetOpName(opcodetype opcode) {
   }
 }
 
-unsigned int CScript::GetSigOpCount(bool fAccurate) const {
-  unsigned int n = 0;
+uint32_t CScript::GetSigOpCount(bool fAccurate) const {
+  uint32_t n = 0;
   auto pc = begin();
   opcodetype lastOpcode = OP_INVALIDOPCODE;
   while (pc < end()) {
@@ -299,7 +299,7 @@ unsigned int CScript::GetSigOpCount(bool fAccurate) const {
   return n;
 }
 
-unsigned int CScript::GetSigOpCount(const CScript& scriptSig) const {
+uint32_t CScript::GetSigOpCount(const CScript& scriptSig) const {
   if (!IsPayToScriptHash()) return GetSigOpCount(true);
 
   // This is a pay-to-script-hash scriptPubKey;

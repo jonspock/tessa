@@ -74,7 +74,7 @@ static bool RESTERR(HTTPRequest* req, enum HTTPStatusCode status, string message
 static enum RetFormat ParseDataFormat(vector<string>& params, const string& strReq) {
   Split(params, strReq, ".");
   if (params.size() > 1) {
-    for (unsigned int i = 0; i < ARRAYLEN(rf_names); i++)
+    for (uint32_t i = 0; i < ARRAYLEN(rf_names); i++)
       if (params[1] == rf_names[i].name) return rf_names[i].rf;
   }
 
@@ -83,7 +83,7 @@ static enum RetFormat ParseDataFormat(vector<string>& params, const string& strR
 
 static string AvailableDataFormatsString() {
   string formats = "";
-  for (unsigned int i = 0; i < ARRAYLEN(rf_names); i++)
+  for (uint32_t i = 0; i < ARRAYLEN(rf_names); i++)
     if (strlen(rf_names[i].name) > 0) {
       formats.append(".");
       formats.append(rf_names[i].name);
@@ -554,7 +554,7 @@ static const struct {
 };
 
 bool StartREST() {
-  for (unsigned int i = 0; i < ARRAYLEN(uri_prefixes); i++)
+  for (uint32_t i = 0; i < ARRAYLEN(uri_prefixes); i++)
     RegisterHTTPHandler(uri_prefixes[i].prefix, false, uri_prefixes[i].handler);
   return true;
 }
@@ -562,5 +562,5 @@ bool StartREST() {
 void InterruptREST() {}
 
 void StopREST() {
-  for (unsigned int i = 0; i < ARRAYLEN(uri_prefixes); i++) UnregisterHTTPHandler(uri_prefixes[i].prefix, false);
+  for (uint32_t i = 0; i < ARRAYLEN(uri_prefixes); i++) UnregisterHTTPHandler(uri_prefixes[i].prefix, false);
 }

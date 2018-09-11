@@ -158,14 +158,14 @@ class CZerocoinSpend {
   uint256 hashTx;
   CBigNum pubCoin;
   libzerocoin::CoinDenomination denomination;
-  unsigned int nAccumulatorChecksum;
+  uint32_t nAccumulatorChecksum;
   int nMintCount;  // memory only - the amount of mints that belong to the accumulator this is spent from
 
  public:
   CZerocoinSpend() { SetNull(); }
 
   CZerocoinSpend(const CBigNum& coinSerial, uint256 hashTx, const CBigNum& pubCoin, libzerocoin::CoinDenomination denomination,
-                 unsigned int nAccumulatorChecksum) {
+                 uint32_t nAccumulatorChecksum) {
     this->coinSerial = coinSerial;
     this->hashTx = hashTx;
     this->pubCoin = pubCoin;
@@ -185,7 +185,7 @@ class CZerocoinSpend {
   void SetTxHash(uint256 hash) { this->hashTx = hash; }
   CBigNum GetPubCoin() const { return pubCoin; }
   libzerocoin::CoinDenomination GetDenomination() const { return denomination; }
-  unsigned int GetAccumulatorChecksum() const { return this->nAccumulatorChecksum; }
+  uint32_t GetAccumulatorChecksum() const { return this->nAccumulatorChecksum; }
   uint256 GetHash() const;
   void SetMintCount(int nMintsAdded) { this->nMintCount = nMintsAdded; }
   int GetMintCount() const { return nMintCount; }
