@@ -83,7 +83,6 @@ class CClientUIInterface {
   ADD_SIGNALS_DECL_WRAPPER(ThreadSafeMessageBox, bool, const std::string& message, const std::string& caption, unsigned int style)
 
   /** Progress message during initialization. */
-  //boost::signals2::signal<void(const std::string& message)> InitMessage;
   ADD_SIGNALS_DECL_WRAPPER(InitMessage, void, const std::string& message)
   
     /** Translate a message to the native language of the user. */
@@ -92,26 +91,20 @@ class CClientUIInterface {
 
   /** Number of network connections changed. */
   ADD_SIGNALS_DECL_WRAPPER(NotifyNumConnectionsChanged, void, int newNumConnections)
-  //boost::signals2::signal<void(int newNumConnections)> NotifyNumConnectionsChanged;
 
   /** A wallet has been loaded. */
   ADD_SIGNALS_DECL_WRAPPER(LoadWallet, void, CWallet* wallet)
-  //boost::signals2::signal<void(CWallet* wallet)> LoadWallet;
 
   /** Show progress e.g. for verifychain */
   ADD_SIGNALS_DECL_WRAPPER(ShowProgress, void, const std::string& title, int nProgress)//, bool resume_possible);
-  //boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
 
   /** New block has been accepted */
-  //boost::signals2::signal<void(const uint256& hash)> NotifyBlockTip;
   ADD_SIGNALS_DECL_WRAPPER(NotifyBlockTip, void, const uint256&)
 
   /** New block has been accepted and is over a certain size */
-  //boost::signals2::signal<void(int size, const uint256& hash)> NotifyBlockSize;
   ADD_SIGNALS_DECL_WRAPPER(NotifyBlockSize, void, int, const uint256&)
 
   /** Banlist did change. */
-  //boost::signals2::signal<void(void)> BannedListChanged;
   ADD_SIGNALS_DECL_WRAPPER(BannedListChanged, void, void)
 };
 
