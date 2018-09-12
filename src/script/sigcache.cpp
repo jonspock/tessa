@@ -10,7 +10,7 @@
 #include "uint256.h"
 #include "util.h"
 
-#include <boost/thread.hpp>
+#include <shared_mutex>
 
 namespace {
 
@@ -24,11 +24,11 @@ class CSignatureCache {
   //! sigdata_type is (signature hash, signature, public key):
   typedef std::tuple<uint256, std::vector<uint8_t>, ecdsa::CPubKey> sigdata_type;
   std::set<sigdata_type> setValid;
-  boost::shared_mutex cs_sigcache;
+  std::shared_mutex cs_sigcache;
 
  public:
   bool Get(const uint256& hash, const std::vector<uint8_t>& vchSig, const ecdsa::CPubKey& pubKey) {
-    boost::shared_lock<boost::shared_mutex> lock(cs_sigcache);
+    std::shared_lock<std::shared_mutex> lock(cs_sigcache);
 
     sigdata_type k(hash, vchSig, pubKey);
     auto mi = setValid.find(k);
@@ -44,7 +44,7 @@ class CSignatureCache {
     int64_t nMaxCacheSize = GetArg("-maxsigcachesize", 50000);
     if (nMaxCacheSize <= 0) return;
 
-    boost::unique_lock<boost::shared_mutex> lock(cs_sigcache);
+    std::unique_lock<std::shared_mutex> lock(cs_sigcache);
     sigdata_type k(hash, vchSig, pubKey);
     setValid.insert(k);
   }
