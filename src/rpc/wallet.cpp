@@ -32,8 +32,6 @@
 #include "libzerocoin/PrivateCoin.h"
 #include "primitives/deterministicmint.h"
 
-#include <boost/bind.hpp>
-
 #include <univalue.h>
 
 using namespace std;
@@ -1735,7 +1733,7 @@ UniValue walletpassphrase(const UniValue& params, bool fHelp) {
 
   if (nSleepTime > 0) {
     nWalletUnlockTime = GetTime() + nSleepTime;
-    RPCRunLater("lockwallet", boost::bind(LockWallet, pwalletMain), nSleepTime);
+    RPCRunLater("lockwallet", std::bind(LockWallet, pwalletMain), nSleepTime);
   }
 
   return NullUniValue;

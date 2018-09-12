@@ -33,16 +33,10 @@
 #include "util.h"
 #include "utiltime.h"
 
-#include "wallet/wallet.h"
-#include "wallet/wallettx.h"
-
-#include <boost/bind.hpp>
 #include <boost/signals2/last_value.hpp>
 #include <boost/signals2/signal.hpp>
 
-
-
-#include <stdint.h>
+#include <cstdint>
 
 #include <QApplication>
 #include <QDebug>
