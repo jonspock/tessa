@@ -241,7 +241,6 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
 
     std::vector<std::string> vstr;
     Split(vstr, line, " ");
-    // boost::split(vstr, line, boost::is_any_of(" "));
     if (vstr.size() < 2) continue;
     CBitcoinSecret vchSecret;
     if (!vchSecret.SetString(vstr[0])) continue;

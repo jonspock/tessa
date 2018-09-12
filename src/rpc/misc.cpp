@@ -27,7 +27,6 @@
 
 #include <univalue.h>
 
-// using namespace boost;
 using namespace std;
 using namespace ecdsa;
 
