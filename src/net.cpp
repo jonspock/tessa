@@ -2203,11 +2203,11 @@ struct CNodeSignalSigs {
     return g_node_signals.signal_name.disconnect(&fn);                                                          \
   }
 
-ADD_SIGNALS_IMPL_WRAPPER(GetHeight);
-ADD_SIGNALS_IMPL_WRAPPER(ProcessMessages);
-ADD_SIGNALS_IMPL_WRAPPER(SendMessages);
-ADD_SIGNALS_IMPL_WRAPPER(InitializeNode);
-ADD_SIGNALS_IMPL_WRAPPER(FinalizeNode);
+ADD_SIGNALS_IMPL_WRAPPER(GetHeight)
+ADD_SIGNALS_IMPL_WRAPPER(ProcessMessages)
+ADD_SIGNALS_IMPL_WRAPPER(SendMessages)
+ADD_SIGNALS_IMPL_WRAPPER(InitializeNode)
+ADD_SIGNALS_IMPL_WRAPPER(FinalizeNode)
 
 int CNodeSignals::GetHeight() { return g_node_signals.GetHeight(); }
 

@@ -12,6 +12,7 @@
 #include "serialize.h"
 #include "support/allocators/secure.h"
 #include "support/cleanse.h"
+#include <functional>
 
 class uint256;
 

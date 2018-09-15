@@ -4,6 +4,7 @@
 #include "utiltime.h"
 
 #include "main.h"  // for IsInitialBlockDownload
+#include <cmath>
 
 #if defined(HAVE_CONFIG_H)
 #include "tessa-config.h"

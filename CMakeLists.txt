@@ -174,29 +174,13 @@ endif()
 
 add_definitions("-fPIC")
 
-# run autogen.sh if missing header files from configure on Linux/Mac
-if (EXISTS  "${CMAKE_CURRENT_SOURCE_DIR}/configure")
-else()  
-  execute_process(
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/autogen.sh
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
-endif()
-
 # run configure if tessa_config.h doesn't exist, For Linux add "--with-incompatible-bdb"
 if (EXISTS  "${CMAKE_CURRENT_BINARY_DIR}/src/tessa-config.h")
 else()  
-  IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     execute_process(
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure 
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/configure  --enable-module-recovery
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
-else()
-    execute_process(
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure --with-unsupported-ssl --enable-module-recovery
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-endif()
     execute_process(
     COMMAND make
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1

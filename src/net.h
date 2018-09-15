@@ -20,8 +20,10 @@
 #include "uint256.h"
 #include "utilstrencodings.h"
 #include "nodeid.h"
+
 #include <deque>
 #include <cstdint>
+#include <functional>
 
 #ifndef WIN32
 #include <arpa/inet.h>
