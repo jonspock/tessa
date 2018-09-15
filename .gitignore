@@ -7,12 +7,12 @@ reset-files.bash
 *.tar.gz
 
 *.exe
-src/club
-src/clubd
-src/club-cli
-src/club-tx
-src/test/test_club
-src/qt/test/test_club-qt
+src/tessa
+src/tessad
+src/tessa-cli
+src/tessa-tx
+src/test/test_tessa
+src/qt/test/test_tessa-qt
 
 # autoreconf
 Makefile.in
@@ -62,8 +62,6 @@ src/qt/test/moc*.cpp
 *.pyc
 *.o
 *.o-*
-*.patch
-.club
 *.a
 *.pb.cc
 *.pb.h
@@ -81,13 +79,12 @@ src/qt/test/moc*.cpp
 
 # Compilation and Qt preprocessor part
 *.qm
-Makefile
-club-qt
-CLUB-Qt.app
+tessa-qt
+TESSA-Qt.app
 
 # Unit-tests
 Makefile.test
-club-qt_test
+tessa-qt_test
 src/test/buildenv.py
 
 # Resources cpp
@@ -103,7 +100,7 @@ build
 #lcov
 *.gcno
 /*.info
-test_club.coverage/
+test_tessa.coverage/
 total.coverage/
 coverage_percent.txt
 
