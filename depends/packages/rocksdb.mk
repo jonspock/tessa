@@ -9,5 +9,5 @@ define $(package)_build_cmds
 endef
 
 define $(package)_stage_cmds
-  $(MAKE) static_lib
+  $(MAKE) install-static INSTALL_PATH=/users/spiralus/tessa/x86_64-w64-mingw32
 endef
