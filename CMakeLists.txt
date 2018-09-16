@@ -174,7 +174,7 @@ endif()
 
 add_definitions("-fPIC")
 
-# run configure if tessa_config.h doesn't exist, For Linux add "--with-incompatible-bdb"
+# run configure if tessa_config.h doesn't exist
 if (EXISTS  "${CMAKE_CURRENT_BINARY_DIR}/src/tessa-config.h")
 else()  
     execute_process(
@@ -381,9 +381,8 @@ if (SODIUM_FOUND)
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package( Boost COMPONENTS  filesystem thread)
+find_package(Boost COMPONENTS filesystem)
 link_directories ( ${Boost_LIBRARY_DIRS} )
-
 
 find_package(gmp)
 if (GMP_FOUND)
