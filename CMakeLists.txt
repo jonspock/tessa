@@ -515,7 +515,7 @@ endif()
 message(STATUS "BS is ${Boost_LIBRARIES}")
 
 SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${Boost_LIBRARIES} 
-  miniupnpc event pthread gmp sodium ${ZMQ_LIBRARY} wsock32)
+  miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIBRARY}) # wsock32)
 
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 target_link_libraries(tessad ${LIBS_LIST})
