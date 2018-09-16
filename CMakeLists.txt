@@ -94,8 +94,6 @@ if (POLICY CMP0048)
 endif()
 
 
-set(ROCKSDB_VER "5.14.2")
-
 #---------------------------------------------------------------------------------------------------------
 # Code coverage
 #---------------------------------------------------------------------------------------------------------
@@ -370,6 +368,7 @@ endif()
 find_package(RocksDB)
 if (RocksDB_FOUND)
   message(STATUS "Found RocksDB")
+  message(STATUS "Libs : ${ROCKSDB_LIBRARIES}")
 else()
   message(STATUS "FAILED to F?IND RocksDB")
 endif()  
@@ -440,6 +439,8 @@ source_group("CommonA" FILES ${COMMON_A})
 add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} 
   ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
   ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+target_link_libraries(coin ${ROCKSDB_LIBRARIES})
+
 
 if(CLANG_TIDY_EXE)
 ###  set_target_properties(coin PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
@@ -511,14 +512,16 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 #------------------- ------------------- ------------------- ------------------- -------------------
+message(STATUS "BS is ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb rocksdb ${Boost_LIBRARIES} ${ANL}
-  miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIBRARY})
+SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${Boost_LIBRARIES} 
+  miniupnpc event pthread gmp sodium ${ZMQ_LIBRARY} wsock32)
 
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 target_link_libraries(tessad ${LIBS_LIST})
 
 add_subdirectory(src/qt)
+
 
 #---------------------------------------------------------------------------------------------------------
 # Create a target in Xcode to setup coverage script
