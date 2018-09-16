@@ -161,7 +161,7 @@ bool RenameOver(const fs::path& src, fs::path& dest) {
 bool TryCreateDirectory(const fs::path& p) {
   try {
     return fs::create_directory(p);
-  } catch (fs::filesystem_error) {
+  } catch (fs::filesystem_error&) {
     if (!fs::exists(p) || !fs::is_directory(p)) throw;
   }
 
@@ -179,5 +179,6 @@ fs::path GetSpecialFolderPath(int nFolder, bool fCreate) {
   return fs::path("");
 }
 #endif
+
 
 fs::path GetTempPath() { return fs::temp_directory_path(); }

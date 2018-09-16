@@ -284,17 +284,6 @@ void ShrinkDebugFile() {
     fclose(file);
 }
 
-#ifdef WIN32
-fs::path GetSpecialFolderPath(int nFolder, bool fCreate) {
-  char pszPath[MAX_PATH] = "";
-
-  if (SHGetSpecialFolderPathA(nullptr, pszPath, nFolder, fCreate)) { return fs::path(pszPath); }
-
-  LogPrintf("SHGetSpecialFolderPathA() failed, could not obtain requested path.\n");
-  return fs::path("");
-}
-#endif
-
 double double_safe_addition(double fValue, double fIncrement) {
   double fLimit = std::numeric_limits<double>::max() - fValue;
 

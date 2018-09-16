@@ -32,13 +32,16 @@ bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
 
   TryCreateDirectory(wallet_dir);
 
+  char fstring[1024];
+  size_t result = wcstombs(fstring, wallet_dir.c_str(), 1024);
+
   LogPrintf("CDbWrapperEnv::Open: %s\n", wallet_dir.string());
   int dbr;
 
   dbr = mdb_env_set_mapsize(env, 10485760);
   dbr |= mdb_env_set_maxdbs(env, 4);
 
-  dbr |= mdb_env_open(env, wallet_dir.c_str(), MDB_FIXEDMAP | MDB_NOSYNC, 0664);
+  dbr |= mdb_env_open(env, fstring, MDB_FIXEDMAP | MDB_NOSYNC, 0664);
 
   if (dbr != 0) {
     LogPrintf("CDbWrapperEnv::Open : Error opening database environment:\n");
@@ -55,12 +58,12 @@ bool CDbWrapper::open(const fs::path& wallet_dir, const char* pszMode) {
     LOCK(cs_db);
     // Check if created or not
 
-    dbr = mdb_dbi_open(activeTxn, wallet_dir.c_str(), MDB_DUPSORT, &dbi);
+    dbr = mdb_dbi_open(activeTxn, fstring, MDB_DUPSORT, &dbi);
     if (dbr == 0) {
       LogPrintf("Open old DBI OK\n");
     } else if (!fReadOnly) {
       dbr = mdb_dbi_open(activeTxn,  // Txn pointer
-                         wallet_dir.c_str(), MDB_CREATE | MDB_DUPSORT, &dbi);
+                         fstring, MDB_CREATE | MDB_DUPSORT, &dbi);
       fCreate = true;
     }
     if (dbr != 0) {

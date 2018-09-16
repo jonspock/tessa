@@ -362,6 +362,6 @@ struct CCryptoKeyStoreSignalSigs {
     return g_crypter_signals.signal_name.disconnect(&fn);                                           \
   }
 
-ADD_SIGNALS_IMPL_WRAPPER(NotifyStatusChanged);
+ADD_SIGNALS_IMPL_WRAPPER(NotifyStatusChanged)
 
 void CCryptoKeyStore::NotifyStatusChanged(CCryptoKeyStore *wallet) { g_crypter_signals.NotifyStatusChanged(wallet); }

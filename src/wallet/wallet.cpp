@@ -3676,14 +3676,14 @@ struct CWalletSignalSigs {
     return g_wallet_signals.signal_name.disconnect(&fn);                                           \
   }
 
-ADD_SIGNALS_IMPL_WRAPPER(NotifyZkpReset);
-ADD_SIGNALS_IMPL_WRAPPER(NotifyZerocoinChanged);
-ADD_SIGNALS_IMPL_WRAPPER(NotifyAddressBookChanged);
-ADD_SIGNALS_IMPL_WRAPPER(NotifyTransactionChanged);
-ADD_SIGNALS_IMPL_WRAPPER(NotifyWatchonlyChanged);
-ADD_SIGNALS_IMPL_WRAPPER(NotifyMultiSigChanged);
-ADD_SIGNALS_IMPL_WRAPPER(ShowProgress);
-ADD_SIGNALS_IMPL_CONST_WRAPPER(NotifyWalletBacked);
+ADD_SIGNALS_IMPL_WRAPPER(NotifyZkpReset)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyZerocoinChanged)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyAddressBookChanged)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyTransactionChanged)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyWatchonlyChanged)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyMultiSigChanged)
+ADD_SIGNALS_IMPL_WRAPPER(ShowProgress)
+ADD_SIGNALS_IMPL_CONST_WRAPPER(NotifyWalletBacked)
 
 void CWallet::NotifyZkpReset() { g_wallet_signals.NotifyZkpReset(); }
 void CWallet::NotifyZerocoinChanged(CWallet* wallet, const std::string& pubCoin, const std::string& isUsed,
