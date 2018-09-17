@@ -35,7 +35,7 @@ bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
   LogPrintf("CDBEnv::Open: %s\n", wallet_dir.string());
 
   char fstring[1024];
-#ifdef WIN32  
+#ifdef WIN32
   size_t result = wcstombs(fstring, wallet_dir.c_str(), 1024);
 #else
   strncpy(fstring, wallet_dir.c_str(), 1023);

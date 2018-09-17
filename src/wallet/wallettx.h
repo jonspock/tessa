@@ -7,6 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
+#include "wallet.h"
 #include "utilstrencodings.h"
 
 typedef std::map<std::string, std::string> mapValue_t;

@@ -7,9 +7,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
-#include "output.h"
 #include "init.h"
 #include "main.h"
+#include "output.h"
 #include "walletkey.h"
 #include "wallettx.h"
 
@@ -3668,12 +3668,12 @@ struct CWalletSignalSigs {
     return g_wallet_signals.signal_name.disconnect(&fn);                                           \
   }
 
-#define ADD_SIGNALS_IMPL_CONST_WRAPPER(signal_name)                           \
+#define ADD_SIGNALS_IMPL_CONST_WRAPPER(signal_name)                                                      \
   boost::signals2::connection CWallet::signal_name##_connect(std::function<signal_name##Sig> fn) const { \
-    return g_wallet_signals.signal_name.connect(fn);                                               \
-  }                                                                                                \
+    return g_wallet_signals.signal_name.connect(fn);                                                     \
+  }                                                                                                      \
   void CWallet::signal_name##_disconnect(std::function<signal_name##Sig> fn) const {                     \
-    return g_wallet_signals.signal_name.disconnect(&fn);                                           \
+    return g_wallet_signals.signal_name.disconnect(&fn);                                                 \
   }
 
 ADD_SIGNALS_IMPL_WRAPPER(NotifyZkpReset)

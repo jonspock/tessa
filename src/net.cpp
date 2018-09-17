@@ -465,7 +465,7 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, const string& strLastCom
 }
 
 void CNode::PushVersion() {
-  int nBestHeight = g_signals.GetHeight(); //???.get_value_or(0);
+  int nBestHeight = g_signals.GetHeight();  //???.get_value_or(0);
 
   /// when NTP implemented, change to just nTime = GetAdjustedTime()
   int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
@@ -2195,12 +2195,12 @@ struct CNodeSignalSigs {
   boost::signals2::signal<CNodeSignals::FinalizeNodeSig> FinalizeNode;
 } g_node_signals;
 
-#define ADD_SIGNALS_IMPL_WRAPPER(signal_name)                                                                 \
+#define ADD_SIGNALS_IMPL_WRAPPER(signal_name)                                                           \
   boost::signals2::connection CNodeSignals::signal_name##_connect(std::function<signal_name##Sig> fn) { \
-    return g_node_signals.signal_name.connect(fn);                                                              \
-  }                                                                                                           \
+    return g_node_signals.signal_name.connect(fn);                                                      \
+  }                                                                                                     \
   void CNodeSignals::signal_name##_disconnect(std::function<signal_name##Sig> fn) {                     \
-    return g_node_signals.signal_name.disconnect(&fn);                                                          \
+    return g_node_signals.signal_name.disconnect(&fn);                                                  \
   }
 
 ADD_SIGNALS_IMPL_WRAPPER(GetHeight)
@@ -2211,7 +2211,7 @@ ADD_SIGNALS_IMPL_WRAPPER(FinalizeNode)
 
 int CNodeSignals::GetHeight() { return g_node_signals.GetHeight(); }
 
-bool CNodeSignals::ProcessMessages(CNode* n) {  return g_node_signals.ProcessMessages(n);}
-bool CNodeSignals::SendMessages(CNode* n, bool b) {  return g_node_signals.SendMessages(n,b);}
-void CNodeSignals::InitializeNode(NodeId id, const CNode* n) {  g_node_signals.InitializeNode(id,n);}
-void CNodeSignals::FinalizeNode(NodeId id) {  g_node_signals.FinalizeNode(id);}
+bool CNodeSignals::ProcessMessages(CNode* n) { return g_node_signals.ProcessMessages(n); }
+bool CNodeSignals::SendMessages(CNode* n, bool b) { return g_node_signals.SendMessages(n, b); }
+void CNodeSignals::InitializeNode(NodeId id, const CNode* n) { g_node_signals.InitializeNode(id, n); }
+void CNodeSignals::FinalizeNode(NodeId id) { g_node_signals.FinalizeNode(id); }

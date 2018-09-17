@@ -54,8 +54,8 @@ bool CClientUIInterface::ThreadSafeMessageBox(const std::string& message, const 
   return g_ui_signals.ThreadSafeMessageBox(message, caption, style);
 }
 // bool CClientUIInterface::ThreadSafeQuestion(const std::string& message, const std::string& non_interactive_message,
-// const std::string& caption, uint32_t style) { return g_ui_signals.ThreadSafeQuestion(message, non_interactive_message,
-// caption, style); }
+// const std::string& caption, uint32_t style) { return g_ui_signals.ThreadSafeQuestion(message,
+// non_interactive_message, caption, style); }
 void CClientUIInterface::InitMessage(const std::string& message) { return g_ui_signals.InitMessage(message); }
 ///////std::string CClientUIInterface::Translate(const char* psz) { return g_ui_signals.Translate(psz); }
 void CClientUIInterface::NotifyNumConnectionsChanged(int newNumConnections) {
