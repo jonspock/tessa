@@ -9,7 +9,7 @@
 #pragma once
 
 namespace ecdsa {
-  class CPubKey;
+class CPubKey;
 }
 
 class CWallet;

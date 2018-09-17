@@ -23,7 +23,7 @@ class CTxInUndo {
   CTxOut txout;    // the txout data before being spent
   bool fCoinBase;  // if the outpoint was the last unspent: whether it belonged to a coinbase
   bool fCoinStake;
-  uint32_t nHeight;     // if the outpoint was the last unspent: its height
+  uint32_t nHeight;         // if the outpoint was the last unspent: its height
   int nTransactionVersion;  // if the outpoint was the last unspent: its version
 
   CTxInUndo() : txout(), fCoinBase(false), fCoinStake(false), nHeight(0), nTransactionVersion(0) {}

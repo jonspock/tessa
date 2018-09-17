@@ -20,24 +20,23 @@ const uint32_t WALLET_CRYPTO_KEY_SIZE = 32;
 const uint32_t WALLET_CRYPTO_SALT_SIZE = 8;
 const uint32_t WALLET_CRYPTO_IV_SIZE = 16;
 
-
 namespace boost {
-  namespace signals2 {
-    class connection;
-  }
-} // namespace boost
+namespace signals2 {
+class connection;
+}
+}  // namespace boost
 
-#define ADD_WALLET_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                           \
-    rtype signal_name(__VA_ARGS__);                                                        \
-    using signal_name##Sig = rtype(__VA_ARGS__);                                           \
-    boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
-    void signal_name##_disconnect(std::function<signal_name##Sig> fn);
+#define ADD_WALLET_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                         \
+  rtype signal_name(__VA_ARGS__);                                                        \
+  using signal_name##Sig = rtype(__VA_ARGS__);                                           \
+  boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
+  void signal_name##_disconnect(std::function<signal_name##Sig> fn);
 
-#define ADD_WALLET_SIGNALS_DECL_CONST_WRAPPER(signal_name, rtype, ...)                           \
-    rtype signal_name(__VA_ARGS__) const;                                                        \
-    using signal_name##Sig = rtype(__VA_ARGS__);                                           \
-    boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn) const; \
-    void signal_name##_disconnect(std::function<signal_name##Sig> fn) const;
+#define ADD_WALLET_SIGNALS_DECL_CONST_WRAPPER(signal_name, rtype, ...)                         \
+  rtype signal_name(__VA_ARGS__) const;                                                        \
+  using signal_name##Sig = rtype(__VA_ARGS__);                                                 \
+  boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn) const; \
+  void signal_name##_disconnect(std::function<signal_name##Sig> fn) const;
 
 /**
  * Private key encryption is done based on a CMasterKey,
@@ -99,8 +98,8 @@ class CCrypter {
                           uint8_t *iv) const;
 
  public:
-  bool SetKeyFromPassphrase(const SecureString &strKeyData, const std::vector<uint8_t> &chSalt,
-                            const uint32_t nRounds, const uint32_t nDerivationMethod);
+  bool SetKeyFromPassphrase(const SecureString &strKeyData, const std::vector<uint8_t> &chSalt, const uint32_t nRounds,
+                            const uint32_t nDerivationMethod);
   bool Encrypt(const CKeyingMaterial &vchPlaintext, std::vector<uint8_t> &vchCiphertext) const;
   bool Decrypt(const std::vector<uint8_t> &vchCiphertext, CKeyingMaterial &vchPlaintext) const;
   bool SetKey(const CKeyingMaterial &chNewKey, const std::vector<uint8_t> &chNewIV);
@@ -192,7 +191,7 @@ class CCryptoKeyStore : public CBasicKeyStore {
    * Wallet status (encrypted, locked) changed.
    * Note: Called without locks held.
    */
-  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyStatusChanged, void, CCryptoKeyStore* wallet)
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyStatusChanged, void, CCryptoKeyStore *wallet)
 };
 
 #endif  // BITCOIN_CRYPTER_H

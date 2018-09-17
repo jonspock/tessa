@@ -35,6 +35,7 @@
 #include <ws2tcpip.h>
 #else
 #include <arpa/inet.h>
+#include <climits>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <netdb.h>
@@ -44,7 +45,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <climits>
 #endif
 
 #ifdef WIN32

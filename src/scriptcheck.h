@@ -7,10 +7,10 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
+#include "coins.h"
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/script_error.h"
-#include "coins.h"
 /**
  * Closure representing one script verification
  * Note that this stores references to the spending transaction
@@ -26,8 +26,7 @@ class CScriptCheck {
 
  public:
   CScriptCheck() : ptxTo(nullptr), nIn(0), nFlags(0), cacheStore(false), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
-  CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, uint32_t nInIn, uint32_t nFlagsIn,
-               bool cacheIn)
+  CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, uint32_t nInIn, uint32_t nFlagsIn, bool cacheIn)
       : scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey),
         ptxTo(&txToIn),
         nIn(nInIn),

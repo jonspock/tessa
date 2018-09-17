@@ -34,16 +34,15 @@ static const uint32_t MEMPOOL_HEIGHT = 0x7FFFFFFF;
 class CTxMemPoolEntry {
  private:
   CTransaction tx;
-  CAmount nFee;          //! Cached to avoid expensive parent-transaction lookups
-  size_t nTxSize;        //! ... and avoid recomputing tx size
-  size_t nModSize;       //! ... and modified size for priority
-  int64_t nTime;         //! Local time when entering the mempool
-  double dPriority;      //! Priority when entering the mempool
+  CAmount nFee;      //! Cached to avoid expensive parent-transaction lookups
+  size_t nTxSize;    //! ... and avoid recomputing tx size
+  size_t nModSize;   //! ... and modified size for priority
+  int64_t nTime;     //! Local time when entering the mempool
+  double dPriority;  //! Priority when entering the mempool
   uint32_t nHeight;  //! Chain height when entering the mempool
 
  public:
-  CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, int64_t _nTime, double _dPriority,
-                  uint32_t _nHeight);
+  CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, int64_t _nTime, double _dPriority, uint32_t _nHeight);
   CTxMemPoolEntry();
   CTxMemPoolEntry(const CTxMemPoolEntry& other);
 
@@ -116,8 +115,7 @@ class CTxMemPool {
   void remove(const CTransaction& tx, std::list<CTransaction>& removed, bool fRecursive = false);
   void removeCoinbaseSpends(const CCoinsViewCache* pcoins, uint32_t nMemPoolHeight);
   void removeConflicts(const CTransaction& tx, std::list<CTransaction>& removed);
-  void removeForBlock(const std::vector<CTransaction>& vtx, uint32_t nBlockHeight,
-                      std::list<CTransaction>& conflicts);
+  void removeForBlock(const std::vector<CTransaction>& vtx, uint32_t nBlockHeight, std::list<CTransaction>& conflicts);
   void clear();
   void queryHashes(std::vector<uint256>& vtxid);
   void getTransactions(std::set<uint256>& setTxid);

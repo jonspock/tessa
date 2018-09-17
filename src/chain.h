@@ -146,7 +146,7 @@ class CBlockIndex {
 
   // proof-of-stake specific fields
   arith_uint256 GetBlockTrust() const;
-  uint64_t nStakeModifier;              // hash modifier for proof-of-stake
+  uint64_t nStakeModifier;          // hash modifier for proof-of-stake
   uint32_t nStakeModifierChecksum;  // checksum of index; in-memeory only
   COutPoint prevoutStake;
   uint32_t nStakeTime;

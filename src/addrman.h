@@ -14,9 +14,9 @@
 #include "timedata.h"
 #include "util.h"
 
+#include <cstdint>
 #include <map>
 #include <set>
-#include <cstdint>
 #include <vector>
 
 /**

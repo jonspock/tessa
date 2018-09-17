@@ -256,5 +256,4 @@ template <typename T> uint256 SerializeHash(const T& obj) {
 
 uint32_t MurmurHash3(uint32_t nHashSeed, const std::vector<uint8_t>& vDataToHash);
 
-void BIP32Hash(const ChainCode chainCode, uint32_t nChild, uint8_t header, const uint8_t data[32],
-               uint8_t output[64]);
+void BIP32Hash(const ChainCode chainCode, uint32_t nChild, uint8_t header, const uint8_t data[32], uint8_t output[64]);

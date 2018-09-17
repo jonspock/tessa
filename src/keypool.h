@@ -3,7 +3,7 @@
 #include "serialize.h"
 
 namespace ecdsa {
-  class CPubKey;
+class CPubKey;
 }
 
 /** A key pool entry */

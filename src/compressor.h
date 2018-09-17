@@ -13,9 +13,9 @@
 #include "serialize.h"
 
 namespace ecdsa {
-  class CPubKey;
-  class CKeyID;
-}
+class CPubKey;
+class CKeyID;
+}  // namespace ecdsa
 
 class CScriptID;
 

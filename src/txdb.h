@@ -9,9 +9,9 @@
 
 #include "blockfileinfo.h"
 #include "blockmap.h"
+#include "coins.h"
 #include "disktxpos.h"
 #include "leveldbwrapper.h"
-#include "coins.h"
 #include "primitives/zerocoin.h"
 
 #include <map>

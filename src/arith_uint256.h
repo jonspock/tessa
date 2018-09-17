@@ -7,9 +7,9 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <stdexcept>
-#include <cstdint>
 #include <string>
 #include <vector>
 

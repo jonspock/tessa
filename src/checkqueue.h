@@ -93,7 +93,7 @@ template <typename T> class CCheckQueue {
           }
           nIdle++;
           //          cond.wait(lock);  // wait
-          cond.wait(lock, [this, fMaster]{return !queue.empty() || ((fMaster || fQuit) && nTodo == 0); }); 
+          cond.wait(lock, [this, fMaster] { return !queue.empty() || ((fMaster || fQuit) && nTodo == 0); });
           nIdle--;
         }
         // Decide how many work units to process now.
@@ -126,7 +126,6 @@ template <typename T> class CCheckQueue {
 
   //! Worker thread
   void Thread() { Loop(); }
-
 
   void Interrupt() {
     {

@@ -42,12 +42,11 @@
 #include <utility>
 #include <vector>
 
-
 namespace boost {
-  namespace signals2 {
-    class connection;
-  }
-} // namespace boost
+namespace signals2 {
+class connection;
+}
+}  // namespace boost
 
 /**
  * Settings
@@ -153,7 +152,8 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   /** Zerocin entry changed.
    * @note called with lock cs_wallet held.
    */
-  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyZerocoinChanged, void, CWallet* wallet, const std::string& pubCoin, const std::string& isUsed, ChangeType status)
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyZerocoinChanged, void, CWallet* wallet, const std::string& pubCoin,
+                                  const std::string& isUsed, ChangeType status)
   /*
    * Main wallet lock.
    * This lock protects all the fields added by CWallet
@@ -396,8 +396,8 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
   bool AddAccountingEntry(const CAccountingEntry& c);
   bool ConvertList(std::vector<CTxIn> vCoins, std::vector<int64_t>& vecAmounts);
-  bool CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t nSearchInterval,
-                       CMutableTransaction& txNew, uint32_t& nTxNewTime);
+  bool CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t nSearchInterval, CMutableTransaction& txNew,
+                       uint32_t& nTxNewTime);
   bool MultiSend();
   void AutoCombineDust();
 
@@ -520,17 +520,19 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
    * Address book entry changed.
    * @note called with lock cs_wallet held.
    */
-  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyAddressBookChanged, void, CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine, const std::string& purpose, ChangeType status)
-  
-  //boost::signals2::signal<void(CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine,
-  //const std::string& purpose, ChangeType status)>      NotifyAddressBookChanged;
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyAddressBookChanged, void, CWallet* wallet, const CTxDestination& address,
+                                  const std::string& label, bool isMine, const std::string& purpose, ChangeType status)
+
+  // boost::signals2::signal<void(CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine,
+  // const std::string& purpose, ChangeType status)>      NotifyAddressBookChanged;
 
   /**
    * Wallet transaction added, removed or updated.
    * @note called with lock cs_wallet held.
    */
-  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyTransactionChanged, void, CWallet* wallet,  const uint256& hashTx, ChangeType status)
-  //boost::signals2::signal<void(CWallet* wallet, const uint256& hashTx, ChangeType status)> NotifyTransactionChanged;
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyTransactionChanged, void, CWallet* wallet, const uint256& hashTx,
+                                  ChangeType status)
+  // boost::signals2::signal<void(CWallet* wallet, const uint256& hashTx, ChangeType status)> NotifyTransactionChanged;
 
   /** Show progress e.g. for rescan */
   ADD_WALLET_SIGNALS_DECL_WRAPPER(ShowProgress, void, const std::string& title, int nProgress)
@@ -538,7 +540,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   /** Watch-only address added */
   ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyWatchonlyChanged, void, bool f)
-  //boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
+  // boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
 
   /** MultiSig address added */
   ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyMultiSigChanged, void, bool f)
@@ -546,10 +548,9 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   /** ZKP reset */
   ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyZkpReset, void, void)
-  //boost::signals2::signal<void()> NotifyZkpReset;
+  // boost::signals2::signal<void()> NotifyZkpReset;
 
   /** notify wallet file backed up */
   ADD_WALLET_SIGNALS_DECL_CONST_WRAPPER(NotifyWalletBacked, void, bool b, const std::string& f)
-  //boost::signals2::signal<void(const bool& fSuccess, const std::string& filename)> NotifyWalletBacked;
+  // boost::signals2::signal<void(const bool& fSuccess, const std::string& filename)> NotifyWalletBacked;
 };
-

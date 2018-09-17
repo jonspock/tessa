@@ -1,7 +1,7 @@
 #pragma once
 
-#include <unordered_map>
 #include "uint256.h"
+#include <unordered_map>
 
 class CBlockIndex;
 

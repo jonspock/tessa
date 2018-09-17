@@ -158,7 +158,7 @@ class CCoins {
     bool fSecond = vout.size() > 1 && !vout[1].IsNull();
     assert(fFirst || fSecond || nMaskCode);
     uint32_t nCode = 8 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
-                         (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
+                     (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
     // version
     nSize += ::GetSerializeSize(VARINT(nTransactionVersion));
     // size of header code
@@ -181,7 +181,7 @@ class CCoins {
     bool fSecond = vout.size() > 1 && !vout[1].IsNull();
     assert(fFirst || fSecond || nMaskCode);
     uint32_t nCode = 16 * (nMaskCode - (fFirst || fSecond ? 0 : 1)) + (fCoinBase ? 1 : 0) + (fCoinStake ? 2 : 0) +
-                         (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
+                     (fFirst ? 4 : 0) + (fSecond ? 8 : 0);
     // version
     ::Serialize(s, VARINT(nTransactionVersion));
     // header code

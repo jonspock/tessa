@@ -8,9 +8,9 @@
 
 #include <cassert>
 #include <crypto/common.h>
+#include <cstdint>
 #include <cstring>
 #include <stdexcept>
-#include <cstdint>
 #include <string>
 #include <vector>
 

@@ -12,12 +12,12 @@
 #include "libzerocoin/SpendType.h"
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <ios>
 #include <limits>
 #include <map>
 #include <set>
-#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -532,9 +532,7 @@ template <typename Stream, typename T, typename A> inline void Unserialize(Strea
 /**
  * others derived from vector
  */
-inline uint32_t GetSerializeSize(const CScript& v) {
-  return GetSerializeSize((const std::vector<unsigned char>&)v);
-}
+inline uint32_t GetSerializeSize(const CScript& v) { return GetSerializeSize((const std::vector<unsigned char>&)v); }
 
 template <typename Stream> void Serialize(Stream& os, const CScript& v) {
   Serialize(os, (const std::vector<unsigned char>&)v);

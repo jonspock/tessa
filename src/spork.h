@@ -11,9 +11,9 @@
 #include "sync.h"
 
 namespace ecdsa {
-  class CPubKey;
-  class CKey;
-}
+class CPubKey;
+class CKey;
+}  // namespace ecdsa
 
 class CSporkMessage;
 class CSporkManager;

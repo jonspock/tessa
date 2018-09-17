@@ -70,8 +70,7 @@ class CPartialMerkleTree {
   uint256 CalcHash(int height, uint32_t pos, const std::vector<uint256>& vTxid);
 
   /** recursive function that traverses tree nodes, storing the data as bits and hashes */
-  void TraverseAndBuild(int height, uint32_t pos, const std::vector<uint256>& vTxid,
-                        const std::vector<bool>& vMatch);
+  void TraverseAndBuild(int height, uint32_t pos, const std::vector<uint256>& vTxid, const std::vector<bool>& vMatch);
 
   /**
    * recursive function that traverses tree nodes, consuming the bits and hashes produced by TraverseAndBuild.

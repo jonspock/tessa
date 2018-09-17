@@ -13,8 +13,8 @@
 #include "sync.h"
 #include "version.h"
 
-#include <lmdb.h>
 #include <atomic>
+#include <lmdb.h>
 #include <string>
 
 class CDbWrapper {

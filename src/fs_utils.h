@@ -11,9 +11,9 @@
 //#include "fs.h"
 
 #ifdef WIN32
-#include <winsock2.h>  // Must be included before mswsock.h and windows.h
 #include <mswsock.h>
 #include <windows.h>
+#include <winsock2.h>  // Must be included before mswsock.h and windows.h
 #include <ws2tcpip.h>
 #else
 #include <sys/types.h>
@@ -21,10 +21,10 @@
 
 // Forward decl
 namespace boost {
-  namespace filesystem {
-    class path;
-  }
+namespace filesystem {
+class path;
 }
+}  // namespace boost
 namespace fs = boost::filesystem;
 
 struct CDiskBlockPos;
@@ -46,4 +46,3 @@ void ClearDatadirCache();
 
 /** Translation to a filesystem path */
 fs::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix);
-

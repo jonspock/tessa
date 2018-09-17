@@ -13,16 +13,16 @@
 #include "limitedmap.h"
 #include "mruset.h"
 #include "netbase.h"
+#include "nodeid.h"
 #include "protocol.h"
 #include "random.h"
 #include "streams.h"
 #include "sync.h"
 #include "uint256.h"
 #include "utilstrencodings.h"
-#include "nodeid.h"
 
-#include <deque>
 #include <cstdint>
+#include <deque>
 #include <functional>
 
 #ifndef WIN32
@@ -30,10 +30,10 @@
 #endif
 
 namespace boost {
-  namespace signals2 {
-    class connection;
-  }
-} // namespace boost
+namespace signals2 {
+class connection;
+}
+}  // namespace boost
 
 class CAddrMan;
 class CBlockIndex;
@@ -85,11 +85,11 @@ bool StopNode();
 void InterruptNode();
 void SocketSendData(CNode* pnode);
 
-#define ADD_NET_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                              \
-    rtype signal_name(__VA_ARGS__);                                                        \
-    using signal_name##Sig = rtype(__VA_ARGS__);                                           \
-    boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
-    void signal_name##_disconnect(std::function<signal_name##Sig> fn);
+#define ADD_NET_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                            \
+  rtype signal_name(__VA_ARGS__);                                                        \
+  using signal_name##Sig = rtype(__VA_ARGS__);                                           \
+  boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
+  void signal_name##_disconnect(std::function<signal_name##Sig> fn);
 
 // Signals for message handling
 struct CNodeSignals {
@@ -405,7 +405,7 @@ class CNode {
 
   void AddAddressKnown(const CAddress& addr) { setAddrKnown.insert(addr); }
 
-  void PushAddress(const CAddress& addr, FastRandomContext &insecure_rand) {
+  void PushAddress(const CAddress& addr, FastRandomContext& insecure_rand) {
     // Known checking here is only to save space from duplicates.
     // SendMessages will filter it again for knowns that were added
     // after addresses were pushed.
@@ -695,4 +695,3 @@ void RelayTransactionLockReq(const CTransaction& tx, bool relayToAll = false);
 void RelayInv(CInv& inv);
 
 void DumpBanlist();
-

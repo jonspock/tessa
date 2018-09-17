@@ -9,13 +9,13 @@
 // NOTE:
 // std::thread / std::function / std::chrono now we support C++11.
 //
-#include <thread>
-#include <functional>
-#include <map>
-#include <list>
+#include "sync.h"
 #include <chrono>
 #include <condition_variable>
-#include "sync.h"
+#include <functional>
+#include <list>
+#include <map>
+#include <thread>
 //
 // Simple class for background tasks that should be run
 // periodically or once "after a while"
@@ -69,8 +69,7 @@ class CScheduler {
 
   // Returns number of tasks waiting to be serviced,
   // and first and last task times
-  size_t getQueueInfo(std::chrono::system_clock::time_point &first,
-                      std::chrono::system_clock::time_point &last) const;
+  size_t getQueueInfo(std::chrono::system_clock::time_point &first, std::chrono::system_clock::time_point &last) const;
 
  private:
   std::multimap<std::chrono::system_clock::time_point, Function> taskQueue;
@@ -93,30 +92,30 @@ class CScheduler {
  * before it.
  */
 class SingleThreadedSchedulerClient {
-private:
-    CScheduler *m_pscheduler;
+ private:
+  CScheduler *m_pscheduler;
 
-    CCriticalSection m_cs_callbacks_pending;
-    std::list<std::function<void (void)>> m_callbacks_pending GUARDED_BY(m_cs_callbacks_pending);
-    bool m_are_callbacks_running GUARDED_BY(m_cs_callbacks_pending) = false;
+  CCriticalSection m_cs_callbacks_pending;
+  std::list<std::function<void(void)> > m_callbacks_pending GUARDED_BY(m_cs_callbacks_pending);
+  bool m_are_callbacks_running GUARDED_BY(m_cs_callbacks_pending) = false;
 
-    void MaybeScheduleProcessQueue();
-    void ProcessQueue();
+  void MaybeScheduleProcessQueue();
+  void ProcessQueue();
 
-public:
-    explicit SingleThreadedSchedulerClient(CScheduler *pschedulerIn) : m_pscheduler(pschedulerIn) {}
+ public:
+  explicit SingleThreadedSchedulerClient(CScheduler *pschedulerIn) : m_pscheduler(pschedulerIn) {}
 
-    /**
-     * Add a callback to be executed. Callbacks are executed serially
-     * and memory is release-acquire consistent between callback executions.
-     * Practially, this means that callbacks can behave as if they are executed
-     * in order by a single thread.
-     */
-    void AddToProcessQueue(std::function<void (void)> func);
+  /**
+   * Add a callback to be executed. Callbacks are executed serially
+   * and memory is release-acquire consistent between callback executions.
+   * Practially, this means that callbacks can behave as if they are executed
+   * in order by a single thread.
+   */
+  void AddToProcessQueue(std::function<void(void)> func);
 
-    // Processes all remaining queue members on the calling thread, blocking until queue is empty
-    // Must be called after the CScheduler has no remaining processing threads!
-    void EmptyQueue();
+  // Processes all remaining queue members on the calling thread, blocking until queue is empty
+  // Must be called after the CScheduler has no remaining processing threads!
+  void EmptyQueue();
 
-    size_t CallbacksPending();
+  size_t CallbacksPending();
 };

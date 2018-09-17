@@ -4,9 +4,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <map>
 #include <set>
-#include <cstdint>
 #include <string>
 
 #include "sync.h"
@@ -70,4 +70,3 @@ extern CZerocoinDB* zerocoinDB;
 
 /** Global variable that points to the spork database (protected by cs_main) */
 extern CSporkDB* pSporkDB;
-

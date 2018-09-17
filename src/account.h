@@ -7,8 +7,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-#include "streams.h"
 #include "ecdsa/pubkey.h"
+#include "streams.h"
 #include "wallet/wallet_functions.h"
 
 /**

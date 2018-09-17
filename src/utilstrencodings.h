@@ -107,10 +107,7 @@ template <typename T> bool TimingResistantEqual(const T& a, const T& b) {
  * @return          the lowercase equivalent of c; or the argument
  *                  if no conversion is possible.
  */
-constexpr unsigned char ToLower(unsigned char c)
-{
-    return (c >= 'A' && c <= 'Z' ? (c - 'A') + 'a' : c);
-}
+constexpr unsigned char ToLower(unsigned char c) { return (c >= 'A' && c <= 'Z' ? (c - 'A') + 'a' : c); }
 
 /**
  * Converts the given string to its lowercase equivalent.
@@ -119,7 +116,7 @@ constexpr unsigned char ToLower(unsigned char c)
  * @param[in,out] str   the string to convert to lowercase.
  */
 void Downcase(std::string& str);
- /**
+/**
  * Converts the given character to its uppercase equivalent.
  * This function is locale independent. It only converts lowercase
  * characters in the standard 7-bit ASCII range.
@@ -127,11 +124,8 @@ void Downcase(std::string& str);
  * @return          the uppercase equivalent of c; or the argument
  *                  if no conversion is possible.
  */
-constexpr unsigned char ToUpper(unsigned char c)
-{
-    return (c >= 'a' && c <= 'z' ? (c - 'a') + 'A' : c);
-}
- /**
+constexpr unsigned char ToUpper(unsigned char c) { return (c >= 'a' && c <= 'z' ? (c - 'a') + 'A' : c); }
+/**
  * Capitalizes the first character of the given string.
  * This function is locale independent. It only capitalizes the
  * first character of the argument if it has an uppercase equivalent
@@ -141,13 +135,9 @@ constexpr unsigned char ToUpper(unsigned char c)
  */
 std::string Capitalize(std::string str);
 
-
 /**
  * Tests if the given character is a decimal digit.
  * @param[in] c     character to test
  * @return          true if the argument is a decimal digit; otherwise false.
  */
-constexpr bool IsDigit(char c)
-{
-    return c >= '0' && c <= '9';
-}
+constexpr bool IsDigit(char c) { return c >= '0' && c <= '9'; }

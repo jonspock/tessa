@@ -24,11 +24,11 @@
 #include <vector>
 
 namespace ecdsa {
-  class CPubKey;
-  class CKey;
-  class CKeyID;
-  struct CExtKey;
-}
+class CPubKey;
+class CKey;
+class CKeyID;
+struct CExtKey;
+}  // namespace ecdsa
 
 /**
  * Encode a byte sequence as a base58-encoded string.

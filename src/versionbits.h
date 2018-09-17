@@ -18,11 +18,11 @@ static const int32_t VERSIONBITS_TOP_MASK = 0xE0000000UL;
 static const int32_t VERSIONBITS_NUM_BITS = 29;
 
 enum ThresholdState {
-    THRESHOLD_DEFINED,
-    THRESHOLD_STARTED,
-    THRESHOLD_LOCKED_IN,
-    THRESHOLD_ACTIVE,
-    THRESHOLD_FAILED,
+  THRESHOLD_DEFINED,
+  THRESHOLD_STARTED,
+  THRESHOLD_LOCKED_IN,
+  THRESHOLD_ACTIVE,
+  THRESHOLD_FAILED,
 };
 
 // A map that gives the state for blocks whose height is a multiple of Period().
@@ -31,10 +31,10 @@ enum ThresholdState {
 typedef std::map<const CBlockIndex *, ThresholdState> ThresholdConditionCache;
 
 struct BIP9DeploymentInfo {
-    /** Deployment name */
-    const char *name;
-    /** Whether GBT clients can safely ignore this rule in simplified usage */
-    bool gbt_force;
+  /** Deployment name */
+  const char *name;
+  /** Whether GBT clients can safely ignore this rule in simplified usage */
+  bool gbt_force;
 };
 
 extern const struct BIP9DeploymentInfo VersionBitsDeploymentInfo[];
@@ -44,40 +44,32 @@ extern const struct BIP9DeploymentInfo VersionBitsDeploymentInfo[];
  * results.
  */
 class AbstractThresholdConditionChecker {
-protected:
-    virtual bool Condition(const CBlockIndex *pindex,
-                           const Consensus::Params &params) const = 0;
-    virtual int64_t BeginTime(const Consensus::Params &params) const = 0;
-    virtual int64_t EndTime(const Consensus::Params &params) const = 0;
-    virtual int Period(const Consensus::Params &params) const = 0;
-    virtual int Threshold(const Consensus::Params &params) const = 0;
+ protected:
+  virtual bool Condition(const CBlockIndex *pindex, const Consensus::Params &params) const = 0;
+  virtual int64_t BeginTime(const Consensus::Params &params) const = 0;
+  virtual int64_t EndTime(const Consensus::Params &params) const = 0;
+  virtual int Period(const Consensus::Params &params) const = 0;
+  virtual int Threshold(const Consensus::Params &params) const = 0;
 
-public:
-    // Note that the functions below take a pindexPrev as input: they compute
-    // information for block B based on its parent.
-    ThresholdState GetStateFor(const CBlockIndex *pindexPrev,
-                               const Consensus::Params &params,
-                               ThresholdConditionCache &cache) const;
-    int GetStateSinceHeightFor(const CBlockIndex *pindexPrev,
-                               const Consensus::Params &params,
-                               ThresholdConditionCache &cache) const;
+ public:
+  // Note that the functions below take a pindexPrev as input: they compute
+  // information for block B based on its parent.
+  ThresholdState GetStateFor(const CBlockIndex *pindexPrev, const Consensus::Params &params,
+                             ThresholdConditionCache &cache) const;
+  int GetStateSinceHeightFor(const CBlockIndex *pindexPrev, const Consensus::Params &params,
+                             ThresholdConditionCache &cache) const;
 };
 
 struct VersionBitsCache {
-    ThresholdConditionCache caches[Consensus::MAX_VERSION_BITS_DEPLOYMENTS];
+  ThresholdConditionCache caches[Consensus::MAX_VERSION_BITS_DEPLOYMENTS];
 
-    void Clear();
+  void Clear();
 };
 
-ThresholdState VersionBitsState(const CBlockIndex *pindexPrev,
-                                const Consensus::Params &params,
-                                Consensus::DeploymentPos pos,
-                                VersionBitsCache &cache);
-int VersionBitsStateSinceHeight(const CBlockIndex *pindexPrev,
-                                const Consensus::Params &params,
-                                Consensus::DeploymentPos pos,
-                                VersionBitsCache &cache);
-uint32_t VersionBitsMask(const Consensus::Params &params,
-                         Consensus::DeploymentPos pos);
+ThresholdState VersionBitsState(const CBlockIndex *pindexPrev, const Consensus::Params &params,
+                                Consensus::DeploymentPos pos, VersionBitsCache &cache);
+int VersionBitsStateSinceHeight(const CBlockIndex *pindexPrev, const Consensus::Params &params,
+                                Consensus::DeploymentPos pos, VersionBitsCache &cache);
+uint32_t VersionBitsMask(const Consensus::Params &params, Consensus::DeploymentPos pos);
 
 #endif

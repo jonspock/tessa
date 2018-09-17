@@ -14,7 +14,7 @@ class CScheduler;
 void StartShutdown();
 bool ShutdownRequested();
 /** Interrupt threads */
-void InterruptSearch(); // Rpc Zkp search
+void InterruptSearch();  // Rpc Zkp search
 void Interrupt(CScheduler& scheduler);
 void Shutdown(CScheduler& scheduler);
 void PrepareShutdown(CScheduler& scheduler);

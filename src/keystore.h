@@ -14,10 +14,10 @@
 #include <vector>
 
 namespace ecdsa {
-  class CPubKey;
-  class CKey;
-  class CKeyID;
-}
+class CPubKey;
+class CKey;
+class CKeyID;
+}  // namespace ecdsa
 
 class CScript;
 class CScriptID;
@@ -59,9 +59,9 @@ class CKeyStore {
 };
 
 using KeyMap = std::map<ecdsa::CKeyID, ecdsa::CKey>;
-using ScriptMap =  std::map<CScriptID, CScript>;
-using WatchOnlySet =  std::set<CScript>;
-using MultiSigScriptSet =  std::set<CScript>;
+using ScriptMap = std::map<CScriptID, CScript>;
+using WatchOnlySet = std::set<CScript>;
+using MultiSigScriptSet = std::set<CScript>;
 
 /** Basic key store, that keeps keys in an address->secret map */
 class CBasicKeyStore : public CKeyStore {
@@ -92,7 +92,7 @@ class CBasicKeyStore : public CKeyStore {
   virtual bool HaveMultiSig() const;
 };
 
-using CKeyingMaterial= std::vector<uint8_t, secure_allocator<uint8_t> >;
-using CryptedKeyMap =  std::map<ecdsa::CKeyID, std::pair<ecdsa::CPubKey, std::vector<uint8_t> > >;
+using CKeyingMaterial = std::vector<uint8_t, secure_allocator<uint8_t> >;
+using CryptedKeyMap = std::map<ecdsa::CKeyID, std::pair<ecdsa::CPubKey, std::vector<uint8_t> > >;
 
 #endif  // BITCOIN_KEYSTORE_H

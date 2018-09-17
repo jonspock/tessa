@@ -8,17 +8,17 @@
 #ifndef BITCOIN_STREAMS_H
 #define BITCOIN_STREAMS_H
 
-#include "support/allocators/zeroafterfree.h"
 #include "serialize.h"
+#include "support/allocators/zeroafterfree.h"
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <ios>
 #include <limits>
 #include <map>
 #include <set>
-#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>

@@ -7,16 +7,16 @@
 
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <memory>
-#include <cstdint>
 #include <string>
 
 namespace boost {
 namespace signals2 {
 class connection;
 }
-} // namespace boost
+}  // namespace boost
 
 class CBlockIndex;
 class CBasicKeyStore;
@@ -72,21 +72,21 @@ class CClientUIInterface {
     MSG_ERROR = (ICON_ERROR | BTN_OK | MODAL)
   };
 
-#define ADD_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                                  \
-    rtype signal_name(__VA_ARGS__);                                                        \
-    using signal_name##Sig = rtype(__VA_ARGS__);                                           \
-    boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
-    void signal_name##_disconnect(std::function<signal_name##Sig> fn);
+#define ADD_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                                \
+  rtype signal_name(__VA_ARGS__);                                                        \
+  using signal_name##Sig = rtype(__VA_ARGS__);                                           \
+  boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
+  void signal_name##_disconnect(std::function<signal_name##Sig> fn);
 
-  
   /** Show message box. */
-  ADD_SIGNALS_DECL_WRAPPER(ThreadSafeMessageBox, bool, const std::string& message, const std::string& caption, uint32_t style)
+  ADD_SIGNALS_DECL_WRAPPER(ThreadSafeMessageBox, bool, const std::string& message, const std::string& caption,
+                           uint32_t style)
 
   /** Progress message during initialization. */
   ADD_SIGNALS_DECL_WRAPPER(InitMessage, void, const std::string& message)
-  
-    /** Translate a message to the native language of the user. */
-  //boost::signals2::signal<std::string(const char* psz)> Translate;
+
+  /** Translate a message to the native language of the user. */
+  // boost::signals2::signal<std::string(const char* psz)> Translate;
   ///// ADD_SIGNALS_DECL_WRAPPER(Translate, std::string, const char* psz)
 
   /** Number of network connections changed. */
@@ -96,7 +96,7 @@ class CClientUIInterface {
   ADD_SIGNALS_DECL_WRAPPER(LoadWallet, void, CWallet* wallet)
 
   /** Show progress e.g. for verifychain */
-  ADD_SIGNALS_DECL_WRAPPER(ShowProgress, void, const std::string& title, int nProgress)//, bool resume_possible);
+  ADD_SIGNALS_DECL_WRAPPER(ShowProgress, void, const std::string& title, int nProgress)  //, bool resume_possible);
 
   /** New block has been accepted */
   ADD_SIGNALS_DECL_WRAPPER(NotifyBlockTip, void, const uint256&)

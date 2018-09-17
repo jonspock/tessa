@@ -12,10 +12,10 @@
 #include "tessa-config.h"
 #endif
 
-#include "tessa_constants.h"
-#include "tessa_externs.h"
 #include "nodeid.h"
 #include "primitives/block.h"
+#include "tessa_constants.h"
+#include "tessa_externs.h"
 
 class uint256;
 class CScriptCheck;
