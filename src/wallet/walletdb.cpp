@@ -7,8 +7,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletdb.h"
-#include "walletkey.h"
-
 #include "base58.h"
 #include "fs.h"
 #include "fs_utils.h"
@@ -81,7 +79,6 @@ bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<uint
   if (!Write(std::make_pair(std::string("ckey"), vchPubKey), vchCryptedSecret, false)) return false;
   if (fEraseUnencryptedKey) {
     Erase(std::make_pair(std::string("key"), vchPubKey));
-    Erase(std::make_pair(std::string("wkey"), vchPubKey));
   }
   return true;
 }
@@ -393,7 +390,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
       // MultiSig addresses have no birthday information for now,
       // so set the wallet birthday to the beginning of time.
       pwallet->nTimeFirstKey = 1;
-    } else if (strType == "key" || strType == "wkey") {
+    } else if (strType == "key") {
       CPubKey vchPubKey;
       ssKey >> vchPubKey;
       if (!vchPubKey.IsValid()) {
@@ -404,14 +401,8 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
       CPrivKey pkey;
       uint256 hash;
 
-      if (strType == "key") {
-        wss.nKeys++;
-        ssValue >> pkey;
-      } else {
-        CWalletKey wkey;
-        ssValue >> wkey;
-        pkey = wkey.vchPrivKey;
-      }
+      wss.nKeys++;
+      ssValue >> pkey;
 
       // Old wallets store keys as "key" [pubkey] => [privkey]
       // ... which was slow for wallets with lots of keys, because the public key is re-derived from the private key
@@ -558,7 +549,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
 }
 
 static bool IsKeyType(string strType) {
-  return (strType == "key" || strType == "wkey" || strType == "mkey" || strType == "ckey");
+  return (strType == "key" || strType == "mkey" || strType == "ckey");
 }
 
 DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {

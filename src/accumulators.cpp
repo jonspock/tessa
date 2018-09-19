@@ -220,8 +220,8 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
   int nTotalMintsFound = 0;
   CBlockIndex* pindex = chainActive[nHeightCheckpoint - 2 * ACC_BLOCK_INTERVAL];
 
-#warning "Check this"
-  if (pindex == nullptr) return true;
+  if (pindex == nullptr) 
+      return error("%s: got nullptr for pindex prior to accumulation", __func__);
 
   while (pindex->nHeight < nHeight - ACC_BLOCK_INTERVAL) {
     // checking whether we should stop this process due to a shutdown request

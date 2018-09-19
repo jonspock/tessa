@@ -341,10 +341,7 @@ std::string HelpMessage(HelpMessageMode mode) {
   string strUsage = HelpMessageGroup(_("Options:"));
   strUsage += HelpMessageOpt("-?", _("This help message"));
   strUsage += HelpMessageOpt("-version", _("Print version and exit"));
-  strUsage += HelpMessageOpt("-alertnotify=<cmd>", _("Execute command when a relevant alert is received or we see a "
-                                                     "really long fork (%s in cmd is replaced by message)"));
-  strUsage +=
-      HelpMessageOpt("-alerts", strprintf(_("Receive and display P2P network alerts (default: %u)"), DEFAULT_ALERTS));
+  strUsage += HelpMessageOpt("-alertnotify=<cmd>", _("Execute command when a we see a really long fork (%s in cmd is replaced by message)"));
   strUsage += HelpMessageOpt("-blocknotify=<cmd>",
                              _("Execute command when the best block changes (%s in cmd is replaced by block hash)"));
   strUsage +=
@@ -434,7 +431,6 @@ std::string HelpMessage(HelpMessageMode mode) {
   strUsage += HelpMessageOpt(
       "-timeout=<n>",
       strprintf(_("Specify connection timeout in milliseconds (minimum: 1, default: %d)"), DEFAULT_CONNECT_TIMEOUT));
-  strUsage += HelpMessageOpt("-torpassword=<pass>", _("Tor control port password (default: empty)"));
 #ifdef USE_UPNP
 #if USE_UPNP
   strUsage += HelpMessageOpt("-upnp", _("Use UPnP to map the listening port (default: 1 when listening)"));
@@ -563,10 +559,6 @@ std::string HelpMessage(HelpMessageMode mode) {
     strUsage += HelpMessageOpt("-maxsigcachesize=<n>",
                                strprintf(_("Limit size of signature cache to <n> entries (default: %u)"), 50000));
   }
-  strUsage += HelpMessageOpt(
-      "-minrelaytxfee=<amt>",
-      strprintf(_("Fees (in Tessa/Kb) smaller than this are considered zero fee for relaying (default: %s)"),
-                FormatMoney(::minRelayTxFee.GetFeePerK())));
   strUsage += HelpMessageOpt(
       "-printtoconsole", strprintf(_("Send trace/debug info to console instead of debug.log file (default: %u)"), 0));
   if (GetBoolArg("-help-debug", false)) {
@@ -929,14 +921,7 @@ bool AppInit2(CScheduler& scheduler) {
   // Check for -debugnet
   if (GetBoolArg("-debugnet", false))
     InitWarning(_("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
-  // Check for -socks - as this is a privacy risk to continue, exit here
-  if (gArgs.IsArgSet("-socks"))
-    return InitError(
-        _("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies "
-          "are supported."));
-  // Check for -tor - as this is a privacy risk to continue, exit here
-  if (GetBoolArg("-tor", false)) return InitError(_("Error: Unsupported argument -tor found, use -onion."));
-  // Check level must be 4 for zerocoin checks
+   // Check level must be 4 for zerocoin checks
   if (gArgs.IsArgSet("-checklevel"))
     return InitError(_("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
 
@@ -968,21 +953,6 @@ bool AppInit2(CScheduler& scheduler) {
 
   nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
   if (nConnectTimeout <= 0) nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
-
-  // Fee-per-kilobyte amount considered the same as "free"
-  // If you are mining, be careful setting this:
-  // if you set it to zero then
-  // a transaction spammer can cheaply fill blocks using
-  // 1-satoshi-fee transactions. It should be set above the real
-  // cost to you of processing a transaction.
-  if (gArgs.IsArgSet("-minrelaytxfee")) {
-    CAmount n = 0;
-    if (ParseMoney(gArgs.GetArg("-minrelaytxfee", ""), n) && n > 0)
-      ::minRelayTxFee = CFeeRate(n);
-    else
-      return InitError(
-          strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), gArgs.GetArg("-minrelaytxfee", "")));
-  }
 
   if (!fDisableWallet) {
     if (gArgs.IsArgSet("-mintxfee")) {

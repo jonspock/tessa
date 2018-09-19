@@ -123,14 +123,17 @@ option(SECP256K1_ECMULT_STATIC_PRECOMPUTATION "Precompute libsecp256k1's eliptic
 set(USE_ECMULT_STATIC_PRECOMPUTATION 1)
 
 include(NativeExecutable)
-add_native_executable(gen_context src/gen_context.c)
-
-add_custom_command(
-	OUTPUT ecmult_static_context.h
-	COMMAND gen_context
-	)
-
-target_sources(secp256k1 PRIVATE ecmult_static_context.h)
+if (EXISTS  "${CMAKE_CURRENT_BINARY_DIR}/src/ecmult_static_context.h")
+  message(STATUS "ecmult_static_context.h already created")
+else()
+  message(STATUS " Creating ${CMAKE_CURRENT_BINARY_DIR}/src/ecmult_static_context.h")
+  add_native_executable(gen_context src/gen_context.c)
+  add_custom_command(
+	  OUTPUT ecmult_static_context.h
+	  COMMAND gen_context
+	  )
+  target_sources(secp256k1 PRIVATE ecmult_static_context.h)
+endif()
 
 # Generate the config
 configure_file(src/libsecp256k1-config.h.cmake.in src/libsecp256k1-config.h ESCAPE_QUOTES)
