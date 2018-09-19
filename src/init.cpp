@@ -1552,7 +1552,10 @@ bool AppInit2(CScheduler& scheduler) {
       LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
       
       // Try this....
-      // pwalletMain->EncryptWallet(passphrase);
+      CKeyingMaterial vTempMasterKey;
+      vTempMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
+      GetStrongRandBytes(&vTempMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
+      pwalletMain->SetupCrypter(passphrase, vTempMasterKey);
     }
         
     RegisterValidationInterface(pwalletMain);

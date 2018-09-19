@@ -350,7 +350,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool Unlock(const SecureString& strWalletPassphrase, bool anonimizeOnly = false);
   bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
   bool EncryptWallet(const SecureString& strWalletPassphrase);
-  bool SetupCrypter(const SecureString& strWalletPassphrase); // TBD
+  bool SetupCrypter(const SecureString& strWalletPassphrase, const CKeyingMaterial& vTempMasterKey);
 
   void GetKeyBirthTimes(std::map<ecdsa::CKeyID, int64_t>& mapKeyBirth) const;
   uint32_t ComputeTimeSmart(const CWalletTx& wtx) const;

@@ -484,8 +484,9 @@ void CWallet::AddToSpends(const uint256& wtxid) {
 
   for (const CTxIn& txin : thisTx.vin) AddToSpends(txin.prevout, wtxid);
 }
-
-bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
+// Creates a CMasterKey and adds it to mapMasterKeys for future use
+// everything else in here is temporary
+bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase, const CKeyingMaterial& vTempMasterKey) {
   if (IsCrypted()) return false;
   
   CMasterKey kMasterKey;
@@ -513,54 +514,27 @@ bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
   if (!crypter.SetKeyFromPassphrase(strWalletPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations,
                                     kMasterKey.nDerivationMethod))
     return false;
-  else
-    return true;
+    
+  if (!crypter.Encrypt(vTempMasterKey, kMasterKey.vchCryptedKey)) return false;
+    {
+        LOCK(cs_wallet);
+        mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
+    }
+
+  return true;
+    
 }
 bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase) {
   if (IsCrypted()) return false;
-  
-  CKeyingMaterial vTempMasterKey;
-  CMasterKey kMasterKey;
 
+  CKeyingMaterial vTempMasterKey;
   vTempMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
   GetStrongRandBytes(&vTempMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
-
-  kMasterKey.vchSalt.resize(WALLET_CRYPTO_SALT_SIZE);
-  GetStrongRandBytes(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE);
-
-  CCrypter crypter;
-  int64_t nStartTime = GetTimeMillis();
-  crypter.SetKeyFromPassphrase(strWalletPassphrase, kMasterKey.vchSalt, 25000, kMasterKey.nDerivationMethod);
-  kMasterKey.nDeriveIterations = 2500000 / ((double)(GetTimeMillis() - nStartTime));
-
-  nStartTime = GetTimeMillis();
-  crypter.SetKeyFromPassphrase(strWalletPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations,
-                               kMasterKey.nDerivationMethod);
-
-  kMasterKey.nDeriveIterations =
-    (kMasterKey.nDeriveIterations + kMasterKey.nDeriveIterations * 100 / ((double)(GetTimeMillis() - nStartTime))) /
-    2;
-
-  if (kMasterKey.nDeriveIterations < 25000) kMasterKey.nDeriveIterations = 25000;
-
-  LogPrintf("Encrypting Wallet with an nDeriveIterations of %i\n", kMasterKey.nDeriveIterations);
-
-  if (!crypter.SetKeyFromPassphrase(strWalletPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations,
-                                    kMasterKey.nDerivationMethod))
-    return false;
   
-  // Should use HDMasterKey here
-  if (!crypter.Encrypt(vTempMasterKey, kMasterKey.vchCryptedKey)) return false;
-
+  if (!SetupCrypter(strWalletPassphrase, vTempMasterKey)) return false;
+  
   {
     LOCK(cs_wallet);
-    mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
-    if (fFileBacked) {
-      //
-      // Use gWalletDB to write MasterKey TBD HACK
-      // pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey);
-    }
-
     // Writes new Crypted keys and erases old unencrypted private keys
       // No new keys added to pool, 1st time through should be no keys?
     if (!EncryptKeys(vTempMasterKey)) {
