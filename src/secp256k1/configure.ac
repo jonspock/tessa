@@ -40,7 +40,12 @@ case $host_os in
          dnl in expected paths because they may conflict with system files. Ask
          dnl Homebrew where each one is located, then adjust paths accordingly.
 
+         openssl_prefix=`$BREW --prefix openssl 2>/dev/null`
          gmp_prefix=`$BREW --prefix gmp 2>/dev/null`
+         if test x$openssl_prefix != x; then
+           PKG_CONFIG_PATH="$openssl_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
+           export PKG_CONFIG_PATH
+         fi
          if test x$gmp_prefix != x; then
            GMP_CPPFLAGS="-I$gmp_prefix/include"
            GMP_LIBS="-L$gmp_prefix/lib"
@@ -94,6 +99,11 @@ AC_ARG_ENABLE(tests,
     [use_tests=$enableval],
     [use_tests=yes])
 
+AC_ARG_ENABLE(openssl_tests,
+    AS_HELP_STRING([--enable-openssl-tests],[enable OpenSSL tests, if OpenSSL is available (default is auto)]),
+    [enable_openssl_tests=$enableval],
+    [enable_openssl_tests=auto])
+
 AC_ARG_ENABLE(experimental,
     AS_HELP_STRING([--enable-experimental],[allow experimental configure options (default is no)]),
     [use_experimental=$enableval],
@@ -118,6 +128,11 @@ AC_ARG_ENABLE(module_ecdh,
     AS_HELP_STRING([--enable-module-ecdh],[enable ECDH shared secret computation (experimental)]),
     [enable_module_ecdh=$enableval],
     [enable_module_ecdh=no])
+
+AC_ARG_ENABLE(module_multiset,
+    AS_HELP_STRING([--enable-module-multiset],[enable multiset operations (experimental)]),
+    [enable_module_multiset=$enableval],
+    [enable_module_multiset=no])
 
 AC_ARG_ENABLE(module_recovery,
     AS_HELP_STRING([--enable-module-recovery],[enable ECDSA pubkey recovery module (default is no)]),
@@ -356,6 +371,31 @@ case $set_scalar in
   ;;
 esac
 
+if test x"$use_tests" = x"yes"; then
+  SECP_OPENSSL_CHECK
+  if test x"$has_openssl_ec" = x"yes"; then
+    if test x"$enable_openssl_tests" != x"no"; then
+      AC_DEFINE(ENABLE_OPENSSL_TESTS, 1, [Define this symbol if OpenSSL EC functions are available])
+      SECP_TEST_INCLUDES="$SSL_CFLAGS $CRYPTO_CFLAGS"
+      SECP_TEST_LIBS="$CRYPTO_LIBS"
+
+      case $host in
+      *mingw*)
+        SECP_TEST_LIBS="$SECP_TEST_LIBS -lgdi32"
+        ;;
+      esac
+    fi
+  else
+    if test x"$enable_openssl_tests" = x"yes"; then
+      AC_MSG_ERROR([OpenSSL tests requested but OpenSSL with EC support is not available])
+    fi
+  fi
+else
+  if test x"$enable_openssl_tests" = x"yes"; then
+    AC_MSG_ERROR([OpenSSL tests requested but tests are not enabled])
+  fi
+fi
+
 if test x"$use_jni" != x"no"; then
   AX_JNI_INCLUDE_DIR
   have_jni_dependencies=yes
@@ -394,6 +434,10 @@ fi
 
 if test x"$enable_module_ecdh" = x"yes"; then
   AC_DEFINE(ENABLE_MODULE_ECDH, 1, [Define this symbol to enable the ECDH module])
+fi
+
+if test x"$enable_module_multiset" = x"yes"; then
+  AC_DEFINE(ENABLE_MODULE_MULTISET, 1, [Define this symbol to enable the multiset module])
 fi
 
 if test x"$enable_module_recovery" = x"yes"; then
@@ -446,6 +490,7 @@ AM_CONDITIONAL([USE_EXHAUSTIVE_TESTS], [test x"$use_exhaustive_tests" != x"no"])
 AM_CONDITIONAL([USE_BENCHMARK], [test x"$use_benchmark" = x"yes"])
 AM_CONDITIONAL([USE_ECMULT_STATIC_PRECOMPUTATION], [test x"$set_precomp" = x"yes"])
 AM_CONDITIONAL([ENABLE_MODULE_ECDH], [test x"$enable_module_ecdh" = x"yes"])
+AM_CONDITIONAL([ENABLE_MODULE_MULTISET], [test x"$enable_module_multiset" = x"yes"])
 AM_CONDITIONAL([ENABLE_MODULE_RECOVERY], [test x"$enable_module_recovery" = x"yes"])
 AM_CONDITIONAL([USE_JNI], [test x"$use_jni" == x"yes"])
 AM_CONDITIONAL([USE_EXTERNAL_ASM], [test x"$use_external_asm" = x"yes"])

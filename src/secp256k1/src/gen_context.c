@@ -11,6 +11,9 @@
 #include "field_impl.h"
 #include "scalar_impl.h"
 #include "group_impl.h"
+#ifdef USE_ECMULT_STATIC_PRECOMPUTATION
+#undef USE_ECMULT_STATIC_PRECOMPUTATION
+#endif
 #include "ecmult_gen_impl.h"
 
 static void default_error_callback_fn(const char* str, void* data) {

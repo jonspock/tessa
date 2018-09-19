@@ -74,6 +74,12 @@ endif()
 file(GLOB LOCAL_QT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
 source_group("QtHeaders" FILES ${LOCAL_QT_HEADERS})
 
+include_directories(${include_directories} 
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/forms
+  )
+
+
 set(GUI_FORMS
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/addressbookpage.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/askpassphrasedialog.ui
@@ -191,9 +197,9 @@ add_executable(tessa-qt tessa.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} $
 add_dependencies(tessa-qt translations_target)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} qrencode zmq "-framework Cocoa")
+  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} qrencode ${ZMQ_LIB} "-framework Cocoa")
 else()
-	TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${Qt5_LIBRARIES} ${ANL} miniupnpc qrencode event event_pthreads pthread)
+	TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${Qt5_LIBRARIES} ${ZMQ_LIB} ${ANL} miniupnpc qrencode event event_pthreads pthread)
 endif()
 
 #############################################################

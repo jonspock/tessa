@@ -167,23 +167,10 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 else()
   # secp256k1 Linux gcc
   add_definitions("-Wno-cpp -Wno-unused-function -Wno-nonnull-compare -Wno-implicit-fallthrough")
-  set(ANL anl)
+  set(ANL anl) # Not used ATM
 endif()
 
 add_definitions("-fPIC")
-
-# run configure if tessa_config.h doesn't exist
-if (EXISTS  "${CMAKE_CURRENT_BINARY_DIR}/src/tessa-config.h")
-else()  
-    execute_process(
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/configure  --enable-module-recovery
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-    execute_process(
-    COMMAND make
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
-    )
-endif()
 
 SET(COMMON_A
   ./src/support/cleanse.cpp
@@ -361,6 +348,7 @@ if (ZeroMQ_FOUND)
     ./src/zmq/zmqpublishnotifier.cpp
     ./src/zmq/zmqabstractnotifier.cpp
     )
+  set(ZMQ_LIB ${ZMQ_LIBRARY})
 else()
   message(STATUS "ZMQ not found")
 endif()
@@ -380,7 +368,7 @@ if (SODIUM_FOUND)
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost COMPONENTS filesystem)
+find_package(Boost COMPONENTS REQUIRED filesystem)
 link_directories ( ${Boost_LIBRARY_DIRS} )
 
 find_package(gmp)
@@ -392,7 +380,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/wallet
   ${CMAKE_CURRENT_SOURCE_DIR}/src/univalue/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/obj
   ${Boost_INCLUDE_DIRS}
   ${GMP_INCLUDE_DIR}
   ${ROCKSDB_INCLUDE_DIR}/include
@@ -403,8 +390,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/liblmdb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/forms
   # For relic_conf.h file
   ${CMAKE_CURRENT_BINARY_DIR}
   # For config file tessa-config.h
@@ -449,16 +434,11 @@ endif()
 # not used
 #add_dependencies(coin buildHeader)
 
+add_subdirectory(src/secp256k1)
 add_subdirectory(src)
 
 add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
-
-set(SECP256
-  ./src/secp256k1/src/secp256k1.c
-  ./src/secp256k1/src/gen_context.c
-  )
-add_library(secp256k1 ${SECP256})
 
 add_subdirectory(src/ecdsa)
 
@@ -512,10 +492,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 #------------------- ------------------- ------------------- ------------------- -------------------
-message(STATUS "BS is ${Boost_LIBRARIES}")
+message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
 SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${Boost_LIBRARIES} 
-  miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIBRARY}) # wsock32)
+  miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIB}) # wsock32)
 
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 target_link_libraries(tessad ${LIBS_LIST})

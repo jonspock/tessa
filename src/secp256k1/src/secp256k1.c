@@ -17,7 +17,6 @@
 #include "ecdsa_impl.h"
 #include "eckey_impl.h"
 #include "hash_impl.h"
-#include "scratch_impl.h"
 
 #define ARG_CHECK(cond) do { \
     if (EXPECT(!(cond), 0)) { \
@@ -113,15 +112,6 @@ void secp256k1_context_set_error_callback(secp256k1_context* ctx, void (*fun)(co
     }
     ctx->error_callback.fn = fun;
     ctx->error_callback.data = data;
-}
-
-secp256k1_scratch_space* secp256k1_scratch_space_create(const secp256k1_context* ctx, size_t max_size) {
-    VERIFY_CHECK(ctx != NULL);
-    return secp256k1_scratch_create(&ctx->error_callback, max_size);
-}
-
-void secp256k1_scratch_space_destroy(secp256k1_scratch_space* scratch) {
-    secp256k1_scratch_destroy(scratch);
 }
 
 static int secp256k1_pubkey_load(const secp256k1_context* ctx, secp256k1_ge* ge, const secp256k1_pubkey* pubkey) {
@@ -590,6 +580,10 @@ int secp256k1_ec_pubkey_combine(const secp256k1_context* ctx, secp256k1_pubkey *
 
 #ifdef ENABLE_MODULE_ECDH
 # include "modules/ecdh/main_impl.h"
+#endif
+
+#ifdef ENABLE_MODULE_MULTISET
+# include "modules/multiset/main_impl.h"
 #endif
 
 #ifdef ENABLE_MODULE_RECOVERY
