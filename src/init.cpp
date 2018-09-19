@@ -1520,14 +1520,25 @@ bool AppInit2(CScheduler& scheduler) {
         strErrors << _("Error loading wallet.dat") << "\n";
     }
 
+    zwalletMain = new CZeroWallet;
+    pwalletMain->setZWallet(zwalletMain);
+    
     if (fFirstRun) {
+        
+      // Get/Set Password
+      // Check if QT or Not
+      SecureString passphrase;
+      passphrase.reserve(1024);
+      passphrase.assign("1234");
+        
       // Generate a new master key.
-      ecdsa::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey();
+      ecdsa::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey(); // Also adds to DB
       if (!pwalletMain->SetHDMasterKey(masterPubKey)) {
         throw std::runtime_error(std::string(__func__) + ": Storing master key failed");
       }
 
       // Create new keyUser and set as default key
+      // Also setups pool of 200(?) keys -> calls TopUpKeyPool
       ecdsa::CPubKey newDefaultKey;
       if (pwalletMain->GetKeyFromPool(newDefaultKey)) {
         pwalletMain->SetDefaultKey(newDefaultKey);
@@ -1536,13 +1547,14 @@ bool AppInit2(CScheduler& scheduler) {
       }
 
       pwalletMain->SetBestChain(chainActive.GetLocator());
+
+      LogPrintf("%s", strErrors.str());
+      LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
+      
+      // Try this....
+      // pwalletMain->EncryptWallet(passphrase);
     }
-
-    LogPrintf("%s", strErrors.str());
-    LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
-    zwalletMain = new CZeroWallet;
-    pwalletMain->setZWallet(zwalletMain);
-
+        
     RegisterValidationInterface(pwalletMain);
 
     CBlockIndex* pindexRescan = chainActive.Tip();

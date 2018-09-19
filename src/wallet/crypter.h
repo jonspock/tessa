@@ -139,9 +139,9 @@ class CCryptoKeyStore : public CBasicKeyStore {
   bool SetCrypted();
 
   //! will encrypt previously unencrypted keys
-  bool EncryptKeys(CKeyingMaterial &vMasterKeyIn);
+  bool EncryptKeys(CKeyingMaterial &vInMasterKey);
 
-  bool Unlock(const CKeyingMaterial &vMasterKeyIn);
+  bool Unlock(const CKeyingMaterial &vInMasterKey);
   CryptedKeyMap mapCryptedKeys;
 
  public:

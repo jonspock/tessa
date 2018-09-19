@@ -92,8 +92,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   // setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = nullptr, AvailableCoinsType coin_type=ALL_COINS,
   // bool useIX = true) const;
 
-  CWalletDB* pwalletdbEncryption;
-
   //! the current wallet version: clients below this version are not able to load the wallet
   int nWalletVersion;
 
@@ -173,7 +171,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   CHDChain hdChain;
 
   /* HD derive new child key (on internal or external chain) */
-  void DeriveNewChildKey(CWalletDB& walletdb, CKeyMetadata& metadata, ecdsa::CKey& secret, bool internal = false);
+  void DeriveNewChildKey(CKeyMetadata& metadata, ecdsa::CKey& secret, bool internal = false);
 
   std::unique_ptr<CZeroTracker> zkpTracker;
 
@@ -208,14 +206,13 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
     fFileBacked = true;
   }
 
-  ~CWallet() { delete pwalletdbEncryption; }
+  ~CWallet() { }
 
   void SetNull() {
     nWalletVersion = FEATURE_LATEST;
     nWalletMaxVersion = FEATURE_LATEST;
     fFileBacked = false;
     nMasterKeyMaxID = 0;
-    pwalletdbEncryption = nullptr;
     nOrderPosNext = 0;
     nNextResend = 0;
     nLastResend = 0;
@@ -307,7 +304,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   //! Adds a key to the store, and saves it to disk.
   bool AddKeyPubKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey);
-  bool AddKeyPubKeyWithDB(CWalletDB& walletdb, const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey);
+  bool AddKeyPubKeyWithDB(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey);
   //! Adds a key to the store, without saving it to disk (used by LoadWallet)
   bool LoadKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey) {
     return CCryptoKeyStore::AddKeyPubKey(key, pubkey);
@@ -353,6 +350,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool Unlock(const SecureString& strWalletPassphrase, bool anonimizeOnly = false);
   bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
   bool EncryptWallet(const SecureString& strWalletPassphrase);
+  bool SetupCrypter(const SecureString& strWalletPassphrase); // TBD
 
   void GetKeyBirthTimes(std::map<ecdsa::CKeyID, int64_t>& mapKeyBirth) const;
   uint32_t ComputeTimeSmart(const CWalletTx& wtx) const;
@@ -488,8 +486,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   }
 
   bool SetDefaultKey(const ecdsa::CPubKey& vchPubKey);
-
-  CWallet* CreateWalletFromFile(const std::string& walletFile);
 
   /* Set the HD chain model (chain child index counters) */
   bool SetHDChain(const CHDChain& chain, bool memonly);
