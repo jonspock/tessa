@@ -1265,7 +1265,7 @@ void ThreadOpenConnections() {
       for (auto strAddr : gArgs.GetArgs("-connect")) {
         CAddress addr;
         OpenNetworkConnection(addr, nullptr, strAddr.c_str());
-        for (int i = 0; i < 10 && i < nLoop; i++) { MilliSleep(500); }
+        for (int i = 0; i < 10 && i < nLoop; i++) { InterruptibleSleep(500); }
       }
       InterruptibleSleep(500);
     }
@@ -1278,8 +1278,9 @@ void ThreadOpenConnections() {
     InterruptibleSleep(500);
 
     CSemaphoreGrant grant(*semOutbound);
-    if (net_interrupted) break;
-
+      if (net_interrupted) {
+          break;
+      }
     // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
     if (addrman.size() == 0 && (GetTime() - nStart > 60)) {
       static bool done = false;
@@ -1397,9 +1398,9 @@ void ThreadOpenAddedConnections() {
     for (vector<CService>& vserv : lservAddressesToAdd) {
       CSemaphoreGrant grant(*semOutbound);
       OpenNetworkConnection(CAddress(vserv[i % vserv.size()]), &grant);
-      MilliSleep(500);
+      InterruptibleSleep(500);
     }
-    MilliSleep(120000);  // Retry every 2 minutes
+    InterruptibleSleep(120000);  // Retry every 2 minutes
   }
 }
 
@@ -1433,7 +1434,7 @@ void ThreadMessageHandler() {
   std::unique_lock<std::mutex> lock(condition_mutex);
 
   SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
-  while (true) {
+  while (!net_interrupted) {
     vector<CNode*> vNodesCopy;
     {
       LOCK(cs_vNodes);
@@ -1485,13 +1486,18 @@ void ThreadMessageHandler() {
 
 // ppcoin: stake minter thread
 void static ThreadStakeMinter() {
-  interruption_point(net_interrupted);
   LogPrintf("ThreadStakeMinter started\n");
   CWallet* pwallet = pwalletMain;
   try {
     BitcoinMiner(pwallet, true);
     interruption_point(net_interrupted);
-  } catch (std::exception& e) { LogPrintf("ThreadStakeMinter() exception \n"); } catch (...) {
+  } catch (std::exception& e) {
+      LogPrintf("ThreadStakeMinter() exception \n");
+  }
+  catch (thread_interrupted& e) {
+    LogPrintf("ThreadStakeMinter() interrupted\n");
+  }
+  catch (...) {
     LogPrintf("ThreadStakeMinter() error \n");
   }
   LogPrintf("ThreadStakeMinter exiting,\n");
@@ -1714,6 +1720,7 @@ bool StopNode() {
 
   if (dns_address_seed_thread.joinable()) dns_address_seed_thread.join();
   if (socket_handler_thread.joinable()) socket_handler_thread.join();
+#warning "Need to find out why these cause issues TBD"
   if (open_added_connections_thread.joinable()) open_added_connections_thread.join();
   if (open_connections_thread.joinable()) open_connections_thread.join();
   if (message_handler_thread.joinable()) message_handler_thread.join();

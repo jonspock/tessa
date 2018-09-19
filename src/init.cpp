@@ -173,8 +173,8 @@ static std::vector<std::thread> script_check_threads;
 static std::thread import_thread;
 
 static bool fHaveGenesis = false;
-static std::mutex cs_GenesisWait;
-static CConditionVariable condvar_GenesisWait;
+//static std::mutex cs_GenesisWait;
+//static CConditionVariable condvar_GenesisWait;
 
 void Interrupt(CScheduler& scheduler) {
   InterruptHTTPServer();
@@ -196,7 +196,7 @@ void Interrupt(CScheduler& scheduler) {
   InterruptNode();
   InterruptMiner();
   InterruptSearch();
-  condvar_GenesisWait.notify_all();
+  // condvar_GenesisWait.notify_all();
 }
 
 /** Preparing steps before shutting down or restarting the wallet */
@@ -1531,6 +1531,12 @@ bool AppInit2(CScheduler& scheduler) {
       passphrase.reserve(1024);
       passphrase.assign("1234");
         
+      // Try this....
+      CKeyingMaterial vTempMasterKey;
+      vTempMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
+      GetStrongRandBytes(&vTempMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
+      pwalletMain->SetupCrypter(passphrase, vTempMasterKey);
+
       // Generate a new master key.
       ecdsa::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey(); // Also adds to DB
       if (!pwalletMain->SetHDMasterKey(masterPubKey)) {
@@ -1551,12 +1557,7 @@ bool AppInit2(CScheduler& scheduler) {
       LogPrintf("%s", strErrors.str());
       LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
       
-      // Try this....
-      CKeyingMaterial vTempMasterKey;
-      vTempMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
-      GetStrongRandBytes(&vTempMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
-      pwalletMain->SetupCrypter(passphrase, vTempMasterKey);
-    }
+     }
         
     RegisterValidationInterface(pwalletMain);
 

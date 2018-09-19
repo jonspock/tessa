@@ -37,7 +37,18 @@
 using namespace std;
 using namespace ecdsa;
 
+static std::condition_variable miner_interrupt_cond;
+static std::mutex cs_miner_interrupt;
 static std::atomic<bool> miner_interrupted(false);
+
+static void InterruptibleSleep(uint64_t n) {
+  bool ret = false;
+  {
+    std::unique_lock<std::mutex> lock(cs_miner_interrupt);
+    ret = miner_interrupt_cond.wait_for(lock, std::chrono::milliseconds(n), []() -> bool { return miner_interrupted; });
+  }
+  interruption_point(ret);
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -532,7 +543,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
       }
 
       if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
-        MilliSleep(5000);
+        InterruptibleSleep(5000);
         continue;
       }
 
@@ -551,7 +562,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
             std::cout << "Rechecking if Mintable : " << fMintableCoins << " " << GetTime() << "\n";
           }
         }
-        MilliSleep(5000);
+        InterruptibleSleep(5000);
         if (!fGenerateBitcoins && !fProofOfStake) continue;
       }
 
@@ -561,7 +572,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
         if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] <
             max(pwallet->nHashInterval, (uint32_t)1))  // wait half of the nHashDrift with max wait of 3 minutes
         {
-          MilliSleep(5000);
+          InterruptibleSleep(5000);
           continue;
         }
       }
@@ -676,7 +687,10 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
     }
   }
 }
-void InterruptMiner() { miner_interrupted = true; }
+void InterruptMiner() {
+  miner_interrupted = true;
+  miner_interrupt_cond.notify_all();
+}
 
 void static ThreadBitcoinMiner(void* parg) {
   interruption_point(miner_interrupted);
@@ -684,8 +698,14 @@ void static ThreadBitcoinMiner(void* parg) {
   try {
     BitcoinMiner(pwallet, false);
     interruption_point(miner_interrupted);
-  } catch (std::exception& e) { LogPrintf("ThreadBitcoinMiner() exception"); } catch (...) {
-    LogPrintf("ThreadBitcoinMiner() exception");
+  } catch (std::exception& e) {
+      LogPrintf("ThreadBitcoinMiner() exception\n");
+  }
+  catch (const thread_interrupted&) {
+      LogPrintf("%s thread interrupt\n", "BitcoinMiner");
+  }
+  catch (...) {
+    LogPrintf("ThreadBitcoinMiner() exception\n");
   }
 
   LogPrintf("ThreadBitcoinMiner exiting\n");

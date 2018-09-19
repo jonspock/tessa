@@ -4606,6 +4606,7 @@ bool ProcessMessages(CNode* pfrom) {
         PrintExceptionContinue(&e, "ProcessMessages()");
       }
     } catch (const thread_interrupted&) {
+        LogPrintf("ProcessMessage interrupted\n");
     } catch (...) { PrintExceptionContinue(nullptr, "ProcessMessages()"); }
 
     if (!fRet)

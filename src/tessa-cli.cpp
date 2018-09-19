@@ -262,6 +262,7 @@ int CommandLineRPC(int argc, char* argv[]) {
       }
     } while (fWait);
   } catch (const thread_interrupted&) {
+      
   } catch (...) {
     PrintExceptionContinue(nullptr, "CommandLineRPC()");
     throw;
@@ -281,6 +282,7 @@ int main(int argc, char* argv[]) {
   try {
     if (!AppInitRPC(argc, argv)) return EXIT_FAILURE;
   } catch (const thread_interrupted&) {
+      LogPrintf("main interrupted\n");
   } catch (std::exception& e) {
     PrintExceptionContinue(&e, "AppInitRPC()");
     return EXIT_FAILURE;
