@@ -51,7 +51,7 @@
 #define MSG_DONTWAIT 0
 #else
 typedef u_int SOCKET;
-#include "errno.h"
+#include <cerrno>
 #define WSAGetLastError() errno
 #define WSAEINVAL EINVAL
 #define WSAEALREADY EALREADY

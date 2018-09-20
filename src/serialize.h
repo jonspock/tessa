@@ -577,7 +577,7 @@ template <typename Stream, typename K, typename T, typename Pred, typename A>
 void Unserialize(Stream& is, std::map<K, T, Pred, A>& m) {
   m.clear();
   uint32_t nSize = ReadCompactSize(is);
-  typename std::map<K, T, Pred, A>::iterator mi = m.begin();
+  auto mi = m.begin();
   for (uint32_t i = 0; i < nSize; i++) {
     std::pair<K, T> item;
     Unserialize(is, item);

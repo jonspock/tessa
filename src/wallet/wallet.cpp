@@ -589,7 +589,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet) {
     if (fInsertedNew) {
       if (!wtx.nTimeReceived) wtx.nTimeReceived = GetAdjustedTime();
       wtx.nOrderPos = IncOrderPosNext();
-      wtxOrdered.insert(make_pair(wtx.nOrderPos, TxPair(&wtx, (CAccountingEntry*)0)));
+      wtxOrdered.insert(make_pair(wtx.nOrderPos, TxPair(&wtx, (CAccountingEntry*)nullptr)));
       wtx.nTimeSmart = ComputeTimeSmart(wtx);
       AddToSpends(hash);
     }
