@@ -1361,6 +1361,7 @@ void ThreadOpenAddedConnections() {
         InterruptibleSleep(500);
       }
       InterruptibleSleep(120000);
+      if (net_interrupted) break;
     }
   }
 
@@ -1401,6 +1402,7 @@ void ThreadOpenAddedConnections() {
       InterruptibleSleep(500);
     }
     InterruptibleSleep(120000);  // Retry every 2 minutes
+    if (net_interrupted) break;
   }
 }
 

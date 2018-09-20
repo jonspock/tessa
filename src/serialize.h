@@ -634,14 +634,14 @@ template <typename Stream, typename T> inline void SerReadWrite(Stream& s, T& ob
 
 class CSizeComputer {
  protected:
-  size_t nSize;
+  size_t nSize=0;
 
  public:
-  int nType;
-  int nVersion;
+  int nType=0;
+  int nVersion=0;
 
-  CSizeComputer(int nTypeIn, int nVersionIn) : nSize(0) {}
-  CSizeComputer() : nSize(0) {}
+  CSizeComputer(int nTypeIn, int nVersionIn) {}
+  CSizeComputer() {}
 
   CSizeComputer& write(const char* psz, size_t nSize) {
     this->nSize += nSize;

@@ -187,9 +187,9 @@ void Interrupt(CScheduler& scheduler) {
 
 #warning "Check interupt stuff here"
   /// HACK TBD!!!!
-  // if (CVerifyDB()).InterruptInit();
-  // if (CCoinsViewDB()).InterruptGetStats();
-  // if (CZerocoinDB()).InterruptWipeCoins();
+  //CVerifyDB().InterruptInit();
+  pcoinsdbview->InterruptGetStats();
+  zerocoinDB->InterruptWipeCoins();
 
   InterruptThreadScriptCheck();
   InterruptNetBase();
@@ -222,7 +222,6 @@ void PrepareShutdown(CScheduler& scheduler) {
   GenerateBitcoins(false, nullptr, 0);
 
   StopNode();
-  UnregisterNodeSignals(GetNodeSignals());
 
   StopMapPort();
   scheduler.stop();
@@ -231,6 +230,8 @@ void PrepareShutdown(CScheduler& scheduler) {
   script_check_threads.clear();
   if (import_thread.joinable()) import_thread.join();
   if (fFeeEstimatesInitialized) { fFeeEstimatesInitialized = false; }
+
+  UnregisterNodeSignals(GetNodeSignals());
 
   {
     LOCK(cs_main);
