@@ -358,7 +358,7 @@ if (RocksDB_FOUND)
   message(STATUS "Found RocksDB")
   message(STATUS "Libs : ${ROCKSDB_LIBRARIES}")
 else()
-  message(STATUS "FAILED to F?IND RocksDB")
+  message(STATUS "FAILED to FIND RocksDB")
 endif()  
 
 find_package(sodium)
@@ -383,6 +383,8 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${GMP_INCLUDE_DIR}
   ${ROCKSDB_INCLUDE_DIR}/include
+  #${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
+  #${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
   ${sodium_INCLUDE_DIR}
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/relic/include
@@ -424,7 +426,6 @@ source_group("CommonA" FILES ${COMMON_A})
 add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} 
   ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
   ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
-target_link_libraries(coin ${ROCKSDB_LIBRARIES})
 
 
 if(CLANG_TIDY_EXE)
@@ -443,6 +444,8 @@ add_subdirectory(src/liblmdb)
 add_subdirectory(src/ecdsa)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
+#target_link_libraries(coin ${ROCKSDB_LIBRARIES} leveldb)
+target_link_libraries(coin ${ROCKSDB_LIBRARIES})
 
 add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
 add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
