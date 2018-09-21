@@ -348,9 +348,9 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool LoadMultiSig(const CScript& dest);
 
   bool Unlock(const SecureString& strWalletPassphrase, bool anonimizeOnly = false);
+  void SetMaster(const CKeyingMaterial &vInMasterKey);
   bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
-  bool EncryptWallet(const SecureString& strWalletPassphrase);
-  bool SetupCrypter(const SecureString& strWalletPassphrase, const CKeyingMaterial& vTempMasterKey);
+  bool SetupCrypter(const SecureString& strWalletPassphrase);
 
   void GetKeyBirthTimes(std::map<ecdsa::CKeyID, int64_t>& mapKeyBirth) const;
   uint32_t ComputeTimeSmart(const CWalletTx& wtx) const;
@@ -496,7 +496,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   /* Generates a new HD master key (will not be activated) */
   ecdsa::CPubKey GenerateNewHDMasterKey();
-  uint256 GetMasterKeySeed();  // returns HDMasterKey as uint256 for ZKP
+  uint256 GetHDMasterKeySeed();  // returns HDMasterKey as uint256 for ZKP
   bool SetHDMasterKeyFromSeed(const uint256 seed);
 
   /* Set the current HD master key (will reset the chain child index counters)

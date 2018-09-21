@@ -140,7 +140,7 @@ CPubKey CWallet::GenerateNewKey() {
   return pubkey;
 }
 
-uint256 CWallet::GetMasterKeySeed() {
+uint256 CWallet::GetHDMasterKeySeed() {
   CKey key;
   // try to get the master key
   if (!GetKey(hdChain.masterKeyID, key)) { throw std::runtime_error(std::string(__func__) + ": Master key not found"); }
@@ -219,9 +219,7 @@ bool CWallet::AddKeyPubKeyWithDB(const CKey& secret, const CPubKey& pubkey) {
   script = GetScriptForRawPubKey(pubkey);
   if (HaveWatchOnly(script)) { RemoveWatchOnly(script); }
 
-  if (IsCrypted()) { return true; }
-
-  return gWalletDB.WriteKey(pubkey, secret.GetPrivKey(), mapKeyMetadata[pubkey.GetID()]);
+  return true; 
 }
 
 bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey& pubkey) {
@@ -234,7 +232,6 @@ bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey& pubkey) {
   if (HaveWatchOnly(script)) RemoveWatchOnly(script);
 
   if (!fFileBacked) return true;
-  if (!IsCrypted()) { return gWalletDB.WriteKey(pubkey, secret.GetPrivKey(), mapKeyMetadata[pubkey.GetID()]); }
   return true;
 }
 
@@ -321,6 +318,9 @@ bool CWallet::RemoveMultiSig(const CScript& dest) {
 }
 
 bool CWallet::LoadMultiSig(const CScript& dest) { return CCryptoKeyStore::AddMultiSig(dest); }
+void CWallet::SetMaster(const CKeyingMaterial &vInMasterKey) {
+  CCryptoKeyStore::SetMaster(vInMasterKey);
+}
 
 bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool anonymizeOnly) {
   SecureString strWalletPassphraseFinal;
@@ -334,6 +334,13 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool anonymizeOnly
 
   CCrypter crypter;
   CKeyingMaterial vTempMasterKey; // since multiple possible Master keys
+
+  // Weird duplication here for now
+  if (mapMasterKeys.empty()) {
+    CMasterKey kMasterKey;
+    gWalletDB.ReadMasterKey(1, kMasterKey);
+    mapMasterKeys[1] = kMasterKey;
+  }
 
   {
     LOCK(cs_wallet);
@@ -486,9 +493,12 @@ void CWallet::AddToSpends(const uint256& wtxid) {
 }
 // Creates a CMasterKey and adds it to mapMasterKeys for future use
 // everything else in here is temporary
-bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase, const CKeyingMaterial& vTempMasterKey) {
-  if (IsCrypted()) return false;
-  
+bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
+
+  CKeyingMaterial vTempMasterKey;
+  vTempMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
+  GetStrongRandBytes(&vTempMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
+
   CMasterKey kMasterKey;
   kMasterKey.vchSalt.resize(WALLET_CRYPTO_SALT_SIZE);
   GetStrongRandBytes(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE);
@@ -519,41 +529,30 @@ bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase, const CKeyin
     {
         LOCK(cs_wallet);
         mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
+        gWalletDB.WriteMasterKey(nMasterKeyMaxID, kMasterKey);
+
+        CMasterKey kkMasterKey;
+        if (!gWalletDB.ReadMasterKey(nMasterKeyMaxID, kkMasterKey)) {
+            LogPrintf("Problem reading back kMasterKey");
+        }
+        std::cout << "Check if reading back Key worked!!\n";
+        //std::cout << "Set mapMasterKeys[" << nMasterKeyMaxID << "]\n";
     }
+
+  CCryptoKeyStore::SetMaster(vTempMasterKey);
+
+  
+  // Generate a new master key.
+  ecdsa::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey(); // Also adds to DB
+  if (!SetHDMasterKey(masterPubKey)) {
+    throw std::runtime_error(std::string(__func__) + ": Storing master key failed");
+  }
+    
+  NewKeyPool();
+  //???? Lock();
 
   return true;
     
-}
-bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase) {
-  if (IsCrypted()) return false;
-
-  CKeyingMaterial vTempMasterKey;
-  vTempMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
-  GetStrongRandBytes(&vTempMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
-  
-  if (!SetupCrypter(strWalletPassphrase, vTempMasterKey)) return false;
-  
-  {
-    LOCK(cs_wallet);
-    // Writes new Crypted keys and erases old unencrypted private keys
-      // No new keys added to pool, 1st time through should be no keys?
-    if (!EncryptKeys(vTempMasterKey)) {
-      // We now probably have half of our keys encrypted in memory, and half not...
-      // die and let the user reload their unencrypted wallet.
-      assert(false);
-    }
-
-    Lock();
-    Unlock(strWalletPassphrase);
-  }
-
-    // Need this since no keys setup yet. Are these encrypted?
-  NewKeyPool();
-  Lock();
-  
-  NotifyStatusChanged(this);
-
-  return true;
 }
 
 int64_t CWallet::IncOrderPosNext() {

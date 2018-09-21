@@ -127,7 +127,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
     obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
     obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
   }
-  if (pwalletMain && pwalletMain->IsCrypted()) obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+  if (pwalletMain) obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
 
   obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
   bool nStaking = false;

@@ -21,13 +21,11 @@ bool CKeyStore::GetPubKey(const CKeyID& address, CPubKey& vchPubKeyOut) const {
   return true;
 }
 
-bool CKeyStore::AddKey(const CKey& key) { return AddKeyPubKey(key, key.GetPubKey()); }
-
-bool CBasicKeyStore::AddKeyPubKey(const CKey& key, const CPubKey& pubkey) {
-  LOCK(cs_KeyStore);
-  mapKeys[pubkey.GetID()] = key;
-  return true;
+bool CKeyStore::AddKey(const CKey& key) {
+    return AddKeyPubKey(key, key.GetPubKey());
+    
 }
+
 
 bool CBasicKeyStore::AddCScript(const CScript& redeemScript) {
   if (redeemScript.size() > MAX_SCRIPT_ELEMENT_SIZE)
@@ -97,31 +95,8 @@ bool CBasicKeyStore::HaveMultiSig() const {
   return (!setMultiSig.empty());
 }
 
-bool CBasicKeyStore::HaveKey(const CKeyID& address) const {
-  bool result;
-  {
-    LOCK(cs_KeyStore);
-    result = (mapKeys.count(address) > 0);
-  }
-  return result;
-}
-
-void CBasicKeyStore::GetKeys(std::set<CKeyID>& setAddress) const {
-  setAddress.clear();
-  {
-    LOCK(cs_KeyStore);
-    for (const auto& mi : mapKeys) setAddress.insert(mi.first);
-  }
-}
-
-bool CBasicKeyStore::GetKey(const CKeyID& address, CKey& keyOut) const {
-  {
-    LOCK(cs_KeyStore);
-    auto mi = mapKeys.find(address);
-    if (mi != mapKeys.end()) {
-      keyOut = mi->second;
-      return true;
-    }
-  }
-  return false;
-}
+// Should not be used
+bool CBasicKeyStore::HaveKey(const CKeyID& address) const { return false; }
+bool CBasicKeyStore::GetKey(const ecdsa::CKeyID& address, ecdsa::CKey& keyOut) const { return false;}
+void CBasicKeyStore::GetKeys(std::set<CKeyID>& setAddress) const {}
+bool CBasicKeyStore::AddKeyPubKey(const CKey& key, const CPubKey& pubkey) {  return false;}

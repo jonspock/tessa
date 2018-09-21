@@ -1532,17 +1532,7 @@ bool AppInit2(CScheduler& scheduler) {
       passphrase.reserve(1024);
       passphrase.assign("1234");
         
-      // Try this....
-      CKeyingMaterial vTempMasterKey;
-      vTempMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
-      GetStrongRandBytes(&vTempMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
-      pwalletMain->SetupCrypter(passphrase, vTempMasterKey);
-
-      // Generate a new master key.
-      ecdsa::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey(); // Also adds to DB
-      if (!pwalletMain->SetHDMasterKey(masterPubKey)) {
-        throw std::runtime_error(std::string(__func__) + ": Storing master key failed");
-      }
+      pwalletMain->SetupCrypter(passphrase);
 
       // Create new keyUser and set as default key
       // Also setups pool of 200(?) keys -> calls TopUpKeyPool
@@ -1558,7 +1548,16 @@ bool AppInit2(CScheduler& scheduler) {
       LogPrintf("%s", strErrors.str());
       LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
       
-     }
+    } else {
+        SecureString passphrase;
+        passphrase.reserve(1024);
+        passphrase.assign("1234");
+
+        if (!pwalletMain->Unlock(passphrase)) {
+            throw string("Couldn't unlock wallet with password");
+        }
+
+    }
         
     RegisterValidationInterface(pwalletMain);
 

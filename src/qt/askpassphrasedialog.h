@@ -22,7 +22,6 @@ class AskPassphraseDialog : public QDialog {
 
  public:
   enum class Mode {
-    Encrypt,         /**< Ask passphrase twice and encrypt */
     UnlockAnonymize, /**< Ask passphrase and unlock only for anonymization */
     Unlock,          /**< Ask passphrase and unlock */
     ChangePass,      /**< Ask old passphrase + new passphrase twice */

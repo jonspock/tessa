@@ -132,17 +132,7 @@ static bool DecryptKey(const CKeyingMaterial &vInMasterKey, const std::vector<ui
   return key.VerifyPubKey(vchPubKey);
 }
 
-bool CCryptoKeyStore::SetCrypted() {
-  LOCK(cs_KeyStore);
-  if (fUseCrypto) return true;
-  if (!mapKeys.empty()) return false;
-  fUseCrypto = true;
-  return true;
-}
-
 bool CCryptoKeyStore::Lock() {
-  if (!SetCrypted()) return false;
-
   {
     LOCK(cs_KeyStore);
     vMasterKey.clear();
@@ -152,18 +142,22 @@ bool CCryptoKeyStore::Lock() {
   NotifyStatusChanged(this);
   return true;
 }
+void CCryptoKeyStore::SetMaster(const CKeyingMaterial &vInMasterKey) {
+    {
+        LOCK(cs_KeyStore);
+        vMasterKey = vInMasterKey;
+    }
+}
 
 bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
   {
     LOCK(cs_KeyStore);
-    if (!SetCrypted()) return false;
 
     bool keyPass = false;
     bool keyFail = false;
-    auto mi = mapCryptedKeys.begin();
-    for (; mi != mapCryptedKeys.end(); ++mi) {
-      const CPubKey &vchPubKey = (*mi).second.first;
-      const std::vector<uint8_t> &vchCryptedSecret = (*mi).second.second;
+    for (auto&  mi : mapCryptedKeys) {
+      const CPubKey &vchPubKey = mi.second.first;
+      const std::vector<uint8_t> &vchCryptedSecret = mi.second.second;
       CKey key;
       if (!DecryptKey(vInMasterKey, vchCryptedSecret, vchPubKey, key)) {
         keyFail = true;
@@ -191,7 +185,7 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
       pwalletMain->zwalletMain->SetMasterSeed(nSeed, false);
     } else {
       // First time this wallet has been unlocked with dZkp. Get HD MasterKey for ZKP
-      uint256 seed = pwalletMain->GetMasterKeySeed();
+      uint256 seed = pwalletMain->GetHDMasterKeySeed();
       // LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n",
       // __func__,Hash(seed.begin(), seed.end()).GetHex());
       pwalletMain->zwalletMain->SetMasterSeed(seed, true);
@@ -205,14 +199,11 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
 bool CCryptoKeyStore::AddKeyPubKey(const CKey &key, const CPubKey &pubkey) {
   {
     LOCK(cs_KeyStore);
-    if (!IsCrypted()) return CBasicKeyStore::AddKeyPubKey(key, pubkey);
-
     if (IsLocked()) return false;
 
     std::vector<uint8_t> vchCryptedSecret;
     CKeyingMaterial vchSecret(key.begin(), key.end());
     if (!EncryptSecret(vMasterKey, vchSecret, pubkey.GetHash(), vchCryptedSecret)) return false;
-
     if (!AddCryptedKey(pubkey, vchCryptedSecret)) return false;
   }
   return true;
@@ -221,8 +212,6 @@ bool CCryptoKeyStore::AddKeyPubKey(const CKey &key, const CPubKey &pubkey) {
 bool CCryptoKeyStore::AddCryptedKey(const CPubKey &vchPubKey, const std::vector<uint8_t> &vchCryptedSecret) {
   {
     LOCK(cs_KeyStore);
-    if (!SetCrypted()) return false;
-
     mapCryptedKeys[vchPubKey.GetID()] = make_pair(vchPubKey, vchCryptedSecret);
   }
   return true;
@@ -231,8 +220,6 @@ bool CCryptoKeyStore::AddCryptedKey(const CPubKey &vchPubKey, const std::vector<
 bool CCryptoKeyStore::GetKey(const CKeyID &address, CKey &keyOut) const {
   {
     LOCK(cs_KeyStore);
-    if (!IsCrypted()) return CBasicKeyStore::GetKey(address, keyOut);
-
     const auto mi = mapCryptedKeys.find(address);
     if (mi != mapCryptedKeys.end()) {
       const CPubKey &vchPubKey = (*mi).second.first;
@@ -246,8 +233,6 @@ bool CCryptoKeyStore::GetKey(const CKeyID &address, CKey &keyOut) const {
 bool CCryptoKeyStore::GetPubKey(const CKeyID &address, CPubKey &vchPubKeyOut) const {
   {
     LOCK(cs_KeyStore);
-    if (!IsCrypted()) return CBasicKeyStore::GetPubKey(address, vchPubKeyOut);
-
     auto mi = mapCryptedKeys.find(address);
     if (mi != mapCryptedKeys.end()) {
       vchPubKeyOut = (*mi).second.first;
@@ -259,93 +244,53 @@ bool CCryptoKeyStore::GetPubKey(const CKeyID &address, CPubKey &vchPubKeyOut) co
   return false;
 }
 
-bool CCryptoKeyStore::EncryptKeys(CKeyingMaterial &vInMasterKey) {
-  {
-    LOCK(cs_KeyStore);
-    if (!mapCryptedKeys.empty() || IsCrypted()) return false;
-
-    fUseCrypto = true;
-    for (KeyMap::value_type &mKey : mapKeys) {
-      const CKey &key = mKey.second;
-      CPubKey vchPubKey = key.GetPubKey();
-      CKeyingMaterial vchSecret(key.begin(), key.end());
-      std::vector<uint8_t> vchCryptedSecret;
-      if (!EncryptSecret(vInMasterKey, vchSecret, vchPubKey.GetHash(), vchCryptedSecret)) return false;
-      if (!AddCryptedKey(vchPubKey, vchCryptedSecret)) return false;
-    }
-    mapKeys.clear();
-  }
-  return true;
-}
 
 bool CCryptoKeyStore::AddDeterministicSeed(const uint256 &seed) {
   string strErr;
   uint256 hashSeed = Hash(seed.begin(), seed.end());
-
-  if (IsCrypted()) {
-    if (!IsLocked()) {  // if we have password
-
-      CKeyingMaterial kmSeed(seed.begin(), seed.end());
-      vector<uint8_t> vchSeedSecret;
-
-      // attempt encrypt
-      if (EncryptSecret(vMasterKey, kmSeed, hashSeed, vchSeedSecret)) {
-        // write to wallet with hashSeed as unique key
-        if (gWalletDB.WriteZKPSeed(hashSeed, vchSeedSecret)) { return true; }
-      }
-      strErr = "encrypt seed";
+  if (!IsLocked()) {  // if we have password
+    CKeyingMaterial kmSeed(seed.begin(), seed.end());
+    vector<uint8_t> vchSeedSecret;
+    // attempt encrypt
+    if (EncryptSecret(vMasterKey, kmSeed, hashSeed, vchSeedSecret)) {
+      // write to wallet with hashSeed as unique key
+      if (gWalletDB.WriteZKPSeed(hashSeed, vchSeedSecret)) { return true; }
     }
-    strErr = "save since wallet is locked";
-  } else {  // wallet not encrypted
-    if (gWalletDB.WriteZKPSeed(hashSeed, ToByteVector(seed))) { return true; }
-    strErr = "save zkpseed to wallet";
+    strErr = "encrypt seed";
   }
+  strErr = "save since wallet is locked";
   // the use case for this is no password set seed, mint dZkp,
-
   return error("s%: Failed to %s\n", __func__, strErr);
 }
 
 bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &seedOut) {
   string strErr;
-  if (IsCrypted()) {
-    if (!IsLocked()) {  // if we have password
-
-      vector<uint8_t> vchCryptedSeed;
-      // read encrypted seed
-      if (gWalletDB.ReadZKPSeed(hashSeed, vchCryptedSeed)) {
-        uint256 seedRetrieved = uint256S(ReverseEndianString(HexStr(vchCryptedSeed)));
-        // this checks if the hash of the seed we just read matches the hash given, meaning it is not encrypted
-        // the use case for this is when not crypted, seed is set, then password set, the seed not yet crypted in memory
-        if (hashSeed == Hash(seedRetrieved.begin(), seedRetrieved.end())) {
-          seedOut = seedRetrieved;
-          return true;
-        }
-
-        CKeyingMaterial kmSeed;
-        // attempt decrypt
-        if (DecryptSecret(vMasterKey, vchCryptedSeed, hashSeed, kmSeed)) {
-          seedOut = uint256S(ReverseEndianString(HexStr(kmSeed)));
-          return true;
-        }
-        strErr = "decrypt seed";
-      } else {
-        strErr = "read seed from wallet";
+  if (!IsLocked()) {  // if we have password
+    vector<uint8_t> vchCryptedSeed;
+    // read encrypted seed
+    if (gWalletDB.ReadZKPSeed(hashSeed, vchCryptedSeed)) {
+      uint256 seedRetrieved = uint256S(ReverseEndianString(HexStr(vchCryptedSeed)));
+      // this checks if the hash of the seed we just read matches the hash given, meaning it is not encrypted
+      // the use case for this is when not crypted, seed is set, then password set, the seed not yet crypted in memory
+      if (hashSeed == Hash(seedRetrieved.begin(), seedRetrieved.end())) {
+        seedOut = seedRetrieved;
+        return true;
       }
+      
+      CKeyingMaterial kmSeed;
+      // attempt decrypt
+      if (DecryptSecret(vMasterKey, vchCryptedSeed, hashSeed, kmSeed)) {
+        seedOut = uint256S(ReverseEndianString(HexStr(kmSeed)));
+        return true;
+      }
+      strErr = "decrypt seed";
     } else {
-      strErr = "read seed; wallet is locked";
+      strErr = "read seed from wallet";
     }
   } else {
-    vector<uint8_t> vchSeed;
-    // wallet not crypted
-    if (gWalletDB.ReadZKPSeed(hashSeed, vchSeed)) {
-      seedOut = uint256S(ReverseEndianString(HexStr(vchSeed)));
-      return true;
-    }
-    strErr = "read seed from wallet";
+      strErr = "read seed; wallet is locked";
   }
-
   return error("%s: Failed to %s\n", __func__, strErr);
-
   //    return error("Failed to decrypt deterministic seed %s", IsLocked() ? "Wallet is locked!" : "");
 }
 

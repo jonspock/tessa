@@ -57,32 +57,16 @@ bool CWalletDB::WriteTx(uint256 hash, const CWalletTx& wtx) {
 
 bool CWalletDB::EraseTx(uint256 hash) { return Erase(std::make_pair(std::string("tx"), hash)); }
 
-bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta) {
-  if (!Write(std::make_pair(std::string("keymeta"), vchPubKey), keyMeta, false)) return false;
-
-  // hash pubkey/privkey to accelerate wallet load
-  std::vector<uint8_t> vchKey;
-  vchKey.reserve(vchPubKey.size() + vchPrivKey.size());
-  vchKey.insert(vchKey.end(), vchPubKey.begin(), vchPubKey.end());
-  vchKey.insert(vchKey.end(), vchPrivKey.begin(), vchPrivKey.end());
-
-  return Write(std::make_pair(std::string("key"), vchPubKey),
-               std::make_pair(vchPrivKey, Hash(vchKey.begin(), vchKey.end())), false);
-}
-
 bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret,
                                 const CKeyMetadata& keyMeta) {
-  const bool fEraseUnencryptedKey = true;
-
   if (!Write(std::make_pair(std::string("keymeta"), vchPubKey), keyMeta)) return false;
-
   if (!Write(std::make_pair(std::string("ckey"), vchPubKey), vchCryptedSecret, false)) return false;
-  if (fEraseUnencryptedKey) {
-    Erase(std::make_pair(std::string("key"), vchPubKey));
-  }
   return true;
 }
 
+bool CWalletDB::ReadMasterKey(uint32_t nID, CMasterKey& kMasterKey) {
+  return Read(std::make_pair(std::string("mkey"), nID), kMasterKey);
+}
 bool CWalletDB::WriteMasterKey(uint32_t nID, const CMasterKey& kMasterKey) {
   return Write(std::make_pair(std::string("mkey"), nID), kMasterKey, true);
 }
@@ -336,25 +320,6 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
       CValidationState state;
       // false because there is no reason to go through the zerocoin checks for our own wallet
       if (!(CheckTransaction(wtx, false, state) && (wtx.GetHash() == hash) && state.IsValid())) return false;
-
-        // Undo serialize changes in 31600
-#ifdef PLEASE_REMOVE
-      if (31404 <= wtx.fTimeReceivedIsTxTime && wtx.fTimeReceivedIsTxTime <= 31703) {
-        if (!ssValue.empty()) {
-          char fTmp;
-          char fUnused;
-          ssValue >> fTmp >> fUnused >> wtx.strFromAccount;
-          strErr = strprintf("LoadWallet() upgrading tx ver=%d %d '%s' %s", wtx.fTimeReceivedIsTxTime, fTmp,
-                             wtx.strFromAccount, hash.ToString());
-          wtx.fTimeReceivedIsTxTime = fTmp;
-        } else {
-          strErr = strprintf("LoadWallet() repairing tx ver=%d %s", wtx.fTimeReceivedIsTxTime, hash.ToString());
-          wtx.fTimeReceivedIsTxTime = 0;
-        }
-        wss.vWalletUpgrade.push_back(hash);
-      }
-#endif
-
       if (wtx.nOrderPos == -1) wss.fAnyUnordered = true;
 
       pwallet->AddToWallet(wtx, true);
@@ -390,54 +355,6 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
       // MultiSig addresses have no birthday information for now,
       // so set the wallet birthday to the beginning of time.
       pwallet->nTimeFirstKey = 1;
-    } else if (strType == "key") {
-      CPubKey vchPubKey;
-      ssKey >> vchPubKey;
-      if (!vchPubKey.IsValid()) {
-        strErr = "Error reading wallet database: CPubKey corrupt";
-        return false;
-      }
-      CKey key;
-      CPrivKey pkey;
-      uint256 hash;
-
-      wss.nKeys++;
-      ssValue >> pkey;
-
-      // Old wallets store keys as "key" [pubkey] => [privkey]
-      // ... which was slow for wallets with lots of keys, because the public key is re-derived from the private key
-      // using EC operations as a checksum.
-      // Newer wallets store keys as "key"[pubkey] => [privkey][hash(pubkey,privkey)], which is much faster while
-      // remaining backwards-compatible.
-      try {
-        ssValue >> hash;
-      } catch (...) {}
-
-      bool fSkipCheck = false;
-
-      if (!hash.IsNull()) {
-        // hash pubkey/privkey to accelerate wallet load
-        std::vector<uint8_t> vchKey;
-        vchKey.reserve(vchPubKey.size() + pkey.size());
-        vchKey.insert(vchKey.end(), vchPubKey.begin(), vchPubKey.end());
-        vchKey.insert(vchKey.end(), pkey.begin(), pkey.end());
-
-        if (Hash(vchKey.begin(), vchKey.end()) != hash) {
-          strErr = "Error reading wallet database: CPubKey/CPrivKey corrupt";
-          return false;
-        }
-
-        fSkipCheck = true;
-      }
-
-      if (!key.Load(pkey, vchPubKey, fSkipCheck)) {
-        strErr = "Error reading wallet database: CPrivKey corrupt";
-        return false;
-      }
-      if (!pwallet->LoadKey(key, vchPubKey)) {
-        strErr = "Error reading wallet database: LoadKey failed";
-        return false;
-      }
     } else if (strType == "mkey") {
       uint32_t nID;
       ssKey >> nID;
@@ -549,7 +466,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
 }
 
 static bool IsKeyType(string strType) {
-  return (strType == "key" || strType == "mkey" || strType == "ckey");
+  return (strType == "mkey" || strType == "ckey");
 }
 
 DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
@@ -775,6 +692,7 @@ bool CWalletDB::UnarchiveDeterministicMint(const uint256& hashPubcoin, CDetermin
 bool CWalletDB::WriteCurrentSeedHash(const uint256& hashSeed) { return Write(string("seedhash"), hashSeed); }
 
 bool CWalletDB::ReadCurrentSeedHash(uint256& hashSeed) { return Read(string("seedhash"), hashSeed); }
+
 
 bool CWalletDB::WriteZKPSeed(const uint256& hashSeed, const vector<uint8_t>& seed) {
   if (!WriteCurrentSeedHash(hashSeed)) return error("%s: failed to write current seed hash", __func__);

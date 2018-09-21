@@ -335,9 +335,7 @@ TransactionTableModel* WalletModel::getTransactionTableModel() { return transact
 RecentRequestsTableModel* WalletModel::getRecentRequestsTableModel() { return recentRequestsTableModel; }
 
 WalletModel::EncryptionStatus WalletModel::getEncryptionStatus() const {
-  if (!wallet->IsCrypted()) {
-    return Unencrypted;
-  } else if (wallet->fWalletUnlockAnonymizeOnly) {
+  if (wallet->fWalletUnlockAnonymizeOnly) {
     return UnlockedForAnonymizationOnly;
   } else if (wallet->IsLocked()) {
     return Locked;
@@ -349,7 +347,7 @@ WalletModel::EncryptionStatus WalletModel::getEncryptionStatus() const {
 bool WalletModel::setWalletEncrypted(bool encrypted, const SecureString& passphrase) {
   if (encrypted) {
     // Encrypt
-    return wallet->EncryptWallet(passphrase);
+    return true;
   } else {
     // Decrypt -- TODO; not supported yet
     return false;

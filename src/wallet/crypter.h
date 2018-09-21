@@ -130,27 +130,20 @@ class CCryptoKeyStore : public CBasicKeyStore {
 
   //! if fUseCrypto is true, mapKeys must be empty
   //! if fUseCrypto is false, vMasterKey must be empty
-  bool fUseCrypto;
 
   //! keeps track of whether Unlock has run a thorough check before
   bool fDecryptionThoroughlyChecked;
 
  protected:
-  bool SetCrypted();
-
-  //! will encrypt previously unencrypted keys
-  bool EncryptKeys(CKeyingMaterial &vInMasterKey);
-
   bool Unlock(const CKeyingMaterial &vInMasterKey);
+  void SetMaster(const CKeyingMaterial &vInMasterKey);
   CryptedKeyMap mapCryptedKeys;
 
  public:
-  CCryptoKeyStore() : fUseCrypto(false), fDecryptionThoroughlyChecked(false) {}
+  CCryptoKeyStore() : fDecryptionThoroughlyChecked(false) {}
 
-  bool IsCrypted() const { return fUseCrypto; }
 
   bool IsLocked() const {
-    if (!IsCrypted()) return false;
     bool result;
     {
       LOCK(cs_KeyStore);
@@ -165,17 +158,11 @@ class CCryptoKeyStore : public CBasicKeyStore {
   bool AddKeyPubKey(const ecdsa::CKey &key, const ecdsa::CPubKey &pubkey) override;
   bool HaveKey(const ecdsa::CKeyID &address) const override {
     LOCK(cs_KeyStore);
-    if (!IsCrypted()) { return CBasicKeyStore::HaveKey(address); }
-
     return mapCryptedKeys.count(address) > 0;
   }
   bool GetKey(const ecdsa::CKeyID &address, ecdsa::CKey &keyOut) const override;
   bool GetPubKey(const ecdsa::CKeyID &address, ecdsa::CPubKey &vchPubKeyOut) const override;
   void GetKeys(std::set<ecdsa::CKeyID> &setAddress) const override {
-    if (!IsCrypted()) {
-      CBasicKeyStore::GetKeys(setAddress);
-      return;
-    }
     setAddress.clear();
     CryptedKeyMap::const_iterator mi = mapCryptedKeys.begin();
     while (mi != mapCryptedKeys.end()) {

@@ -8,8 +8,6 @@
 #include "stakeinput.h"
 #include "staker.h"
 
-bool GetCoinAge(const CTransaction& tx, const uint32_t nTxTime, uint64_t& nCoinAge);
-
 // Compute the hash modifier for proof-of-stake
 bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int& nStakeModifierHeight,
                             int64_t& nStakeModifierTime, bool fPrintProofOfStake);
