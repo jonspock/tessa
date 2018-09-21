@@ -11,34 +11,41 @@
 #include "util.h"
 #include "version.h"
 
+#ifndef USE_LEVELDB
 #include <rocksdb/db.h>
 #include <rocksdb/write_batch.h>
+namespace datadb = rocksdb;
+#else
+#include <leveldb/db.h>
+#include <leveldb/write_batch.h>
+namespace datadb = leveldb;
+#endif
 
-class leveldb_error : public std::runtime_error {
+class datadb_error : public std::runtime_error {
  public:
-  leveldb_error(const std::string& msg) : std::runtime_error(msg) {}
+  datadb_error(const std::string& msg) : std::runtime_error(msg) {}
 };
 
-void HandleError(const rocksdb::Status& status);
+void HandleError(const datadb::Status& status);
 
 /** Batch of changes queued to be written to a CLevelDBWrapper */
 class CLevelDBBatch {
   friend class CLevelDBWrapper;
 
  private:
-  rocksdb::WriteBatch batch;
+  datadb::WriteBatch batch;
 
  public:
   template <typename K, typename V> void Write(const K& key, const V& value) {
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
     ssKey.reserve(ssKey.GetSerializeSize(key));
     ssKey << key;
-    rocksdb::Slice slKey(&ssKey[0], ssKey.size());
+    datadb::Slice slKey(&ssKey[0], ssKey.size());
 
     CDataStream ssValue(SER_DISK, CLIENT_VERSION);
     ssValue.reserve(ssValue.GetSerializeSize(value));
     ssValue << value;
-    rocksdb::Slice slValue(&ssValue[0], ssValue.size());
+    datadb::Slice slValue(&ssValue[0], ssValue.size());
 
     batch.Put(slKey, slValue);
   }
@@ -47,7 +54,7 @@ class CLevelDBBatch {
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
     ssKey.reserve(ssKey.GetSerializeSize(key));
     ssKey << key;
-    rocksdb::Slice slKey(&ssKey[0], ssKey.size());
+    datadb::Slice slKey(&ssKey[0], ssKey.size());
 
     batch.Delete(slKey);
   }
@@ -56,25 +63,25 @@ class CLevelDBBatch {
 class CLevelDBWrapper {
  private:
   //! custom environment this database is using (may be nullptr in case of default environment)
-  rocksdb::Env* penv;
+  datadb::Env* penv;
 
   //! database options used
-  rocksdb::Options options;
+  datadb::Options options;
 
   //! options used when reading from the database
-  rocksdb::ReadOptions readoptions;
+  datadb::ReadOptions readoptions;
 
   //! options used when iterating over values of the database
-  rocksdb::ReadOptions iteroptions;
+  datadb::ReadOptions iteroptions;
 
   //! options used when writing to the database
-  rocksdb::WriteOptions writeoptions;
+  datadb::WriteOptions writeoptions;
 
   //! options used when sync writing to the database
-  rocksdb::WriteOptions syncoptions;
+  datadb::WriteOptions syncoptions;
 
   //! the database itself
-  rocksdb::DB* pdb;
+  datadb::DB* pdb;
 
  public:
   CLevelDBWrapper(const fs::path& path, size_t nCacheSize, bool fMemory = false, bool fWipe = false);
@@ -84,13 +91,13 @@ class CLevelDBWrapper {
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
     ssKey.reserve(ssKey.GetSerializeSize(key));
     ssKey << key;
-    rocksdb::Slice slKey(&ssKey[0], ssKey.size());
+    datadb::Slice slKey(&ssKey[0], ssKey.size());
 
     std::string strValue;
-    rocksdb::Status status = pdb->Get(readoptions, slKey, &strValue);
+    datadb::Status status = pdb->Get(readoptions, slKey, &strValue);
     if (!status.ok()) {
       if (status.IsNotFound()) return false;
-      LogPrintf("Rocksdb read failure: %s\n", status.ToString());
+      LogPrintf("DataDB read failure: %s\n", status.ToString());
       HandleError(status);
     }
     try {
@@ -110,19 +117,19 @@ class CLevelDBWrapper {
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
     ssKey.reserve(ssKey.GetSerializeSize(key));
     ssKey << key;
-    rocksdb::Slice slKey(&ssKey[0], ssKey.size());
+    datadb::Slice slKey(&ssKey[0], ssKey.size());
 
     std::string strValue;
-    rocksdb::Status status = pdb->Get(readoptions, slKey, &strValue);
+    datadb::Status status = pdb->Get(readoptions, slKey, &strValue);
     if (!status.ok()) {
       if (status.IsNotFound()) return false;
-      LogPrintf("Rocksdb read failure: %s\n", status.ToString());
+      LogPrintf("DataDB read failure: %s\n", status.ToString());
       HandleError(status);
     }
     return true;
   }
 
-  template <typename K> bool Erase(const K& key, bool fSync = false) {
+  template <typename K> bool Erase(const K& key, bool fSync = false)  {
     CLevelDBBatch batch;
     batch.Erase(key);
     return WriteBatch(batch, fSync);
@@ -130,7 +137,7 @@ class CLevelDBWrapper {
 
   bool WriteBatch(CLevelDBBatch& batch, bool fSync = false);
 
-  // not available for Rocksdb; provide for compatibility with BDB
+  // not available for LevelDB; provide for compatibility with BDB
   bool Flush() { return true; }
 
   bool Sync() {
@@ -139,5 +146,5 @@ class CLevelDBWrapper {
   }
 
   // not exactly clean encapsulation, but it's easiest for now
-  rocksdb::Iterator* NewIterator() { return pdb->NewIterator(iteroptions); }
+  datadb::Iterator* NewIterator() { return pdb->NewIterator(iteroptions); }
 };

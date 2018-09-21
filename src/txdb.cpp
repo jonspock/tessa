@@ -97,7 +97,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
   /* It seems that there are no "const iterators" for LevelDB.  Since we
      only need read operations on it, use a const-cast to get around
      that restriction.  */
-  std::unique_ptr<rocksdb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
+  std::unique_ptr<datadb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
   pcursor->SeekToFirst();
 
   CHashWriter ss;
@@ -107,12 +107,12 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
   while (pcursor->Valid()) {
     if (interrupt) return error("GetStats() : interrupted");
     try {
-      rocksdb::Slice slKey = pcursor->key();
+      datadb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
       char chType;
       ssKey >> chType;
       if (chType == 'c') {
-        rocksdb::Slice slValue = pcursor->value();
+        datadb::Slice slValue = pcursor->value();
         CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
         CCoins coins;
         ssValue >> coins;
@@ -170,7 +170,7 @@ bool CBlockTreeDB::WriteInt(const std::string& name, int nValue) { return Write(
 bool CBlockTreeDB::ReadInt(const std::string& name, int& nValue) { return Read(std::make_pair('I', name), nValue); }
 
 bool CBlockTreeDB::LoadBlockIndexGuts() {
-  std::unique_ptr<rocksdb::Iterator> pcursor(NewIterator());
+  std::unique_ptr<datadb::Iterator> pcursor(NewIterator());
 
   CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
   ssKeySet << make_pair('b', uint256());
@@ -182,12 +182,12 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
   while (pcursor->Valid()) {
     if (interrupt) return error("LoadBlockIndexGuts() : interrupted");
     try {
-      rocksdb::Slice slKey = pcursor->key();
+      datadb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
       char chType;
       ssKey >> chType;
       if (chType == 'b') {
-        rocksdb::Slice slValue = pcursor->value();
+        datadb::Slice slValue = pcursor->value();
         CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
         CDiskBlockIndex diskindex;
         ssValue >> diskindex;
@@ -329,7 +329,7 @@ bool CZerocoinDB::EraseCoinSpend(const CBigNum& bnSerial) {
 bool CZerocoinDB::WipeCoins(const std::string& strType) {
   if (strType != "spends" && strType != "mints") return error("%s: did not recognize type %s", __func__, strType);
 
-  std::unique_ptr<rocksdb::Iterator> pcursor(NewIterator());
+  std::unique_ptr<datadb::Iterator> pcursor(NewIterator());
 
   char type = (strType == "spends" ? 's' : 'm');
   CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
@@ -340,12 +340,12 @@ bool CZerocoinDB::WipeCoins(const std::string& strType) {
   while (pcursor->Valid()) {
     if (interrupt) return error("WipeCoins() : interrupted");
     try {
-      rocksdb::Slice slKey = pcursor->key();
+      datadb::Slice slKey = pcursor->key();
       CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
       char chType;
       ssKey >> chType;
       if (chType == type) {
-        rocksdb::Slice slValue = pcursor->value();
+        datadb::Slice slValue = pcursor->value();
         CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
         uint256 hash;
         ssValue >> hash;
