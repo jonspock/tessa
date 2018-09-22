@@ -261,6 +261,7 @@ bool CZerocoinDB::WriteCoinMint(const libzerocoin::PublicCoin& pubCoin, const ui
 bool CZerocoinDB::WriteCoinMintBatch(const std::vector<std::pair<libzerocoin::PublicCoin, uint256> >& mintInfo) {
   CLevelDBBatch batch;
   size_t count = 0;
+  if (mintInfo.size() == 0) return true;
   for (auto& it : mintInfo) {
     libzerocoin::PublicCoin pubCoin = it.first;
     uint256 hash = GetPubCoinHash(pubCoin.getValue());
