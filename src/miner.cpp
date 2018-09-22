@@ -484,7 +484,7 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
 }
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey) {
-  LogPrintf("%s\n", pblock->ToString());
+  //// HACK LogPrintf("%s\n", pblock->ToString());
   LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
 
   // Found a solution
@@ -628,7 +628,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
           // Found a solution
           SetThreadPriority(THREAD_PRIORITY_NORMAL);
           LogPrintf("BitcoinMiner:\n");
-          LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
+          LogPrintf("proof-of-work found : hash: %s  : target: %s\n", hash.GetHex(), hashTarget.GetHex());
           ProcessBlockFound(pblock, *pwallet, reservekey);
           SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
