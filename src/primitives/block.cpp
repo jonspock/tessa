@@ -118,6 +118,4 @@ std::string CBlock::ToString() const {
   return s.str();
 }
 
-void CBlock::print() const { LogPrintf("%s", ToString()); }
-
 bool CBlock::IsZerocoinStake() const { return IsProofOfStake() && vtx[1].IsZerocoinSpend(); }

@@ -138,7 +138,6 @@ class CBlock : public CBlockHeader {
   std::vector<uint256> GetMerkleBranch(int nIndex) const;
   static uint256 CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMerkleBranch, int nIndex);
   std::string ToString() const;
-  void print() const;
 };
 
 /** Describes a place in the block chain to another node such that if the
