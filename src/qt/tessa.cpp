@@ -384,6 +384,8 @@ void BitcoinApplication::initializeResult(int retval) {
       window->showMinimized();
     } else {
       window->show();
+      window->raise(); //bring window from minimized state on OSX
+      window->activateWindow();
     }
     emit splashFinished(window);
 
