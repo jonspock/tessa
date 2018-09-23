@@ -79,6 +79,8 @@ enum AvailableCoinsType {
   STAKABLE_COINS = 2  // UTXO's that are valid for staking
 };
 
+//void InterruptWallet();
+
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.
