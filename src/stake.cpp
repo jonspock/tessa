@@ -3,7 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "stakeinput.h"
+#include "stake.h"
 #include "accumulators.h"
 #include "blockmap.h"
 #include "chain.h"

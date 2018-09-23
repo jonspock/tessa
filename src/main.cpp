@@ -3085,7 +3085,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
   if (block.IsProofOfStake()) {
     uint256 hashProofOfStake;
-    unique_ptr<CStakeInput> stake;
+    unique_ptr<CStake> stake;
 
     if (!CheckProofOfStake(block, hashProofOfStake, stake))
       return state.DoS(100, error("%s: proof of stake check failed", __func__));

@@ -22,7 +22,6 @@
 #include "net.h"
 #include "script/script.h"
 #include "script/sign.h"
-#include "stakeinput.h"
 #include "timedata.h"
 #include "txdb.h"
 #include "utilmoneystr.h"
@@ -1133,7 +1132,7 @@ static void ApproximateBestSubset(vector<pair<CAmount, pair<const CWalletTx*, ui
   }
 }
 
-bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInputs, CAmount nTargetAmount) {
+bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStake> >& listInputs, CAmount nTargetAmount) {
   LOCK(cs_main);
   // Add Tessa
   vector<COutput> vCoins;
@@ -1589,7 +1588,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
   if (nBalance > 0 && nBalance <= nReserveBalance) return false;
 
   // Get the list of stakable inputs
-  std::list<std::unique_ptr<CStakeInput> > listInputs;
+  std::list<std::unique_ptr<CStake> > listInputs;
   if (!SelectStakeCoins(listInputs, nBalance - nReserveBalance)) return false;
 
   if (listInputs.empty()) return false;
@@ -1599,7 +1598,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
   CAmount nCredit = 0;
   CScript scriptPubKeyKernel;
   bool fKernelFound = false;
-  for (std::unique_ptr<CStakeInput>& stakeInput : listInputs) {
+  for (std::unique_ptr<CStake>& stakeInput : listInputs) {
     // Make sure the wallet is unlocked and shutdown hasn't been requested
     if (IsLocked() || ShutdownRequested()) return false;
 

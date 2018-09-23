@@ -28,9 +28,9 @@ class datadb_error : public std::runtime_error {
 
 void HandleError(const datadb::Status& status);
 
-/** Batch of changes queued to be written to a CLevelDBWrapper */
-class CLevelDBBatch {
-  friend class CLevelDBWrapper;
+/** Batch of changes queued to be written to a CDataDBWrapper */
+class CDataDBBatch {
+  friend class CDataDBWrapper;
 
  private:
   datadb::WriteBatch batch;
@@ -60,7 +60,7 @@ class CLevelDBBatch {
   }
 };
 
-class CLevelDBWrapper {
+class CDataDBWrapper {
  private:
   //! custom environment this database is using (may be nullptr in case of default environment)
   datadb::Env* penv;
@@ -84,8 +84,8 @@ class CLevelDBWrapper {
   datadb::DB* pdb;
 
  public:
-  CLevelDBWrapper(const fs::path& path, size_t nCacheSize, bool fMemory = false, bool fWipe = false);
-  ~CLevelDBWrapper();
+  CDataDBWrapper(const fs::path& path, size_t nCacheSize, bool fMemory = false, bool fWipe = false);
+  ~CDataDBWrapper();
 
   template <typename K, typename V> bool Read(const K& key, V& value) const {
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
@@ -108,7 +108,7 @@ class CLevelDBWrapper {
   }
 
   template <typename K, typename V> bool Write(const K& key, const V& value, bool fSync = false) {
-    CLevelDBBatch batch;
+    CDataDBBatch batch;
     batch.Write(key, value);
     return WriteBatch(batch, fSync);
   }
@@ -130,18 +130,18 @@ class CLevelDBWrapper {
   }
 
   template <typename K> bool Erase(const K& key, bool fSync = false)  {
-    CLevelDBBatch batch;
+    CDataDBBatch batch;
     batch.Erase(key);
     return WriteBatch(batch, fSync);
   }
 
-  bool WriteBatch(CLevelDBBatch& batch, bool fSync = false);
+  bool WriteBatch(CDataDBBatch& batch, bool fSync = false);
 
-  // not available for LevelDB; provide for compatibility with BDB
+  // not available for Datadb; provide for compatibility with BDB
   bool Flush() { return true; }
 
   bool Sync() {
-    CLevelDBBatch batch;
+    CDataDBBatch batch;
     return WriteBatch(batch, true);
   }
 

@@ -13,7 +13,6 @@
 #include "primitives/block.h"
 #include "script/interpreter.h"
 #include "script/standard.h"  // for const
-#include "stakeinput.h"
 #include "timedata.h"
 #include "util.h"
 #include "utiltime.h"
@@ -273,7 +272,7 @@ bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t 
   return stakeTargetHit(hashProofOfStake, nValueIn, bnTarget);
 }
 
-bool Stake(CStakeInput* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
+bool Stake(CStake* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
            uint256& hashProofOfStake) {
   if (nTimeTx < nTimeBlockFrom) return error("CheckStakeKernelHash() : nTime violation");
 
@@ -320,7 +319,7 @@ bool Stake(CStakeInput* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uin
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, unique_ptr<CStakeInput>& stake) {
+bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, unique_ptr<CStake>& stake) {
   const CTransaction tx = block.vtx[1];
   if (!tx.IsCoinStake())
     return error("CheckProofOfStake() : called on non-coinstake %s", tx.GetHash().ToString().c_str());
@@ -345,7 +344,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, unique_ptr
 
     auto pivInput = new CStake();
     pivInput->SetInput(txPrev, txin.prevout.n);
-    stake = unique_ptr<CStakeInput>(pivInput);
+    stake = unique_ptr<CStake>(pivInput);
   }
 
   CBlockIndex* pindex = stake->GetIndexFrom();

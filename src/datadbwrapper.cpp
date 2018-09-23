@@ -2,7 +2,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "leveldbwrapper.h"
+#include "datadbwrapper.h"
 
 #include "fs.h"
 #include "fs_utils.h"
@@ -59,7 +59,7 @@ static datadb::Options GetOptions(size_t nCacheSize) {
 #endif
 }
 
-CLevelDBWrapper::CLevelDBWrapper(const fs::path& path, size_t nCacheSize, bool fMemory, bool fWipe) {
+CDataDBWrapper::CDataDBWrapper(const fs::path& path, size_t nCacheSize, bool fMemory, bool fWipe) {
   penv = nullptr;
   readoptions.verify_checksums = true;
   iteroptions.verify_checksums = true;
@@ -83,7 +83,7 @@ CLevelDBWrapper::CLevelDBWrapper(const fs::path& path, size_t nCacheSize, bool f
   LogPrintf("Opened Datadb successfully\n");
 }
 
-CLevelDBWrapper::~CLevelDBWrapper() {
+CDataDBWrapper::~CDataDBWrapper() {
   delete pdb;
   pdb = nullptr;
 #ifndef USE_LEVELDB
@@ -103,7 +103,7 @@ CLevelDBWrapper::~CLevelDBWrapper() {
   options.env = nullptr;
 }
 
-bool CLevelDBWrapper::WriteBatch(CLevelDBBatch& batch, bool fSync)  {
+bool CDataDBWrapper::WriteBatch(CDataDBBatch& batch, bool fSync)  {
   datadb::Status status = pdb->Write(fSync ? syncoptions : writeoptions, &batch.batch);
   HandleError(status);
   return true;

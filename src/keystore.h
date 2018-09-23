@@ -66,7 +66,6 @@ using MultiSigScriptSet = std::set<CScript>;
 /** Basic key store, that keeps keys in an address->secret map */
 class CBasicKeyStore : public CKeyStore {
  protected:
-  //  KeyMap mapKeys;
   ScriptMap mapScripts;
   WatchOnlySet setWatchOnly;
   MultiSigScriptSet setMultiSig;

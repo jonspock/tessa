@@ -21,14 +21,14 @@
 
 using namespace std;
 
-void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCoins& coins) {
+void static BatchWriteCoins(CDataDBBatch& batch, const uint256& hash, const CCoins& coins) {
   if (coins.IsPruned())
     batch.Erase(make_pair('c', hash));
   else
     batch.Write(make_pair('c', hash), coins);
 }
 
-void static BatchWriteHashBestChain(CLevelDBBatch& batch, const uint256& hash) { batch.Write('B', hash); }
+void static BatchWriteHashBestChain(CDataDBBatch& batch, const uint256& hash) { batch.Write('B', hash); }
 
 CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe)
     : db(GetDataDir() / "chainstate", nCacheSize, fMemory, fWipe) {}
@@ -46,7 +46,7 @@ uint256 CCoinsViewDB::GetBestBlock() const {
 }
 
 bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
-  CLevelDBBatch batch;
+  CDataDBBatch batch;
   size_t count = 0;
   size_t changed = 0;
   for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
@@ -65,7 +65,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
 }
 
 CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe)
-    : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {}
+    : CDataDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {}
 
 bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex) {
   return Write(make_pair('b', blockindex.GetBlockHash()), blockindex);
@@ -94,10 +94,10 @@ bool CBlockTreeDB::ReadReindexing(bool& fReindexing) {
 bool CBlockTreeDB::ReadLastBlockFile(int& nFile) { return Read('l', nFile); }
 
 bool CCoinsViewDB::GetStats(CCoinsStats& stats) const {
-  /* It seems that there are no "const iterators" for LevelDB.  Since we
+  /* It seems that there are no "const iterators" for DataDB.  Since we
      only need read operations on it, use a const-cast to get around
      that restriction.  */
-  std::unique_ptr<datadb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
+  std::unique_ptr<datadb::Iterator> pcursor(const_cast<CDataDBWrapper*>(&db)->NewIterator());
   pcursor->SeekToFirst();
 
   CHashWriter ss;
@@ -149,7 +149,7 @@ void CCoinsViewDB::InterruptGetStats() { interrupt = true; }
 bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos) { return Read(make_pair('t', txid), pos); }
 
 bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> >& vect) {
-  CLevelDBBatch batch;
+  CDataDBBatch batch;
   for (auto& it : vect) batch.Write(make_pair('t', it.first), it.second);
   return WriteBatch(batch);
 }
@@ -252,14 +252,14 @@ void CBlockTreeDB::InterruptLoadBlockIndexGuts() { interrupt = true; }
 void CZerocoinDB::InterruptWipeCoins() { interrupt = true; }
 
 CZerocoinDB::CZerocoinDB(size_t nCacheSize, bool fMemory, bool fWipe)
-    : CLevelDBWrapper(GetDataDir() / "zerocoin", nCacheSize, fMemory, fWipe) {}
+    : CDataDBWrapper(GetDataDir() / "zerocoin", nCacheSize, fMemory, fWipe) {}
 
 bool CZerocoinDB::WriteCoinMint(const libzerocoin::PublicCoin& pubCoin, const uint256& hashTx) {
   uint256 hash = GetPubCoinHash(pubCoin.getValue());
   return Write(make_pair('m', hash), hashTx, true);
 }
 bool CZerocoinDB::WriteCoinMintBatch(const std::vector<std::pair<libzerocoin::PublicCoin, uint256> >& mintInfo) {
-  CLevelDBBatch batch;
+  CDataDBBatch batch;
   size_t count = 0;
   if (mintInfo.size() == 0) return true;
   for (auto& it : mintInfo) {
@@ -295,7 +295,7 @@ bool CZerocoinDB::WriteCoinSpend(const CBigNum& bnSerial, const uint256& txHash)
 }
 /*
 bool CZerocoinDB::WriteCoinSpendBatch(const std::vector<std::pair<libzerocoin::CoinSpend, uint256> >& spendInfo) {
-    CLevelDBBatch batch;
+    CDataDBBatch batch;
     size_t count = 0;
     for (std::vector<std::pair<libzerocoin::CoinSpend, uint256> >::const_iterator it=spendInfo.begin(); it !=
 spendInfo.end(); it++) { CBigNum bnSerial = it->first.getCoinSerialNumber(); CDataStream ss(SER_GETHASH, 0); ss <<

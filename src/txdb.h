@@ -11,7 +11,7 @@
 #include "blockmap.h"
 #include "coins.h"
 #include "disktxpos.h"
-#include "leveldbwrapper.h"
+#include "datadbwrapper.h"
 #include "primitives/zerocoin.h"
 
 #include <map>
@@ -32,10 +32,10 @@ static const int64_t nMaxDbCache = sizeof(void*) > 4 ? 4096 : 1024;
 //! min. -dbcache in (MiB)
 static const int64_t nMinDbCache = 4;
 
-/** CCoinsView backed by the LevelDB coin database (chainstate/) */
+/** CCoinsView backed by the DataDB coin database (chainstate/) */
 class CCoinsViewDB : public CCoinsView {
  protected:
-  CLevelDBWrapper db;
+  CDataDBWrapper db;
   std::atomic<bool> interrupt = false;
 
  public:
@@ -50,7 +50,7 @@ class CCoinsViewDB : public CCoinsView {
 };
 
 /** Access to the block database (blocks/index/) */
-class CBlockTreeDB : public CLevelDBWrapper {
+class CBlockTreeDB : public CDataDBWrapper {
  public:
   CBlockTreeDB(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
 
@@ -77,7 +77,7 @@ class CBlockTreeDB : public CLevelDBWrapper {
   void InterruptLoadBlockIndexGuts();
 };
 
-class CZerocoinDB : public CLevelDBWrapper {
+class CZerocoinDB : public CDataDBWrapper {
  public:
   CZerocoinDB(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
 

@@ -22,7 +22,7 @@
 #include "primitives/transaction.h"
 #include "primitives/zerocoin.h"
 #include "reservekey.h"
-#include "stakeinput.h"
+#include "stake.h"
 #include "txmempool.h"
 #include "ui_interface.h"
 #include "util.h"
@@ -117,7 +117,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
  public:
   bool MintableCoins();
-  bool SelectStakeCoins(std::list<std::unique_ptr<CStakeInput> >& listInputs, CAmount nTargetAmount);
+  bool SelectStakeCoins(std::list<std::unique_ptr<CStake> >& listInputs, CAmount nTargetAmount);
   int CountInputsWithAmount(CAmount nInputAmount);
 
   // Zerocoin additions

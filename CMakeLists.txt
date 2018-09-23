@@ -180,7 +180,7 @@ SET(COMMON_A
   ./src/accumulators.cpp
   ./src/accumulatormap.cpp
   ./src/accumulatorcheckpoints.cpp
-  ./src/stakeinput.cpp
+  ./src/stake.cpp
   ./src/mintpool.cpp
   ./src/protocol.cpp
   ./src/netbase.cpp
@@ -225,7 +225,7 @@ SET(SERVER_A
   ./src/bloom.cpp
   ./src/chain.cpp
   ./src/checkpoints.cpp
-  ./src/leveldbwrapper.cpp
+  ./src/datadbwrapper.cpp
   ./src/dbwrapper.cpp
   ./src/init.cpp
   ./src/main.cpp
