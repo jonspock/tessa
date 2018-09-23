@@ -20,6 +20,7 @@
 #include "fs.h"
 #include "kernel.h"
 #include "net.h"
+#include "reverse_iterate.h"
 #include "script/script.h"
 #include "script/sign.h"
 #include "timedata.h"
@@ -27,6 +28,7 @@
 #include "utilmoneystr.h"
 #include "utiltime.h"
 #include "validationstate.h"
+#include "warnings.h"
 #include "zerochain.h"
 
 #include "denomination_functions.h"
@@ -2247,10 +2249,10 @@ uint32_t CWallet::ComputeTimeSmart(const CWalletTx& wtx) const {
         // Tolerate times up to the last timestamp in the wallet not more than 5 minutes into the future
         int64_t latestTolerated = latestNow + 300;
         TxItems txOrdered = wtxOrdered;
-        for (TxItems::reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
-          CWalletTx* const pwtx = (*it).second.first;
+        for (const auto& it : reverse_iterate(txOrdered))  {
+          CWalletTx* const pwtx = it.second.first;
           if (pwtx == &wtx) continue;
-          CAccountingEntry* const pacentry = (*it).second.second;
+          CAccountingEntry* const pacentry = it.second.second;
           int64_t nSmartTime;
           if (pwtx) {
             nSmartTime = pwtx->nTimeSmart;
@@ -2575,7 +2577,7 @@ bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree, bool fRejectInsaneFee, bool 
 }
 
 int CMerkleTx::GetTransactionLockSignatures() const {
-  if (fLargeWorkForkFound || fLargeWorkInvalidChainFound) return -2;
+  if (CheckLargeWork()) return -2;
   return -1;
 }
 

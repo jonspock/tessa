@@ -181,11 +181,11 @@ bool GetLocal(CService& addr, const CNetAddr* paddrPeer) {
   int nBestReachability = -1;
   {
     LOCK(cs_mapLocalHost);
-    for (map<CNetAddr, LocalServiceInfo>::iterator it = mapLocalHost.begin(); it != mapLocalHost.end(); it++) {
-      int nScore = (*it).second.nScore;
-      int nReachability = (*it).first.GetReachabilityFrom(paddrPeer);
+    for (const auto& it : mapLocalHost) {
+      int nScore = it.second.nScore;
+      int nReachability = it.first.GetReachabilityFrom(paddrPeer);
       if (nReachability > nBestReachability || (nReachability == nBestReachability && nScore > nBestScore)) {
-        addr = CService((*it).first, (*it).second.nPort);
+        addr = CService(it.first, it.second.nPort);
         nBestReachability = nReachability;
         nBestScore = nScore;
       }
@@ -500,9 +500,9 @@ bool CNode::IsBanned(CNetAddr ip) {
   bool fResult = false;
   {
     LOCK(cs_setBanned);
-    for (banmap_t::iterator it = setBanned.begin(); it != setBanned.end(); it++) {
-      CSubNet subNet = (*it).first;
-      CBanEntry banEntry = (*it).second;
+    for (const auto& it : setBanned) {
+      CSubNet subNet = it.first;
+      CBanEntry banEntry = it.second;
 
       if (subNet.Match(ip) && GetTime() < banEntry.nBanUntil) fResult = true;
     }

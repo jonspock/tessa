@@ -423,10 +423,10 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
 
   LOCK(cs);
   list<const CTxMemPoolEntry*> waitingOnDependants;
-  for (std::map<uint256, CTxMemPoolEntry>::const_iterator it = mapTx.begin(); it != mapTx.end(); it++) {
+  for (auto& it : mapTx) {
     uint32_t i = 0;
-    checkTotal += it->second.GetTxSize();
-    const CTransaction& tx = it->second.GetTx();
+    checkTotal += it.second.GetTxSize();
+    const CTransaction& tx = it.second.GetTx();
     bool fDependsWait = false;
     for (const CTxIn& txin : tx.vin) {
       // Check that every mempool transaction's inputs refer to available coins, or other mempool tx's.
@@ -447,7 +447,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const {
       i++;
     }
     if (fDependsWait)
-      waitingOnDependants.push_back(&it->second);
+      waitingOnDependants.push_back(&it.second);
     else {
       CValidationState state;
       CTxUndo undo;

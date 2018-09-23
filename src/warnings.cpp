@@ -15,6 +15,13 @@
 //
 using std::string;
 
+static bool fLargeWorkForkFound = false;
+static bool fLargeWorkInvalidChainFound = false;
+
+bool CheckLargeWork() {
+    return (fLargeWorkForkFound || fLargeWorkInvalidChainFound);
+}
+
 string GetWarnings(string strFor) {
   string strStatusBar;
   string strRPC;
@@ -45,8 +52,6 @@ string GetWarnings(string strFor) {
   return "error";
 }
 
-bool fLargeWorkForkFound = false;
-bool fLargeWorkInvalidChainFound = false;
 CBlockIndex *pindexBestForkTip = nullptr, *pindexBestForkBase = nullptr;
 
 void CheckForkWarningConditions() {

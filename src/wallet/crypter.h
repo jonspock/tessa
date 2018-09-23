@@ -163,10 +163,8 @@ class CCryptoKeyStore : public CBasicKeyStore {
   bool GetPubKey(const ecdsa::CKeyID &address, ecdsa::CPubKey &vchPubKeyOut) const override;
   void GetKeys(std::set<ecdsa::CKeyID> &setAddress) const override {
     setAddress.clear();
-    CryptedKeyMap::const_iterator mi = mapCryptedKeys.begin();
-    while (mi != mapCryptedKeys.end()) {
-      setAddress.insert((*mi).first);
-      mi++;
+    for (auto& mi : mapCryptedKeys) {
+      setAddress.insert(mi.first);
     }
   }
 

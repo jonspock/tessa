@@ -49,15 +49,14 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) {
   CDataDBBatch batch;
   size_t count = 0;
   size_t changed = 0;
-  for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
-    if (it->second.flags & CCoinsCacheEntry::DIRTY) {
-      BatchWriteCoins(batch, it->first, it->second.coins);
+  for (const auto& it : mapCoins) {
+    if (it.second.flags & CCoinsCacheEntry::DIRTY) {
+      BatchWriteCoins(batch, it.first, it.second.coins);
       changed++;
     }
     count++;
-    CCoinsMap::iterator itOld = it++;
-    mapCoins.erase(itOld);
   }
+  mapCoins.clear();
   if (!hashBlock.IsNull()) BatchWriteHashBestChain(batch, hashBlock);
 
   LogPrint(TessaLog::COINDB, "Committing %u changed transactions (out of %u) to coin database...\n", changed, count);
@@ -295,17 +294,20 @@ bool CZerocoinDB::WriteCoinSpend(const CBigNum& bnSerial, const uint256& txHash)
 }
 /*
 bool CZerocoinDB::WriteCoinSpendBatch(const std::vector<std::pair<libzerocoin::CoinSpend, uint256> >& spendInfo) {
-    CDataDBBatch batch;
-    size_t count = 0;
-    for (std::vector<std::pair<libzerocoin::CoinSpend, uint256> >::const_iterator it=spendInfo.begin(); it !=
-spendInfo.end(); it++) { CBigNum bnSerial = it->first.getCoinSerialNumber(); CDataStream ss(SER_GETHASH, 0); ss <<
-bnSerial; uint256 hash = Hash(ss.begin(), ss.end()); batch.Write(make_pair('s', hash), it->second);
-        ++count;
-    }
+  CDataDBBatch batch;
+  size_t count = 0;
+  for (auto& it : spendInfo) {
+    CBigNum bnSerial = it.first.getCoinSerialNumber();
+    CDataStream ss(SER_GETHASH, 0);
+    ss << bnSerial;
+    uint256 hash = Hash(ss.begin(), ss.end());
+    batch.Write(make_pair('s', hash), it.second);
+    ++count;
+  }
 
-    LogPrint(TessaLog::ZKP, "Writing %u coin spends to db.\n", count);
-    return WriteBatch(batch, true);
- }
+  LogPrint(TessaLog::ZKP, "Writing %u coin spends to db.\n", count);
+  return WriteBatch(batch, true);
+}
 */
 bool CZerocoinDB::ReadCoinSpend(const CBigNum& bnSerial, uint256& txHash) {
   CDataStream ss(SER_GETHASH);

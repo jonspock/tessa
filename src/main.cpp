@@ -79,7 +79,7 @@ CBlockIndex* pindexBestHeader = nullptr;
 int64_t nTimeBestReceived = 0;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
-int nScriptCheckThreads = 0;
+int32_t nScriptCheckThreads = 0;
 bool fImporting = false;
 bool fReindex = false;
 bool fTxIndex = true;
@@ -113,7 +113,6 @@ static void CheckBlockIndex();
 
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
-#warning "Change strMessageMagic string"
 const string strMessageMagic = "TessaChain Signed Message:\n";
 
 // Internal stuff
@@ -2052,22 +2051,22 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode) {
       FlushBlockFile();
       // Then update all block file information (which may refer to block and undo files).
       bool fileschanged = false;
-      for (set<int>::iterator it = setDirtyFileInfo.begin(); it != setDirtyFileInfo.end();) {
-        if (!gpBlockTreeDB->WriteBlockFileInfo(*it, vinfoBlockFile[*it])) {
+      for (auto& it : setDirtyFileInfo) {
+        if (!gpBlockTreeDB->WriteBlockFileInfo(it, vinfoBlockFile[it])) {
           return state.Abort("Failed to write to block index");
         }
         fileschanged = true;
-        setDirtyFileInfo.erase(it++);
       }
+      setDirtyFileInfo.clear();
       if (fileschanged && !gpBlockTreeDB->WriteLastBlockFile(nLastBlockFile)) {
         return state.Abort("Failed to write to block index");
       }
-      for (set<CBlockIndex*>::iterator it = setDirtyBlockIndex.begin(); it != setDirtyBlockIndex.end();) {
-        if (!gpBlockTreeDB->WriteBlockIndex(CDiskBlockIndex(*it))) {
+      for (auto& it : setDirtyBlockIndex) {
+        if (!gpBlockTreeDB->WriteBlockIndex(CDiskBlockIndex(it))) {
           return state.Abort("Failed to write to block index");
         }
-        setDirtyBlockIndex.erase(it++);
       }
+      setDirtyBlockIndex.clear();
       gpBlockTreeDB->Sync();
       // Finally flush the chainstate (which may refer to block index entries).
       if (!gpCoinsTip->Flush()) return state.Abort("Failed to write to coin database");

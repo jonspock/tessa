@@ -47,8 +47,8 @@ const signed char p_util_hexdigit[256] = {
 signed char HexDigit(char c) { return p_util_hexdigit[(uint8_t)c]; }
 
 bool IsHex(const string& str) {
-  for (std::string::const_iterator it(str.begin()); it != str.end(); ++it) {
-    if (HexDigit(*it) < 0) return false;
+  for (auto& it : str) {
+    if (HexDigit(it) < 0) return false;
   }
   return (str.size() > 0) && (str.size() % 2 == 0);
 }

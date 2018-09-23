@@ -32,21 +32,19 @@ extern const std::string strMessageMagic;
 extern int64_t nTimeBestReceived;
 extern CWaitableCriticalSection csBestBlock;
 extern CConditionVariable cvBlockChange;
+extern int32_t nScriptCheckThreads;
+extern uint32_t nCoinCacheSize;
+extern CFeeRate minRelayTxFee;
+extern int64_t nReserveBalance;
+
 extern bool fImporting;
 extern bool fReindex;
-extern int nScriptCheckThreads;
 extern bool fTxIndex;
 extern bool fIsBareMultisigStd;
 extern bool fCheckBlockIndex;
-extern uint32_t nCoinCacheSize;
-extern CFeeRate minRelayTxFee;
 extern bool fVerifyingBlocks;
 extern bool fDisableWallet;
 
-extern bool fLargeWorkForkFound;
-extern bool fLargeWorkInvalidChainFound;
-
-extern int64_t nReserveBalance;
 
 extern std::map<uint32_t, uint32_t> mapHashedBlocks;
 extern std::map<uint256, int64_t> mapZerocoinspends;  // txid, time received

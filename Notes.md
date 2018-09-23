@@ -6,3 +6,5 @@ spendzerocoin 1 false false 1 cFQ2QQTa7fcqbc3GgYL8eN9RNyj4jcu9So
 
 # checkpoints in ChainParams are wrong
 # check various parameters, pchMessageStart, etc
+
+Make sure to change strMEssageMagic if coin name changes (main.cpp)
