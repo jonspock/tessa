@@ -447,7 +447,7 @@ static bool rest_getutxos(HTTPRequest* req, const std::string& strURIPart) {
     CCoinsView viewDummy;
     CCoinsViewCache view(&viewDummy);
 
-    CCoinsViewCache& viewChain = *pcoinsTip;
+    CCoinsViewCache& viewChain = *gpCoinsTip;
     CCoinsViewMemPool viewMempool(&viewChain, mempool);
 
     if (fCheckMemPool)

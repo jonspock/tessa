@@ -580,7 +580,7 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
   CCoinsViewCache view(&viewDummy);
   {
     LOCK(mempool.cs);
-    CCoinsViewCache& viewChain = *pcoinsTip;
+    CCoinsViewCache& viewChain = *gpCoinsTip;
     CCoinsViewMemPool viewMempool(&viewChain, mempool);
     view.SetBackend(viewMempool);  // temporarily switch cache backend to db+mempool view
 
@@ -749,7 +749,7 @@ UniValue sendrawtransaction(const UniValue& params, bool fHelp) {
   bool fOverrideFees = false;
   if (params.size() > 1) fOverrideFees = params[1].get_bool();
 
-  CCoinsViewCache& view = *pcoinsTip;
+  CCoinsViewCache& view = *gpCoinsTip;
   const CCoins* existingCoins = view.AccessCoins(hashTx);
   bool fHaveMempool = mempool.exists(hashTx);
   bool fHaveChain = existingCoins && existingCoins->nHeight < 1000000000;

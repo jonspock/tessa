@@ -440,7 +440,7 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
   return chain.Genesis();
 }
 
-CCoinsViewCache* pcoinsTip = nullptr;
+CCoinsViewCache* gpCoinsTip = nullptr;
 CBlockTreeDB* gpBlockTreeDB = nullptr;
 CZerocoinDB* gpZerocoinDB = nullptr;
 CSporkDB* gpSporkDB = nullptr;
@@ -681,7 +681,7 @@ int GetInputAge(CTxIn& vin) {
   CCoinsViewCache view(&viewDummy);
   {
     LOCK(mempool.cs);
-    CCoinsViewMemPool viewMempool(pcoinsTip, mempool);
+    CCoinsViewMemPool viewMempool(gpCoinsTip, mempool);
     view.SetBackend(viewMempool);  // temporarily switch cache backend to db+mempool view
 
     const CCoins* coins = view.AccessCoins(vin.prevout.hash);
@@ -901,7 +901,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       }
     } else {
       LOCK(pool.cs);
-      CCoinsViewMemPool viewMemPool(pcoinsTip, pool);
+      CCoinsViewMemPool viewMemPool(gpCoinsTip, pool);
       view.SetBackend(viewMemPool);
 
       // do we already have it?
@@ -1095,7 +1095,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
     CAmount nValueIn = 0;
     {
       LOCK(pool.cs);
-      CCoinsViewMemPool viewMemPool(pcoinsTip, pool);
+      CCoinsViewMemPool viewMemPool(gpCoinsTip, pool);
       view.SetBackend(viewMemPool);
 
       // do we already have it?
@@ -1256,7 +1256,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
     if (fAllowSlow) {  // use coin database to locate block that contains transaction, and scan it
       int nHeight = -1;
       {
-        CCoinsViewCache& view = *pcoinsTip;
+        CCoinsViewCache& view = *gpCoinsTip;
         const CCoins* coins = view.AccessCoins(hash);
         if (coins) nHeight = coins->nHeight;
       }
@@ -2040,14 +2040,14 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode) {
   try {
     if ((mode == FLUSH_STATE_ALWAYS) ||
         ((mode == FLUSH_STATE_PERIODIC || mode == FLUSH_STATE_IF_NEEDED) &&
-         pcoinsTip->GetCacheSize() > nCoinCacheSize) ||
+         gpCoinsTip->GetCacheSize() > nCoinCacheSize) ||
         (mode == FLUSH_STATE_PERIODIC && GetTimeMicros() > nLastWrite + DATABASE_WRITE_INTERVAL * 1000000)) {
       // Typical CCoins structures on disk are around 100 bytes in size.
       // Pushing a new one to the database can cause it to be written
       // twice (once in the log, and once in the tables). This is already
       // an overestimation, as most will delete an existing entry or
       // overwrite one. Still, use a conservative safety factor of 2.
-      if (!CheckDiskSpace(100 * 2 * 2 * pcoinsTip->GetCacheSize())) return state.Error("out of disk space");
+      if (!CheckDiskSpace(100 * 2 * 2 * gpCoinsTip->GetCacheSize())) return state.Error("out of disk space");
       // First make sure all block and undo data is flushed to disk.
       FlushBlockFile();
       // Then update all block file information (which may refer to block and undo files).
@@ -2070,7 +2070,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode) {
       }
       gpBlockTreeDB->Sync();
       // Finally flush the chainstate (which may refer to block index entries).
-      if (!pcoinsTip->Flush()) return state.Abort("Failed to write to coin database");
+      if (!gpCoinsTip->Flush()) return state.Abort("Failed to write to coin database");
       // Update best block in wallet (so we can detect restored wallets).
       if (mode != FLUSH_STATE_IF_NEEDED) { GetMainSignals().SetBestChain(chainActive.GetLocator()); }
       nLastWrite = GetTimeMicros();
@@ -2096,7 +2096,7 @@ void static UpdateTip(CBlockIndex* pindexNew) {
             chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(),
             log(chainActive.Tip()->nChainWork.getdouble()) / log(2.0), (uint64_t)chainActive.Tip()->nChainTx,
             DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
-            Checkpoints::GuessVerificationProgress(chainActive.Tip()), (uint32_t)pcoinsTip->GetCacheSize());
+            Checkpoints::GuessVerificationProgress(chainActive.Tip()), (uint32_t)gpCoinsTip->GetCacheSize());
 
   cvBlockChange.notify_all();
 
@@ -2118,14 +2118,14 @@ void static UpdateTip(CBlockIndex* pindexNew) {
 bool static DisconnectTip(CValidationState& state) {
   CBlockIndex* pindexDelete = chainActive.Tip();
   assert(pindexDelete);
-  mempool.check(pcoinsTip);
+  mempool.check(gpCoinsTip);
   // Read block from disk.
   CBlock block;
   if (!ReadBlockFromDisk(block, pindexDelete)) return state.Abort("Failed to read block");
   // Apply the block atomically to the chain state.
   int64_t nStart = GetTimeMicros();
   {
-    CCoinsViewCache view(pcoinsTip);
+    CCoinsViewCache view(gpCoinsTip);
     if (!DisconnectBlock(block, state, pindexDelete, view))
       return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
     assert(view.Flush());
@@ -2141,8 +2141,8 @@ bool static DisconnectTip(CValidationState& state) {
     if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool, stateDummy, tx, false, nullptr))
       mempool.remove(tx, removed, true);
   }
-  mempool.removeCoinbaseSpends(pcoinsTip, pindexDelete->nHeight);
-  mempool.check(pcoinsTip);
+  mempool.removeCoinbaseSpends(gpCoinsTip, pindexDelete->nHeight);
+  mempool.check(gpCoinsTip);
   // Update chainActive and related variables.
   UpdateTip(pindexDelete->pprev);
   // Let wallets know transactions went from 1-confirmed to
@@ -2163,8 +2163,8 @@ static int64_t nTimePostConnect = 0;
  */
 bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* pblock, bool fAlreadyChecked) {
   assert(pindexNew->pprev == chainActive.Tip());
-  mempool.check(pcoinsTip);
-  CCoinsViewCache view(pcoinsTip);
+  mempool.check(gpCoinsTip);
+  CCoinsViewCache view(gpCoinsTip);
 
   if (pblock == nullptr) fAlreadyChecked = false;
 
@@ -2213,7 +2213,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   // Remove conflicting transactions from the mempool.
   list<CTransaction> txConflicted;
   mempool.removeForBlock(pblock->vtx, pindexNew->nHeight, txConflicted);
-  mempool.check(pcoinsTip);
+  mempool.check(gpCoinsTip);
   // Update chainActive & related variables.
   UpdateTip(pindexNew);
   // Tell wallet about transactions that went from mempool
@@ -2251,8 +2251,8 @@ bool DisconnectBlocksAndReprocess(int blocks) {
 // ***TODO*** clean up here
 bool DisconnectBlockAndInputs(CValidationState& state, CTransaction txLock) {
   // All modifications to the coin state will be done in this cache.
-  // Only when all have succeeded, we push it to pcoinsTip.
-  //    CCoinsViewCache view(*pcoinsTip, true);
+  // Only when all have succeeded, we push it to gpCoinsTip.
+  //    CCoinsViewCache view(*gpCoinsTip, true);
 
   CBlockIndex* BlockReading = chainActive.Tip();
   CBlockIndex* pindexNew = nullptr;
@@ -3250,7 +3250,7 @@ bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex
   AssertLockHeld(cs_main);
   assert(pindexPrev == chainActive.Tip());
 
-  CCoinsViewCache viewNew(pcoinsTip);
+  CCoinsViewCache viewNew(gpCoinsTip);
   CBlockIndex indexDummy(block);
   indexDummy.pprev = pindexPrev;
   indexDummy.nHeight = pindexPrev->nHeight + 1;
@@ -3349,7 +3349,7 @@ bool static LoadBlockIndexDB(string& strError) {
   gpBlockTreeDB->WriteFlag("shutdown", false);
 
   // Load pointer to end of best chain
-  auto it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
+  auto it = mapBlockIndex.find(gpCoinsTip->GetBestBlock());
   if (it == mapBlockIndex.end()) return true;
   chainActive.SetTip(it->second);
 
@@ -3678,7 +3678,7 @@ bool static AlreadyHave(const CInv& inv) {
     case MSG_TX: {
       bool txInMap = false;
       txInMap = mempool.exists(inv.hash);
-      return txInMap || mapOrphanTransactions.count(inv.hash) || pcoinsTip->HaveCoins(inv.hash);
+      return txInMap || mapOrphanTransactions.count(inv.hash) || gpCoinsTip->HaveCoins(inv.hash);
     }
     case MSG_BLOCK:
       return mapBlockIndex.count(inv.hash);
@@ -4145,7 +4145,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     mapAlreadyAskedFor.erase(inv);
 
     if (!tx.IsZerocoinSpend() && AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs, false, ignoreFees)) {
-      mempool.check(pcoinsTip);
+      mempool.check(gpCoinsTip);
       RelayTransaction(tx);
       vWorkQueue.push_back(inv.hash);
 
@@ -4185,7 +4185,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             LogPrint(TessaLog::MEMPOOL, "   removed orphan tx %s\n", orphanHash.ToString());
             vEraseQueue.push_back(orphanHash);
           }
-          mempool.check(pcoinsTip);
+          mempool.check(gpCoinsTip);
         }
       }
 

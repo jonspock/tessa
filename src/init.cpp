@@ -234,13 +234,13 @@ void PrepareShutdown(CScheduler& scheduler) {
 
   {
     LOCK(cs_main);
-    if (pcoinsTip != nullptr) {
+    if (gpCoinsTip != nullptr) {
       FlushStateToDisk();
 
       // record that client took the proper shutdown procedure
       gpBlockTreeDB->WriteFlag("shutdown", true);
     }
-    if (pcoinsTip) delete pcoinsTip;
+    if (gpCoinsTip) delete gpCoinsTip;
     if (pcoinscatcher) delete pcoinscatcher;
     if (pcoinsdbview) delete pcoinsdbview;
     if (gpBlockTreeDB) delete gpBlockTreeDB;
@@ -1337,7 +1337,7 @@ bool AppInit2(CScheduler& scheduler) {
     do {
       try {
         UnloadBlockIndex();
-        delete pcoinsTip;
+        delete gpCoinsTip;
         delete pcoinsdbview;
         delete pcoinscatcher;
         delete gpBlockTreeDB;
@@ -1351,7 +1351,7 @@ bool AppInit2(CScheduler& scheduler) {
         gpBlockTreeDB = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
         pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);
         pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
-        pcoinsTip = new CCoinsViewCache(pcoinscatcher);
+        gpCoinsTip = new CCoinsViewCache(pcoinscatcher);
 
         if (fReindex) gpBlockTreeDB->WriteReindexing(true);
 

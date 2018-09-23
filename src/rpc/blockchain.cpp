@@ -430,7 +430,7 @@ UniValue gettxoutsetinfo(const UniValue& params, bool fHelp) {
 
   CCoinsStats stats;
   FlushStateToDisk();
-  if (pcoinsTip->GetStats(stats)) {
+  if (gpCoinsTip->GetStats(stats)) {
     ret.push_back(Pair("height", (int64_t)stats.nHeight));
     ret.push_back(Pair("bestblock", stats.hashBlock.GetHex()));
     ret.push_back(Pair("transactions", (int64_t)stats.nTransactions));
@@ -490,15 +490,15 @@ UniValue gettxout(const UniValue& params, bool fHelp) {
   CCoins coins;
   if (fMempool) {
     LOCK(mempool.cs);
-    CCoinsViewMemPool view(pcoinsTip, mempool);
+    CCoinsViewMemPool view(gpCoinsTip, mempool);
     if (!view.GetCoins(hash, coins)) return NullUniValue;
     mempool.pruneSpent(hash, coins);  // TODO: this should be done by the CCoinsViewMemPool
   } else {
-    if (!pcoinsTip->GetCoins(hash, coins)) return NullUniValue;
+    if (!gpCoinsTip->GetCoins(hash, coins)) return NullUniValue;
   }
   if (n < 0 || (uint32_t)n >= coins.vout.size() || coins.vout[n].IsNull()) return NullUniValue;
 
-  BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
+  BlockMap::iterator it = mapBlockIndex.find(gpCoinsTip->GetBestBlock());
   CBlockIndex* pindex = it->second;
   ret.push_back(Pair("bestblock", pindex->GetBlockHash().GetHex()));
   if ((uint32_t)coins.nHeight == MEMPOOL_HEIGHT)
@@ -537,7 +537,7 @@ UniValue verifychain(const UniValue& params, bool fHelp) {
   if (params.size() > 0) nCheckDepth = params[1].get_int();
 
   fVerifyingBlocks = true;
-  bool fVerified = CVerifyDB().VerifyDB(pcoinsTip, nCheckLevel, nCheckDepth);
+  bool fVerified = CVerifyDB().VerifyDB(gpCoinsTip, nCheckLevel, nCheckDepth);
   fVerifyingBlocks = false;
 
   return fVerified;

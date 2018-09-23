@@ -65,7 +65,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
     }
     // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
     if (nCheckLevel >= 3 && pindex == pindexState &&
-        (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= nCoinCacheSize) {
+        (coins.GetCacheSize() + gpCoinsTip->GetCacheSize()) <= nCoinCacheSize) {
       bool fClean = true;
       if (!DisconnectBlock(block, state, pindex, coins, &fClean))
         return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight,

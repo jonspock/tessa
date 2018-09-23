@@ -60,7 +60,7 @@ extern CBlockIndex* pindexBestInvalid;
 extern CChain chainActive;
 
 /** Global variable that points to the active CCoinsView (protected by cs_main) */
-extern CCoinsViewCache* pcoinsTip;
+extern CCoinsViewCache* gpCoinsTip;
 
 /** Global variable that points to the active block tree (protected by cs_main) */
 extern CBlockTreeDB* gpBlockTreeDB;

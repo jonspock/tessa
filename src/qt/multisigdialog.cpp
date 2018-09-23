@@ -533,7 +533,7 @@ CCoinsViewCache MultisigDialog::getInputsCoinsViewCache(const vector<CTxIn>& vin
   CCoinsViewCache view(&viewDummy);
   {
     LOCK(mempool.cs);
-    CCoinsViewCache& viewChain = *pcoinsTip;
+    CCoinsViewCache& viewChain = *gpCoinsTip;
     CCoinsViewMemPool viewMempool(&viewChain, mempool);
     view.SetBackend(viewMempool);  // temporarily switch cache backend to db+mempool view
 
@@ -680,7 +680,7 @@ void MultisigDialog::commitMultisigTx() {
         throw runtime_error(string("Transaction rejected - Failed to commit"));
     } else {
       uint256 hashTx = tx.GetHash();
-      CCoinsViewCache& view = *pcoinsTip;
+      CCoinsViewCache& view = *gpCoinsTip;
       const CCoins* existingCoins = view.AccessCoins(hashTx);
       bool fOverrideFees = false;
       bool fHaveMempool = mempool.exists(hashTx);
