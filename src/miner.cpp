@@ -736,4 +736,5 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads) {
   // Assume just 1 thread to get this going. TBD add loop later
   auto bindMiner = std::bind(ThreadBitcoinMiner, pwallet);
   miner_thread = std::thread(&TraceThread<decltype(bindMiner)>, "miner", std::move(bindMiner));
+  miner_thread.detach();
 }

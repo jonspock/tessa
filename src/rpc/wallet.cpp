@@ -3112,6 +3112,7 @@ UniValue searchdzkp(const UniValue& params, bool fHelp) {
   auto bindSearch = std::bind(SearchThread, zwallet, nStart, nEnd);
   static std::thread search_thread;
   search_thread = std::thread(&TraceThread<decltype(bindSearch)>, "search", std::move(bindSearch));
+  if (search_thread.joinable()) search_thread.join();
 
   zwallet->RemoveMintsFromPool(pwalletMain->zkpTracker->GetSerialHashes());
   zwallet->SyncWithChain(false);

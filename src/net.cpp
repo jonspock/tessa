@@ -1720,6 +1720,7 @@ bool StopNode() {
     fAddressesInitialized = false;
   }
 
+
   if (dns_address_seed_thread.joinable()) dns_address_seed_thread.join();
   if (socket_handler_thread.joinable()) socket_handler_thread.join();
 #warning "Need to find out why these cause issues TBD"
@@ -2012,7 +2013,7 @@ CNode::~CNode() {
 
   if (pfilter) delete pfilter;
 
-  GetNodeSignals().FinalizeNode(GetId());
+    // HACK : Check XXXX GetNodeSignals().FinalizeNode(GetId());
 }
 
 void CNode::AskFor(const CInv& inv) {

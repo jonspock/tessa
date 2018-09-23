@@ -195,6 +195,7 @@ void Interrupt(CScheduler& scheduler) {
   InterruptNetBase();
   InterruptNode();
   InterruptMiner();
+//  InterruptWallet();
   InterruptSearch();
   // condvar_GenesisWait.notify_all();
 }

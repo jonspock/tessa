@@ -38,6 +38,10 @@ static datadb::Options GetOptions(size_t nCacheSize) {
   opt.compression = datadb::kNoCompression;
   opt.max_open_files = 64;
   datadb::Options datadb_options = ConvertOptions(opt);
+  datadb_options.avoid_flush_during_shutdown = true;
+  datadb_options.enable_thread_tracking = true;
+  datadb_options.IncreaseParallelism();
+  datadb_options.OptimizeLevelStyleCompaction();
   return datadb_options;
 #else
   datadb::Options options;
@@ -83,11 +87,13 @@ CLevelDBWrapper::~CLevelDBWrapper() {
   delete pdb;
   pdb = nullptr;
 #ifndef USE_LEVELDB
+  // Didn't help  DestroyDB(dbpath, options);
+  ///// delete options.env;
   // delete options.filter_policy;
   //  options.filter_policy = nullptr;
   // delete options.block_cache;
   //  options.block_cache = nullptr;
-#else  
+#else
   delete options.filter_policy;
   options.filter_policy = nullptr;
   delete options.block_cache;

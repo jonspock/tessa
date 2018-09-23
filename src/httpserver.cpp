@@ -413,11 +413,14 @@ bool StartHTTPServer() {
   threadResult = task.get_future();
   auto bindHTTP = std::bind(std::move(task), eventBase, eventHTTP);
   threadHTTP = std::thread(&TraceThread<decltype(bindHTTP)>, "bitcoin-http", std::move(bindHTTP));
-
+#warning "may need to re-enable"
+  /* HACK XXXX
   for (int i = 0; i < rpcThreads; i++) {
     auto bindHTTPWorker = std::bind(HTTPWorkQueueRun, workQueue);
     std::thread rpc_worker(&TraceThread<decltype(bindHTTPWorker)>, "httpworker", std::move(bindHTTPWorker));
+    rpc_worker.detach();
   }
+  */
   return true;
 }
 
