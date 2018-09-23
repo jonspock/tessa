@@ -46,8 +46,6 @@ namespace signalz {
         inline connections()  { }
         inline ~connections() { disconnect_all(true); }
 
-#if defined(SIGNALS_CPP_HAVE_VARIADIC_TEMPLATES)
-
         /// Connects to the given `signal` `s` and adds the created `connection` to
         /// the list of tracked connections.
         template<typename SIGNAL, typename... ARGS>
@@ -56,52 +54,6 @@ namespace signalz {
             add(conn);
             return conn;
         }
-
-#else //  defined(SIGNALS_CPP_HAVE_VARIADIC_TEMPLATES)
-
-        template<typename SIGNAL, typename ARG1>
-        inline connection connect(SIGNAL& s, ARG1&& arg1) {
-            auto conn = s.connect(std::forward<ARG1>(arg1));
-            add(conn);
-            return conn;
-        }
-
-        template<typename SIGNAL, typename ARG1, typename ARG2>
-        inline connection connect(SIGNAL& s, ARG1&& arg1, ARG2&& arg2) {
-            auto conn = s.connect(std::forward<ARG1>(arg1), std::forward<ARG2>(arg2));
-            add(conn);
-            return conn;
-        }
-
-        template<typename SIGNAL, typename ARG1, typename ARG2, typename ARG3>
-        inline connection connect(SIGNAL& s, ARG1&& arg1, ARG2&& arg2, ARG3&& arg3) {
-            auto conn = s.connect(std::forward<ARG1>(arg1), std::forward<ARG2>(arg2), std::forward<ARG3>(arg3));
-            add(conn);
-            return conn;
-        }
-
-        template<typename SIGNAL, typename ARG1, typename ARG2, typename ARG3, typename ARG4>
-        inline connection connect(SIGNAL& s, ARG1&& arg1, ARG2&& arg2, ARG3&& arg3, ARG4&& arg4) {
-            auto conn = s.connect(std::forward<ARG1>(arg1), std::forward<ARG2>(arg2), std::forward<ARG3>(arg3), std::forward<ARG4>(arg4));
-            add(conn);
-            return conn;
-        }
-
-        template<typename SIGNAL, typename ARG1, typename ARG2, typename ARG3, typename ARG4, typename ARG5>
-        inline connection connect(SIGNAL& s, ARG1&& arg1, ARG2&& arg2, ARG3&& arg3, ARG4&& arg4, ARG5&& arg5) {
-            auto conn = s.connect(std::forward<ARG1>(arg1), std::forward<ARG2>(arg2), std::forward<ARG3>(arg3), std::forward<ARG4>(arg4), std::forward<ARG5>(arg5));
-            add(conn);
-            return conn;
-        }
-
-        template<typename SIGNAL, typename ARG1, typename ARG2, typename ARG3, typename ARG4, typename ARG5, typename ARG6>
-        inline connection connect(SIGNAL& s, ARG1&& arg1, ARG2&& arg2, ARG3&& arg3, ARG4&& arg4, ARG5&& arg5, ARG6&& arg6) {
-            auto conn = s.connect(std::forward<ARG1>(arg1), std::forward<ARG2>(arg2), std::forward<ARG3>(arg3), std::forward<ARG4>(arg4), std::forward<ARG5>(arg5), std::forward<ARG6>(arg6));
-            add(conn);
-            return conn;
-        }
-
-#endif //  defined(SIGNALS_CPP_HAVE_VARIADIC_TEMPLATES)
 
         /// If the given `connection` `conn` is connected it gets added to the list of
         /// tracked connections.
