@@ -441,7 +441,7 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
 }
 
 CCoinsViewCache* pcoinsTip = nullptr;
-CBlockTreeDB* pblocktree = nullptr;
+CBlockTreeDB* gpBlockTreeDB = nullptr;
 CZerocoinDB* gpZerocoinDB = nullptr;
 CSporkDB* gpSporkDB = nullptr;
 
@@ -1235,7 +1235,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
 
     if (fTxIndex) {
       CDiskTxPos postx;
-      if (pblocktree->ReadTxIndex(hash, postx)) {
+      if (gpBlockTreeDB->ReadTxIndex(hash, postx)) {
         CAutoFile file(OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
         if (file.IsNull()) return error("%s: OpenBlockFile failed", __func__);
         CBlockHeader header;
@@ -2000,7 +2000,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   DatabaseChecksums(mapAccumulators);
 
   if (fTxIndex)
-    if (!pblocktree->WriteTxIndex(vPos)) return state.Abort("Failed to write transaction index");
+    if (!gpBlockTreeDB->WriteTxIndex(vPos)) return state.Abort("Failed to write transaction index");
 
   // add this block to the view's block chain
   view.SetBestBlock(pindex->GetBlockHash());
@@ -2053,22 +2053,22 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode) {
       // Then update all block file information (which may refer to block and undo files).
       bool fileschanged = false;
       for (set<int>::iterator it = setDirtyFileInfo.begin(); it != setDirtyFileInfo.end();) {
-        if (!pblocktree->WriteBlockFileInfo(*it, vinfoBlockFile[*it])) {
+        if (!gpBlockTreeDB->WriteBlockFileInfo(*it, vinfoBlockFile[*it])) {
           return state.Abort("Failed to write to block index");
         }
         fileschanged = true;
         setDirtyFileInfo.erase(it++);
       }
-      if (fileschanged && !pblocktree->WriteLastBlockFile(nLastBlockFile)) {
+      if (fileschanged && !gpBlockTreeDB->WriteLastBlockFile(nLastBlockFile)) {
         return state.Abort("Failed to write to block index");
       }
       for (set<CBlockIndex*>::iterator it = setDirtyBlockIndex.begin(); it != setDirtyBlockIndex.end();) {
-        if (!pblocktree->WriteBlockIndex(CDiskBlockIndex(*it))) {
+        if (!gpBlockTreeDB->WriteBlockIndex(CDiskBlockIndex(*it))) {
           return state.Abort("Failed to write to block index");
         }
         setDirtyBlockIndex.erase(it++);
       }
-      pblocktree->Sync();
+      gpBlockTreeDB->Sync();
       // Finally flush the chainstate (which may refer to block index entries).
       if (!pcoinsTip->Flush()) return state.Abort("Failed to write to coin database");
       // Update best block in wallet (so we can detect restored wallets).
@@ -3266,7 +3266,7 @@ bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex
 }
 
 bool static LoadBlockIndexDB(string& strError) {
-  if (!pblocktree->LoadBlockIndexGuts()) return false;
+  if (!gpBlockTreeDB->LoadBlockIndexGuts()) return false;
 
   interruption_point(ShutdownRequested());
 
@@ -3305,14 +3305,14 @@ bool static LoadBlockIndexDB(string& strError) {
   }
 
   // Load block file info
-  pblocktree->ReadLastBlockFile(nLastBlockFile);
+  gpBlockTreeDB->ReadLastBlockFile(nLastBlockFile);
   vinfoBlockFile.resize(nLastBlockFile + 1);
   LogPrintf("%s: last block file = %i\n", __func__, nLastBlockFile);
-  for (int nFile = 0; nFile <= nLastBlockFile; nFile++) { pblocktree->ReadBlockFileInfo(nFile, vinfoBlockFile[nFile]); }
+  for (int nFile = 0; nFile <= nLastBlockFile; nFile++) { gpBlockTreeDB->ReadBlockFileInfo(nFile, vinfoBlockFile[nFile]); }
   LogPrintf("%s: last block file info: %s\n", __func__, vinfoBlockFile[nLastBlockFile].ToString());
   for (int nFile = nLastBlockFile + 1; true; nFile++) {
     CBlockFileInfo info;
-    if (pblocktree->ReadBlockFileInfo(nFile, info)) {
+    if (gpBlockTreeDB->ReadBlockFileInfo(nFile, info)) {
       vinfoBlockFile.push_back(info);
     } else {
       break;
@@ -3333,20 +3333,20 @@ bool static LoadBlockIndexDB(string& strError) {
 
   // Check if the shutdown procedure was followed on last client exit
   bool fLastShutdownWasPrepared = true;
-  pblocktree->ReadFlag("shutdown", fLastShutdownWasPrepared);
+  gpBlockTreeDB->ReadFlag("shutdown", fLastShutdownWasPrepared);
   LogPrintf("%s: Last shutdown was prepared: %s\n", __func__, fLastShutdownWasPrepared);
 
   // Check whether we need to continue reindexing
   bool fReindexing = false;
-  pblocktree->ReadReindexing(fReindexing);
+  gpBlockTreeDB->ReadReindexing(fReindexing);
   fReindex |= fReindexing;
 
   // Check whether we have a transaction index
-  pblocktree->ReadFlag("txindex", fTxIndex);
+  gpBlockTreeDB->ReadFlag("txindex", fTxIndex);
   LogPrintf("LoadBlockIndexDB(): transaction index %s\n", fTxIndex ? "enabled" : "disabled");
 
   // If this is written true before the next client init, then we know the shutdown process failed
-  pblocktree->WriteFlag("shutdown", false);
+  gpBlockTreeDB->WriteFlag("shutdown", false);
 
   // Load pointer to end of best chain
   auto it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
@@ -3383,7 +3383,7 @@ bool InitBlockIndex() {
 
   // Use the provided setting for -txindex in the new database
   fTxIndex = GetBoolArg("-txindex", true);
-  pblocktree->WriteFlag("txindex", fTxIndex);
+  gpBlockTreeDB->WriteFlag("txindex", fTxIndex);
   LogPrintf("Initializing databases...\n");
 
   // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)

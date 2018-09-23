@@ -188,7 +188,7 @@ void RecalculateZKPSpent() {
     for (auto denom : listDenomsSpent) pindex->mapZerocoinSupply.at(denom)--;
 
     // Rewrite money supply
-    assert(pblocktree->WriteBlockIndex(CDiskBlockIndex(pindex)));
+    assert(gpBlockTreeDB->WriteBlockIndex(CDiskBlockIndex(pindex)));
 
     if (pindex->nHeight < chainActive.Height())
       pindex = chainActive.Next(pindex);

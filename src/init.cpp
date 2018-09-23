@@ -183,7 +183,7 @@ void Interrupt(CScheduler& scheduler) {
   InterruptREST();
   InterruptMapPort();
   scheduler.interrupt(false);
-  if (pblocktree) pblocktree->InterruptLoadBlockIndexGuts();
+  if (gpBlockTreeDB) gpBlockTreeDB->InterruptLoadBlockIndexGuts();
   /// HACK TBD!!!!
   //CVerifyDB().InterruptInit();
   pcoinsdbview->InterruptGetStats();
@@ -238,12 +238,12 @@ void PrepareShutdown(CScheduler& scheduler) {
       FlushStateToDisk();
 
       // record that client took the proper shutdown procedure
-      pblocktree->WriteFlag("shutdown", true);
+      gpBlockTreeDB->WriteFlag("shutdown", true);
     }
     if (pcoinsTip) delete pcoinsTip;
     if (pcoinscatcher) delete pcoinscatcher;
     if (pcoinsdbview) delete pcoinsdbview;
-    if (pblocktree) delete pblocktree;
+    if (gpBlockTreeDB) delete gpBlockTreeDB;
     if (gpZerocoinDB) delete gpZerocoinDB;
     if (gpSporkDB) delete gpSporkDB;
   }
@@ -692,7 +692,7 @@ void ThreadImport(std::vector<fs::path> vImportFiles) {
       LoadExternalBlockFile(file, &pos);
       nFile++;
     }
-    pblocktree->WriteReindexing(false);
+    gpBlockTreeDB->WriteReindexing(false);
     fReindex = false;
     LogPrintf("Reindexing finished\n");
     // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
@@ -1340,7 +1340,7 @@ bool AppInit2(CScheduler& scheduler) {
         delete pcoinsTip;
         delete pcoinsdbview;
         delete pcoinscatcher;
-        delete pblocktree;
+        delete gpBlockTreeDB;
         delete gpZerocoinDB;
         delete gpSporkDB;
 
@@ -1348,12 +1348,12 @@ bool AppInit2(CScheduler& scheduler) {
         gpZerocoinDB = new CZerocoinDB(0, false, fReindex);
         gpSporkDB = new CSporkDB();
 
-        pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
+        gpBlockTreeDB = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
         pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);
         pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
         pcoinsTip = new CCoinsViewCache(pcoinscatcher);
 
-        if (fReindex) pblocktree->WriteReindexing(true);
+        if (fReindex) gpBlockTreeDB->WriteReindexing(true);
 
         // Tessa: load previous sessions sporks if we have them.
         uiInterface.InitMessage(_("Loading sporks..."));
