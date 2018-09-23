@@ -1720,10 +1720,8 @@ bool StopNode() {
     fAddressesInitialized = false;
   }
 
-
   if (dns_address_seed_thread.joinable()) dns_address_seed_thread.join();
   if (socket_handler_thread.joinable()) socket_handler_thread.join();
-#warning "Need to find out why these cause issues TBD"
   if (open_added_connections_thread.joinable()) open_added_connections_thread.join();
   if (open_connections_thread.joinable()) open_connections_thread.join();
   if (message_handler_thread.joinable()) message_handler_thread.join();

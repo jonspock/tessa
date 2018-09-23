@@ -184,8 +184,6 @@ void Interrupt(CScheduler& scheduler) {
   InterruptMapPort();
   scheduler.interrupt(false);
   if (pblocktree) pblocktree->InterruptLoadBlockIndexGuts();
-
-#warning "Check interupt stuff here"
   /// HACK TBD!!!!
   //CVerifyDB().InterruptInit();
   pcoinsdbview->InterruptGetStats();
@@ -195,7 +193,7 @@ void Interrupt(CScheduler& scheduler) {
   InterruptNetBase();
   InterruptNode();
   InterruptMiner();
-//  InterruptWallet();
+  //  InterruptWallet();
   InterruptSearch();
   // condvar_GenesisWait.notify_all();
 }
