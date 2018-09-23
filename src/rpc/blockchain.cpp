@@ -868,7 +868,7 @@ UniValue findserial(const UniValue& params, bool fHelp) {
   if (!bnSerial) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid serial");
 
   uint256 txid;
-  bool fSuccess = zerocoinDB->ReadCoinSpend(bnSerial, txid);
+  bool fSuccess = gpZerocoinDB->ReadCoinSpend(bnSerial, txid);
 
   UniValue ret(UniValue::VOBJ);
   ret.push_back(Pair("success", fSuccess));

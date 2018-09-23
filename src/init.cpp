@@ -187,7 +187,7 @@ void Interrupt(CScheduler& scheduler) {
   /// HACK TBD!!!!
   //CVerifyDB().InterruptInit();
   pcoinsdbview->InterruptGetStats();
-  zerocoinDB->InterruptWipeCoins();
+  gpZerocoinDB->InterruptWipeCoins();
 
   InterruptThreadScriptCheck();
   InterruptNetBase();
@@ -240,18 +240,12 @@ void PrepareShutdown(CScheduler& scheduler) {
       // record that client took the proper shutdown procedure
       pblocktree->WriteFlag("shutdown", true);
     }
-    delete pcoinsTip;
-    pcoinsTip = nullptr;
-    delete pcoinscatcher;
-    pcoinscatcher = nullptr;
-    delete pcoinsdbview;
-    pcoinsdbview = nullptr;
-    delete pblocktree;
-    pblocktree = nullptr;
-    delete zerocoinDB;
-    zerocoinDB = nullptr;
-    delete pSporkDB;
-    pSporkDB = nullptr;
+    if (pcoinsTip) delete pcoinsTip;
+    if (pcoinscatcher) delete pcoinscatcher;
+    if (pcoinsdbview) delete pcoinsdbview;
+    if (pblocktree) delete pblocktree;
+    if (gpZerocoinDB) delete gpZerocoinDB;
+    if (gpSporkDB) delete gpSporkDB;
   }
 
 #if ENABLE_ZMQ
@@ -1347,12 +1341,12 @@ bool AppInit2(CScheduler& scheduler) {
         delete pcoinsdbview;
         delete pcoinscatcher;
         delete pblocktree;
-        delete zerocoinDB;
-        delete pSporkDB;
+        delete gpZerocoinDB;
+        delete gpSporkDB;
 
         // Tessa specific: zerocoin and spork DB's
-        zerocoinDB = new CZerocoinDB(0, false, fReindex);
-        pSporkDB = new CSporkDB(0, false, false);
+        gpZerocoinDB = new CZerocoinDB(0, false, fReindex);
+        gpSporkDB = new CSporkDB();
 
         pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
         pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);

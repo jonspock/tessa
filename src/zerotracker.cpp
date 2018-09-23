@@ -239,14 +239,14 @@ bool CZeroTracker::UpdateStatusInternal(const std::set<uint256>& setMempool, CMi
   //! Check whether this mint has been spent and is considered 'pending' or 'confirmed'
   // If there is not a record of the block height, then look it up and assign it
   uint256 txidMint;
-  bool isMintInChain = zerocoinDB->ReadCoinMint(mint.hashPubcoin, txidMint);
+  bool isMintInChain = gpZerocoinDB->ReadCoinMint(mint.hashPubcoin, txidMint);
 
   // See if there is internal record of spending this mint (note this is memory only, would reset on restart)
   auto isPendingSpend = static_cast<bool>(mapPendingSpends.count(mint.hashSerial));
 
   // See if there is a blockchain record of spending this mint
   uint256 txidSpend;
-  bool isConfirmedSpend = zerocoinDB->ReadCoinSpend(mint.hashSerial, txidSpend);
+  bool isConfirmedSpend = gpZerocoinDB->ReadCoinSpend(mint.hashSerial, txidSpend);
 
   // Double check the mempool for pending spend
   if (isPendingSpend) {

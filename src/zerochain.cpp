@@ -86,7 +86,7 @@ void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMin
   // something went wrong
   for (CMintMeta meta : vMintsToFind) {
     uint256 txHash;
-    if (!zerocoinDB->ReadCoinMint(meta.hashPubcoin, txHash)) {
+    if (!gpZerocoinDB->ReadCoinMint(meta.hashPubcoin, txHash)) {
       vMissingMints.push_back(meta);
       continue;
     }
@@ -108,7 +108,7 @@ void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMin
 
     // see if this mint is spent
     uint256 hashTxSpend;
-    bool fSpent = zerocoinDB->ReadCoinSpend(meta.hashSerial, hashTxSpend);
+    bool fSpent = gpZerocoinDB->ReadCoinSpend(meta.hashSerial, hashTxSpend);
 
     // if marked as spent, check that it actually made it into the chain
     CTransaction txSpend;
@@ -120,7 +120,7 @@ void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMin
       continue;
     }
 
-    // The mint has been incorrectly labelled as spent in zerocoinDB and needs to be undone
+    // The mint has been incorrectly labelled as spent in gpZerocoinDB and needs to be undone
     int nHeightTx = 0;
     uint256 hashSerial = meta.hashSerial;
     uint256 txidSpend;
@@ -161,23 +161,23 @@ int GetZerocoinStartHeight() { return Params().Zerocoin_StartHeight(); }
 
 bool GetZerocoinMint(const CBigNum& bnPubcoin, uint256& txHash) {
   txHash.SetNull();
-  return zerocoinDB->ReadCoinMint(bnPubcoin, txHash);
+  return gpZerocoinDB->ReadCoinMint(bnPubcoin, txHash);
 }
 
 bool IsPubcoinInBlockchain(const uint256& hashPubcoin, uint256& txid) {
   txid.SetNull();
-  return zerocoinDB->ReadCoinMint(hashPubcoin, txid);
+  return gpZerocoinDB->ReadCoinMint(hashPubcoin, txid);
 }
 
 bool IsSerialKnown(const CBigNum& bnSerial) {
   uint256 txHash;
-  return zerocoinDB->ReadCoinSpend(bnSerial, txHash);
+  return gpZerocoinDB->ReadCoinSpend(bnSerial, txHash);
 }
 
 bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx) {
   uint256 txHash;
-  // if not in zerocoinDB then its not in the blockchain
-  if (!zerocoinDB->ReadCoinSpend(bnSerial, txHash)) return false;
+  // if not in gpZerocoinDB then its not in the blockchain
+  if (!gpZerocoinDB->ReadCoinSpend(bnSerial, txHash)) return false;
 
   return IsTransactionInChain(txHash, nHeightTx);
 }
@@ -189,14 +189,14 @@ bool IsSerialInBlockchain(const uint256& hashSerial, int& nHeightTx, uint256& tx
 
 bool IsSerialInBlockchain(const uint256& hashSerial, int& nHeightTx, uint256& txidSpend, CTransaction& tx) {
   txidSpend.SetNull();
-  // if not in zerocoinDB then its not in the blockchain
-  if (!zerocoinDB->ReadCoinSpend(hashSerial, txidSpend)) return false;
+  // if not in gpZerocoinDB then its not in the blockchain
+  if (!gpZerocoinDB->ReadCoinSpend(hashSerial, txidSpend)) return false;
 
   return IsTransactionInChain(txidSpend, nHeightTx, tx);
 }
 
 std::string ReindexZerocoinDB() {
-  if (!zerocoinDB->WipeCoins("spends") || !zerocoinDB->WipeCoins("mints")) { return _("Failed to wipe zerocoinDB"); }
+  if (!gpZerocoinDB->WipeCoins("spends") || !gpZerocoinDB->WipeCoins("mints")) { return _("Failed to wipe zerocoinDB"); }
 
   CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
   while (pindex) {
@@ -217,7 +217,7 @@ std::string ReindexZerocoinDB() {
               if (!in.scriptSig.IsZerocoinSpend()) continue;
 
               libzerocoin::CoinSpend spend = TxInToZerocoinSpend(in);
-              zerocoinDB->WriteCoinSpend(spend.getCoinSerialNumber(), txid);
+              gpZerocoinDB->WriteCoinSpend(spend.getCoinSerialNumber(), txid);
             }
           }
 
@@ -229,7 +229,7 @@ std::string ReindexZerocoinDB() {
               CValidationState state;
               libzerocoin::PublicCoin coin;
               TxOutToPublicCoin(out, coin, state);
-              zerocoinDB->WriteCoinMint(coin, txid);
+              gpZerocoinDB->WriteCoinMint(coin, txid);
             }
           }
         }
@@ -241,7 +241,7 @@ std::string ReindexZerocoinDB() {
   return "";
 }
 
-bool RemoveSerialFromDB(const CBigNum& bnSerial) { return zerocoinDB->EraseCoinSpend(bnSerial); }
+bool RemoveSerialFromDB(const CBigNum& bnSerial) { return gpZerocoinDB->EraseCoinSpend(bnSerial); }
 
 libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin) {
   // extract the CoinSpend from the txin

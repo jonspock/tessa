@@ -40,7 +40,7 @@ bool ContextualCheckZerocoinMint(const CTransaction& tx, const PublicCoin& coin,
     // See if this coin has already been added to the blockchain
     uint256 txid;
     int nHeight;
-    if (zerocoinDB->ReadCoinMint(coin.getValue(), txid) && IsTransactionInChain(txid, nHeight))
+    if (gpZerocoinDB->ReadCoinMint(coin.getValue(), txid) && IsTransactionInChain(txid, nHeight))
       return error("%s: pubcoin %s was already accumulated in tx %s", __func__, coin.getValue().GetHex().substr(0, 10),
                    txid.GetHex());
   }
@@ -107,7 +107,7 @@ bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidati
     if (fVerifySignature) {
       // see if we have record of the accumulator used in the spend tx
       CBigNum bnAccumulatorValue = 0;
-      if (!zerocoinDB->ReadAccumulatorValue(newSpend.getAccumulatorChecksum(), bnAccumulatorValue)) {
+      if (!gpZerocoinDB->ReadAccumulatorValue(newSpend.getAccumulatorChecksum(), bnAccumulatorValue)) {
         uint32_t nChecksum = newSpend.getAccumulatorChecksum();
         return state.DoS(100, error("%s: Zerocoinspend could not find accumulator associated with checksum %s",
                                     __func__, HexStr(BEGIN(nChecksum), END(nChecksum))));

@@ -64,7 +64,7 @@ bool GetAccumulatorValueFromChecksum(uint32_t nChecksum, bool fMemoryOnly, CBigN
 
   if (fMemoryOnly) return false;
 
-  if (!zerocoinDB->ReadAccumulatorValue(nChecksum, bnAccValue)) { bnAccValue = 0; }
+  if (!gpZerocoinDB->ReadAccumulatorValue(nChecksum, bnAccValue)) { bnAccValue = 0; }
 
   return true;
 }
@@ -76,7 +76,7 @@ bool GetAccumulatorValueFromDB(uint256 nCheckpoint, CoinDenomination denom, CBig
 
 void AddAccumulatorChecksum(const uint32_t nChecksum, const CBigNum& bnValue) {
   // Since accumulators are switching at v2, stop databasing v1 because its useless. Only focus on v2.
-  zerocoinDB->WriteAccumulatorValue(nChecksum, bnValue);
+  gpZerocoinDB->WriteAccumulatorValue(nChecksum, bnValue);
   mapAccumulatorValues.insert(make_pair(nChecksum, bnValue));
 }
 
@@ -100,7 +100,7 @@ void DatabaseChecksums(AccumulatorMap& mapAccumulators) {
 bool EraseChecksum(uint32_t nChecksum) {
   // erase from both memory and database
   mapAccumulatorValues.erase(nChecksum);
-  return zerocoinDB->EraseAccumulatorValue(nChecksum);
+  return gpZerocoinDB->EraseAccumulatorValue(nChecksum);
 }
 
 bool EraseAccumulatorValues(const uint256& nCheckpointErase, const uint256& nCheckpointPrevious) {
@@ -123,7 +123,7 @@ bool LoadAccumulatorValuesFromDB(const uint256 nCheckpoint) {
 
     // if read is not successful then we are not in a state to verify zerocoin transactions
     CBigNum bnValue;
-    if (!zerocoinDB->ReadAccumulatorValue(nChecksum, bnValue)) {
+    if (!gpZerocoinDB->ReadAccumulatorValue(nChecksum, bnValue)) {
       if (!count(listAccCheckpointsNoDB.begin(), listAccCheckpointsNoDB.end(), nCheckpoint))
         listAccCheckpointsNoDB.push_back(nCheckpoint);
       LogPrint(TessaLog::ZKP, "%s : Missing databased value for checksum %d", __func__, nChecksum);
@@ -387,7 +387,7 @@ bool GenerateAccumulatorWitness(const PublicCoin& coin, Accumulator& accumulator
   if (nLockAttempts == 100) return error("%s: could not get lock on cs_main", __func__);
   LogPrint(TessaLog::ZKP, "%s: after lock\n", __func__);
   uint256 txid;
-  if (!zerocoinDB->ReadCoinMint(coin.getValue(), txid)) return error("%s failed to read mint from db", __func__);
+  if (!gpZerocoinDB->ReadCoinMint(coin.getValue(), txid)) return error("%s failed to read mint from db", __func__);
   LogPrint(TessaLog::ZKP, "%s Read mint for %s from DB", __func__, coin.getValue());
 
   CTransaction txMinted;

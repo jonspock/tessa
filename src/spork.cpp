@@ -42,7 +42,7 @@ void CSporkManager::LoadSporksFromDB() {
 
     // attempt to read spork from sporkDB
     CSporkMessage spork;
-    if (!pSporkDB->ReadSpork(sporkID, spork)) {
+    if (!gpSporkDB->ReadSpork(sporkID, spork)) {
       LogPrint(TessaLog::SPORK, "%s : no previous value for %s found in database\n", __func__, strSpork);
       continue;
     }
@@ -104,7 +104,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStr
     Relay(spork);
 
     // Tessa: add to spork database.
-    pSporkDB->WriteSpork(id, spork);
+    gpSporkDB->WriteSpork(id, spork);
   }
 
   if (strCommand == "getsporks") {

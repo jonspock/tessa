@@ -178,7 +178,7 @@ void CZeroWallet::SyncWithChain(bool fGenerateMintPool) {
 
       uint256 txHash;
       CZerocoinMint mint;
-      if (zerocoinDB->ReadCoinMint(pMint.first, txHash)) {
+      if (gpZerocoinDB->ReadCoinMint(pMint.first, txHash)) {
         // this mint has already occurred on the chain, increment counter's state to reflect this
         LogPrint(TessaLog::ZKP, "%s : Found wallet coin mint=%s count=%d tx=%s\n", __func__, pMint.first.GetHex(),
                  pMint.second, txHash.GetHex());

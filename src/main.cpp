@@ -442,8 +442,8 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
 
 CCoinsViewCache* pcoinsTip = nullptr;
 CBlockTreeDB* pblocktree = nullptr;
-CZerocoinDB* zerocoinDB = nullptr;
-CSporkDB* pSporkDB = nullptr;
+CZerocoinDB* gpZerocoinDB = nullptr;
+CSporkDB* gpSporkDB = nullptr;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1480,7 +1480,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
         for (const CTxIn& txin : tx.vin) {
           if (txin.scriptSig.IsZerocoinSpend()) {
             CoinSpend spend = TxInToZerocoinSpend(txin);
-            if (!zerocoinDB->EraseCoinSpend(spend.getCoinSerialNumber()))
+            if (!gpZerocoinDB->EraseCoinSpend(spend.getCoinSerialNumber()))
               return error("failed to erase spent zerocoin in block");
 
             // if this was our spend, then mark it unspent now
@@ -1502,7 +1502,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
           PublicCoin pubCoin;
           if (!TxOutToPublicCoin(txout, pubCoin, state)) return error("DisconnectBlock(): TxOutToPublicCoin() failed");
 
-          if (!zerocoinDB->EraseCoinMint(pubCoin.getValue()))
+          if (!gpZerocoinDB->EraseCoinMint(pubCoin.getValue()))
             return error("DisconnectBlock(): Failed to erase coin mint");
         }
       }
@@ -1964,7 +1964,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   set<uint256> setAddedTx;
   for (pair<CoinSpend, uint256> pSpend : vSpends) {
     // record spend to database
-    if (!zerocoinDB->WriteCoinSpend(pSpend.first.getCoinSerialNumber(), pSpend.second))
+    if (!gpZerocoinDB->WriteCoinSpend(pSpend.first.getCoinSerialNumber(), pSpend.second))
       return state.Abort(("Failed to record coin serial to database"));
 
     // Send signal to wallet if this is ours
@@ -1993,8 +1993,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   }
 
   // Flush spend/mint info to disk
-  // if (!zerocoinDB->WriteCoinSpendBatch(vSpends)) return state.Abort(("Failed to record coin serials to database"));
-  if (!zerocoinDB->WriteCoinMintBatch(vMints)) return state.Abort(("Failed to record new mints to database"));
+  // if (!gpZerocoinDB->WriteCoinSpendBatch(vSpends)) return state.Abort(("Failed to record coin serials to database"));
+  if (!gpZerocoinDB->WriteCoinMintBatch(vMints)) return state.Abort(("Failed to record new mints to database"));
 
   // Record accumulator checksums
   DatabaseChecksums(mapAccumulators);
@@ -3838,7 +3838,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     // Tessa: We use certain sporks during IBD, so check to see if they are
     // available. If not, ask the first peer connected for them.
-    bool fMissingSporks = !pSporkDB->SporkExists(SporkID::SPORK_PROTOCOL_ENFORCEMENT);
+    bool fMissingSporks = !gpSporkDB->SporkExists(SporkID::SPORK_PROTOCOL_ENFORCEMENT);
     if (fMissingSporks || !fRequestedSporksIDB) {
       LogPrintf("asking peer for sporks\n");
       pfrom->PushMessage("getsporks");
