@@ -143,10 +143,10 @@ bool CCryptoKeyStore::Lock() {
   return true;
 }
 void CCryptoKeyStore::SetMaster(const CKeyingMaterial &vInMasterKey) {
-    {
-        LOCK(cs_KeyStore);
-        vMasterKey = vInMasterKey;
-    }
+  {
+    LOCK(cs_KeyStore);
+    vMasterKey = vInMasterKey;
+  }
 }
 
 bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
@@ -155,7 +155,7 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
 
     bool keyPass = false;
     bool keyFail = false;
-    for (auto&  mi : mapCryptedKeys) {
+    for (auto &mi : mapCryptedKeys) {
       const CPubKey &vchPubKey = mi.second.first;
       const std::vector<uint8_t> &vchCryptedSecret = mi.second.second;
       CKey key;
@@ -244,7 +244,6 @@ bool CCryptoKeyStore::GetPubKey(const CKeyID &address, CPubKey &vchPubKeyOut) co
   return false;
 }
 
-
 bool CCryptoKeyStore::AddDeterministicSeed(const uint256 &seed) {
   string strErr;
   uint256 hashSeed = Hash(seed.begin(), seed.end());
@@ -276,7 +275,7 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &see
         seedOut = seedRetrieved;
         return true;
       }
-      
+
       CKeyingMaterial kmSeed;
       // attempt decrypt
       if (DecryptSecret(vMasterKey, vchCryptedSeed, hashSeed, kmSeed)) {
@@ -288,7 +287,7 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &see
       strErr = "read seed from wallet";
     }
   } else {
-      strErr = "read seed; wallet is locked";
+    strErr = "read seed; wallet is locked";
   }
   return error("%s: Failed to %s\n", __func__, strErr);
   //    return error("Failed to decrypt deterministic seed %s", IsLocked() ? "Wallet is locked!" : "");

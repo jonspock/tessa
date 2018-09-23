@@ -132,10 +132,8 @@ CPubKey CWallet::GenerateNewKey() {
   mapKeyMetadata[pubkey.GetID()] = metadata;
   /////  UpdateTimeFirstKey(nCreationTime);
 
-    ///???
-  if (!AddKeyPubKeyWithDB(secret, pubkey)) {
-    throw std::runtime_error(std::string(__func__) + ": AddKey failed");
-  }
+  ///???
+  if (!AddKeyPubKeyWithDB(secret, pubkey)) { throw std::runtime_error(std::string(__func__) + ": AddKey failed"); }
 
   return pubkey;
 }
@@ -207,9 +205,7 @@ bool CWallet::AddKeyPubKeyWithDB(const CKey& secret, const CPubKey& pubkey) {
   // AddCryptedKey
   // which is overridden below.  To avoid flushes, the database handle is
   // tunneled through to it.
-  if (!CCryptoKeyStore::AddKeyPubKey(secret, pubkey)) {
-    return false;
-  }
+  if (!CCryptoKeyStore::AddKeyPubKey(secret, pubkey)) { return false; }
 
   // Check if we need to remove from watch-only.
   CScript script;
@@ -219,7 +215,7 @@ bool CWallet::AddKeyPubKeyWithDB(const CKey& secret, const CPubKey& pubkey) {
   script = GetScriptForRawPubKey(pubkey);
   if (HaveWatchOnly(script)) { RemoveWatchOnly(script); }
 
-  return true; 
+  return true;
 }
 
 bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey& pubkey) {
@@ -318,9 +314,7 @@ bool CWallet::RemoveMultiSig(const CScript& dest) {
 }
 
 bool CWallet::LoadMultiSig(const CScript& dest) { return CCryptoKeyStore::AddMultiSig(dest); }
-void CWallet::SetMaster(const CKeyingMaterial &vInMasterKey) {
-  CCryptoKeyStore::SetMaster(vInMasterKey);
-}
+void CWallet::SetMaster(const CKeyingMaterial& vInMasterKey) { CCryptoKeyStore::SetMaster(vInMasterKey); }
 
 bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool anonymizeOnly) {
   SecureString strWalletPassphraseFinal;
@@ -333,7 +327,7 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool anonymizeOnly
   strWalletPassphraseFinal = strWalletPassphrase;
 
   CCrypter crypter;
-  CKeyingMaterial vTempMasterKey; // since multiple possible Master keys
+  CKeyingMaterial vTempMasterKey;  // since multiple possible Master keys
 
   // Weird duplication here for now
   if (mapMasterKeys.empty()) {
@@ -494,7 +488,6 @@ void CWallet::AddToSpends(const uint256& wtxid) {
 // Creates a CMasterKey and adds it to mapMasterKeys for future use
 // everything else in here is temporary
 bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
-
   CKeyingMaterial vTempMasterKey;
   vTempMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
   GetStrongRandBytes(&vTempMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
@@ -513,8 +506,8 @@ bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
                                kMasterKey.nDerivationMethod);
 
   kMasterKey.nDeriveIterations =
-    (kMasterKey.nDeriveIterations + kMasterKey.nDeriveIterations * 100 / ((double)(GetTimeMillis() - nStartTime))) /
-    2;
+      (kMasterKey.nDeriveIterations + kMasterKey.nDeriveIterations * 100 / ((double)(GetTimeMillis() - nStartTime))) /
+      2;
 
   if (kMasterKey.nDeriveIterations < 25000) kMasterKey.nDeriveIterations = 25000;
 
@@ -524,35 +517,31 @@ bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
   if (!crypter.SetKeyFromPassphrase(strWalletPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations,
                                     kMasterKey.nDerivationMethod))
     return false;
-    
-  if (!crypter.Encrypt(vTempMasterKey, kMasterKey.vchCryptedKey)) return false;
-    {
-        LOCK(cs_wallet);
-        mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
-        gWalletDB.WriteMasterKey(nMasterKeyMaxID, kMasterKey);
 
-        CMasterKey kkMasterKey;
-        if (!gWalletDB.ReadMasterKey(nMasterKeyMaxID, kkMasterKey)) {
-            LogPrintf("Problem reading back kMasterKey");
-        }
-        std::cout << "Check if reading back Key worked!!\n";
-        //std::cout << "Set mapMasterKeys[" << nMasterKeyMaxID << "]\n";
-    }
+  if (!crypter.Encrypt(vTempMasterKey, kMasterKey.vchCryptedKey)) return false;
+  {
+    LOCK(cs_wallet);
+    mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
+    gWalletDB.WriteMasterKey(nMasterKeyMaxID, kMasterKey);
+
+    CMasterKey kkMasterKey;
+    if (!gWalletDB.ReadMasterKey(nMasterKeyMaxID, kkMasterKey)) { LogPrintf("Problem reading back kMasterKey"); }
+    std::cout << "Check if reading back Key worked!!\n";
+    // std::cout << "Set mapMasterKeys[" << nMasterKeyMaxID << "]\n";
+  }
 
   CCryptoKeyStore::SetMaster(vTempMasterKey);
 
-  
   // Generate a new master key.
-  ecdsa::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey(); // Also adds to DB
+  ecdsa::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey();  // Also adds to DB
   if (!SetHDMasterKey(masterPubKey)) {
     throw std::runtime_error(std::string(__func__) + ": Storing master key failed");
   }
-    
+
   NewKeyPool();
   //???? Lock();
 
   return true;
-    
 }
 
 int64_t CWallet::IncOrderPosNext() {

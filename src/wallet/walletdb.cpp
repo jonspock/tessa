@@ -465,9 +465,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
   return true;
 }
 
-static bool IsKeyType(string strType) {
-  return (strType == "mkey" || strType == "ckey");
-}
+static bool IsKeyType(string strType) { return (strType == "mkey" || strType == "ckey"); }
 
 DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
   pwallet->vchDefaultKey = CPubKey();
@@ -692,7 +690,6 @@ bool CWalletDB::UnarchiveDeterministicMint(const uint256& hashPubcoin, CDetermin
 bool CWalletDB::WriteCurrentSeedHash(const uint256& hashSeed) { return Write(string("seedhash"), hashSeed); }
 
 bool CWalletDB::ReadCurrentSeedHash(uint256& hashSeed) { return Read(string("seedhash"), hashSeed); }
-
 
 bool CWalletDB::WriteZKPSeed(const uint256& hashSeed, const vector<uint8_t>& seed) {
   if (!WriteCurrentSeedHash(hashSeed)) return error("%s: failed to write current seed hash", __func__);

@@ -79,7 +79,7 @@ enum AvailableCoinsType {
   STAKABLE_COINS = 2  // UTXO's that are valid for staking
 };
 
-//void InterruptWallet();
+// void InterruptWallet();
 
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
@@ -208,7 +208,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
     fFileBacked = true;
   }
 
-  ~CWallet() { }
+  ~CWallet() {}
 
   void SetNull() {
     nWalletVersion = FEATURE_LATEST;
@@ -350,7 +350,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool LoadMultiSig(const CScript& dest);
 
   bool Unlock(const SecureString& strWalletPassphrase, bool anonimizeOnly = false);
-  void SetMaster(const CKeyingMaterial &vInMasterKey);
+  void SetMaster(const CKeyingMaterial& vInMasterKey);
   bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
   bool SetupCrypter(const SecureString& strWalletPassphrase);
 

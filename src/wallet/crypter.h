@@ -142,7 +142,6 @@ class CCryptoKeyStore : public CBasicKeyStore {
  public:
   CCryptoKeyStore() : fDecryptionThoroughlyChecked(false) {}
 
-
   bool IsLocked() const {
     bool result;
     {
