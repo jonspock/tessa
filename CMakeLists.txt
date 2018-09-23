@@ -171,7 +171,7 @@ else()
 endif()
 
 add_definitions("-fPIC")
-add_definitions("-DUSE_LEVELDB")
+#add_definitions("-DUSE_LEVELDB")
 
 SET(COMMON_A
   ./src/support/cleanse.cpp
@@ -384,8 +384,8 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${GMP_INCLUDE_DIR}
   ${ROCKSDB_INCLUDE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
+#  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
+#  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
   ${sodium_INCLUDE_DIR}
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/relic/include
@@ -445,8 +445,8 @@ add_subdirectory(src/liblmdb)
 add_subdirectory(src/ecdsa)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
-target_link_libraries(coin ${ROCKSDB_LIBRARIES} leveldb)
-#target_link_libraries(coin ${ROCKSDB_LIBRARIES})
+#target_link_libraries(coin ${ROCKSDB_LIBRARIES} leveldb)
+target_link_libraries(coin ${ROCKSDB_LIBRARIES})
 
 add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
 add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
@@ -498,7 +498,7 @@ endif()
 #------------------- ------------------- ------------------- ------------------- -------------------
 message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb leveldb ${ROCKSDB_LIBRARIES} ${Boost_LIBRARIES} 
+SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${Boost_LIBRARIES} 
   miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIB}) # wsock32)
 
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
