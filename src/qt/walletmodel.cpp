@@ -27,13 +27,6 @@
 #include "wallet/walletdb.h"  // for BackupWallet
 #include <stdint.h>
 
-
-#include <boost/bind.hpp>
-#include <boost/signals2/last_value.hpp>
-#include <boost/signals2/signal.hpp>
-
-
-
 #include <QDebug>
 #include <QSet>
 #include <QTimer>
@@ -468,28 +461,28 @@ static void NotifyWalletBacked(WalletModel* model, const bool& fSuccess, const s
 
 void WalletModel::subscribeToCoreSignals() {
   // Connect signals to wallet
-  wallet->NotifyStatusChanged.connect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
-  wallet->NotifyAddressBookChanged_connect(boost::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
-  wallet->NotifyTransactionChanged_connect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
-  wallet->ShowProgress_connect(boost::bind(ShowProgress, this, _1, _2));
-  wallet->NotifyWatchonlyChanged_connect(boost::bind(NotifyWatchonlyChanged, this, _1));
-  wallet->NotifyMultiSigChanged_connect(boost::bind(NotifyMultiSigChanged, this, _1));
-  wallet->NotifyZerocoinChanged_connect(boost::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
-  wallet->NotifyZkpReset_connect(boost::bind(NotifyZkpReset, this));
-  wallet->NotifyWalletBacked_connect(boost::bind(NotifyWalletBacked, this, _1, _2));
+  wallet->NotifyStatusChanged.connect(std::bind(&NotifyKeyStoreStatusChanged, this, std::placeholders::_1));
+  wallet->NotifyAddressBookChanged.connect(std::bind(NotifyAddressBookChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+  wallet->NotifyTransactionChanged.connect(std::bind(NotifyTransactionChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+  wallet->ShowProgress.connect(std::bind(ShowProgress, this, std::placeholders::_1, std::placeholders::_2));
+  wallet->NotifyWatchonlyChanged.connect(std::bind(NotifyWatchonlyChanged, this, std::placeholders::_1));
+  wallet->NotifyMultiSigChanged.connect(std::bind(NotifyMultiSigChanged, this, std::placeholders::_1));
+  wallet->NotifyZerocoinChanged.connect(std::bind(NotifyZerocoinChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+  wallet->NotifyZkpReset.connect(std::bind(NotifyZkpReset, this));
+  wallet->NotifyWalletBacked.connect(std::bind(NotifyWalletBacked, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void WalletModel::unsubscribeFromCoreSignals() {
   // Disconnect signals from wallet
-  //wallet->NotifyStatusChanged.disconnect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
-  wallet->NotifyAddressBookChanged_disconnect(boost::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
-  wallet->NotifyTransactionChanged_disconnect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
-  wallet->ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
-  wallet->NotifyWatchonlyChanged_disconnect(boost::bind(NotifyWatchonlyChanged, this, _1));
-  wallet->NotifyMultiSigChanged_disconnect(boost::bind(NotifyMultiSigChanged, this, _1));
-  wallet->NotifyZerocoinChanged_disconnect(boost::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
-  wallet->NotifyZkpReset_disconnect(boost::bind(NotifyZkpReset, this));
-  wallet->NotifyWalletBacked_disconnect(boost::bind(NotifyWalletBacked, this, _1, _2));
+  //wallet->NotifyStatusChanged.disconnect(std::bind(&NotifyKeyStoreStatusChanged, this, _1));
+  //  wallet->NotifyAddressBookChanged_disconnect(std::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
+  //  wallet->NotifyTransactionChanged_disconnect(std::bind(NotifyTransactionChanged, this, _1, _2, _3));
+  //  wallet->ShowProgress_disconnect(std::bind(ShowProgress, this, _1, _2));
+  //  wallet->NotifyWatchonlyChanged_disconnect(std::bind(NotifyWatchonlyChanged, this, _1));
+  //  wallet->NotifyMultiSigChanged_disconnect(std::bind(NotifyMultiSigChanged, this, _1));
+  //  wallet->NotifyZerocoinChanged_disconnect(std::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
+  //  wallet->NotifyZkpReset_disconnect(std::bind(NotifyZkpReset, this));
+  //  wallet->NotifyWalletBacked_disconnect(std::bind(NotifyWalletBacked, this, _1, _2));
 }
 
 // WalletModel::UnlockContext implementation

@@ -503,7 +503,7 @@ SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${Boost_LI
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 target_link_libraries(tessad ${LIBS_LIST})
 
-#add_subdirectory(src/qt)
+add_subdirectory(src/qt)
 
 
 #---------------------------------------------------------------------------------------------------------
