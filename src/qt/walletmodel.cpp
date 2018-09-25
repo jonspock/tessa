@@ -468,7 +468,7 @@ static void NotifyWalletBacked(WalletModel* model, const bool& fSuccess, const s
 
 void WalletModel::subscribeToCoreSignals() {
   // Connect signals to wallet
-  wallet->NotifyStatusChanged_connect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
+  wallet->NotifyStatusChanged.connect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
   wallet->NotifyAddressBookChanged_connect(boost::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
   wallet->NotifyTransactionChanged_connect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
   wallet->ShowProgress_connect(boost::bind(ShowProgress, this, _1, _2));
@@ -481,7 +481,7 @@ void WalletModel::subscribeToCoreSignals() {
 
 void WalletModel::unsubscribeFromCoreSignals() {
   // Disconnect signals from wallet
-  wallet->NotifyStatusChanged_disconnect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
+  //wallet->NotifyStatusChanged.disconnect(boost::bind(&NotifyKeyStoreStatusChanged, this, _1));
   wallet->NotifyAddressBookChanged_disconnect(boost::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
   wallet->NotifyTransactionChanged_disconnect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
   wallet->ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));

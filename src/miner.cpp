@@ -504,7 +504,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
   }
 
   // Inform about the new block
-  GetMainSignals().BlockFound(pblock->GetHash());
+  GetMainSignals().BlockFound.fire(pblock->GetHash());
 
   // Process this block the same as if we had received it from another node
   CValidationState state;

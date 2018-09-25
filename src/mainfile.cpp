@@ -33,9 +33,10 @@ fs::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix) {
 bool AbortNode(const std::string& strMessage, const std::string& userMessage) {
   strMiscWarning = strMessage;
   LogPrintf("*** %s\n", strMessage);
-  uiInterface.ThreadSafeMessageBox(
+  bool fRet;
+  uiInterface.ThreadSafeMessageBox.fire(
       userMessage.empty() ? _("Error: A fatal internal error occured, see debug.log for details") : userMessage, "",
-      CClientUIInterface::MSG_ERROR);
+      CClientUIInterface::MSG_ERROR, &fRet);
   StartShutdown();
   return false;
 }

@@ -641,7 +641,7 @@ class CSizeComputer {
   int nVersion=0;
 
   CSizeComputer(int nTypeIn, int nVersionIn) {}
-  CSizeComputer() {}
+  CSizeComputer() = default;
 
   CSizeComputer& write(const char* psz, size_t nSize) {
     this->nSize += nSize;

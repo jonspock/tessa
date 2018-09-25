@@ -15,9 +15,9 @@
 #include <cstdio>
 #include <string>
 
-#include <boost/signals2/signal.hpp>
+#include "signals-cpp/signals.hpp"
 
-static bool noui_ThreadSafeMessageBox(const std::string& message, const std::string& caption, uint32_t style) {
+static void noui_ThreadSafeMessageBox(const std::string& message, const std::string& caption, uint32_t style, bool* b) {
   bool fSecure = style & CClientUIInterface::SECURE;
   style &= ~CClientUIInterface::SECURE;
 
@@ -39,13 +39,13 @@ static bool noui_ThreadSafeMessageBox(const std::string& message, const std::str
 
   if (!fSecure) LogPrintf("%s: %s\n", strCaption, message);
   fprintf(stderr, "%s: %s\n", strCaption.c_str(), message.c_str());
-  return false;
+  *b = false;
 }
 
 static void noui_InitMessage(const std::string& message) { LogPrintf("init message: %s\n", message); }
 
 void noui_connect() {
   // Connect tessad signal handlers
-  uiInterface.ThreadSafeMessageBox_connect(noui_ThreadSafeMessageBox);
-  uiInterface.InitMessage_connect(noui_InitMessage);
+  uiInterface.ThreadSafeMessageBox.connect(noui_ThreadSafeMessageBox);
+  uiInterface.InitMessage.connect(noui_InitMessage);
 }

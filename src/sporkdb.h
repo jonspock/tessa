@@ -12,12 +12,11 @@ class CSporkDB : public CDataDBWrapper {
  public:
   CSporkDB();
 
- private:
-  CSporkDB(const CSporkDB&);
-  void operator=(const CSporkDB&);
-
  public:
-  bool WriteSpork(const SporkID nSporkId, const CSporkMessage& spork);
-  bool ReadSpork(const SporkID nSporkId, CSporkMessage& spork);
-  bool SporkExists(const SporkID nSporkId);
+  bool WriteSpork(const SporkID nSporkId, const CSporkMessage& spork) {
+    LogPrint(TessaLog::SPORK, "Wrote spork %s to database\n", gSporkManager.GetSporkNameByID(nSporkId));
+    return Write((int)nSporkId, spork);
+  }
+  bool ReadSpork(const SporkID nSporkId, CSporkMessage& spork) { return Read((int)nSporkId, spork); }
+  bool SporkExists(const SporkID nSporkId) { return Exists((int)nSporkId); }
 };

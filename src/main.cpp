@@ -51,9 +51,6 @@
 #include "libzerocoin/Denominations.h"
 #include "libzerocoin/PublicCoin.h"
 
-#include <boost/signals2/last_value.hpp>
-#include <boost/signals2/signal.hpp>
-
 #include <cmath>
 #include <sstream>
 #include <thread>
@@ -196,14 +193,14 @@ CNodeState* State(NodeId pnode) {
   return &it->second;
 }
 
-int GetHeight() {
+void GetHeight(int* h) {
   while (true) {
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain) {
       MilliSleep(50);
       continue;
     }
-    return chainActive.Height();
+    *h = chainActive.Height();
   }
 }
 
@@ -412,19 +409,21 @@ bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats) {
 }
 
 void RegisterNodeSignals(CNodeSignals& nodeSignals) {
-  nodeSignals.GetHeight_connect(&GetHeight);
-  nodeSignals.ProcessMessages_connect(&ProcessMessages);
-  nodeSignals.SendMessages_connect(&SendMessages);
-  nodeSignals.InitializeNode_connect(&InitializeNode);
-  nodeSignals.FinalizeNode_connect(&FinalizeNode);
+  nodeSignals.GetHeight.connect(&GetHeight);
+  nodeSignals.ProcessMessagesSignal.connect(&ProcessMessagesSignal);
+  nodeSignals.SendMessages.connect(&SendMessages);
+  nodeSignals.InitializeNode.connect(&InitializeNode);
+  nodeSignals.FinalizeNode.connect(&FinalizeNode);
 }
 
 void UnregisterNodeSignals(CNodeSignals& nodeSignals) {
-  nodeSignals.GetHeight_disconnect(&GetHeight);
-  nodeSignals.ProcessMessages_disconnect(&ProcessMessages);
-  nodeSignals.SendMessages_disconnect(&SendMessages);
-  nodeSignals.InitializeNode_disconnect(&InitializeNode);
-  nodeSignals.FinalizeNode_disconnect(&FinalizeNode);
+  /*
+  nodeSignals.GetHeight.disconnect(&GetHeight);
+  nodeSignals.ProcessMessages.disconnect(&ProcessMessages);
+  nodeSignals.SendMessages.disconnect(&SendMessages);
+  nodeSignals.InitializeNode.disconnect(&InitializeNode);
+  nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
+  */
 }
 
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator) {
@@ -1971,7 +1970,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
       if (pwalletMain->IsMyZerocoinSpend(pSpend.first.getCoinSerialNumber())) {
         LogPrintf("%s: %s detected zerocoinspend in transaction %s \n", __func__,
                   pSpend.first.getCoinSerialNumber().GetHex(), pSpend.second.GetHex());
-        pwalletMain->NotifyZerocoinChanged(pwalletMain, pSpend.first.getCoinSerialNumber().GetHex(), "Used",
+        pwalletMain->NotifyZerocoinChanged.fire(pwalletMain, pSpend.first.getCoinSerialNumber().GetHex(), "Used",
                                            CT_UPDATED);
 
         // Don't add the same tx multiple times
@@ -2010,7 +2009,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   // Watch for changes to the previous coinbase transaction.
   static uint256 hashPrevBestCoinBase;
-  GetMainSignals().UpdatedTransaction(hashPrevBestCoinBase);
+  GetMainSignals().UpdatedTransaction.fire(hashPrevBestCoinBase);
   hashPrevBestCoinBase = block.vtx[0].GetHash();
 
   int64_t nTime4 = GetTimeMicros();
@@ -2071,7 +2070,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode) {
       // Finally flush the chainstate (which may refer to block index entries).
       if (!gpCoinsTip->Flush()) return state.Abort("Failed to write to coin database");
       // Update best block in wallet (so we can detect restored wallets).
-      if (mode != FLUSH_STATE_IF_NEEDED) { GetMainSignals().SetBestChain(chainActive.GetLocator()); }
+      if (mode != FLUSH_STATE_IF_NEEDED) { GetMainSignals().SetBestChain.fire(chainActive.GetLocator()); }
       nLastWrite = GetTimeMicros();
     }
   } catch (const std::runtime_error& e) { return state.Abort(std::string("System error while flushing: ") + e.what()); }
@@ -2183,7 +2182,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   {
     CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
     bool rv = ConnectBlock(*pblock, state, pindexNew, view, false, fAlreadyChecked);
-    GetMainSignals().BlockChecked(*pblock, state);
+    GetMainSignals().BlockChecked.fire(*pblock, state);
     if (!rv) {
       if (state.IsInvalid()) InvalidBlockFound(pindexNew, state);
       return error("ConnectTip() : ConnectBlock %s failed", pindexNew->GetBlockHash().ToString());
@@ -2493,14 +2492,14 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
       }
       // Notify external listeners about the new tip.
       // Note: uiInterface, should switch main signals.
-      uiInterface.NotifyBlockTip(hashNewTip);
-      GetMainSignals().UpdatedBlockTip(pindexNewTip);
+      uiInterface.NotifyBlockTip.fire(hashNewTip);
+      GetMainSignals().UpdatedBlockTip.fire(pindexNewTip);
 
       unsigned size = 0;
       if (pblock) size = GetSerializeSize(*pblock);
       // If the size is over 1 MB notify external listeners, and it is within the last 5 minutes
       if (size > MAX_BLOCK_SIZE_LEGACY && pblock->GetBlockTime() > GetAdjustedTime() - 300) {
-        uiInterface.NotifyBlockSize(static_cast<int>(size), hashNewTip);
+        uiInterface.NotifyBlockSize.fire(static_cast<int>(size), hashNewTip);
       }
     }
   } while (pindexMostWork != chainActive.Tip());
@@ -3797,7 +3796,7 @@ void static ProcessGetData(CNode* pfrom) {
       }
 
       // Track requests for our stuff.
-      GetMainSignals().Inventory(inv.hash);
+      GetMainSignals().Inventory.fire(inv.hash);
 
       if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK) break;
     }
@@ -4027,7 +4026,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       }
 
       // Track requests for our stuff
-      GetMainSignals().Inventory(inv.hash);
+      GetMainSignals().Inventory.fire(inv.hash);
 
       if (pfrom->nSendSize > (SendBufferSize() * 2)) {
         Misbehaving(pfrom->GetId(), 50);
@@ -4516,6 +4515,11 @@ int ActiveProtocol() {
   return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 
+void ProcessMessagesSignal(CNode* pfrom, bool* b) {
+  *b = ProcessMessages(pfrom);
+}
+
+
 // requires LOCK(cs_vRecvMsg)
 bool ProcessMessages(CNode* pfrom) {
   // if (fDebug)
@@ -4725,7 +4729,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
     // Resend wallet transactions that haven't gotten in a block yet
     // Except during reindex, importing and IBD, when old wallet
     // transactions become unconfirmed and spams other nodes.
-    if (!fReindex /*&& !fImporting && !IsInitialBlockDownload()*/) { GetMainSignals().Broadcast(); }
+    if (!fReindex /*&& !fImporting && !IsInitialBlockDownload()*/) { GetMainSignals().Broadcast.fire(); }
 
     //
     // Message: inventory

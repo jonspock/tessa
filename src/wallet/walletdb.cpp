@@ -233,9 +233,9 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet) {
   typedef multimap<int64_t, TxPair> TxItems;
   TxItems txByTime;
 
-  for (map<uint256, CWalletTx>::iterator it = pwallet->mapWallet.begin(); it != pwallet->mapWallet.end(); ++it) {
-    CWalletTx* wtx = &((*it).second);
-    txByTime.insert(make_pair(wtx->nTimeReceived, TxPair(wtx, (CAccountingEntry*)0)));
+  for (auto& it : pwallet->mapWallet) {
+    CWalletTx* wtx = &(it.second);
+    txByTime.insert(make_pair(wtx->nTimeReceived, TxPair(wtx, (CAccountingEntry*)nullptr)));
   }
   list<CAccountingEntry> acentries;
   ListAccountCreditDebit("", acentries);
@@ -244,9 +244,9 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet) {
   int64_t& nOrderPosNext = pwallet->nOrderPosNext;
   nOrderPosNext = 0;
   std::vector<int64_t> nOrderPosOffsets;
-  for (TxItems::iterator it = txByTime.begin(); it != txByTime.end(); ++it) {
-    CWalletTx* const pwtx = (*it).second.first;
-    CAccountingEntry* const pacentry = (*it).second.second;
+  for (const auto& it : txByTime) {
+    CWalletTx* const pwtx = it.second.first;
+    CAccountingEntry* const pacentry = it.second.second;
     int64_t& nOrderPos = (pwtx != 0) ? pwtx->nOrderPos : pacentry->nOrderPos;
 
     if (nOrderPos == -1) {
@@ -615,7 +615,7 @@ DBErrors CWalletDB::ZapWalletTx(CWallet* pwallet, vector<CWalletTx>& vWtx) {
 
 void NotifyBacked(const CWallet& wallet, bool fSuccess, string strMessage) {
   LogPrint(TessaLog::NONE, strMessage.data());
-  wallet.NotifyWalletBacked(fSuccess, strMessage);
+  wallet.NotifyWalletBacked.fire(fSuccess, strMessage);
 }
 
 bool CWalletDB::WriteDestData(const std::string& address, const std::string& key, const std::string& value) {

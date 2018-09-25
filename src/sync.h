@@ -202,8 +202,8 @@ class CSemaphore {
 /** RAII-style semaphore lock */
 class CSemaphoreGrant {
  private:
-  CSemaphore *sem;
-  bool fHaveGrant;
+  CSemaphore *sem=nullptr;
+  bool fHaveGrant=false;
 
  public:
   void Acquire() {
@@ -230,9 +230,9 @@ class CSemaphoreGrant {
     fHaveGrant = false;
   }
 
-  CSemaphoreGrant() : sem(nullptr), fHaveGrant(false) {}
+  CSemaphoreGrant() = default;
 
-  CSemaphoreGrant(CSemaphore &sema, bool fTry = false) : sem(&sema), fHaveGrant(false) {
+  CSemaphoreGrant(CSemaphore &sema, bool fTry = false) : sem(&sema) {
     if (fTry)
       TryAcquire();
     else

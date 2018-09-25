@@ -140,8 +140,6 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   return obj;
 }
 
-UniValue mnsync(const UniValue& params, bool fHelp) { return "failure"; }
-
 class DescribeAddressVisitor : public mpark::variant<UniValue> {
  private:
   isminetype mine;

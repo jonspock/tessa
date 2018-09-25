@@ -29,7 +29,7 @@ class CBaseChainParams {
   int RPCPort() const { return nRPCPort; }
 
  protected:
-  CBaseChainParams() {}
+  CBaseChainParams() = default;
 
   int nRPCPort;
   std::string strDataDir;

@@ -29,11 +29,7 @@
 #include <arpa/inet.h>
 #endif
 
-namespace boost {
-namespace signals2 {
-class connection;
-}
-}  // namespace boost
+#include "signals-cpp/signal.hpp"
 
 class CAddrMan;
 class CBlockIndex;
@@ -85,19 +81,13 @@ bool StopNode();
 void InterruptNode();
 void SocketSendData(CNode* pnode);
 
-#define ADD_NET_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                            \
-  rtype signal_name(__VA_ARGS__);                                                        \
-  using signal_name##Sig = rtype(__VA_ARGS__);                                           \
-  boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
-  void signal_name##_disconnect(std::function<signal_name##Sig> fn);
-
 // Signals for message handling
 struct CNodeSignals {
-  ADD_NET_SIGNALS_DECL_WRAPPER(GetHeight, int, void)
-  ADD_NET_SIGNALS_DECL_WRAPPER(ProcessMessages, bool, CNode*)
-  ADD_NET_SIGNALS_DECL_WRAPPER(SendMessages, bool, CNode*, bool)
-  ADD_NET_SIGNALS_DECL_WRAPPER(InitializeNode, void, NodeId, const CNode*)
-  ADD_NET_SIGNALS_DECL_WRAPPER(FinalizeNode, void, NodeId)
+  sigs::signal<void(int*)> GetHeight;
+  sigs::signal<void(CNode*, bool*)> ProcessMessagesSignal;
+  sigs::signal<bool(CNode*, bool)> SendMessages;
+  sigs::signal<void(NodeId, const CNode*)> InitializeNode;
+  sigs::signal<void(NodeId)> FinalizeNode;
 };
 
 CNodeSignals& GetNodeSignals();

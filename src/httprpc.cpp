@@ -147,9 +147,10 @@ static bool InitRPCAuthentication() {
   if (gArgs.GetArg("-rpcpassword", "") == "") {
     LogPrintf("No rpcpassword set - using random cookie authentication\n");
     if (!GenerateAuthCookie(&strRPCUserColonPass)) {
-      uiInterface.ThreadSafeMessageBox(
+      bool fRet;
+      uiInterface.ThreadSafeMessageBox.fire(
           _("Error: A fatal internal error occurred, see debug.log for details"),  // Same message as AbortNode
-          "", CClientUIInterface::MSG_ERROR);
+          "", CClientUIInterface::MSG_ERROR, &fRet);
       return false;
     }
   } else {
