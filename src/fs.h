@@ -7,9 +7,9 @@
 #pragma once
 
 // Not ready for this yet (disable via define instead of compiler version)
-#ifdef USE_STD_FILESYSTEM
+#ifdef NO_BOOST_FILESYSTEM
 
-#include <filesystem>
+#include "filesystem/filesystem.hpp"
 namespace fs = std::filesystem;
 
 #else
@@ -26,7 +26,7 @@ namespace fs = boost::filesystem;
 
 /** Bridge operations to C stdio */
 namespace fsbridge {
-FILE *fopen(const fs::path &p, const char *mode);
-FILE *freopen(const fs::path &p, const char *mode, FILE *stream);
+  FILE *fopen(const fs::path &p, const char *mode);
+  FILE *freopen(const fs::path &p, const char *mode, FILE *stream);
 }
 // clang-format on

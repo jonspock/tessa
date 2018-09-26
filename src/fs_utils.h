@@ -8,7 +8,6 @@
 
 #pragma once
 
-//#include "fs.h"
 
 #ifdef WIN32
 #include <mswsock.h>
@@ -19,13 +18,17 @@
 #include <sys/types.h>
 #endif
 
+#ifdef NO_BOOST_FILESYSTEM
+#include "fs.h"
+#else
 // Forward decl
 namespace boost {
-namespace filesystem {
-class path;
-}
+  namespace filesystem {
+    class path;
+  }
 }  // namespace boost
 namespace fs = boost::filesystem;
+#endif
 
 struct CDiskBlockPos;
 

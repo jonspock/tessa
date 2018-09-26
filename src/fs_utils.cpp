@@ -114,7 +114,7 @@ const fs::path& GetDataDir(bool fNetSpecific) {
   } else {
     path = GetDefaultDataDir();
   }
-  if (fNetSpecific) path /= BaseParams().DataDir();
+  if (fNetSpecific) path = path / BaseParams().DataDir();
 
   fs::create_directories(path);
 
@@ -159,11 +159,15 @@ bool RenameOver(const fs::path& src, fs::path& dest) {
  * write to the parent directory.
  */
 bool TryCreateDirectory(const fs::path& p) {
+#ifdef NO_BOOST_FILESYSTEM
+    return fs::create_directory(p);
+#else  
   try {
     return fs::create_directory(p);
   } catch (fs::filesystem_error&) {
     if (!fs::exists(p) || !fs::is_directory(p)) throw;
   }
+#endif
 
   // create_directory didn't create the directory, it had to have existed already
   return false;

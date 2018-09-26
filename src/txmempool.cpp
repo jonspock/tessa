@@ -6,7 +6,11 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "txmempool.h"
-
+#ifdef NO_BOOST_FILESYSTEM
+#include "blockaverage.h"
+#else
+#include "boost_blockaverage.h"
+#endif
 #include "chainparams.h"
 #include "clientversion.h"
 #include "main.h"
@@ -17,8 +21,7 @@
 #include "version.h"
 #include <algorithm>
 #include <random>
-
-#include <boost/circular_buffer.hpp>
+#include <deque>
 
 using namespace std;
 
@@ -42,58 +45,6 @@ double CTxMemPoolEntry::GetPriority(uint32_t currentHeight) const {
   double dResult = dPriority + deltaPriority;
   return dResult;
 }
-
-/**
- * Keep track of fee/priority for transactions confirmed within N blocks
- */
-class CBlockAverage {
- private:
-  boost::circular_buffer<double> prioritySamples;
-
-  template <typename T> std::vector<T> buf2vec(boost::circular_buffer<T> buf) const {
-    std::vector<T> vec(buf.begin(), buf.end());
-    return vec;
-  }
-
- public:
-  CBlockAverage() : prioritySamples(100) {}
-
-  void RecordPriority(double priority) { prioritySamples.push_back(priority); }
-
-  size_t PrioritySamples() const { return prioritySamples.size(); }
-  size_t GetPrioritySamples(std::vector<double>& insertInto) const {
-    for (double d : prioritySamples) insertInto.push_back(d);
-    return prioritySamples.size();
-  }
-
-  /**
-   * Used as belt-and-suspenders check when reading to detect
-   * file corruption
-   */
-  static bool AreSane(const double priority) { return priority >= 0; }
-  static bool AreSane(const std::vector<double> vecPriority) {
-    for (double priority : vecPriority) {
-      if (!AreSane(priority)) return false;
-    }
-    return true;
-  }
-
-  void Write(CAutoFile& fileout) const {
-    std::vector<double> vecPriority = buf2vec(prioritySamples);
-    fileout << vecPriority;
-  }
-
-  void Read(CAutoFile& filein) {
-    std::vector<double> vecPriority;
-    filein >> vecPriority;
-    if (AreSane(vecPriority))
-      prioritySamples.insert(prioritySamples.end(), vecPriority.begin(), vecPriority.end());
-    else
-      throw runtime_error("Corrupt priority value in estimates file.");
-    if (prioritySamples.size() > 0)
-      LogPrint(TessaLog::ESTIMATEFEE, "Read %d priority samples\n", prioritySamples.size());
-  }
-};
 
 class CMinerPolicyEstimator {
  private:
@@ -185,9 +136,9 @@ class CMinerPolicyEstimator {
     sortedPrioritySamples.clear();
 
     for (size_t i = 0; i < history.size(); i++) {
-      if (history[i].PrioritySamples() > 0)
+      if (history[i].size() > 0)
         LogPrint(TessaLog::ESTIMATEFEE, "estimates: for confirming within %d blocks based on %d samples, prio=%g\n", i,
-                 history[i].PrioritySamples(), estimatePriority(i + 1));
+                 history[i].size(), estimatePriority(i + 1));
     }
   }
 
@@ -209,7 +160,7 @@ class CMinerPolicyEstimator {
     }
     if (sortedPrioritySamples.size() < 11) return -1.0;
 
-    int nBucketSize = history.at(nBlocksToConfirm).PrioritySamples();
+    int nBucketSize = history.at(nBlocksToConfirm).size();
 
     // Estimates should not increase as number of confirmations needed goes up,
     // but the estimates are noisy because confirmations happen discretely
@@ -217,7 +168,7 @@ class CMinerPolicyEstimator {
     // and use the nth highest where n is (number of samples in previous buckets +
     // half the samples in nBlocksToConfirm bucket).
     size_t nPrevSize = 0;
-    for (int i = 0; i < nBlocksToConfirm; i++) nPrevSize += history.at(i).PrioritySamples();
+    for (int i = 0; i < nBlocksToConfirm; i++) nPrevSize += history.at(i).size();
     size_t index = min(nPrevSize + nBucketSize / 2, sortedPrioritySamples.size() - 1);
     return sortedPrioritySamples[index];
   }

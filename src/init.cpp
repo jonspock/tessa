@@ -69,8 +69,10 @@
 using namespace std;
 using fs::create_directories;
 using fs::exists;
-using fs::filesystem_error;
 using fs::path;
+#ifndef NO_BOOST_FILESYSTEM
+using fs::filesystem_error;
+#endif
 
 CWallet* pwalletMain = nullptr;
 CZeroWallet* zwalletMain = nullptr;
@@ -255,9 +257,13 @@ void PrepareShutdown(CScheduler& scheduler) {
 #endif
 
 #ifndef WIN32
+#ifdef NO_BOOST_FILESYSTEM
+    fs::remove(GetPidFile());
+#else  
   try {
     fs::remove(GetPidFile());
   } catch (const fs::filesystem_error& e) { LogPrintf("%s: Unable to remove pidfile: %s\n", __func__, e.what()); }
+#endif
 #endif
   UnregisterAllValidationInterfaces();
 }
@@ -963,7 +969,7 @@ bool AppInit2(CScheduler& scheduler) {
   }
   std::string strWalletDir = GetArg("-wallet", "wallet");
   fs::path strWalletPath = GetDataDir();
-  strWalletPath /= strWalletDir;
+  strWalletPath = strWalletPath / strWalletDir;
 
   fIsBareMultisigStd = GetBoolArg("-permitbaremultisig", true) != 0;
   nMaxDatacarrierBytes = GetArg("-datacarriersize", nMaxDatacarrierBytes);
@@ -984,8 +990,10 @@ bool AppInit2(CScheduler& scheduler) {
   std::string strDataDir = GetDataDir().string();
   if (!fDisableWallet) {
     // Wallet file must be a plain filename without a directory
+#ifndef NO_BOOST_FILESYSTEM
     if (strWalletDir != fs::basename(strWalletDir) + fs::extension(strWalletDir))
       return InitError(strprintf(_("Wallet %s resides outside data directory %s"), strWalletDir, strDataDir));
+#endif
   }
   // Make sure only a single Tessa process is using the data directory.
   fs::path pathLockFile = GetDataDir() / ".lock";
@@ -1062,6 +1070,7 @@ bool AppInit2(CScheduler& scheduler) {
       // Always create backup folder to not confuse the operating system's file browser
       create_directories(backupDir);
     }
+#ifndef NO_BOOST_FILESYSTEM        
     if (nWalletBackups > 0) {
       if (exists(backupDir)) {
         // Create backup of the wallet
@@ -1112,7 +1121,8 @@ bool AppInit2(CScheduler& scheduler) {
         }
       }
     }
-
+    //#endif
+    
     if (GetBoolArg("-resync", false)) {
       uiInterface.InitMessage.fire(_("Preparing for resync..."));
       // Delete the local blockchain folders to force a resync from scratch to get a consitent blockchain-state
@@ -1145,19 +1155,25 @@ bool AppInit2(CScheduler& scheduler) {
         }
       } catch (fs::filesystem_error& error) { LogPrintf("Failed to delete blockchain folders %s\n", error.what()); }
     }
-
+#endif
+    
     LogPrintf("Using wallet %s\n", strWalletDir);
     uiInterface.InitMessage.fire(_("Verifying wallet..."));
 
     if (gWalletDB.init(strWalletPath)) {
       // try moving env out of the way
       fs::path pathDatabaseBak = GetDataDir() / strprintf("wallet.%d.bak", GetTime());
+#ifndef NO_BOOST_FILESYSTEM
       try {
-        fs::rename(strWalletPath, pathDatabaseBak);
+        RenameOver(strWalletPath, pathDatabaseBak);
         LogPrintf("Moved old %s to %s. Retrying.\n", strWalletPath.string(), pathDatabaseBak.string());
       } catch (fs::filesystem_error& error) {
         // failure is ok (well, not really, but it's not worse than what we started with)
       }
+#else
+      RenameOver(strWalletPath, pathDatabaseBak);
+      //fs::rename(strWalletPath, pathDatabaseBak);
+#endif
 
       // try again
       if (gWalletDB.init(strWalletPath)) {
@@ -1289,27 +1305,9 @@ bool AppInit2(CScheduler& scheduler) {
 
   fReindex = GetBoolArg("-reindex", false);
 
-  // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
   path blocksDir = GetDataDir() / "blocks";
   if (!exists(blocksDir)) {
     create_directories(blocksDir);
-    bool linked = false;
-    for (uint32_t i = 1; i < 10000; i++) {
-      path source = GetDataDir() / strprintf("blk%04u.dat", i);
-      if (!exists(source)) break;
-      path dest = blocksDir / strprintf("blk%05u.dat", i - 1);
-      try {
-        create_hard_link(source, dest);
-        LogPrintf("Hardlinked %s -> %s\n", source.string(), dest.string());
-        linked = true;
-      } catch (filesystem_error& e) {
-        // Note: hardlink creation failing is not a disaster, it just means
-        // blocks will get re-downloaded from peers.
-        LogPrintf("Error hardlinking blk%04u.dat : %s\n", i, e.what());
-        break;
-      }
-    }
-    if (linked) { fReindex = true; }
   }
 
   // cache size calculations

@@ -288,7 +288,7 @@ set(ALLOC "AUTO" CACHE STRING "Allocation policy")
 if("$ENV{COMP}" STREQUAL "")
   # Not sure why CACHE used here, disable
   # set(COMP "-O2 -funroll-loops -fomit-frame-pointer" CACHE STRING "User-chosen compiler flags.")
-  set(COMP "-O3 -funroll-loops -fomit-frame-pointer -march=native -mtune=native")
+  set(COMP "-O3 -Wno-unused-function -funroll-loops -fomit-frame-pointer -march=native -mtune=native")
 else("$ENV{COMP}" STREQUAL "")
 	set(COMP "$ENV{COMP}" CACHE STRING "User-chosen compiler flags.")
 endif("$ENV{COMP}" STREQUAL "")

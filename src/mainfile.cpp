@@ -21,14 +21,13 @@
 #include "init.h"
 #include "staker.h"
 
-/** Minimum disk space required - used in CheckDiskSpace() */
-static const uint64_t nMinDiskSpace = 52428800;
 
 using namespace std;
 
 fs::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix) {
   return GetDataDir() / "blocks" / strprintf("%s%05u.dat", prefix, pos.nFile);
 }
+fs::path GetBlockPosFilenameDir() {  return GetDataDir() / "blocks"; }
 
 bool AbortNode(const std::string& strMessage, const std::string& userMessage) {
   strMiscWarning = strMessage;
@@ -42,19 +41,22 @@ bool AbortNode(const std::string& strMessage, const std::string& userMessage) {
 }
 
 bool CheckDiskSpace(uint64_t nAdditionalBytes) {
+#ifndef NO_BOOST_FILESYSTEM  
+  /** Minimum disk space required - used in CheckDiskSpace() */
+  const uint64_t nMinDiskSpace = 52428800;
   uint64_t nFreeBytesAvailable = fs::space(GetDataDir()).available;
 
   // Check for nMinDiskSpace bytes (currently 50MB)
   if (nFreeBytesAvailable < nMinDiskSpace + nAdditionalBytes)
     return AbortNode("Disk space is low!", _("Error: Disk space is low!"));
-
+#endif
   return true;
 }
 
 FILE* OpenDiskFile(const CDiskBlockPos& pos, const char* prefix, bool fReadOnly) {
   if (pos.IsNull()) return nullptr;
   fs::path path = GetBlockPosFilename(pos, prefix);
-  fs::create_directories(path.parent_path());
+  fs::create_directories(GetBlockPosFilenameDir());
   FILE* file = fopen(path.string().c_str(), "rb+");
   if (!file && !fReadOnly) file = fopen(path.string().c_str(), "wb+");
   if (!file) {

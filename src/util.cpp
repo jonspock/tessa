@@ -24,6 +24,7 @@
 // Wraps boost::filesystem inside fs namespace (future c++17)
 #include "fs.h"
 #include "fs_utils.h"
+#include <fstream>
 
 #include <thread>
 
@@ -342,8 +343,10 @@ void SetupEnvironment() {
   // in multithreading environments, it is set explicitly by the main thread.
   // A dummy locale is used to extract the internal default locale, used by
   // fs::path, which is then used to explicitly imbue the path.
+#ifndef NO_BOOST_FILESYSTEM  
   std::locale loc = fs::path::imbue(std::locale::classic());
   fs::path::imbue(loc);
+#endif
 }
 
 bool SetupNetworking() {
@@ -371,8 +374,8 @@ void SetThreadPriority(int nPriority) {
 inline bool not_space(int c) { return !std::isspace(c); }
 
 void ArgsManager::ReadConfigFile() {
-  fs::ifstream config_file(GetConfigFile());
-  if (!config_file.good()) return;  // No bitcoin.conf file is OK
+  std::ifstream config_file(GetConfigFile());
+  if (!config_file.is_open()) return;  // No bitcoin.conf file is OK
 
   {
     // left and right trim for strings

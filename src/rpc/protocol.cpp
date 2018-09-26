@@ -113,9 +113,13 @@ bool GetAuthCookie(std::string* cookie_out) {
 }
 
 void DeleteAuthCookie() {
+#ifdef NO_BOOST_FILESYSTEM
+    fs::remove(GetAuthCookieFile());
+#else  
   try {
     fs::remove(GetAuthCookieFile());
   } catch (const fs::filesystem_error& e) {
     LogPrintf("%s: Unable to remove random auth cookie file: %s\n", __func__, e.what());
   }
+#endif
 }

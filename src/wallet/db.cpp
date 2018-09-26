@@ -38,7 +38,7 @@ bool CDB::open(const fs::path& wallet_dir, const char* pszMode) {
 #ifdef WIN32
   size_t result = wcstombs(fstring, wallet_dir.c_str(), 1024);
 #else
-  strncpy(fstring, wallet_dir.c_str(), 1023);
+  strncpy(fstring, wallet_dir.string().c_str(), 1023);
 #endif
 
   int dbr = mdb_env_set_mapsize(env, 10485760);

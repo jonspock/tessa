@@ -110,6 +110,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 endif()
 
 add_definitions("-DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
+add_definitions("-DNO_BOOST_FILESYSTEM")
 
 # Enable warning
 include(AddCompilerFlags)
@@ -503,7 +504,8 @@ SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${Boost_LI
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 target_link_libraries(tessad ${LIBS_LIST})
 
-add_subdirectory(src/qt)
+#add_subdirectory(src/json)
+#add_subdirectory(src/qt)
 
 
 #---------------------------------------------------------------------------------------------------------
