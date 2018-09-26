@@ -57,8 +57,10 @@
 #include <signal.h>
 #endif
 
+#ifndef NO_BOOST_FILESYSTEM  
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread/thread_time.hpp>
+#endif
 
 #if ENABLE_ZMQ
 #include "zmq/zmqnotificationinterface.h"
@@ -999,13 +1001,18 @@ bool AppInit2(CScheduler& scheduler) {
   fs::path pathLockFile = GetDataDir() / ".lock";
   FILE* file = fopen(pathLockFile.string().c_str(), "a");  // empty lock file; created if it doesn't exist.
   if (file) fclose(file);
+
+#ifndef NO_BOOST_FILESYSTEM  
   static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
 
   // Wait maximum 10 seconds if an old wallet is still running. Avoids lockup during restart
   if (!lock.timed_lock(boost::get_system_time() + boost::posix_time::seconds(10)))
     return InitError(
         strprintf(_("Cannot obtain a lock on data directory %s. Tessa Core is probably already running."), strDataDir));
-
+#else
+  LogPrintf("Skipping checking of .lock file\n");
+#endif
+  
 #ifndef WIN32
   CreatePidFile(GetPidFile(), getpid());
 #endif
