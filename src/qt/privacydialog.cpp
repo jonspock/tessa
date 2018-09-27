@@ -301,12 +301,12 @@ void PrivacyDialog::sendZKP() {
   QSettings settings;
 
   // Handle 'Pay To' address options
-  CBitcoinAddress address(ui->payTo->text().toStdString());
+  CTxDestination address = DecodeDestination(ui->payTo->text().toStdString());
   if (ui->payTo->text().isEmpty()) {
     QMessageBox::information(this, tr("Spend Zerocoin"), tr("No 'Pay To' address provided, creating local payment"),
                              QMessageBox::Ok, QMessageBox::Ok);
   } else {
-    if (!address.IsValid()) {
+    if (!IsValidDestinationString(ui->payTo->text().toStdString())) {
       QMessageBox::warning(this, tr("Spend Zerocoin"), tr("Invalid Tessa Address"), QMessageBox::Ok, QMessageBox::Ok);
       ui->payTo->setFocus();
       return;
@@ -369,7 +369,7 @@ void PrivacyDialog::sendZKP() {
   // General info
   QString strQuestionString = tr("Are you sure you want to send?<br /><br />");
   QString strAmount = "<b>" + QString::number(dAmount, 'f', 8) + " ZKP</b>";
-  QString strAddress = tr(" to address ") + QString::fromStdString(address.ToString()) + strAddressLabel + " <br />";
+  QString strAddress = tr(" to address ") + QString::fromStdString(EncodeDestination(address)) + strAddressLabel + " <br />";
 
   if (ui->payTo->text().isEmpty()) {
     // No address provided => send to local address
@@ -458,9 +458,9 @@ void PrivacyDialog::sendZKP() {
     // If ZKP was spent successfully update the addressbook with the label
     std::string labelText = ui->addAsLabel->text().toStdString();
     if (!labelText.empty())
-      walletModel->updateAddressBookLabels(address.Get(), labelText, "send");
+      walletModel->updateAddressBookLabels(address, labelText, "send");
     else
-      walletModel->updateAddressBookLabels(address.Get(), "(no label)", "send");
+      walletModel->updateAddressBookLabels(address, "(no label)", "send");
   }
 
   // Clear zkp selector in case it was used
@@ -491,7 +491,7 @@ void PrivacyDialog::sendZKP() {
     if (txout.scriptPubKey.IsZerocoinMint())
       strStats += tr("ZKP Mint");
     else if (ExtractDestination(txout.scriptPubKey, dest))
-      strStats += tr(CBitcoinAddress(dest).ToString().c_str());
+      strStats += tr(EncodeDestination(dest).c_str());
     strStats += "\n";
   }
   double fDuration = (double)(GetTimeMillis() - nTime) / 1000.0;

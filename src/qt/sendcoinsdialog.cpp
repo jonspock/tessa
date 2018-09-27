@@ -138,7 +138,7 @@ void SendCoinsDialog::on_sendButton_clicked() {
     SendCoinsEntry* entry = qobject_cast<SendCoinsEntry*>(ui->entries->itemAt(i)->widget());
 
     // UTXO splitter - address should be our own
-    CBitcoinAddress address = entry->getValue().address.toStdString();
+    CTxDestination address = DecodeDestination(entry->getValue().address.toStdString());
     if (!model->isMine(address) && ui->splitBlockCheckBox->checkState() == Qt::Checked) {
       CoinControlDialog::coinControl->fSplitBlock = false;
       ui->splitBlockCheckBox->setCheckState(Qt::Unchecked);
@@ -624,20 +624,19 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text) {
     CoinControlDialog::coinControl->destChange = CNoDestination();
     ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:red;}");
 
-    CBitcoinAddress addr = CBitcoinAddress(text.toStdString());
+    CTxDestination addr = DecodeDestination(text.toStdString());
 
     if (text.isEmpty())  // Nothing entered
     {
       ui->labelCoinControlChangeLabel->setText("");
-    } else if (!addr.IsValid())  // Invalid address
+    } else if (!IsValidDestinationString(text.toStdString()))  // Invalid address
     {
       ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Tessa address"));
     } else  // Valid address
     {
       CPubKey pubkey;
-      CKeyID keyid;
-      addr.GetKeyID(keyid);
-      if (!model->getPubKey(keyid, pubkey))  // Unknown change address
+      CKeyID *keyid = &mpark::get<CKeyID>(addr);
+      if (!model->getPubKey(*keyid, pubkey))  // Unknown change address
       {
         ui->labelCoinControlChangeLabel->setText(tr("Warning: Unknown change address"));
       } else  // Known change address
@@ -651,7 +650,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text) {
         else
           ui->labelCoinControlChangeLabel->setText(tr("(no label)"));
 
-        CoinControlDialog::coinControl->destChange = addr.Get();
+        CoinControlDialog::coinControl->destChange = addr;
       }
     }
   }

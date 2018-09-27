@@ -115,10 +115,10 @@ UniValue getnewaddress(const UniValue& params, bool fHelp) {
 
   pwalletMain->SetAddressBook(keyID, strAccount, "receive");
 
-  return CBitcoinAddress(keyID).ToString();
+  return EncodeDestination(CTxDestination(keyID));
 }
 
-CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false) {
+CTxDestination GetAccountAddress(string strAccount, bool bForceNew = false) {
   CAccount account;
   gWalletDB.ReadAccount(strAccount, account);
 
@@ -144,7 +144,7 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false) {
     gWalletDB.WriteAccount(strAccount, account);
   }
 
-  return CBitcoinAddress(account.vchPubKey.GetID());
+  return CTxDestination(account.vchPubKey.GetID());
 }
 
 UniValue getaccountaddress(const UniValue& params, bool fHelp) {
@@ -172,7 +172,7 @@ UniValue getaccountaddress(const UniValue& params, bool fHelp) {
 
   UniValue ret(UniValue::VSTR);
 
-  ret = GetAccountAddress(strAccount).ToString();
+  ret = EncodeDestination(GetAccountAddress(strAccount));
   return ret;
 }
 
@@ -202,7 +202,7 @@ UniValue getrawchangeaddress(const UniValue& params, bool fHelp) {
 
   CKeyID keyID = vchPubKey.GetID();
 
-  return CBitcoinAddress(keyID).ToString();
+  return EncodeDestination(CTxDestination(keyID));
 }
 
 UniValue setaccount(const UniValue& params, bool fHelp) {
@@ -221,20 +221,22 @@ UniValue setaccount(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  CBitcoinAddress address(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+  if (!IsValidDestinationString(params[0].get_str()))
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+
+  CTxDestination address = DecodeDestination(params[0].get_str());
 
   string strAccount;
   if (params.size() > 1) strAccount = AccountFromValue(params[1]);
 
   // Only add the account if the address is yours.
-  if (IsMine(*pwalletMain, address.Get())) {
+  if (IsMine(*pwalletMain, address)) {
     // Detect when changing the account of an address that is the 'unused current key' of another account:
-    if (pwalletMain->mapAddressBook.count(address.Get())) {
-      string strOldAccount = pwalletMain->mapAddressBook[address.Get()].name;
+    if (pwalletMain->mapAddressBook.count(address)) {
+      string strOldAccount = pwalletMain->mapAddressBook[address].name;
       if (address == GetAccountAddress(strOldAccount)) GetAccountAddress(strOldAccount, true);
     }
-    pwalletMain->SetAddressBook(address.Get(), strAccount, "receive");
+    pwalletMain->SetAddressBook(address, strAccount, "receive");
   } else
     throw JSONRPCError(RPC_MISC_ERROR, "setaccount can only be used with own address");
 
@@ -259,11 +261,12 @@ UniValue getaccount(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  CBitcoinAddress address(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+  CTxDestination address = DecodeDestination(params[0].get_str());
+  if (!IsValidDestinationString(params[0].get_str()))
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
 
   string strAccount;
-  map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(address.Get());
+  map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(address);
   if (mi != pwalletMain->mapAddressBook.end() && !(*mi).second.name.empty()) strAccount = (*mi).second.name;
   return strAccount;
 }
@@ -293,9 +296,9 @@ UniValue getaddressesbyaccount(const UniValue& params, bool fHelp) {
   // Find all addresses that have the given account
   UniValue ret(UniValue::VARR);
   for (const auto& item : pwalletMain->mapAddressBook) {
-    const CBitcoinAddress& address = item.first;
+    const CTxDestination& address = item.first;
     const string& strName = item.second.name;
-    if (strName == strAccount) ret.push_back(address.ToString());
+    if (strName == strAccount) ret.push_back(EncodeDestination(address));
   }
   return ret;
 }
@@ -364,9 +367,10 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  CBitcoinAddress address(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+  if (!IsValidDestinationString(params[0].get_str()))
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
 
+  CTxDestination address = DecodeDestination(params[0].get_str());
   // Amount
   CAmount nAmount = AmountFromValue(params[1]);
 
@@ -379,7 +383,7 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked();
 
-  SendMoney(address.Get(), nAmount, wtx);
+  SendMoney(address, nAmount, wtx);
 
   return wtx.GetHash().GetHex();
 }
@@ -412,8 +416,10 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  CBitcoinAddress address(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+  if (!IsValidDestinationString(params[0].get_str()))
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+
+  CTxDestination address = DecodeDestination(params[0].get_str());
 
   // Amount
   CAmount nAmount = AmountFromValue(params[1]);
@@ -427,7 +433,7 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked();
 
-  SendMoney(address.Get(), nAmount, wtx, true);
+  SendMoney(address, nAmount, wtx, true);
 
   return wtx.GetHash().GetHex();
 }
@@ -464,11 +470,11 @@ UniValue listaddressgroupings(const UniValue& params, bool fHelp) {
     UniValue jsonGrouping(UniValue::VARR);
     for (auto& address : grouping) {
       UniValue addressInfo(UniValue::VARR);
-      addressInfo.push_back(CBitcoinAddress(address).ToString());
+      addressInfo.push_back(EncodeDestination(address));
       addressInfo.push_back(ValueFromAmount(balances[address]));
       {
-        if (pwalletMain->mapAddressBook.find(CBitcoinAddress(address).Get()) != pwalletMain->mapAddressBook.end())
-          addressInfo.push_back(pwalletMain->mapAddressBook.find(CBitcoinAddress(address).Get())->second.name);
+        if (pwalletMain->mapAddressBook.find(address) != pwalletMain->mapAddressBook.end())
+          addressInfo.push_back(pwalletMain->mapAddressBook.find(address)->second.name);
       }
       jsonGrouping.push_back(addressInfo);
     }
@@ -507,14 +513,16 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
   string strAddress = params[0].get_str();
   string strMessage = params[1].get_str();
 
-  CBitcoinAddress addr(strAddress);
-  if (!addr.IsValid()) throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
+  if (!IsValidDestinationString(strAddress))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
-  CKeyID keyID;
-  if (!addr.GetKeyID(keyID)) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
+  CTxDestination address = DecodeDestination(strAddress);
+
+  CKeyID *keyID = &mpark::get<CKeyID>(address);
+  if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
   CKey key;
-  if (!pwalletMain->GetKey(keyID, key)) throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
+  if (!pwalletMain->GetKey(*keyID, key)) throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
 
   CHashWriter ss;
   ss << strMessageMagic;
@@ -552,10 +560,12 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  // club address
-  CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
-  CScript scriptPubKey = GetScriptForDestination(address.Get());
+  // Amount
+  if (!IsValidDestinationString(params[0].get_str()))
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+
+  CTxDestination address = DecodeDestination(params[0].get_str());
+  CScript scriptPubKey = GetScriptForDestination(address);
   if (!IsMine(*pwalletMain, scriptPubKey)) return (double)0.0;
 
   // Minimum confirmations
@@ -835,8 +845,11 @@ UniValue sendfrom(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   string strAccount = AccountFromValue(params[0]);
-  CBitcoinAddress address(params[1].get_str());
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+
+  if (!IsValidDestinationString(params[1].get_str()))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+
+  CTxDestination address = DecodeDestination(params[1].get_str());
   CAmount nAmount = AmountFromValue(params[2]);
   int nMinDepth = 1;
   if (params.size() > 3) nMinDepth = params[3].get_int();
@@ -854,7 +867,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp) {
   CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
   if (nAmount > nBalance) throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
-  SendMoney(address.Get(), nAmount, wtx);
+  SendMoney(address, nAmount, wtx);
 
   return wtx.GetHash().GetHex();
 }
@@ -913,20 +926,20 @@ UniValue sendmany(const UniValue& params, bool fHelp) {
   if (params.size() > 3 && !params[3].isNull() && !params[3].get_str().empty())
     wtx.mapValue["comment"] = params[3].get_str();
 
-  set<CBitcoinAddress> setAddress;
+  set<CTxDestination> setAddress;
   vector<pair<CScript, CAmount> > vecSend;
 
   CAmount totalAmount = 0;
   vector<string> keys = sendTo.getKeys();
   for (const string& name_ : keys) {
-    CBitcoinAddress address(name_);
-    if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + name_);
+    if (!IsValidDestinationString(name_)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + name_);
+    CTxDestination address = DecodeDestination(name_);
 
     if (setAddress.count(address))
       throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + name_);
     setAddress.insert(address);
 
-    CScript scriptPubKey = GetScriptForDestination(address.Get());
+    CScript scriptPubKey = GetScriptForDestination(address);
     CAmount nAmount = AmountFromValue(sendTo[name_]);
     totalAmount += nAmount;
 
@@ -995,7 +1008,7 @@ UniValue addmultisigaddress(const UniValue& params, bool fHelp) {
   pwalletMain->AddCScript(inner);
 
   pwalletMain->SetAddressBook(innerID, strAccount, "send");
-  return CBitcoinAddress(innerID).ToString();
+  return EncodeDestination(CTxDestination(innerID));
 }
 
 struct tallyitem {
@@ -1026,7 +1039,7 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts) {
     if (params[2].get_bool()) filter = filter | ISMINE_WATCH_ONLY;
 
   // Tally
-  map<CBitcoinAddress, tallyitem> mapTally;
+  map<CTxDestination, tallyitem> mapTally;
   for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end();
        ++it) {
     const CWalletTx& wtx = (*it).second;
@@ -1057,9 +1070,9 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts) {
   UniValue ret(UniValue::VARR);
   map<string, tallyitem> mapAccountTally;
   for (const auto& item : pwalletMain->mapAddressBook) {
-    const CBitcoinAddress& address = item.first;
+    const CTxDestination& address = item.first;
     const string& strAccount = item.second.name;
-    map<CBitcoinAddress, tallyitem>::iterator it = mapTally.find(address);
+    map<CTxDestination, tallyitem>::iterator it = mapTally.find(address);
     if (it == mapTally.end() && !fIncludeEmpty) continue;
 
     CAmount nAmount = 0;
@@ -1082,7 +1095,7 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts) {
     } else {
       UniValue obj(UniValue::VOBJ);
       if (fIsWatchonly) obj.push_back(Pair("involvesWatchonly", true));
-      obj.push_back(Pair("address", address.ToString()));
+      obj.push_back(Pair("address", EncodeDestination(address)));
       obj.push_back(Pair("account", strAccount));
       obj.push_back(Pair("amount", ValueFromAmount(nAmount)));
       obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
@@ -1193,8 +1206,8 @@ UniValue listreceivedbyaccount(const UniValue& params, bool fHelp) {
 }
 
 static void MaybePushAddress(UniValue& entry, const CTxDestination& dest) {
-  CBitcoinAddress addr;
-  if (addr.Set(dest)) entry.push_back(Pair("address", addr.ToString()));
+  if (!mpark::holds_alternative<CNoDestination>(dest))
+    entry.push_back(Pair("address", EncodeDestination(dest)));
 }
 
 void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, UniValue& ret,
@@ -2160,7 +2173,7 @@ UniValue printAddresses() {
   for (const COutput& out : vCoins) {
     CTxDestination utxoAddress;
     ExtractDestination(out.tx->vout[out.i].scriptPubKey, utxoAddress);
-    std::string strAdd = CBitcoinAddress(utxoAddress).ToString();
+    std::string strAdd = EncodeDestination(utxoAddress);
 
     if (mapAddresses.find(strAdd) == mapAddresses.end())  // if strAdd is not already part of the map
       mapAddresses[strAdd] = (double)out.tx->vout[out.i].nValue / (double)COIN;
@@ -2218,7 +2231,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
       if (pwalletMain->vMultiSend.size() < 1)
         throw JSONRPCError(RPC_INVALID_REQUEST, "Unable to activate MultiSend, check MultiSend vector");
 
-      if (CBitcoinAddress(pwalletMain->vMultiSend[0].first).IsValid()) {
+      if (IsValidDestinationString(pwalletMain->vMultiSend[0].first)) {
         pwalletMain->fMultiSendStake = true;
         if (!gWalletDB.WriteMSettings(true, false, pwalletMain->nLastMultiSendHeight)) {
           UniValue obj(UniValue::VOBJ);
@@ -2260,7 +2273,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
   }
   if (params.size() == 2 && params[0].get_str() == "disable") {
     std::string disAddress = params[1].get_str();
-    if (!CBitcoinAddress(disAddress).IsValid())
+    if (!IsValidDestinationString(disAddress))
       throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "address you want to disable is not valid");
     else {
       pwalletMain->vDisabledAddresses.push_back(disAddress);
@@ -2302,8 +2315,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
 
   // if the user is entering a new MultiSend item
   string strAddress = params[0].get_str();
-  CBitcoinAddress address(strAddress);
-  if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
   if (std::stoi(params[1].get_str()) < 0)
     throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid percentage");
   if (pwalletMain->IsLocked())
@@ -2630,12 +2642,15 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
   bool fMinimizeChange = params[2].get_bool();   // Minimize change
   int nSecurityLevel = params[3].get_int();      // Security level
 
-  CBitcoinAddress address = CBitcoinAddress();  // Optional sending address. Dummy initialization here.
+  CTxDestination address = CNoDestination(); // Optional sending address. Dummy initialization here.
   if (params.size() == 5) {
     // Destination address was supplied as params[4]. Optional parameters MUST be at the end
     // to avoid type confusion from the JSON interpreter
-    address = CBitcoinAddress(params[4].get_str());
-    if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+    if(!IsValidDestinationString(params[4].get_str())) {
+      throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+    } else {
+      address = DecodeDestination(params[4].get_str());
+    }
   }
 
   CWalletTx wtx;
@@ -2677,7 +2692,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
     if (txout.scriptPubKey.IsZerocoinMint())
       out.push_back(Pair("address", "zerocoinmint"));
     else if (ExtractDestination(txout.scriptPubKey, dest))
-      out.push_back(Pair("address", CBitcoinAddress(dest).ToString()));
+      out.push_back(Pair("address", EncodeDestination(dest)));
     vout.push_back(out);
   }
 

@@ -193,6 +193,7 @@ SET(COMMON_A
   ./src/coins.cpp
   ./src/chainparams.cpp
   ./src/base58.cpp
+  ./src/key_io.cpp
   ./src/amount.cpp
   ./src/logging.cpp
   ./src/fs.cpp

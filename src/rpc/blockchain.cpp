@@ -9,6 +9,7 @@
 #include "accumulatormap.h"
 #include "base58.h"
 #include "checkpoints.h"
+#include "chainparams.h"
 #include "clientversion.h"
 #include "main.h"
 #include "rpc/server.h"

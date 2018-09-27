@@ -5,6 +5,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spork.h"
+#include "key_io.h"
 #include "base58.h"
 #include "blockmap.h"
 #include "ecdsa/key.h"
@@ -181,14 +182,9 @@ bool CSporkManager::CheckSignature(CSporkMessage& spork, bool fCheckSigner) {
 }
 
 bool CSporkManager::SetKey(const std::string& strSecret, CKey& key, CPubKey& pubkey) {
-  CBitcoinSecret vchSecret;
-  bool fGood = vchSecret.SetString(strSecret);
-
-  if (!fGood) return false;
-
-  key = vchSecret.GetKey();
+  key = DecodeSecret(strSecret);
+  if (!key.IsValid()) return false;
   pubkey = key.GetPubKey();
-
   return true;
 }
 

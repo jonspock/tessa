@@ -197,8 +197,7 @@ void WalletModel::updateMultiSigFlag(bool fHaveMultiSig) {
 }
 
 bool WalletModel::validateAddress(const QString& address) {
-  CBitcoinAddress addressParsed(address.toStdString());
-  return addressParsed.IsValid();
+  return IsValidDestinationString(address.toStdString());
 }
 
 void WalletModel::updateAddressBookLabels(const CTxDestination& dest, const string& strName, const string& strPurpose) {
@@ -234,7 +233,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
     setAddress.insert(rcp.address);
     ++nAddresses;
 
-    CScript scriptPubKey = GetScriptForDestination(CBitcoinAddress(rcp.address.toStdString()).Get());
+    CScript scriptPubKey = GetScriptForDestination(DecodeDestination(rcp.address.toStdString()));
     vecSend.push_back(std::pair<CScript, CAmount>(scriptPubKey, rcp.amount));
 
     total += rcp.amount;
@@ -307,7 +306,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction& tran
   foreach (const SendCoinsRecipient& rcp, transaction.getRecipients()) {
     // Don't touch the address book when we have a payment request
     std::string strAddress = rcp.address.toStdString();
-    CTxDestination dest = CBitcoinAddress(strAddress).Get();
+    CTxDestination dest = DecodeDestination(strAddress);
     std::string strLabel = rcp.label.toStdString();
 
     updateAddressBookLabels(dest, strLabel, "send");
@@ -381,7 +380,7 @@ static void NotifyKeyStoreStatusChanged(WalletModel* walletmodel, CCryptoKeyStor
 static void NotifyAddressBookChanged(WalletModel* walletmodel, CWallet* wallet, const CTxDestination& address,
                                      const std::string& label, bool isMine, const std::string& purpose,
                                      ChangeType status) {
-  QString strAddress = QString::fromStdString(CBitcoinAddress(address).ToString());
+  QString strAddress = QString::fromStdString(EncodeDestination(address));
   QString strLabel = QString::fromStdString(label);
   QString strPurpose = QString::fromStdString(purpose);
 
@@ -572,7 +571,7 @@ void WalletModel::listCoins(std::map<QString, std::vector<COutput> >& mapCoins) 
 
     CTxDestination address;
     if (!out.fSpendable || !ExtractDestination(cout.tx->vout[cout.i].scriptPubKey, address)) continue;
-    mapCoins[QString::fromStdString(CBitcoinAddress(address).ToString())].push_back(out);
+    mapCoins[QString::fromStdString(EncodeDestination(address))].push_back(out);
   }
 }
 
@@ -611,7 +610,7 @@ void WalletModel::loadReceiveRequests(std::vector<std::string>& vReceiveRequests
 }
 
 bool WalletModel::saveReceiveRequest(const std::string& sAddress, const int64_t nId, const std::string& sRequest) {
-  CTxDestination dest = CBitcoinAddress(sAddress).Get();
+  CTxDestination dest = DecodeDestination(sAddress);
 
   std::stringstream ss;
   ss << nId;
@@ -624,4 +623,4 @@ bool WalletModel::saveReceiveRequest(const std::string& sAddress, const int64_t 
     return wallet->AddDestData(dest, key, sRequest);
 }
 
-bool WalletModel::isMine(CBitcoinAddress address) { return IsMine(*wallet, address.Get()); }
+bool WalletModel::isMine(CTxDestination address) { return IsMine(*wallet, address); }

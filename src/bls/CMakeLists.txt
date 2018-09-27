@@ -27,7 +27,7 @@ add_library(bls ${BLS_HEADERS}
 )
 
 # For now just on Mac
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if (ENABLE_TESTS)
   add_executable(runtest test.cpp)
   add_executable(runbench test-bench.cpp)
 

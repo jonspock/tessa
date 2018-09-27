@@ -312,11 +312,8 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr) {
 
   for (uint32_t kidx = 0; kidx < keysObj.size(); kidx++) {
     if (!keysObj[kidx].isStr()) throw runtime_error("privatekey not a string");
-    CBitcoinSecret vchSecret;
-    bool fGood = vchSecret.SetString(keysObj[kidx].getValStr());
-    if (!fGood) throw runtime_error("privatekey not valid");
-
-    CKey key = vchSecret.GetKey();
+    CKey key = DecodeSecrret(keysObj[kidx].getValStr());
+    if (!key.IsValid()) throw runtime_error("privatekey not valid");
     tempKeystore.AddKey(key);
   }
 

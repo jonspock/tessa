@@ -82,7 +82,7 @@ void MultiSendDialog::on_viewButton_clicked() {
 void MultiSendDialog::on_addButton_clicked() {
   bool fValidConversion = false;
   std::string strAddress = ui->multiSendAddressEdit->text().toStdString();
-  if (!CBitcoinAddress(strAddress).IsValid()) {
+  if (!IsValidDestinationString(strAddress)) {
     ui->message->setProperty("status", "error");
     ui->message->style()->polish(ui->message);
     ui->message->setText(tr("The entered address:\n") + ui->multiSendAddressEdit->text() +
@@ -124,12 +124,12 @@ void MultiSendDialog::on_addButton_clicked() {
 
   if (model && model->getAddressTableModel()) {
     // update the address book with the label given or no label if none was given.
-    CBitcoinAddress address(strAddress);
+    CTxDestination address = DecodeDestination(strAddress);
     std::string userInputLabel = ui->labelAddressLabelEdit->text().toStdString();
     if (!userInputLabel.empty())
-      model->updateAddressBookLabels(address.Get(), userInputLabel, "send");
+      model->updateAddressBookLabels(address, userInputLabel, "send");
     else
-      model->updateAddressBookLabels(address.Get(), "(no label)", "send");
+      model->updateAddressBookLabels(address, "(no label)", "send");
   }
 
   if (!gWalletDB.WriteMultiSend(pwalletMain->vMultiSend)) {
@@ -172,7 +172,7 @@ void MultiSendDialog::on_activateButton_clicked() {
     strRet = "Unable to activate MultiSend, check MultiSend vector\n";
   else if (!(ui->multiSendStakeCheckBox->isChecked())) {
     strRet = "Need to select to send on stake\n";
-  } else if (CBitcoinAddress(pwalletMain->vMultiSend[0].first).IsValid()) {
+  } else if (IsValidDestinationString(pwalletMain->vMultiSend[0].first)) {
     pwalletMain->fMultiSendStake = ui->multiSendStakeCheckBox->isChecked();
     if (!gWalletDB.WriteMSettings(pwalletMain->fMultiSendStake, false, pwalletMain->nLastMultiSendHeight))
       strRet = "MultiSend activated but writing settings to DB failed";

@@ -51,7 +51,7 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, UniValue& out, bool fInclud
   out.push_back(Pair("type", GetTxnOutputType(type)));
 
   UniValue a(UniValue::VARR);
-  for (const CTxDestination& addr : addresses) a.push_back(CBitcoinAddress(addr).ToString());
+  for (const CTxDestination& addr : addresses) a.push_back(EncodeDestination(addr));
   out.push_back(Pair("addresses", a));
 }
 
@@ -241,13 +241,13 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
   int nMaxDepth = 9999999;
   if (params.size() > 1) nMaxDepth = params[1].get_int();
 
-  set<CBitcoinAddress> setAddress;
+  set<CTxDestination> setAddress;
   if (params.size() > 2) {
     UniValue inputs = params[2].get_array();
     for (uint32_t inx = 0; inx < inputs.size(); inx++) {
       const UniValue& input = inputs[inx];
-      CBitcoinAddress address(input.get_str());
-      if (!address.IsValid())
+      CTxDestination address = DecodeDestination(input.get_str());
+      if (!IsValidDestinationString(input.get_str()))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + input.get_str());
       if (setAddress.count(address))
         throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + input.get_str());
@@ -283,7 +283,7 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
     entry.push_back(Pair("vout", out.i));
     CTxDestination address;
     if (ExtractDestination(out.tx->vout[out.i].scriptPubKey, address)) {
-      entry.push_back(Pair("address", CBitcoinAddress(address).ToString()));
+      entry.push_back(Pair("address", EncodeDestination(address)));
       if (pwalletMain->mapAddressBook.count(address))
         entry.push_back(Pair("account", pwalletMain->mapAddressBook[address].name));
     }
@@ -362,17 +362,17 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp) {
     rawTx.vin.push_back(in);
   }
 
-  set<CBitcoinAddress> setAddress;
+  set<CTxDestination> setAddress;
   vector<string> addrList = sendTo.getKeys();
   for (const string& name_ : addrList) {
-    CBitcoinAddress address(name_);
-    if (!address.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + name_);
+    if (!IsValidDestinationString(name_)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + name_);
+    CTxDestination address = DecodeDestination(name_);
 
     if (setAddress.count(address))
       throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + name_);
     setAddress.insert(address);
 
-    CScript scriptPubKey = GetScriptForDestination(address.Get());
+    CScript scriptPubKey = GetScriptForDestination(address);
     CAmount nAmount = AmountFromValue(sendTo[name_]);
 
     CTxOut out(nAmount, scriptPubKey);
@@ -482,7 +482,7 @@ UniValue decodescript(const UniValue& params, bool fHelp) {
   }
   ScriptPubKeyToJSON(script, r, false);
 
-  r.push_back(Pair("p2sh", CBitcoinAddress(CScriptID(script)).ToString()));
+  r.push_back(Pair("p2sh", EncodeDestination(CTxDestination(CScriptID(script)))));
   return r;
 }
 
@@ -600,11 +600,8 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
     UniValue keys = params[2].get_array();
     for (uint32_t idx = 0; idx < keys.size(); idx++) {
       UniValue k = keys[idx];
-      CBitcoinSecret vchSecret;
-      bool fGood = vchSecret.SetString(k.get_str());
-      if (!fGood) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
-      CKey key = vchSecret.GetKey();
-      if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Private key outside allowed range");
+      CKey key = DecodeSecret(k.get_str());
+      if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
       tempKeystore.AddKey(key);
     }
   } else if (pwalletMain)

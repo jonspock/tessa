@@ -9,6 +9,7 @@
 #include <QMainWindow>
 
 #include "base58.h"
+#include "key_io.h"
 #include "uint256.h"
 #undef loop
 

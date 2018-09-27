@@ -7,6 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "base58.h"
+#include "key_io.h"
 #include "chain.h"
 #include "clientversion.h"
 #include "init.h"
@@ -174,7 +175,7 @@ class DescribeAddressVisitor : public mpark::variant<UniValue> {
       obj.push_back(Pair("script", GetTxnOutputType(whichType)));
       obj.push_back(Pair("hex", HexStr(subscript.begin(), subscript.end())));
       UniValue a(UniValue::VARR);
-      for (const CTxDestination& addr : addresses) a.push_back(CBitcoinAddress(addr).ToString());
+      for (const CTxDestination& addr : addresses) a.push_back(EncodeDestination(addr));
       obj.push_back(Pair("addresses", a));
       if (whichType == TX_MULTISIG) obj.push_back(Pair("sigsrequired", nRequired));
     }
@@ -269,14 +270,14 @@ UniValue validateaddress(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
 
-  CBitcoinAddress address(params[0].get_str());
-  bool isValid = address.IsValid();
+  CTxDestination address = DecodeDestination(params[0].get_str());
+  bool isValid = IsValidDestinationString(params[0].get_str());
 
   UniValue ret(UniValue::VOBJ);
   ret.push_back(Pair("isvalid", isValid));
   if (isValid) {
-    CTxDestination dest = address.Get();
-    string currentAddress = address.ToString();
+    CTxDestination dest = address;
+    string currentAddress = EncodeDestination(address);
     ret.push_back(Pair("address", currentAddress));
     isminetype mine = pwalletMain ? IsMine(*pwalletMain, dest) : ISMINE_NO;
     ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
@@ -312,12 +313,12 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
   for (uint32_t i = 0; i < keys.size(); i++) {
     const std::string& ks = keys[i].get_str();
     // Case 1: Tessa address and we have full public key:
-    CBitcoinAddress address(ks);
-    if (pwalletMain && address.IsValid()) {
-      CKeyID keyID;
-      if (!address.GetKeyID(keyID)) throw runtime_error(strprintf("%s does not refer to a key", ks));
+    if (pwalletMain && IsValidDestinationString(ks)) {
+      CTxDestination address = DecodeDestination(ks);
+      CKeyID *keyID = &mpark::get<CKeyID>(address);
+      if (!keyID) throw runtime_error(strprintf("%s does not refer to a key", ks));
       CPubKey vchPubKey;
-      if (!pwalletMain->GetPubKey(keyID, vchPubKey))
+      if (!pwalletMain->GetPubKey(*keyID, vchPubKey))
         throw runtime_error(strprintf("no full public key for address %s", ks));
       if (!vchPubKey.IsFullyValid()) throw runtime_error(" Invalid public key: " + ks);
       pubkeys[i] = vchPubKey;
@@ -375,10 +376,8 @@ UniValue createmultisig(const UniValue& params, bool fHelp) {
   // Construct using pay-to-script-hash:
   CScript inner = _createmultisig_redeemScript(params);
   CScriptID innerID(inner);
-  CBitcoinAddress address(innerID);
-
   UniValue result(UniValue::VOBJ);
-  result.push_back(Pair("address", address.ToString()));
+  result.push_back(Pair("address", EncodeDestination(CTxDestination(inner))));
   result.push_back(Pair("redeemScript", HexStr(inner.begin(), inner.end())));
 
   return result;
@@ -414,11 +413,12 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   string strSign = params[1].get_str();
   string strMessage = params[2].get_str();
 
-  CBitcoinAddress addr(strAddress);
-  if (!addr.IsValid()) throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
+  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
 
-  CKeyID keyID;
-  if (!addr.GetKeyID(keyID)) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
+  CTxDestination address = DecodeDestination(strAddress);
+  CKeyID *keyID = &mpark::get<CKeyID>(address);
+  
+  if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
   bool fInvalid = false;
   vector<uint8_t> vchSig = DecodeBase64(strSign.c_str(), &fInvalid);
@@ -432,7 +432,7 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   CPubKey pubkey;
   if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return false;
 
-  return (pubkey.GetID() == keyID);
+  return (pubkey.GetID() == *keyID);
 }
 
 UniValue setmocktime(const UniValue& params, bool fHelp) {

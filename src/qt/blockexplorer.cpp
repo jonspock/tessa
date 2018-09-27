@@ -48,12 +48,13 @@ static std::string ScriptToString(const CScript& Script, bool Long = false, bool
   if (Script.empty()) return "unknown";
 
   CTxDestination Dest;
-  CBitcoinAddress Address;
-  if (ExtractDestination(Script, Dest) && Address.Set(Dest)) {
+  CTxDestination Address;
+  if (ExtractDestination(Script, Dest)) {
+    Address = Dest; // ??? && Address.Set(Dest)) {
     if (Highlight)
-      return "<span class=\"addr\">" + Address.ToString() + "</span>";
+      return "<span class=\"addr\">" + EncodeDestination(Address) + "</span>";
     else
-      return makeHRef(Address.ToString());
+      return makeHRef(EncodeDestination(Address));
   } else
     return Long ? "<pre>" + FormatScript(Script) + "</pre>" : _("Non-standard script");
 }
@@ -343,7 +344,7 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx) {
   return Content;
 }
 
-std::string AddressToString(const CBitcoinAddress& Address) {
+std::string AddressToString(const CTxDestination& Address) {
   std::string TxLabels[] = {_("Date"), _("Hash"),   _("From"),  _("Amount"),
                             _("To"),   _("Amount"), _("Delta"), _("Balance")};
   std::string TxContent = table + makeHTMLTableRow(TxLabels, sizeof(TxLabels) / sizeof(std::string));
@@ -382,7 +383,7 @@ std::string AddressToString(const CBitcoinAddress& Address) {
   TxContent += "</table>";
 
   std::string Content;
-  Content += "<h1>" + _("Transactions to/from") + "&nbsp;<span>" + Address.ToString() + "</span></h1>";
+  Content += "<h1>" + _("Transactions to/from") + "&nbsp;<span>" + EncodeDestination(Address) + "</span></h1>";
   Content += TxContent;
   return Content;
 }
@@ -468,10 +469,9 @@ bool BlockExplorer::switchTo(const QString& query) {
   }
 
   // If the query is not an integer, nor a block hash, nor a transaction hash, assume an address
-  CBitcoinAddress Address;
-  Address.SetString(query.toUtf8().constData());
-  if (Address.IsValid()) {
-    std::string Content = AddressToString(Address);
+  CTxDestination Address;
+  if (IsValidDestinationString(query.toUtf8().constData())) {
+    std::string Content = EncodeDestination(Address);
     if (Content.empty()) return false;
     setContent(Content);
     return true;

@@ -183,7 +183,7 @@ class WalletModel : public QObject {
   UnlockContext requestUnlock(AskPassphraseDialog::Context context, bool relock = false);
 
   bool getPubKey(const ecdsa::CKeyID& address, ecdsa::CPubKey& vchPubKeyOut) const;
-  bool isMine(CBitcoinAddress address);
+  bool isMine(CTxDestination address);
   void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
   bool isSpent(const COutPoint& outpoint) const;
   void listCoins(std::map<QString, std::vector<COutput> >& mapCoins) const;

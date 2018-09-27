@@ -79,6 +79,9 @@ class CNoDestination {
  */
 typedef mpark::variant<CNoDestination, ecdsa::CKeyID, CScriptID> CTxDestination;
 
+/** Check whether a CTxDestination is a CNoDestination. */
+bool IsValidDestination(const CTxDestination& dest);
+
 const char* GetTxnOutputType(txnouttype t);
 
 bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::vector<uint8_t> >& vSolutionsRet);

@@ -263,7 +263,7 @@ bool CWallet::LoadCScript(const CScript& redeemScript) {
    * that never can be redeemed. However, old wallets may still contain
    * these. Do not add them to the wallet and warn. */
   if (redeemScript.size() > MAX_SCRIPT_ELEMENT_SIZE) {
-    std::string strAddr = CBitcoinAddress(CScriptID(redeemScript)).ToString();
+    std::string strAddr = EncodeDestination(CTxDestination(CScriptID(redeemScript)));
     LogPrintf(
         "%s: Warning: This wallet contains a redeemScript of size %i which exceeds maximum size %i thus can never be "
         "redeemed. Do not use address %s.\n",
@@ -1072,18 +1072,18 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, const
   }
 }
 
-map<CBitcoinAddress, vector<COutput> > CWallet::AvailableCoinsByAddress(bool fConfirmed, CAmount maxCoinValue) {
+map<CTxDestination, vector<COutput> > CWallet::AvailableCoinsByAddress(bool fConfirmed, CAmount maxCoinValue) {
   vector<COutput> vCoins;
   AvailableCoins(vCoins, fConfirmed);
 
-  map<CBitcoinAddress, vector<COutput> > mapCoins;
+  map<CTxDestination, vector<COutput> > mapCoins;
   for (COutput& out : vCoins) {
     if (maxCoinValue > 0 && out.tx->vout[out.i].nValue > maxCoinValue) continue;
 
     CTxDestination address;
     if (!ExtractDestination(out.tx->vout[out.i].scriptPubKey, address)) continue;
 
-    mapCoins[CBitcoinAddress(address)].push_back(out);
+    mapCoins[CTxDestination(address)].push_back(out);
   }
 
   return mapCoins;
@@ -1805,8 +1805,8 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const string& strNam
   NotifyAddressBookChanged.fire(this, address, strName, ::IsMine(*this, address) != ISMINE_NO, strPurpose,
                            (fUpdated ? CT_UPDATED : CT_NEW));
   if (!fFileBacked) return false;
-  if (!strPurpose.empty() && !gWalletDB.WritePurpose(CBitcoinAddress(address).ToString(), strPurpose)) return false;
-  return gWalletDB.WriteName(CBitcoinAddress(address).ToString(), strName);
+  if (!strPurpose.empty() && !gWalletDB.WritePurpose(EncodeDestination(address), strPurpose)) return false;
+  return gWalletDB.WriteName(EncodeDestination(address), strName);
 }
 
 bool CWallet::DelAddressBook(const CTxDestination& address) {
@@ -1815,7 +1815,7 @@ bool CWallet::DelAddressBook(const CTxDestination& address) {
 
     if (fFileBacked) {
       // Delete destdata tuples associated with address
-      std::string strAddress = CBitcoinAddress(address).ToString();
+      std::string strAddress = EncodeDestination(address);
       for (const auto& item : mapAddressBook[address].destdata) { gWalletDB.EraseDestData(strAddress, item.first); }
     }
     mapAddressBook.erase(address);
@@ -1824,8 +1824,8 @@ bool CWallet::DelAddressBook(const CTxDestination& address) {
   NotifyAddressBookChanged.fire(this, address, "", ::IsMine(*this, address) != ISMINE_NO, "", CT_DELETED);
 
   if (!fFileBacked) return false;
-  gWalletDB.ErasePurpose(CBitcoinAddress(address).ToString());
-  return gWalletDB.EraseName(CBitcoinAddress(address).ToString());
+  gWalletDB.ErasePurpose(EncodeDestination(address));
+  return gWalletDB.EraseName(EncodeDestination(address));
 }
 
 bool CWallet::SetDefaultKey(const CPubKey& vchPubKey) {
@@ -2277,13 +2277,13 @@ bool CWallet::AddDestData(const CTxDestination& dest, const std::string& key, co
   } catch (mpark::bad_variant_access&) { return false; }
   mapAddressBook[dest].destdata.insert(std::make_pair(key, value));
   if (!fFileBacked) return true;
-  return gWalletDB.WriteDestData(CBitcoinAddress(dest).ToString(), key, value);
+  return gWalletDB.WriteDestData(EncodeDestination(dest), key, value);
 }
 
 bool CWallet::EraseDestData(const CTxDestination& dest, const std::string& key) {
   if (!mapAddressBook[dest].destdata.erase(key)) return false;
   if (!fFileBacked) return true;
-  return gWalletDB.EraseDestData(CBitcoinAddress(dest).ToString(), key);
+  return gWalletDB.EraseDestData(EncodeDestination(dest), key);
 }
 
 bool CWallet::LoadDestData(const CTxDestination& dest, const std::string& key, const std::string& value) {
@@ -2307,7 +2307,7 @@ void CWallet::AutoCombineDust() {
   LOCK2(cs_main, cs_wallet);
   if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300) || IsLocked()) { return; }
 
-  map<CBitcoinAddress, vector<COutput> > mapCoinsByAddress =
+  map<CTxDestination, vector<COutput> > mapCoinsByAddress =
       AvailableCoinsByAddress(true, nAutoCombineThreshold * COIN);
 
   // coins are sectioned by address. This combination code only wants to combine inputs that belong to the same address
@@ -2347,7 +2347,7 @@ void CWallet::AutoCombineDust() {
     if (vRewardCoins.size() <= 1) continue;
 
     vector<pair<CScript, CAmount> > vecSend;
-    CScript scriptPubKey = GetScriptForDestination(it.first.Get());
+    CScript scriptPubKey = GetScriptForDestination(it.first);
     vecSend.push_back(make_pair(scriptPubKey, nTotalRewardsValue));
 
     // Send change to same address
@@ -2421,7 +2421,7 @@ bool CWallet::MultiSend() {
     // Disabled Addresses won't send MultiSend transactions
     if (vDisabledAddresses.size() > 0) {
       for (uint32_t i = 0; i < vDisabledAddresses.size(); i++) {
-        if (vDisabledAddresses[i] == CBitcoinAddress(destMyAddress).ToString()) {
+        if (vDisabledAddresses[i] == EncodeDestination(destMyAddress)) {
           LogPrintf("Multisend: disabled address preventing multisend\n");
           return false;
         }
@@ -2446,9 +2446,9 @@ bool CWallet::MultiSend() {
     for (uint32_t i = 0; i < vMultiSend.size(); i++) {
       // MultiSend vector is a pair of 1)Address as a std::string 2) Percent of stake to send as an int
       nAmount = ((out.tx->GetCredit(filter) - out.tx->GetDebit(filter)) * vMultiSend[i].second) / 100;
-      CBitcoinAddress strAddSend(vMultiSend[i].first);
+      CTxDestination strAddSend = DecodeDestination(vMultiSend[i].first);
       CScript scriptPubKey;
-      scriptPubKey = GetScriptForDestination(strAddSend.Get());
+      scriptPubKey = GetScriptForDestination(strAddSend);
       vecSend.push_back(make_pair(scriptPubKey, nAmount));
     }
 
@@ -2844,7 +2844,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
                                              CReserveKey& reserveKey, CZerocoinSpendReceipt& receipt,
                                              vector<CZerocoinMint>& vSelectedMints,
                                              vector<CDeterministicMint>& vNewMints, bool fMintChange,
-                                             bool fMinimizeChange, CBitcoinAddress* address) {
+                                             bool fMinimizeChange, CTxDestination* address) {
   // Check available funds
   int nStatus = ZKP_TRX_FUNDS_PROBLEMS;
   if (nValue > GetZerocoinBalance(true)) {
@@ -2977,7 +2977,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
       }
 
       if (address) {
-        scriptZerocoinSpend = GetScriptForDestination(address->Get());
+        scriptZerocoinSpend = GetScriptForDestination(*address);
         if (nChange) {
           // Reserve a new key pair from key pool
           CPubKey vchPubKey;
@@ -3204,7 +3204,7 @@ string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, vector<CDetermin
 
 bool CWallet::SpendZerocoin(CAmount nAmount, int nSecurityLevel, CWalletTx& wtxNew, CZerocoinSpendReceipt& receipt,
                             vector<CZerocoinMint>& vMintsSelected, bool fMintChange, bool fMinimizeChange,
-                            CBitcoinAddress* addressTo) {
+                            CTxDestination* addressTo) {
   // Default: assume something goes wrong. Depending on the problem this gets more specific below
   int nStatus = ZKP_SPEND_ERROR;
 

@@ -773,7 +773,7 @@ void CoinControlDialog::updateView() {
       CTxDestination outputAddress;
       QString sAddress = "";
       if (ExtractDestination(out.tx->vout[out.i].scriptPubKey, outputAddress)) {
-        sAddress = QString::fromStdString(CBitcoinAddress(outputAddress).ToString());
+        sAddress = QString::fromStdString(EncodeDestination(outputAddress));
 
         // if listMode or change => show Tessa address. In tree mode, address is not shown again for direct wallet
         // address outputs

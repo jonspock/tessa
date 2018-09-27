@@ -10,10 +10,12 @@
 
 #include "amount.h"
 #include "base58.h"
+#include "key_io.h"
 #include "crypter.h"
 
 #include "account.h"
 #include "addressbookdata.h"
+#include "chainparams.h"
 #include "ecdsa/key.h"
 #include "keypool.h"
 #include "keystore.h"
@@ -124,7 +126,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel, CWalletTx& wtxNew, CReserveKey& reserveKey,
                                       CZerocoinSpendReceipt& receipt, std::vector<CZerocoinMint>& vSelectedMints,
                                       std::vector<CDeterministicMint>& vNewMints, bool fMintChange,
-                                      bool fMinimizeChange, CBitcoinAddress* address = nullptr);
+                                      bool fMinimizeChange, CTxDestination* address=nullptr);
   bool MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
                   CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType,
                   CBlockIndex* pindexCheckpoint = nullptr);
@@ -134,7 +136,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
                            const CCoinControl* coinControl = nullptr);
   bool SpendZerocoin(CAmount nValue, int nSecurityLevel, CWalletTx& wtxNew, CZerocoinSpendReceipt& receipt,
                      std::vector<CZerocoinMint>& vMintsSelected, bool fMintChange, bool fMinimizeChange,
-                     CBitcoinAddress* addressTo = nullptr);
+                     CTxDestination* addressTo=nullptr);
   std::string ResetMintZerocoin();
   std::string ResetSpentZerocoin();
   bool GetZerocoinKey(const CBigNum& bnSerial, ecdsa::CKey& key);
@@ -284,7 +286,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed = true,
                       const CCoinControl* coinControl = nullptr, bool fIncludeZeroValue = false,
                       AvailableCoinsType nCoinType = ALL_COINS, bool fUseIX = false, int nWatchonlyConfig = 1) const;
-  std::map<CBitcoinAddress, std::vector<COutput> > AvailableCoinsByAddress(bool fConfirmed = true,
+  std::map<CTxDestination, std::vector<COutput> > AvailableCoinsByAddress(bool fConfirmed = true,
                                                                            CAmount maxCoinValue = 0);
   bool SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins,
                           std::set<std::pair<const CWalletTx*, uint32_t> >& setCoinsRet, CAmount& nValueRet) const;

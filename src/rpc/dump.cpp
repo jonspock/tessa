@@ -6,6 +6,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chain.h"
+#include "key_io.h"
+#include "base58.h"
 #include "init.h"
 #include "main.h"
 #include "rpc/server.h"
@@ -103,13 +105,8 @@ UniValue importprivkey(const UniValue& params, bool fHelp) {
   bool fRescan = true;
   if (params.size() > 2) fRescan = params[2].get_bool();
 
-  CBitcoinSecret vchSecret;
-  bool fGood = vchSecret.SetString(strSecret);
-
-  if (!fGood) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
-
-  CKey key = vchSecret.GetKey();
-  if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Private key outside allowed range");
+  CKey key = DecodeSecret(strSecret);
+  if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
 
   CPubKey pubkey = key.GetPubKey();
   assert(key.VerifyPubKey(pubkey));
@@ -157,10 +154,11 @@ UniValue importaddress(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   CScript script;
+  CTxDestination address;
 
-  CBitcoinAddress address(params[0].get_str());
-  if (address.IsValid()) {
-    script = GetScriptForDestination(address.Get());
+  if (IsValidDestinationString(params[0].get_str())) {
+    address = DecodeDestination(params[0].get_str());
+    script = GetScriptForDestination(address);
   } else if (IsHex(params[0].get_str())) {
     std::vector<uint8_t> data(ParseHex(params[0].get_str()));
     script = CScript(data.begin(), data.end());
@@ -180,7 +178,7 @@ UniValue importaddress(const UniValue& params, bool fHelp) {
       throw JSONRPCError(RPC_WALLET_ERROR, "The wallet already contains the private key for this address or script");
 
     // add to address book or update label
-    if (address.IsValid()) pwalletMain->SetAddressBook(address.Get(), strLabel, "receive");
+    pwalletMain->SetAddressBook(address, strLabel, "receive");
 
     // Don't throw error in case an address is already there
     if (pwalletMain->HaveWatchOnly(script)) return NullUniValue;
@@ -240,14 +238,13 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
     std::vector<std::string> vstr;
     Split(vstr, line, " ");
     if (vstr.size() < 2) continue;
-    CBitcoinSecret vchSecret;
-    if (!vchSecret.SetString(vstr[0])) continue;
-    CKey key = vchSecret.GetKey();
+    CKey key = DecodeSecret(vstr[0]);
+    if (!key.IsValid()) continue;
     CPubKey pubkey = key.GetPubKey();
     assert(key.VerifyPubKey(pubkey));
     CKeyID keyid = pubkey.GetID();
     if (pwalletMain->HaveKey(keyid)) {
-      LogPrintf("Skipping import of %s (key already present)\n", CBitcoinAddress(keyid).ToString());
+      LogPrintf("Skipping import of %s (key already present)\n", EncodeDestination(keyid));
       continue;
     }
     int64_t nTime = DecodeDumpTime(vstr[1]);
@@ -262,7 +259,7 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
         fLabel = true;
       }
     }
-    LogPrintf("Importing %s...\n", CBitcoinAddress(keyid).ToString());
+    LogPrintf("Importing %s...\n", EncodeDestination(keyid));
     if (!pwalletMain->AddKeyPubKey(key, pubkey)) {
       fGood = false;
       continue;
@@ -312,14 +309,14 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp) {
   EnsureWalletIsUnlocked();
 
   string strAddress = params[0].get_str();
-  CBitcoinAddress address;
-  if (!address.SetString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
-  CKeyID keyID;
-  if (!address.GetKeyID(keyID)) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
+  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+  CTxDestination address = DecodeDestination(strAddress);
+  CKeyID *keyID = &mpark::get<CKeyID>(address);
+  if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
   CKey vchSecret;
-  if (!pwalletMain->GetKey(keyID, vchSecret))
+  if (!pwalletMain->GetKey(*keyID, vchSecret))
     throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + strAddress + " is not known");
-  return CBitcoinSecret(vchSecret).ToString();
+  return EncodeSecret(vchSecret);
 }
 
 UniValue dumpwallet(const UniValue& params, bool fHelp) {
@@ -373,22 +370,24 @@ UniValue dumpwallet(const UniValue& params, bool fHelp) {
       CExtKey masterKey;
       masterKey.SetMaster(key.begin(), key.size());
 
+#warning "Fix this...."
+#ifdef SDFDF      
       CBitcoinExtKey b58extkey;
       b58extkey.SetKey(masterKey);
-
       file << "# extended private masterkey: " << b58extkey.ToString() << "\n\n";
+#endif
     }
   }
 
   for (std::vector<std::pair<int64_t, CKeyID> >::const_iterator it = vKeyBirth.begin(); it != vKeyBirth.end(); it++) {
     const CKeyID& keyid = it->second;
     std::string strTime = EncodeDumpTime(it->first);
-    std::string strAddr = CBitcoinAddress(keyid).ToString();
+    std::string strAddr = EncodeDestination(keyid);
     CKey key;
     if (pwalletMain->GetKey(keyid, key)) {
-      file << strprintf("%s %s ", CBitcoinSecret(key).ToString(), strTime);
+      file << strprintf("%s %s ", EncodeSecret(key), strTime);
       if (pwalletMain->mapAddressBook.count(keyid)) {
-        file << strprintf("%s %s label=%s # addr=%s\n", CBitcoinSecret(key).ToString(), strTime,
+        file << strprintf("%s %s label=%s # addr=%s\n", EncodeSecret(key), strTime,
                           EncodeDumpString(pwalletMain->mapAddressBook[keyid].name), strAddr);
       } else if (keyid == masterKeyID) {
         file << "hdmaster=1";
