@@ -110,7 +110,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 endif()
 
 add_definitions("-DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
-add_definitions("-DNO_BOOST_FILESYSTEM")
+####add_definitions("-DNO_BOOST_FILESYSTEM")
 
 # Enable warning
 include(AddCompilerFlags)
@@ -379,20 +379,18 @@ endif()
   
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/wallet
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/univalue/include
   ${Boost_INCLUDE_DIRS}
+  ${sodium_INCLUDE_DIR}
   ${GMP_INCLUDE_DIR}
   ${ROCKSDB_INCLUDE_DIR}/include
-#  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
-#  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
-  ${sodium_INCLUDE_DIR}
 
+  #  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
+  #  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
+
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/univalue/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/relic/include
-  
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/liblmdb
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
+  
   # For relic_conf.h file
   ${CMAKE_CURRENT_BINARY_DIR}
   # For config file tessa-config.h
@@ -505,7 +503,7 @@ target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARI
 target_link_libraries(tessad ${LIBS_LIST})
 
 #add_subdirectory(src/json)
-#add_subdirectory(src/qt)
+add_subdirectory(src/qt)
 
 
 #---------------------------------------------------------------------------------------------------------

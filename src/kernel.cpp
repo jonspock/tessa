@@ -13,6 +13,7 @@
 #include "primitives/block.h"
 #include "script/interpreter.h"
 #include "script/standard.h"  // for const
+#include "streams.h"
 #include "timedata.h"
 #include "util.h"
 #include "utiltime.h"

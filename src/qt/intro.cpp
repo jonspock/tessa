@@ -55,6 +55,7 @@ class FreespaceChecker : public QObject {
 FreespaceChecker::FreespaceChecker(Intro* intro) { this->intro = intro; }
 
 void FreespaceChecker::check() {
+#ifndef NO_BOOST_FILESYSTEM
   QString dataDirStr = intro->getPathToCheck();
   fs::path dataDir = GUIUtil::qstringToBoostPath(dataDirStr);
   uint64_t freeBytesAvailable = 0;
@@ -92,6 +93,7 @@ void FreespaceChecker::check() {
     replyMessage = tr("Cannot create data directory here.");
   }
   emit reply(replyStatus, replyMessage, freeBytesAvailable);
+#endif
 }
 
 Intro::Intro(QWidget* parent)
@@ -150,6 +152,7 @@ bool Intro::pickDataDirectory() {
         return false;
       }
       dataDir = intro.getDataDirectory();
+#ifndef NO_BOOST_FILESYSTEM
       try {
         TryCreateDirectory(GUIUtil::qstringToBoostPath(dataDir));
         break;
@@ -158,6 +161,9 @@ bool Intro::pickDataDirectory() {
                               tr("Error: Specified data directory \"%1\" cannot be created.").arg(dataDir));
         /* fall through, back to choosing screen */
       }
+#else
+        TryCreateDirectory(GUIUtil::qstringToBoostPath(dataDir));
+#endif
     }
 
     settings.setValue("strDataDir", dataDir);

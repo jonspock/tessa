@@ -16,7 +16,7 @@
 #include "version.h"
 
 #include <atomic>
-#include <lmdb.h>
+#include <liblmdb/lmdb.h>
 #include <string>
 
 class CDB {

@@ -28,6 +28,7 @@ class CBlockAverage {
 
   void RecordPriority(double priority) { prioritySamples.push_back(priority); }
 
+  size_t size() const { return prioritySamples.size(); }
   size_t PrioritySamples() const { return prioritySamples.size(); }
   size_t GetPrioritySamples(std::vector<double>& insertInto) const {
     for (double d : prioritySamples) insertInto.push_back(d);
@@ -57,7 +58,7 @@ class CBlockAverage {
     if (AreSane(vecPriority))
       prioritySamples.insert(prioritySamples.end(), vecPriority.begin(), vecPriority.end());
     else
-      throw runtime_error("Corrupt priority value in estimates file.");
+      throw std::runtime_error("Corrupt priority value in estimates file.");
     if (prioritySamples.size() > 0)
       LogPrint(TessaLog::ESTIMATEFEE, "Read %d priority samples\n", prioritySamples.size());
   }
