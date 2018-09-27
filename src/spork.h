@@ -28,11 +28,11 @@ extern CSporkManager gSporkManager;
 class CSporkMessage {
  public:
   std::vector<uint8_t> vchSig;
-  int nSporkID;
-  int64_t nValue;
-  int64_t nTimeSigned;
+  int nSporkID=0;
+  int64_t nValue=0;
+  int64_t nTimeSigned=0;
 
-  uint256 GetHash() {
+  uint256 GetHash() const {
     uint256 n = Hash(BEGIN(nSporkID), END(nTimeSigned));
     return n;
   }
@@ -45,6 +45,7 @@ class CSporkMessage {
     READWRITE(nTimeSigned);
     READWRITE(vchSig);
   }
+
 };
 
 enum class SporkID { SPORK_PROTOCOL_ENFORCEMENT = 1000, SPORK_ZEROCOIN_MAINTENANCE_MODE };
@@ -80,5 +81,4 @@ class CSporkManager {
 
   void LoadSporksFromDB();
   void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
-  void ReprocessBlocks(int nBlocks);
 };

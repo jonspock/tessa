@@ -162,7 +162,7 @@ UniValue importaddress(const UniValue& params, bool fHelp) {
     std::vector<uint8_t> data(ParseHex(params[0].get_str()));
     script = CScript(data.begin(), data.end());
   } else {
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address or script");
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address or script");
   }
 
   string strLabel = "";
@@ -308,7 +308,7 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp) {
   EnsureWalletIsUnlocked();
 
   string strAddress = params[0].get_str();
-  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
   CTxDestination address = DecodeDestination(strAddress);
   CKeyID *keyID = &mpark::get<CKeyID>(address);
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");

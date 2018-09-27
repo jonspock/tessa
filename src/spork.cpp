@@ -6,15 +6,10 @@
 
 #include "spork.h"
 #include "key_io.h"
-#include "blockmap.h"
 #include "ecdsa/key.h"
 #include "main.h"
-#include "net.h"
 #include "protocol.h"
 #include "sporkdb.h"
-#include "sync.h"
-#include "timedata.h"
-#include "util.h"
 #include "utiltime.h"
 #include "validationstate.h"
 
@@ -22,16 +17,11 @@ using namespace std;
 using namespace ecdsa;
 
 // Public SporkKey
-
 const std::string strSporkKey =
     "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830D8"
     "3B9B7F469A6C45A717";
 
-class CSporkMessage;
-class CSporkManager;
-
 CSporkManager gSporkManager;
-std::map<uint256, int64_t> mapRejectedBlocks;
 
 // Tessa: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB() {
@@ -126,34 +116,6 @@ bool CSporkManager::IsSporkActive(SporkID nSporkID) {
   return r < GetTime();
 }
 
-void CSporkManager::ReprocessBlocks(int nBlocks) {
-  auto it = mapRejectedBlocks.begin();
-  while (it != mapRejectedBlocks.end()) {
-    // use a window twice as large as is usual for the nBlocks we want to reset
-    if ((*it).second > GetTime() - (nBlocks * 60 * 5)) {
-      auto mi = mapBlockIndex.find((*it).first);
-      if (mi != mapBlockIndex.end() && (*mi).second) {
-        LOCK(cs_main);
-
-        CBlockIndex* pindex = (*mi).second;
-        LogPrint(TessaLog::SPORK, "ReprocessBlocks - %s\n", (*it).first.ToString());
-
-        CValidationState state;
-        ReconsiderBlock(state, pindex);
-      }
-    }
-    ++it;
-  }
-
-  CValidationState state;
-  {
-    LOCK(cs_main);
-    DisconnectBlocksAndReprocess(nBlocks);
-  }
-
-  if (state.IsValid()) { ActivateBestChain(state); }
-}
-
 bool CSporkManager::VerifyMessage(CPubKey pubkey, vector<uint8_t>& vchSig, const std::string& strMessage) {
   CHashWriter ss;
   ss << strMessageMagic;
@@ -201,20 +163,20 @@ bool CSporkManager::Sign(CSporkMessage& spork) {
   std::string strMessage =
       std::to_string(spork.nSporkID) + std::to_string(spork.nValue) + std::to_string(spork.nTimeSigned);
 
-  CKey key2;
-  CPubKey pubkey2;
+  CKey key;
+  CPubKey pubkey;
 
-  if (!SetKey(strMasterPrivKey, key2, pubkey2)) {
+  if (!SetKey(strMasterPrivKey, key, pubkey)) {
     LogPrint(TessaLog::SPORK, "Sign - ERROR: Invalid Spork Key\n");
     return false;
   }
 
-  if (!SignMessage(strMessage, spork.vchSig, key2)) {
+  if (!SignMessage(strMessage, spork.vchSig, key)) {
     LogPrint(TessaLog::SPORK, "Sign - Spork Sign message failed");
     return false;
   }
 
-  if (!VerifyMessage(pubkey2, spork.vchSig, strMessage)) {
+  if (!VerifyMessage(pubkey, spork.vchSig, strMessage)) {
     LogPrint(TessaLog::SPORK, "Sign - Verify Spork message failed");
     return false;
   }

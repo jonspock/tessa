@@ -94,49 +94,49 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   GetProxy(NET_IPV4, proxy);
 
   UniValue obj(UniValue::VOBJ);
-  obj.push_back(Pair("version", CLIENT_VERSION));
-  obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
+  obj.push_back(std::make_pair("version", CLIENT_VERSION));
+  obj.push_back(std::make_pair("protocolversion", PROTOCOL_VERSION));
   if (pwalletMain) {
-    obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
-    obj.push_back(Pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
-    obj.push_back(Pair("zerocoinbalance", ValueFromAmount(pwalletMain->GetZerocoinBalance(true))));
+    obj.push_back(std::make_pair("walletversion", pwalletMain->GetVersion()));
+    obj.push_back(std::make_pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
+    obj.push_back(std::make_pair("zerocoinbalance", ValueFromAmount(pwalletMain->GetZerocoinBalance(true))));
   }
-  obj.push_back(Pair("blocks", (int)chainActive.Height()));
-  obj.push_back(Pair("timeoffset", GetTimeOffset()));
-  obj.push_back(Pair("connections", (int)vNodes.size()));
-  obj.push_back(Pair("proxy", (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : string())));
-  obj.push_back(Pair("difficulty", (double)GetDifficulty()));
-  obj.push_back(Pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
+  obj.push_back(std::make_pair("blocks", (int)chainActive.Height()));
+  obj.push_back(std::make_pair("timeoffset", GetTimeOffset()));
+  obj.push_back(std::make_pair("connections", (int)vNodes.size()));
+  obj.push_back(std::make_pair("proxy", (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : string())));
+  obj.push_back(std::make_pair("difficulty", (double)GetDifficulty()));
+  obj.push_back(std::make_pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
 
   // During inital block verification chainActive.Tip() might be not yet initialized
   if (chainActive.Tip() == nullptr) {
-    obj.push_back(Pair("status", "Blockchain information not yet available"));
+    obj.push_back(std::make_pair("status", "Blockchain information not yet available"));
     return obj;
   }
 
-  obj.push_back(Pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply)));
+  obj.push_back(std::make_pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply)));
   UniValue zkpObj(UniValue::VOBJ);
   for (auto denom : libzerocoin::zerocoinDenomList) {
     zkpObj.push_back(
-        Pair(to_string(denom), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * (denom * COIN))));
+        std::make_pair(to_string(denom), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * (denom * COIN))));
   }
-  zkpObj.push_back(Pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
-  obj.push_back(Pair("Zkpsupply", zkpObj));
+  zkpObj.push_back(std::make_pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
+  obj.push_back(std::make_pair("Zkpsupply", zkpObj));
 
   if (pwalletMain) {
-    obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
-    obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
+    obj.push_back(std::make_pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
+    obj.push_back(std::make_pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
   }
-  if (pwalletMain) obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+  if (pwalletMain) obj.push_back(std::make_pair("unlocked_until", nWalletUnlockTime));
 
-  obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
+  obj.push_back(std::make_pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
   bool nStaking = false;
   if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
     nStaking = true;
   else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && gStaker.getLastCoinStakeSearchInterval())
     nStaking = true;
-  obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
-  obj.push_back(Pair("errors", GetWarnings("statusbar")));
+  obj.push_back(std::make_pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
+  obj.push_back(std::make_pair("errors", GetWarnings("statusbar")));
   return obj;
 }
 
@@ -152,18 +152,18 @@ class DescribeAddressVisitor : public mpark::variant<UniValue> {
   UniValue operator()(const CKeyID& keyID) const {
     UniValue obj(UniValue::VOBJ);
     CPubKey vchPubKey;
-    obj.push_back(Pair("isscript", false));
+    obj.push_back(std::make_pair("isscript", false));
     if (mine == ISMINE_SPENDABLE) {
       pwalletMain->GetPubKey(keyID, vchPubKey);
-      obj.push_back(Pair("pubkey", HexStr(vchPubKey)));
-      obj.push_back(Pair("iscompressed", vchPubKey.IsCompressed()));
+      obj.push_back(std::make_pair("pubkey", HexStr(vchPubKey)));
+      obj.push_back(std::make_pair("iscompressed", vchPubKey.IsCompressed()));
     }
     return obj;
   }
 
   UniValue operator()(const CScriptID& scriptID) const {
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("isscript", true));
+    obj.push_back(std::make_pair("isscript", true));
     if (mine != ISMINE_NO) {
       CScript subscript;
       pwalletMain->GetCScript(scriptID, subscript);
@@ -171,12 +171,12 @@ class DescribeAddressVisitor : public mpark::variant<UniValue> {
       txnouttype whichType;
       int nRequired;
       ExtractDestinations(subscript, whichType, addresses, nRequired);
-      obj.push_back(Pair("script", GetTxnOutputType(whichType)));
-      obj.push_back(Pair("hex", HexStr(subscript.begin(), subscript.end())));
+      obj.push_back(std::make_pair("script", GetTxnOutputType(whichType)));
+      obj.push_back(std::make_pair("hex", HexStr(subscript.begin(), subscript.end())));
       UniValue a(UniValue::VARR);
       for (const CTxDestination& addr : addresses) a.push_back(EncodeDestination(addr));
-      obj.push_back(Pair("addresses", a));
-      if (whichType == TX_MULTISIG) obj.push_back(Pair("sigsrequired", nRequired));
+      obj.push_back(std::make_pair("addresses", a));
+      if (whichType == TX_MULTISIG) obj.push_back(std::make_pair("sigsrequired", nRequired));
     }
     return obj;
   }
@@ -191,14 +191,14 @@ UniValue spork(const UniValue& params, bool fHelp) {
     UniValue ret(UniValue::VOBJ);
     for (const auto& s : sporkList) {
       if (gSporkManager.GetSporkNameByID(s) != "Unknown")
-        ret.push_back(Pair(gSporkManager.GetSporkNameByID(s), gSporkManager.GetSporkValue(s)));
+        ret.push_back(std::make_pair(gSporkManager.GetSporkNameByID(s), gSporkManager.GetSporkValue(s)));
     }
     return ret;
   } else if (params.size() == 1 && params[0].get_str() == "active") {
     UniValue ret(UniValue::VOBJ);
     for (const auto& s : sporkList) {
       if (gSporkManager.GetSporkNameByID(s) != "Unknown")
-        ret.push_back(Pair(gSporkManager.GetSporkNameByID(s), gSporkManager.IsSporkActive(s)));
+        ret.push_back(std::make_pair(gSporkManager.GetSporkNameByID(s), gSporkManager.IsSporkActive(s)));
     }
     return ret;
   } else if (params.size() == 2) {
@@ -273,20 +273,20 @@ UniValue validateaddress(const UniValue& params, bool fHelp) {
   bool isValid = IsValidDestinationString(params[0].get_str());
 
   UniValue ret(UniValue::VOBJ);
-  ret.push_back(Pair("isvalid", isValid));
+  ret.push_back(std::make_pair("isvalid", isValid));
   if (isValid) {
     CTxDestination dest = address;
     string currentAddress = EncodeDestination(address);
-    ret.push_back(Pair("address", currentAddress));
+    ret.push_back(std::make_pair("address", currentAddress));
     isminetype mine = pwalletMain ? IsMine(*pwalletMain, dest) : ISMINE_NO;
-    ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
+    ret.push_back(std::make_pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
     if (mine != ISMINE_NO) {
-      ret.push_back(Pair("iswatchonly", (mine & ISMINE_WATCH_ONLY) ? true : false));
+      ret.push_back(std::make_pair("iswatchonly", (mine & ISMINE_WATCH_ONLY) ? true : false));
       UniValue detail = mpark::visit(DescribeAddressVisitor(mine), dest);
       ret.pushKVs(detail);
     }
     if (pwalletMain && pwalletMain->mapAddressBook.count(dest))
-      ret.push_back(Pair("account", pwalletMain->mapAddressBook[dest].name));
+      ret.push_back(std::make_pair("account", pwalletMain->mapAddressBook[dest].name));
   }
   return ret;
 }
@@ -311,7 +311,7 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
   pubkeys.resize(keys.size());
   for (uint32_t i = 0; i < keys.size(); i++) {
     const std::string& ks = keys[i].get_str();
-    // Case 1: Tessa address and we have full public key:
+    // Case 1: address and we have full public key:
     if (pwalletMain && IsValidDestinationString(ks)) {
       CTxDestination address = DecodeDestination(ks);
       CKeyID *keyID = &mpark::get<CKeyID>(address);
@@ -376,8 +376,8 @@ UniValue createmultisig(const UniValue& params, bool fHelp) {
   CScript inner = _createmultisig_redeemScript(params);
   CScriptID innerID(inner);
   UniValue result(UniValue::VOBJ);
-  result.push_back(Pair("address", EncodeDestination(CTxDestination(inner))));
-  result.push_back(Pair("redeemScript", HexStr(inner.begin(), inner.end())));
+  result.push_back(std::make_pair("address", EncodeDestination(CTxDestination(inner))));
+  result.push_back(std::make_pair("redeemScript", HexStr(inner.begin(), inner.end())));
 
   return result;
 }
@@ -476,12 +476,12 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
 
   UniValue obj(UniValue::VOBJ);
-  obj.push_back(Pair("validtime", chainActive.Tip()->nTime > 1471482000));
-  obj.push_back(Pair("haveconnections", !vNodes.empty()));
+  obj.push_back(std::make_pair("validtime", chainActive.Tip()->nTime > 1471482000));
+  obj.push_back(std::make_pair("haveconnections", !vNodes.empty()));
   if (pwalletMain) {
-    obj.push_back(Pair("walletunlocked", !pwalletMain->IsLocked()));
-    obj.push_back(Pair("mintablecoins", pwalletMain->MintableCoins()));
-    obj.push_back(Pair("enoughcoins", nReserveBalance <= pwalletMain->GetBalance()));
+    obj.push_back(std::make_pair("walletunlocked", !pwalletMain->IsLocked()));
+    obj.push_back(std::make_pair("mintablecoins", pwalletMain->MintableCoins()));
+    obj.push_back(std::make_pair("enoughcoins", nReserveBalance <= pwalletMain->GetBalance()));
   }
 
   bool nStaking = false;
@@ -489,7 +489,7 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp) {
     nStaking = true;
   else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && gStaker.getLastCoinStakeSearchInterval())
     nStaking = true;
-  obj.push_back(Pair("staking status", nStaking));
+  obj.push_back(std::make_pair("staking status", nStaking));
 
   return obj;
 }

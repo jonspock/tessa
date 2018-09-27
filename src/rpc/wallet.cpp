@@ -54,22 +54,22 @@ void EnsureWalletIsUnlocked(bool fAllowAnonOnly) {
 void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry) {
   int confirms = wtx.GetDepthInMainChain(false);
   int confirmsTotal = confirms;
-  entry.push_back(Pair("confirmations", confirmsTotal));
-  entry.push_back(Pair("bcconfirmations", confirms));
-  if (wtx.IsCoinBase() || wtx.IsCoinStake()) entry.push_back(Pair("generated", true));
+  entry.push_back(std::make_pair("confirmations", confirmsTotal));
+  entry.push_back(std::make_pair("bcconfirmations", confirms));
+  if (wtx.IsCoinBase() || wtx.IsCoinStake()) entry.push_back(std::make_pair("generated", true));
   if (confirms > 0) {
-    entry.push_back(Pair("blockhash", wtx.hashBlock.GetHex()));
-    entry.push_back(Pair("blockindex", wtx.nIndex));
-    entry.push_back(Pair("blocktime", mapBlockIndex[wtx.hashBlock]->GetBlockTime()));
+    entry.push_back(std::make_pair("blockhash", wtx.hashBlock.GetHex()));
+    entry.push_back(std::make_pair("blockindex", wtx.nIndex));
+    entry.push_back(std::make_pair("blocktime", mapBlockIndex[wtx.hashBlock]->GetBlockTime()));
   }
   uint256 hash = wtx.GetHash();
-  entry.push_back(Pair("txid", hash.GetHex()));
+  entry.push_back(std::make_pair("txid", hash.GetHex()));
   UniValue conflicts(UniValue::VARR);
   for (const uint256& conflict : wtx.GetConflicts()) conflicts.push_back(conflict.GetHex());
-  entry.push_back(Pair("walletconflicts", conflicts));
-  entry.push_back(Pair("time", wtx.GetTxTime()));
-  entry.push_back(Pair("timereceived", (int64_t)wtx.nTimeReceived));
-  for (const auto& item : wtx.mapValue) entry.push_back(Pair(item.first, item.second));
+  entry.push_back(std::make_pair("walletconflicts", conflicts));
+  entry.push_back(std::make_pair("time", wtx.GetTxTime()));
+  entry.push_back(std::make_pair("timereceived", (int64_t)wtx.nTimeReceived));
+  for (const auto& item : wtx.mapValue) entry.push_back(std::make_pair(item.first, item.second));
 }
 
 string AccountFromValue(const UniValue& value) {
@@ -82,7 +82,7 @@ UniValue getnewaddress(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 1)
     throw runtime_error(
         "getnewaddress ( \"account\" )\n"
-        "\nReturns a new Tessa address for receiving payments.\n"
+        "\nReturns a new address for receiving payments.\n"
         "If 'account' is specified (recommended), it is added to the address book \n"
         "so payments received with the address will be credited to 'account'.\n"
 
@@ -150,7 +150,7 @@ UniValue getaccountaddress(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 1)
     throw runtime_error(
         "getaccountaddress \"account\"\n"
-        "\nReturns the current Tessa address for receiving payments to this account.\n"
+        "\nReturns the current address for receiving payments to this account.\n"
 
         "\nArguments:\n"
         "1. \"account\"       (string, required) The account name for the address. It can also be set to the empty "
@@ -179,7 +179,7 @@ UniValue getrawchangeaddress(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 1)
     throw runtime_error(
         "getrawchangeaddress\n"
-        "\nReturns a new Tessa address, for receiving change.\n"
+        "\nReturns a new address, for receiving change.\n"
         "This is for use with raw transactions, NOT normal use.\n"
 
         "\nResult:\n"
@@ -221,7 +221,7 @@ UniValue setaccount(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(params[0].get_str());
 
@@ -262,7 +262,7 @@ UniValue getaccount(const UniValue& params, bool fHelp) {
 
   CTxDestination address = DecodeDestination(params[0].get_str());
   if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   string strAccount;
   map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(address);
@@ -315,7 +315,7 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
     throw JSONRPCError(RPC_WALLET_ERROR, strError);
   }
 
-  // Parse Tessa address
+  // Parse address
   CScript scriptPubKey = GetScriptForDestination(address);
 
   // Create and send the transaction
@@ -367,7 +367,7 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(params[0].get_str());
   // Amount
@@ -416,7 +416,7 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(params[0].get_str());
 
@@ -565,7 +565,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
 
   CTxDestination address = DecodeDestination(params[0].get_str());
   CScript scriptPubKey = GetScriptForDestination(address);
-  if (!IsMine(*pwalletMain, scriptPubKey)) return (double)0.0;
+  if (!IsMine(*pwalletMain, scriptPubKey)) throw JSONRPCError(RPC_WALLET_ERROR, "Address not found in wallet");
 
   // Minimum confirmations
   int nMinDepth = 1;
@@ -573,11 +573,10 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
 
   // Tally
   CAmount nAmount = 0;
-  for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end();
-       ++it) {
-    const CWalletTx& wtx = (*it).second;
+  for (auto& it : pwalletMain->mapWallet) {
+    const CWalletTx& wtx = it.second;
     if (wtx.IsCoinBase() || !IsFinalTx(wtx)) continue;
-
+    
     for (const CTxOut& txout : wtx.vout)
       if (txout.scriptPubKey == scriptPubKey)
         if (wtx.GetDepthInMainChain() >= nMinDepth) nAmount += txout.nValue;
@@ -931,7 +930,7 @@ UniValue sendmany(const UniValue& params, bool fHelp) {
   CAmount totalAmount = 0;
   vector<string> keys = sendTo.getKeys();
   for (const string& name_ : keys) {
-    if (!IsValidDestinationString(name_)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + name_);
+    if (!IsValidDestinationString(name_)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid address: ") + name_);
     CTxDestination address = DecodeDestination(name_);
 
     if (setAddress.count(address))
@@ -971,7 +970,7 @@ UniValue addmultisigaddress(const UniValue& params, bool fHelp) {
     throw runtime_error(
         "addmultisigaddress nrequired [\"key\",...] ( \"account\" )\n"
         "\nAdd a nrequired-to-sign multisignature address to the wallet.\n"
-        "Each key is a Tessa address or hex-encoded public key.\n"
+        "Each key is a address or hex-encoded public key.\n"
         "If 'account' is specified, assign address to that account.\n"
 
         "\nArguments:\n"
@@ -1093,17 +1092,17 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts) {
       item.fIsWatchonly = fIsWatchonly;
     } else {
       UniValue obj(UniValue::VOBJ);
-      if (fIsWatchonly) obj.push_back(Pair("involvesWatchonly", true));
-      obj.push_back(Pair("address", EncodeDestination(address)));
-      obj.push_back(Pair("account", strAccount));
-      obj.push_back(Pair("amount", ValueFromAmount(nAmount)));
-      obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
-      obj.push_back(Pair("bcconfirmations", (nBCConf == std::numeric_limits<int>::max() ? 0 : nBCConf)));
+      if (fIsWatchonly) obj.push_back(std::make_pair("involvesWatchonly", true));
+      obj.push_back(std::make_pair("address", EncodeDestination(address)));
+      obj.push_back(std::make_pair("account", strAccount));
+      obj.push_back(std::make_pair("amount", ValueFromAmount(nAmount)));
+      obj.push_back(std::make_pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
+      obj.push_back(std::make_pair("bcconfirmations", (nBCConf == std::numeric_limits<int>::max() ? 0 : nBCConf)));
       UniValue transactions(UniValue::VARR);
       if (it != mapTally.end()) {
         for (const uint256& item : (*it).second.txids) { transactions.push_back(item.GetHex()); }
       }
-      obj.push_back(Pair("txids", transactions));
+      obj.push_back(std::make_pair("txids", transactions));
       ret.push_back(obj);
     }
   }
@@ -1114,11 +1113,11 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts) {
       int nConf = (*it).second.nConf;
       int nBCConf = (*it).second.nBCConf;
       UniValue obj(UniValue::VOBJ);
-      if ((*it).second.fIsWatchonly) obj.push_back(Pair("involvesWatchonly", true));
-      obj.push_back(Pair("account", (*it).first));
-      obj.push_back(Pair("amount", ValueFromAmount(nAmount)));
-      obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
-      obj.push_back(Pair("bcconfirmations", (nBCConf == std::numeric_limits<int>::max() ? 0 : nBCConf)));
+      if ((*it).second.fIsWatchonly) obj.push_back(std::make_pair("involvesWatchonly", true));
+      obj.push_back(std::make_pair("account", (*it).first));
+      obj.push_back(std::make_pair("amount", ValueFromAmount(nAmount)));
+      obj.push_back(std::make_pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
+      obj.push_back(std::make_pair("bcconfirmations", (nBCConf == std::numeric_limits<int>::max() ? 0 : nBCConf)));
       ret.push_back(obj);
     }
   }
@@ -1206,7 +1205,7 @@ UniValue listreceivedbyaccount(const UniValue& params, bool fHelp) {
 
 static void MaybePushAddress(UniValue& entry, const CTxDestination& dest) {
   if (!mpark::holds_alternative<CNoDestination>(dest))
-    entry.push_back(Pair("address", EncodeDestination(dest)));
+    entry.push_back(std::make_pair("address", EncodeDestination(dest)));
 }
 
 void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, UniValue& ret,
@@ -1226,14 +1225,14 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
     for (const COutputEntry& s : listSent) {
       UniValue entry(UniValue::VOBJ);
       if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
-        entry.push_back(Pair("involvesWatchonly", true));
-      entry.push_back(Pair("account", strSentAccount));
+        entry.push_back(std::make_pair("involvesWatchonly", true));
+      entry.push_back(std::make_pair("account", strSentAccount));
       MaybePushAddress(entry, s.destination);
       std::map<std::string, std::string>::const_iterator it = wtx.mapValue.find("DS");
-      entry.push_back(Pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
-      entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
-      entry.push_back(Pair("vout", s.vout));
-      entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
+      entry.push_back(std::make_pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
+      entry.push_back(std::make_pair("amount", ValueFromAmount(-s.amount)));
+      entry.push_back(std::make_pair("vout", s.vout));
+      entry.push_back(std::make_pair("fee", ValueFromAmount(-nFee)));
       if (fLong) WalletTxToJSON(wtx, entry);
       ret.push_back(entry);
     }
@@ -1247,21 +1246,21 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
       if (fAllAccounts || (account == strAccount)) {
         UniValue entry(UniValue::VOBJ);
         if (involvesWatchonly || (::IsMine(*pwalletMain, r.destination) & ISMINE_WATCH_ONLY))
-          entry.push_back(Pair("involvesWatchonly", true));
-        entry.push_back(Pair("account", account));
+          entry.push_back(std::make_pair("involvesWatchonly", true));
+        entry.push_back(std::make_pair("account", account));
         MaybePushAddress(entry, r.destination);
         if (wtx.IsCoinBase()) {
           if (wtx.GetDepthInMainChain() < 1)
-            entry.push_back(Pair("category", "orphan"));
+            entry.push_back(std::make_pair("category", "orphan"));
           else if (wtx.GetBlocksToMaturity() > 0)
-            entry.push_back(Pair("category", "immature"));
+            entry.push_back(std::make_pair("category", "immature"));
           else
-            entry.push_back(Pair("category", "generate"));
+            entry.push_back(std::make_pair("category", "generate"));
         } else {
-          entry.push_back(Pair("category", "receive"));
+          entry.push_back(std::make_pair("category", "receive"));
         }
-        entry.push_back(Pair("amount", ValueFromAmount(r.amount)));
-        entry.push_back(Pair("vout", r.vout));
+        entry.push_back(std::make_pair("amount", ValueFromAmount(r.amount)));
+        entry.push_back(std::make_pair("vout", r.vout));
         if (fLong) WalletTxToJSON(wtx, entry);
         ret.push_back(entry);
       }
@@ -1274,12 +1273,12 @@ void AcentryToJSON(const CAccountingEntry& acentry, const string& strAccount, Un
 
   if (fAllAccounts || acentry.strAccount == strAccount) {
     UniValue entry(UniValue::VOBJ);
-    entry.push_back(Pair("account", acentry.strAccount));
-    entry.push_back(Pair("category", "move"));
-    entry.push_back(Pair("time", acentry.nTime));
-    entry.push_back(Pair("amount", ValueFromAmount(acentry.nCreditDebit)));
-    entry.push_back(Pair("otheraccount", acentry.strOtherAccount));
-    entry.push_back(Pair("comment", acentry.strComment));
+    entry.push_back(std::make_pair("account", acentry.strAccount));
+    entry.push_back(std::make_pair("category", "move"));
+    entry.push_back(std::make_pair("time", acentry.nTime));
+    entry.push_back(std::make_pair("amount", ValueFromAmount(acentry.nCreditDebit)));
+    entry.push_back(std::make_pair("otheraccount", acentry.strOtherAccount));
+    entry.push_back(std::make_pair("comment", acentry.strComment));
     ret.push_back(entry);
   }
 }
@@ -1475,7 +1474,7 @@ UniValue listaccounts(const UniValue& params, bool fHelp) {
 
   UniValue ret(UniValue::VOBJ);
   for (const auto& accountBalance : mapAccountBalances) {
-    ret.push_back(Pair(accountBalance.first, ValueFromAmount(accountBalance.second)));
+    ret.push_back(std::make_pair(accountBalance.first, ValueFromAmount(accountBalance.second)));
   }
   return ret;
 }
@@ -1571,8 +1570,8 @@ UniValue listsinceblock(const UniValue& params, bool fHelp) {
   uint256 lastblock = pblockLast ? pblockLast->GetBlockHash() : uint256();
 
   UniValue ret(UniValue::VOBJ);
-  ret.push_back(Pair("transactions", transactions));
-  ret.push_back(Pair("lastblock", lastblock.GetHex()));
+  ret.push_back(std::make_pair("transactions", transactions));
+  ret.push_back(std::make_pair("lastblock", lastblock.GetHex()));
 
   return ret;
 }
@@ -1637,17 +1636,17 @@ UniValue gettransaction(const UniValue& params, bool fHelp) {
   CAmount nNet = nCredit - nDebit;
   CAmount nFee = (wtx.IsFromMe(filter) ? wtx.GetValueOut() - nDebit : 0);
 
-  entry.push_back(Pair("amount", ValueFromAmount(nNet - nFee)));
-  if (wtx.IsFromMe(filter)) entry.push_back(Pair("fee", ValueFromAmount(nFee)));
+  entry.push_back(std::make_pair("amount", ValueFromAmount(nNet - nFee)));
+  if (wtx.IsFromMe(filter)) entry.push_back(std::make_pair("fee", ValueFromAmount(nFee)));
 
   WalletTxToJSON(wtx, entry);
 
   UniValue details(UniValue::VARR);
   ListTransactions(wtx, "*", 0, false, details, filter);
-  entry.push_back(Pair("details", details));
+  entry.push_back(std::make_pair("details", details));
 
   string strHex = EncodeHexTx(static_cast<CTransaction>(wtx));
-  entry.push_back(Pair("hex", strHex));
+  entry.push_back(std::make_pair("hex", strHex));
 
   return entry;
 }
@@ -1939,8 +1938,8 @@ UniValue listlockunspent(const UniValue& params, bool fHelp) {
   for (COutPoint& outpt : vOutpts) {
     UniValue o(UniValue::VOBJ);
 
-    o.push_back(Pair("txid", outpt.hash.GetHex()));
-    o.push_back(Pair("vout", (int)outpt.n));
+    o.push_back(std::make_pair("txid", outpt.hash.GetHex()));
+    o.push_back(std::make_pair("vout", (int)outpt.n));
     ret.push_back(o);
   }
 
@@ -1995,14 +1994,14 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   UniValue obj(UniValue::VOBJ);
-  obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
-  obj.push_back(Pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
-  obj.push_back(Pair("txcount", (int)pwalletMain->mapWallet.size()));
-  obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
-  obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
-  obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+  obj.push_back(std::make_pair("walletversion", pwalletMain->GetVersion()));
+  obj.push_back(std::make_pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
+  obj.push_back(std::make_pair("txcount", (int)pwalletMain->mapWallet.size()));
+  obj.push_back(std::make_pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
+  obj.push_back(std::make_pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
+  obj.push_back(std::make_pair("unlocked_until", nWalletUnlockTime));
   CKeyID masterKeyID = pwalletMain->GetHDChain().masterKeyID;
-  obj.push_back(Pair("hdmasterkeyid", masterKeyID.GetHex()));
+  obj.push_back(std::make_pair("hdmasterkeyid", masterKeyID.GetHex()));
   return obj;
 }
 
@@ -2042,8 +2041,8 @@ UniValue reservebalance(const UniValue& params, bool fHelp) {
   }
 
   UniValue result(UniValue::VOBJ);
-  result.push_back(Pair("reserve", (nReserveBalance > 0)));
-  result.push_back(Pair("amount", ValueFromAmount(nReserveBalance)));
+  result.push_back(std::make_pair("reserve", (nReserveBalance > 0)));
+  result.push_back(std::make_pair("amount", ValueFromAmount(nReserveBalance)));
   return result;
 }
 
@@ -2080,12 +2079,12 @@ UniValue setstakesplitthreshold(const UniValue& params, bool fHelp) {
 
     UniValue result(UniValue::VOBJ);
     pwalletMain->nStakeSplitThreshold = nStakeSplitThreshold;
-    result.push_back(Pair("threshold", int(pwalletMain->nStakeSplitThreshold)));
+    result.push_back(std::make_pair("threshold", int(pwalletMain->nStakeSplitThreshold)));
     if (fFileBacked) {
       gWalletDB.WriteStakeSplitThreshold(nStakeSplitThreshold);
-      result.push_back(Pair("saved", "true"));
+      result.push_back(std::make_pair("saved", "true"));
     } else
-      result.push_back(Pair("saved", "false"));
+      result.push_back(std::make_pair("saved", "false"));
 
     return result;
   }
@@ -2115,7 +2114,7 @@ UniValue autocombinerewards(const UniValue& params, bool fHelp) {
     throw runtime_error(
         "autocombinerewards enable ( threshold )\n"
         "\nWallet will automatically monitor for any coins with value below the threshold amount, and combine them if "
-        "they reside with the same Tessa address\n"
+        "they reside with the same address\n"
         "When autocombinerewards runs it will create a transaction, and therefore will be subject to transaction "
         "fees.\n"
 
@@ -2142,13 +2141,13 @@ UniValue autocombinerewards(const UniValue& params, bool fHelp) {
 UniValue printMultiSend() {
   UniValue ret(UniValue::VARR);
   UniValue act(UniValue::VOBJ);
-  act.push_back(Pair("MultiSendStake Activated?", pwalletMain->fMultiSendStake));
+  act.push_back(std::make_pair("MultiSendStake Activated?", pwalletMain->fMultiSendStake));
   ret.push_back(act);
 
   if (pwalletMain->vDisabledAddresses.size() >= 1) {
     UniValue disAdd(UniValue::VOBJ);
     for (uint32_t i = 0; i < pwalletMain->vDisabledAddresses.size(); i++) {
-      disAdd.push_back(Pair("Disabled From Sending", pwalletMain->vDisabledAddresses[i]));
+      disAdd.push_back(std::make_pair("Disabled From Sending", pwalletMain->vDisabledAddresses[i]));
     }
     ret.push_back(disAdd);
   }
@@ -2157,8 +2156,8 @@ UniValue printMultiSend() {
 
   UniValue vMS(UniValue::VOBJ);
   for (uint32_t i = 0; i < pwalletMain->vMultiSend.size(); i++) {
-    vMS.push_back(Pair("Address " + std::to_string(i), pwalletMain->vMultiSend[i].first));
-    vMS.push_back(Pair("Percent", pwalletMain->vMultiSend[i].second));
+    vMS.push_back(std::make_pair("Address " + std::to_string(i), pwalletMain->vMultiSend[i].first));
+    vMS.push_back(std::make_pair("Percent", pwalletMain->vMultiSend[i].second));
   }
 
   ret.push_back(vMS);
@@ -2185,8 +2184,8 @@ UniValue printAddresses() {
     UniValue obj(UniValue::VOBJ);
     const std::string* strAdd = &(*it).first;
     const double* nBalance = &(*it).second;
-    obj.push_back(Pair("Address ", *strAdd));
-    obj.push_back(Pair("Balance ", *nBalance));
+    obj.push_back(std::make_pair("Address ", *strAdd));
+    obj.push_back(std::make_pair("Balance ", *nBalance));
     ret.push_back(obj);
   }
 
@@ -2221,8 +2220,8 @@ UniValue multisend(const UniValue& params, bool fHelp) {
         pwalletMain->setMultiSendDisabled();
 
         UniValue obj(UniValue::VOBJ);
-        obj.push_back(Pair("Erased from database", erased));
-        obj.push_back(Pair("Erased from RAM", true));
+        obj.push_back(std::make_pair("Erased from database", erased));
+        obj.push_back(std::make_pair("Erased from RAM", true));
 
         return obj;
       }
@@ -2234,7 +2233,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
         pwalletMain->fMultiSendStake = true;
         if (!gWalletDB.WriteMSettings(true, false, pwalletMain->nLastMultiSendHeight)) {
           UniValue obj(UniValue::VOBJ);
-          obj.push_back(Pair("error", "MultiSend activated but writing settings to DB failed"));
+          obj.push_back(std::make_pair("error", "MultiSend activated but writing settings to DB failed"));
           UniValue arr(UniValue::VARR);
           arr.push_back(obj);
           arr.push_back(printMultiSend());
@@ -2314,7 +2313,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
 
   // if the user is entering a new MultiSend item
   string strAddress = params[0].get_str();
-  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
   if (std::stoi(params[1].get_str()) < 0)
     throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid percentage");
   if (pwalletMain->IsLocked())
@@ -2372,10 +2371,10 @@ UniValue getzerocoinbalance(const UniValue& params, bool fHelp) {
   EnsureWalletIsUnlocked(true);
 
   UniValue ret(UniValue::VOBJ);
-  ret.push_back(Pair("Total", ValueFromAmount(pwalletMain->GetZerocoinBalance(false))));
-  ret.push_back(Pair("Mature", ValueFromAmount(pwalletMain->GetZerocoinBalance(true))));
-  ret.push_back(Pair("Unconfirmed", ValueFromAmount(pwalletMain->GetUnconfirmedZerocoinBalance())));
-  ret.push_back(Pair("Immature", ValueFromAmount(pwalletMain->GetImmatureZerocoinBalance())));
+  ret.push_back(std::make_pair("Total", ValueFromAmount(pwalletMain->GetZerocoinBalance(false))));
+  ret.push_back(std::make_pair("Mature", ValueFromAmount(pwalletMain->GetZerocoinBalance(true))));
+  ret.push_back(std::make_pair("Unconfirmed", ValueFromAmount(pwalletMain->GetUnconfirmedZerocoinBalance())));
+  ret.push_back(std::make_pair("Immature", ValueFromAmount(pwalletMain->GetImmatureZerocoinBalance())));
   return ret;
 }
 
@@ -2442,8 +2441,8 @@ UniValue listzerocoinamounts(const UniValue& params, bool fHelp) {
   UniValue ret(UniValue::VARR);
   for (const auto& m : libzerocoin::zerocoinDenomList) {
     UniValue val(UniValue::VOBJ);
-    val.push_back(Pair("denomination", libzerocoin::ZerocoinDenominationToInt(m)));
-    val.push_back(Pair("mints", (int64_t)spread.at(m)));
+    val.push_back(std::make_pair("denomination", libzerocoin::ZerocoinDenominationToInt(m)));
+    val.push_back(std::make_pair("mints", (int64_t)spread.at(m)));
     ret.push_back(val);
   }
   return ret;
@@ -2571,13 +2570,13 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
   UniValue arrMints(UniValue::VARR);
   for (CDeterministicMint dMint : vDMints) {
     UniValue m(UniValue::VOBJ);
-    m.push_back(Pair("txid", wtx.GetHash().ToString()));
-    m.push_back(Pair("value", ValueFromAmount(libzerocoin::ZerocoinDenominationToAmount(dMint.GetDenomination()))));
-    m.push_back(Pair("pubcoinhash", dMint.GetPubcoinHash().GetHex()));
-    m.push_back(Pair("serialhash", dMint.GetSerialHash().GetHex()));
-    m.push_back(Pair("seedhash", dMint.GetSeedHash().GetHex()));
-    m.push_back(Pair("count", (int64_t)dMint.GetCount()));
-    m.push_back(Pair("time", GetTimeMillis() - nTime));
+    m.push_back(std::make_pair("txid", wtx.GetHash().ToString()));
+    m.push_back(std::make_pair("value", ValueFromAmount(libzerocoin::ZerocoinDenominationToAmount(dMint.GetDenomination()))));
+    m.push_back(std::make_pair("pubcoinhash", dMint.GetPubcoinHash().GetHex()));
+    m.push_back(std::make_pair("serialhash", dMint.GetSerialHash().GetHex()));
+    m.push_back(std::make_pair("seedhash", dMint.GetSeedHash().GetHex()));
+    m.push_back(std::make_pair("count", (int64_t)dMint.GetCount()));
+    m.push_back(std::make_pair("time", GetTimeMillis() - nTime));
     arrMints.push_back(m);
   }
 
@@ -2588,7 +2587,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() > 5 || params.size() < 4)
     throw runtime_error(
         "spendzerocoin amount mintchange minimizechange securitylevel ( \"address\" )\n"
-        "\nSpend ZKP to a Tessa address.\n" +
+        "\nSpend ZKP to a address.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
@@ -2621,7 +2620,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
         "  \"outputs\": [                 (array) JSON array of output objects.\n"
         "    {\n"
         "      \"value\": amount,         (numeric) Value in Tessa.\n"
-        "      \"address\": \"xxx\"         (string) Tessa address or \"zerocoinmint\" for reminted change.\n"
+        "      \"address\": \"xxx\"         (string) address or \"zerocoinmint\" for reminted change.\n"
         "    }\n"
         "    ,...\n"
         "  ]\n"
@@ -2646,7 +2645,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
     // Destination address was supplied as params[4]. Optional parameters MUST be at the end
     // to avoid type confusion from the JSON interpreter
     if(!IsValidDestinationString(params[4].get_str())) {
-      throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Tessa address");
+      throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     } else {
       address = DecodeDestination(params[4].get_str());
     }
@@ -2670,11 +2669,11 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
   UniValue arrSpends(UniValue::VARR);
   for (CZerocoinSpend& spend : receipt.GetSpends()) {
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("denomination", spend.GetDenomination()));
-    obj.push_back(Pair("pubcoin", spend.GetPubCoin().GetHex()));
-    obj.push_back(Pair("serial", spend.GetSerial().GetHex()));
+    obj.push_back(std::make_pair("denomination", spend.GetDenomination()));
+    obj.push_back(std::make_pair("pubcoin", spend.GetPubCoin().GetHex()));
+    obj.push_back(std::make_pair("serial", spend.GetSerial().GetHex()));
     uint32_t nChecksum = spend.GetAccumulatorChecksum();
-    obj.push_back(Pair("acc_checksum", HexStr(BEGIN(nChecksum), END(nChecksum))));
+    obj.push_back(std::make_pair("acc_checksum", HexStr(BEGIN(nChecksum), END(nChecksum))));
     arrSpends.push_back(obj);
     nValueIn += libzerocoin::ZerocoinDenominationToAmount(spend.GetDenomination());
   }
@@ -2684,25 +2683,25 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
   for (uint32_t i = 0; i < wtx.vout.size(); i++) {
     const CTxOut& txout = wtx.vout[i];
     UniValue out(UniValue::VOBJ);
-    out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
+    out.push_back(std::make_pair("value", ValueFromAmount(txout.nValue)));
     nValueOut += txout.nValue;
 
     CTxDestination dest;
     if (txout.scriptPubKey.IsZerocoinMint())
-      out.push_back(Pair("address", "zerocoinmint"));
+      out.push_back(std::make_pair("address", "zerocoinmint"));
     else if (ExtractDestination(txout.scriptPubKey, dest))
-      out.push_back(Pair("address", EncodeDestination(dest)));
+      out.push_back(std::make_pair("address", EncodeDestination(dest)));
     vout.push_back(out);
   }
 
   // construct JSON to return
   UniValue ret(UniValue::VOBJ);
-  ret.push_back(Pair("txid", wtx.GetHash().ToString()));
-  ret.push_back(Pair("bytes", (int64_t)wtx.GetSerializeSize()));
-  ret.push_back(Pair("fee", ValueFromAmount(nValueIn - nValueOut)));
-  ret.push_back(Pair("duration_millis", (GetTimeMillis() - nTimeStart)));
-  ret.push_back(Pair("spends", arrSpends));
-  ret.push_back(Pair("outputs", vout));
+  ret.push_back(std::make_pair("txid", wtx.GetHash().ToString()));
+  ret.push_back(std::make_pair("bytes", (int64_t)wtx.GetSerializeSize()));
+  ret.push_back(std::make_pair("fee", ValueFromAmount(nValueIn - nValueOut)));
+  ret.push_back(std::make_pair("duration_millis", (GetTimeMillis() - nTimeStart)));
+  ret.push_back(std::make_pair("spends", arrSpends));
+  ret.push_back(std::make_pair("outputs", vout));
 
   return ret;
 }
@@ -2761,8 +2760,8 @@ UniValue resetmintzerocoin(const UniValue& params, bool fHelp) {
   }
 
   UniValue obj(UniValue::VOBJ);
-  obj.push_back(Pair("updated", arrUpdated));
-  obj.push_back(Pair("archived", arrDeleted));
+  obj.push_back(std::make_pair("updated", arrUpdated));
+  obj.push_back(std::make_pair("archived", arrDeleted));
   return obj;
 }
 
@@ -2814,14 +2813,14 @@ UniValue resetspentzerocoin(const UniValue& params, bool fHelp) {
         gWalletDB.EraseZerocoinSpendSerialEntry(spend.GetSerial());
         RemoveSerialFromDB(spend.GetSerial());
         UniValue obj(UniValue::VOBJ);
-        obj.push_back(Pair("serial", spend.GetSerial().GetHex()));
+        obj.push_back(std::make_pair("serial", spend.GetSerial().GetHex()));
         arrRestored.push_back(obj);
         continue;
       }
     }
   }
 
-  objRet.push_back(Pair("restored", arrRestored));
+  objRet.push_back(std::make_pair("restored", arrRestored));
   return objRet;
 }
 
@@ -2858,13 +2857,13 @@ UniValue getarchivedzerocoin(const UniValue& params, bool fHelp) {
   UniValue arrRet(UniValue::VARR);
   for (const CDeterministicMint& dMint : listDMints) {
     UniValue objDMint(UniValue::VOBJ);
-    objDMint.push_back(Pair("txid", dMint.GetTxHash().GetHex()));
+    objDMint.push_back(std::make_pair("txid", dMint.GetTxHash().GetHex()));
     objDMint.push_back(
-        Pair("denomination", ValueFromAmount(libzerocoin::ZerocoinDenominationToAmount(dMint.GetDenomination()))));
-    objDMint.push_back(Pair("serialhash", dMint.GetSerialHash().GetHex()));
-    objDMint.push_back(Pair("pubcoinhash", dMint.GetPubcoinHash().GetHex()));
-    objDMint.push_back(Pair("seedhash", dMint.GetSeedHash().GetHex()));
-    objDMint.push_back(Pair("count", (int64_t)dMint.GetCount()));
+        std::make_pair("denomination", ValueFromAmount(libzerocoin::ZerocoinDenominationToAmount(dMint.GetDenomination()))));
+    objDMint.push_back(std::make_pair("serialhash", dMint.GetSerialHash().GetHex()));
+    objDMint.push_back(std::make_pair("pubcoinhash", dMint.GetPubcoinHash().GetHex()));
+    objDMint.push_back(std::make_pair("seedhash", dMint.GetSeedHash().GetHex()));
+    objDMint.push_back(std::make_pair("count", (int64_t)dMint.GetCount()));
     arrRet.push_back(objDMint);
   }
 
@@ -2921,15 +2920,15 @@ UniValue exportzerocoins(const UniValue& params, bool fHelp) {
     if (!pwalletMain->GetMint(meta.hashSerial, mint)) continue;
 
     UniValue objMint(UniValue::VOBJ);
-    objMint.push_back(Pair("d", mint.GetDenomination()));
-    objMint.push_back(Pair("p", mint.GetValue().GetHex()));
-    objMint.push_back(Pair("s", mint.GetSerialNumber().GetHex()));
-    objMint.push_back(Pair("r", mint.GetRandomness().GetHex()));
-    objMint.push_back(Pair("t", mint.GetTxHash().GetHex()));
-    objMint.push_back(Pair("h", mint.GetHeight()));
-    objMint.push_back(Pair("u", mint.IsUsed()));
-    objMint.push_back(Pair("v", mint.GetVersion()));
-    if (mint.GetVersion() >= 2) { objMint.push_back(Pair("k", HexStr(mint.GetPrivKey()))); }
+    objMint.push_back(std::make_pair("d", mint.GetDenomination()));
+    objMint.push_back(std::make_pair("p", mint.GetValue().GetHex()));
+    objMint.push_back(std::make_pair("s", mint.GetSerialNumber().GetHex()));
+    objMint.push_back(std::make_pair("r", mint.GetRandomness().GetHex()));
+    objMint.push_back(std::make_pair("t", mint.GetTxHash().GetHex()));
+    objMint.push_back(std::make_pair("h", mint.GetHeight()));
+    objMint.push_back(std::make_pair("u", mint.IsUsed()));
+    objMint.push_back(std::make_pair("v", mint.GetVersion()));
+    if (mint.GetVersion() >= 2) { objMint.push_back(std::make_pair("k", HexStr(mint.GetPrivKey()))); }
     jsonList.push_back(objMint);
   }
 
@@ -2969,7 +2968,7 @@ UniValue setMasterHDseed(const UniValue& params, bool fHelp) {
   }
 
   UniValue ret(UniValue::VOBJ);
-  ret.push_back(Pair("success", fSuccess));
+  ret.push_back(std::make_pair("success", fSuccess));
 
   return ret;
 }
@@ -2992,7 +2991,7 @@ UniValue getMasterHDseed(const UniValue& params, bool fHelp) {
   uint256 seed = zwallet->GetMasterSeed();
 
   UniValue ret(UniValue::VOBJ);
-  ret.push_back(Pair("seed", seed.GetHex()));
+  ret.push_back(std::make_pair("seed", seed.GetHex()));
 
   return ret;
 }
@@ -3036,10 +3035,10 @@ UniValue generatemintlist(const UniValue& params, bool fHelp) {
     CDeterministicMint dMint;
     zwallet->GenerateMint(i, denom, coin, dMint);
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("count", i));
-    obj.push_back(Pair("value", coin.getPublicCoin().getValue().GetHex()));
-    obj.push_back(Pair("randomness", coin.getRandomness().GetHex()));
-    obj.push_back(Pair("serial", coin.getSerialNumber().GetHex()));
+    obj.push_back(std::make_pair("count", i));
+    obj.push_back(std::make_pair("value", coin.getPublicCoin().getValue().GetHex()));
+    obj.push_back(std::make_pair("randomness", coin.getRandomness().GetHex()));
+    obj.push_back(std::make_pair("serial", coin.getSerialNumber().GetHex()));
     arrRet.push_back(obj);
   }
 
@@ -3061,8 +3060,8 @@ UniValue dzkpstate(const UniValue& params, bool fHelp) {
   UniValue obj(UniValue::VOBJ);
   int nCount, nCountLastUsed;
   zwallet->GetState(nCount, nCountLastUsed);
-  obj.push_back(Pair("dzkp_count", nCount));
-  obj.push_back(Pair("mintpool_count", nCountLastUsed));
+  obj.push_back(std::make_pair("dzkp_count", nCount));
+  obj.push_back(std::make_pair("mintpool_count", nCountLastUsed));
 
   return obj;
 }

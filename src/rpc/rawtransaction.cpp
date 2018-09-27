@@ -38,67 +38,67 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, UniValue& out, bool fInclud
   vector<CTxDestination> addresses;
   int nRequired;
 
-  out.push_back(Pair("asm", scriptPubKey.ToString()));
-  if (fIncludeHex) out.push_back(Pair("hex", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
+  out.push_back(std::make_pair("asm", scriptPubKey.ToString()));
+  if (fIncludeHex) out.push_back(std::make_pair("hex", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
   if (!ExtractDestinations(scriptPubKey, type, addresses, nRequired)) {
-    out.push_back(Pair("type", GetTxnOutputType(type)));
+    out.push_back(std::make_pair("type", GetTxnOutputType(type)));
     return;
   }
 
-  out.push_back(Pair("reqSigs", nRequired));
-  out.push_back(Pair("type", GetTxnOutputType(type)));
+  out.push_back(std::make_pair("reqSigs", nRequired));
+  out.push_back(std::make_pair("type", GetTxnOutputType(type)));
 
   UniValue a(UniValue::VARR);
   for (const CTxDestination& addr : addresses) a.push_back(EncodeDestination(addr));
-  out.push_back(Pair("addresses", a));
+  out.push_back(std::make_pair("addresses", a));
 }
 
 void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry) {
-  entry.push_back(Pair("txid", tx.GetHash().GetHex()));
-  entry.push_back(Pair("version", tx.nTransactionVersion));
-  entry.push_back(Pair("locktime", (int64_t)tx.nLockTime));
+  entry.push_back(std::make_pair("txid", tx.GetHash().GetHex()));
+  entry.push_back(std::make_pair("version", tx.nTransactionVersion));
+  entry.push_back(std::make_pair("locktime", (int64_t)tx.nLockTime));
   UniValue vin(UniValue::VARR);
   for (const CTxIn& txin : tx.vin) {
     UniValue in(UniValue::VOBJ);
     if (tx.IsCoinBase())
-      in.push_back(Pair("coinbase", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
+      in.push_back(std::make_pair("coinbase", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
     else {
-      in.push_back(Pair("txid", txin.prevout.hash.GetHex()));
-      in.push_back(Pair("vout", (int64_t)txin.prevout.n));
+      in.push_back(std::make_pair("txid", txin.prevout.hash.GetHex()));
+      in.push_back(std::make_pair("vout", (int64_t)txin.prevout.n));
       UniValue o(UniValue::VOBJ);
-      o.push_back(Pair("asm", txin.scriptSig.ToString()));
-      o.push_back(Pair("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-      in.push_back(Pair("scriptSig", o));
+      o.push_back(std::make_pair("asm", txin.scriptSig.ToString()));
+      o.push_back(std::make_pair("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
+      in.push_back(std::make_pair("scriptSig", o));
     }
-    in.push_back(Pair("sequence", (int64_t)txin.nSequence));
+    in.push_back(std::make_pair("sequence", (int64_t)txin.nSequence));
     vin.push_back(in);
   }
-  entry.push_back(Pair("vin", vin));
+  entry.push_back(std::make_pair("vin", vin));
   UniValue vout(UniValue::VARR);
   for (uint32_t i = 0; i < tx.vout.size(); i++) {
     const CTxOut& txout = tx.vout[i];
     UniValue out(UniValue::VOBJ);
-    out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
-    out.push_back(Pair("n", (int64_t)i));
+    out.push_back(std::make_pair("value", ValueFromAmount(txout.nValue)));
+    out.push_back(std::make_pair("n", (int64_t)i));
     UniValue o(UniValue::VOBJ);
     ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
-    out.push_back(Pair("scriptPubKey", o));
+    out.push_back(std::make_pair("scriptPubKey", o));
     vout.push_back(out);
   }
-  entry.push_back(Pair("vout", vout));
+  entry.push_back(std::make_pair("vout", vout));
 
   if (!hashBlock.IsNull()) {
-    entry.push_back(Pair("blockhash", hashBlock.GetHex()));
+    entry.push_back(std::make_pair("blockhash", hashBlock.GetHex()));
     BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
     if (mi != mapBlockIndex.end() && (*mi).second) {
       CBlockIndex* pindex = (*mi).second;
       if (chainActive.Contains(pindex)) {
-        entry.push_back(Pair("confirmations", 1 + chainActive.Height() - pindex->nHeight));
-        entry.push_back(Pair("time", pindex->GetBlockTime()));
-        entry.push_back(Pair("blocktime", pindex->GetBlockTime()));
+        entry.push_back(std::make_pair("confirmations", 1 + chainActive.Height() - pindex->nHeight));
+        entry.push_back(std::make_pair("time", pindex->GetBlockTime()));
+        entry.push_back(std::make_pair("blocktime", pindex->GetBlockTime()));
       } else
-        entry.push_back(Pair("confirmations", 0));
+        entry.push_back(std::make_pair("confirmations", 0));
     }
   }
 }
@@ -183,7 +183,7 @@ UniValue getrawtransaction(const UniValue& params, bool fHelp) {
   if (!fVerbose) return strHex;
 
   UniValue result(UniValue::VOBJ);
-  result.push_back(Pair("hex", strHex));
+  result.push_back(std::make_pair("hex", strHex));
   TxToJSON(tx, hashBlock, result);
   return result;
 }
@@ -247,7 +247,7 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
       const UniValue& input = inputs[inx];
       CTxDestination address = DecodeDestination(input.get_str());
       if (!IsValidDestinationString(input.get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + input.get_str());
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid address: ") + input.get_str());
       if (setAddress.count(address))
         throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + input.get_str());
       setAddress.insert(address);
@@ -278,27 +278,27 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
     CAmount nValue = out.tx->vout[out.i].nValue;
     const CScript& pk = out.tx->vout[out.i].scriptPubKey;
     UniValue entry(UniValue::VOBJ);
-    entry.push_back(Pair("txid", out.tx->GetHash().GetHex()));
-    entry.push_back(Pair("vout", out.i));
+    entry.push_back(std::make_pair("txid", out.tx->GetHash().GetHex()));
+    entry.push_back(std::make_pair("vout", out.i));
     CTxDestination address;
     if (ExtractDestination(out.tx->vout[out.i].scriptPubKey, address)) {
-      entry.push_back(Pair("address", EncodeDestination(address)));
+      entry.push_back(std::make_pair("address", EncodeDestination(address)));
       if (pwalletMain->mapAddressBook.count(address))
-        entry.push_back(Pair("account", pwalletMain->mapAddressBook[address].name));
+        entry.push_back(std::make_pair("account", pwalletMain->mapAddressBook[address].name));
     }
-    entry.push_back(Pair("scriptPubKey", HexStr(pk.begin(), pk.end())));
+    entry.push_back(std::make_pair("scriptPubKey", HexStr(pk.begin(), pk.end())));
     if (pk.IsPayToScriptHash()) {
       CTxDestination address;
       if (ExtractDestination(pk, address)) {
         const CScriptID& hash = mpark::get<CScriptID>(address);
         CScript redeemScript;
         if (pwalletMain->GetCScript(hash, redeemScript))
-          entry.push_back(Pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));
+          entry.push_back(std::make_pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));
       }
     }
-    entry.push_back(Pair("amount", ValueFromAmount(nValue)));
-    entry.push_back(Pair("confirmations", out.nDepth));
-    entry.push_back(Pair("spendable", out.fSpendable));
+    entry.push_back(std::make_pair("amount", ValueFromAmount(nValue)));
+    entry.push_back(std::make_pair("confirmations", out.nDepth));
+    entry.push_back(std::make_pair("spendable", out.fSpendable));
     results.push_back(entry);
   }
 
@@ -364,7 +364,7 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp) {
   set<CTxDestination> setAddress;
   vector<string> addrList = sendTo.getKeys();
   for (const string& name_ : addrList) {
-    if (!IsValidDestinationString(name_)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Tessa address: ") + name_);
+    if (!IsValidDestinationString(name_)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid address: ") + name_);
     CTxDestination address = DecodeDestination(name_);
 
     if (setAddress.count(address))
@@ -481,18 +481,18 @@ UniValue decodescript(const UniValue& params, bool fHelp) {
   }
   ScriptPubKeyToJSON(script, r, false);
 
-  r.push_back(Pair("p2sh", EncodeDestination(CTxDestination(CScriptID(script)))));
+  r.push_back(std::make_pair("p2sh", EncodeDestination(CTxDestination(CScriptID(script)))));
   return r;
 }
 
 /** Pushes a JSON object for script verification or signing errors to vErrorsRet. */
 static void TxInErrorToJSON(const CTxIn& txin, UniValue& vErrorsRet, const std::string& strMessage) {
   UniValue entry(UniValue::VOBJ);
-  entry.push_back(Pair("txid", txin.prevout.hash.ToString()));
-  entry.push_back(Pair("vout", (uint64_t)txin.prevout.n));
-  entry.push_back(Pair("scriptSig", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-  entry.push_back(Pair("sequence", (uint64_t)txin.nSequence));
-  entry.push_back(Pair("error", strMessage));
+  entry.push_back(std::make_pair("txid", txin.prevout.hash.ToString()));
+  entry.push_back(std::make_pair("vout", (uint64_t)txin.prevout.n));
+  entry.push_back(std::make_pair("scriptSig", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
+  entry.push_back(std::make_pair("sequence", (uint64_t)txin.nSequence));
+  entry.push_back(std::make_pair("error", strMessage));
   vErrorsRet.push_back(entry);
 }
 
@@ -705,9 +705,9 @@ UniValue signrawtransaction(const UniValue& params, bool fHelp) {
   bool fComplete = vErrors.empty();
 
   UniValue result(UniValue::VOBJ);
-  result.push_back(Pair("hex", EncodeHexTx(mergedTx)));
-  result.push_back(Pair("complete", fComplete));
-  if (!vErrors.empty()) { result.push_back(Pair("errors", vErrors)); }
+  result.push_back(std::make_pair("hex", EncodeHexTx(mergedTx)));
+  result.push_back(std::make_pair("complete", fComplete));
+  if (!vErrors.empty()) { result.push_back(std::make_pair("errors", vErrors)); }
 
   return result;
 }

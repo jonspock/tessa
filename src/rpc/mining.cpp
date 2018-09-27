@@ -232,19 +232,19 @@ UniValue getmininginfo(const UniValue& params, bool fHelp) {
   LOCK(cs_main);
 
   UniValue obj(UniValue::VOBJ);
-  obj.push_back(Pair("blocks", (int)chainActive.Height()));
-  obj.push_back(Pair("currentblocksize", (uint64_t)nLastBlockSize));
-  obj.push_back(Pair("currentblocktx", (uint64_t)nLastBlockTx));
-  obj.push_back(Pair("difficulty", (double)GetDifficulty()));
-  obj.push_back(Pair("errors", GetWarnings("statusbar")));
-  obj.push_back(Pair("genproclimit", (int)GetArg("-genproclimit", -1)));
-  obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
-  obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
-  obj.push_back(Pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
-  obj.push_back(Pair("chain", Params().NetworkIDString()));
+  obj.push_back(std::make_pair("blocks", (int)chainActive.Height()));
+  obj.push_back(std::make_pair("currentblocksize", (uint64_t)nLastBlockSize));
+  obj.push_back(std::make_pair("currentblocktx", (uint64_t)nLastBlockTx));
+  obj.push_back(std::make_pair("difficulty", (double)GetDifficulty()));
+  obj.push_back(std::make_pair("errors", GetWarnings("statusbar")));
+  obj.push_back(std::make_pair("genproclimit", (int)GetArg("-genproclimit", -1)));
+  obj.push_back(std::make_pair("networkhashps", getnetworkhashps(params, false)));
+  obj.push_back(std::make_pair("pooledtx", (uint64_t)mempool.size()));
+  obj.push_back(std::make_pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
+  obj.push_back(std::make_pair("chain", Params().NetworkIDString()));
   if (!fDisableWallet) {
-    obj.push_back(Pair("generate", getgenerate(params, false)));
-    obj.push_back(Pair("hashespersec", gethashespersec(params, false)));
+    obj.push_back(std::make_pair("generate", getgenerate(params, false)));
+    obj.push_back(std::make_pair("hashespersec", gethashespersec(params, false)));
   }
   return obj;
 }
@@ -505,25 +505,25 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp) {
 
     UniValue entry(UniValue::VOBJ);
 
-    entry.push_back(Pair("data", EncodeHexTx(tx)));
+    entry.push_back(std::make_pair("data", EncodeHexTx(tx)));
 
-    entry.push_back(Pair("hash", txHash.GetHex()));
+    entry.push_back(std::make_pair("hash", txHash.GetHex()));
 
     UniValue deps(UniValue::VARR);
     for (const CTxIn& in : tx.vin) {
       if (setTxIndex.count(in.prevout.hash)) deps.push_back(setTxIndex[in.prevout.hash]);
     }
-    entry.push_back(Pair("depends", deps));
+    entry.push_back(std::make_pair("depends", deps));
 
     int index_in_template = i - 1;
-    entry.push_back(Pair("fee", pblocktemplate->vTxFees[index_in_template]));
-    entry.push_back(Pair("sigops", pblocktemplate->vTxSigOps[index_in_template]));
+    entry.push_back(std::make_pair("fee", pblocktemplate->vTxFees[index_in_template]));
+    entry.push_back(std::make_pair("sigops", pblocktemplate->vTxSigOps[index_in_template]));
 
     transactions.push_back(entry);
   }
 
   UniValue aux(UniValue::VOBJ);
-  aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
+  aux.push_back(std::make_pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
 
   arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
 
@@ -537,33 +537,33 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp) {
   UniValue aVotes(UniValue::VARR);
 
   UniValue result(UniValue::VOBJ);
-  result.push_back(Pair("capabilities", aCaps));
-  result.push_back(Pair("version", pblock->nHeaderVersion));
-  result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
-  result.push_back(Pair("transactions", transactions));
-  result.push_back(Pair("coinbaseaux", aux));
-  result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].GetValueOut()));
+  result.push_back(std::make_pair("capabilities", aCaps));
+  result.push_back(std::make_pair("version", pblock->nHeaderVersion));
+  result.push_back(std::make_pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
+  result.push_back(std::make_pair("transactions", transactions));
+  result.push_back(std::make_pair("coinbaseaux", aux));
+  result.push_back(std::make_pair("coinbasevalue", (int64_t)pblock->vtx[0].GetValueOut()));
   result.push_back(
-      Pair("longpollid", chainActive.Tip()->GetBlockHash().GetHex() + std::to_string(nTransactionsUpdatedLast)));
-  result.push_back(Pair("target", hashTarget.GetHex()));
-  result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1));
-  result.push_back(Pair("mutable", aMutable));
-  result.push_back(Pair("noncerange", "00000000ffffffff"));
-  //    result.push_back(Pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
-  //    result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
-  result.push_back(Pair("curtime", pblock->GetBlockTime()));
-  result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
-  result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight + 1)));
-  result.push_back(Pair("votes", aVotes));
+      std::make_pair("longpollid", chainActive.Tip()->GetBlockHash().GetHex() + std::to_string(nTransactionsUpdatedLast)));
+  result.push_back(std::make_pair("target", hashTarget.GetHex()));
+  result.push_back(std::make_pair("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1));
+  result.push_back(std::make_pair("mutable", aMutable));
+  result.push_back(std::make_pair("noncerange", "00000000ffffffff"));
+  //    result.push_back(std::make_pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
+  //    result.push_back(std::make_pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
+  result.push_back(std::make_pair("curtime", pblock->GetBlockTime()));
+  result.push_back(std::make_pair("bits", strprintf("%08x", pblock->nBits)));
+  result.push_back(std::make_pair("height", (int64_t)(pindexPrev->nHeight + 1)));
+  result.push_back(std::make_pair("votes", aVotes));
 
   if (pblock->payee != CScript()) {
     CTxDestination address1;
     ExtractDestination(pblock->payee, address1);
-    result.push_back(Pair("payee", EncodeDestination(address1).c_str()));
-    result.push_back(Pair("payee_amount", (int64_t)pblock->vtx[0].vout[1].nValue));
+    result.push_back(std::make_pair("payee", EncodeDestination(address1).c_str()));
+    result.push_back(std::make_pair("payee_amount", (int64_t)pblock->vtx[0].vout[1].nValue));
   } else {
-    result.push_back(Pair("payee", ""));
-    result.push_back(Pair("payee_amount", ""));
+    result.push_back(std::make_pair("payee", ""));
+    result.push_back(std::make_pair("payee_amount", ""));
   }
 
   return result;
