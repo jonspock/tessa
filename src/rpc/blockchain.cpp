@@ -7,7 +7,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "accumulatormap.h"
-#include "base58.h"
 #include "checkpoints.h"
 #include "chainparams.h"
 #include "clientversion.h"

@@ -6,7 +6,6 @@
 
 #include "core_io.h"
 
-#include "base58.h"
 #include "key_io.h"
 #include "primitives/transaction.h"
 #include "script/script.h"

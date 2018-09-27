@@ -7,7 +7,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletdb.h"
-#include "base58.h"
 #include "fs.h"
 #include "fs_utils.h"
 #include "main.h"

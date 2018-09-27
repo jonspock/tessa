@@ -8,7 +8,6 @@
 #include "multisenddialog.h"
 #include "addressbookpage.h"
 #include "addresstablemodel.h"
-#include "base58.h"
 #include "init.h"
 #include "ui_multisenddialog.h"
 #include "walletmodel.h"

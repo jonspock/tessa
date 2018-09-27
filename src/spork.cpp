@@ -6,7 +6,6 @@
 
 #include "spork.h"
 #include "key_io.h"
-#include "base58.h"
 #include "blockmap.h"
 #include "ecdsa/key.h"
 #include "main.h"

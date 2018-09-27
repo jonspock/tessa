@@ -7,7 +7,6 @@
 
 #include "chain.h"
 #include "key_io.h"
-#include "base58.h"
 #include "init.h"
 #include "main.h"
 #include "rpc/server.h"

@@ -13,7 +13,6 @@
 #include "walletmodel.h"
 
 #include "askpassphrasedialog.h"
-#include "base58.h"
 #include "init.h"
 #include "tessa_externs.h"
 #include "wallet/wallet.h"

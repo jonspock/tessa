@@ -18,7 +18,6 @@
 #include "sendcoinsentry.h"
 #include "walletmodel.h"
 
-#include "base58.h"
 #include "tessa_externs.h"
 #include "ui_interface.h"
 #include "utilmoneystr.h"

@@ -13,7 +13,6 @@
 #include "guiutil.h"
 #include "transactionrecord.h"
 
-#include "base58.h"
 #include "chain.h"
 #include "db.h"
 #include "main.h"

@@ -9,7 +9,6 @@
 #pragma once
 
 #include "amount.h"
-#include "base58.h"
 #include "key_io.h"
 #include "crypter.h"
 

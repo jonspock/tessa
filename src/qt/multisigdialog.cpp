@@ -6,7 +6,6 @@
 #include "multisigdialog.h"
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
-#include "base58.h"
 #include "bitcoinamountfield.h"
 #include "coins.h"
 #include "core_io.h"

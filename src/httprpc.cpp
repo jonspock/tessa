@@ -6,7 +6,6 @@
 
 #include "httprpc.h"
 
-#include "base58.h"
 #include "chainparams.h"
 #include "httpserver.h"
 #include "random.h"

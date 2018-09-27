@@ -14,7 +14,6 @@
 #include "recentrequeststablemodel.h"
 #include "transactiontablemodel.h"
 
-#include "base58.h"
 #include "db.h"
 #include "keystore.h"
 #include "main.h"

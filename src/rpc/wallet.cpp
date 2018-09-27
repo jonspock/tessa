@@ -8,7 +8,6 @@
 
 #include "wallet/wallet.h"
 #include "amount.h"
-#include "base58.h"
 #include "blockmap.h"
 #include "chain.h"
 #include "core_io.h"

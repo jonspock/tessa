@@ -6,7 +6,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "transactionrecord.h"
-#include "base58.h"
 #include "blockmap.h"
 #include "chain.h"
 #include "timedata.h"
