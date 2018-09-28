@@ -30,8 +30,8 @@
 #include "rpc/server.h"
 #include "scheduler.h"
 #include "script/standard.h"
-#include "spork.h"
-#include "sporkdb.h"
+#include "spork/spork.h"
+#include "spork/sporkdb.h"
 #include "txdb.h"
 #include "ui_interface.h"
 #include "util.h"
@@ -247,7 +247,6 @@ void PrepareShutdown(CScheduler& scheduler) {
     if (pcoinsdbview) delete pcoinsdbview;
     if (gpBlockTreeDB) delete gpBlockTreeDB;
     if (gpZerocoinDB) delete gpZerocoinDB;
-    if (gpSporkDB) delete gpSporkDB;
   }
 
 #if ENABLE_ZMQ
@@ -1347,11 +1346,10 @@ bool AppInit2(CScheduler& scheduler) {
         delete pcoinscatcher;
         delete gpBlockTreeDB;
         delete gpZerocoinDB;
-        delete gpSporkDB;
 
         // Tessa specific: zerocoin and spork DB's
         gpZerocoinDB = new CZerocoinDB(0, false, fReindex);
-        gpSporkDB = new CSporkDB();
+        gSporkDB.init( (GetDataDir() / "sporks.json").string() );
 
         gpBlockTreeDB = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
         pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);

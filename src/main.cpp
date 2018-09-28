@@ -36,8 +36,8 @@
 #include "reverse_iterate.h"
 #include "script/sigcache.h"
 #include "scriptcheck.h"
-#include "spork.h"
-#include "sporkdb.h"
+#include "spork/spork.h"
+#include "spork/sporkdb.h"
 #include "staker.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -441,7 +441,6 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
 CCoinsViewCache* gpCoinsTip = nullptr;
 CBlockTreeDB* gpBlockTreeDB = nullptr;
 CZerocoinDB* gpZerocoinDB = nullptr;
-CSporkDB* gpSporkDB = nullptr;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -3835,8 +3834,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     // Tessa: We use certain sporks during IBD, so check to see if they are
     // available. If not, ask the first peer connected for them.
-    bool fMissingSporks = !gpSporkDB->SporkExists(SporkID::SPORK_PROTOCOL_ENFORCEMENT);
-    if (fMissingSporks || !fRequestedSporksIDB) {
+    bool fMissingSporks = !gSporkDB.SporkExists("SPORK_PROTOCOL_ENFORCEMENT");
+      if (fMissingSporks || !fRequestedSporksIDB) {
       LogPrintf("asking peer for sporks\n");
       pfrom->PushMessage("getsporks");
       fRequestedSporksIDB = true;

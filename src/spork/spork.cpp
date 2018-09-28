@@ -5,8 +5,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spork.h"
-#include "key_io.h"
 #include "ecdsa/key.h"
+#include "key_io.h"
 #include "main.h"
 #include "protocol.h"
 #include "sporkdb.h"
@@ -22,9 +22,8 @@ const std::string strSporkKey =
     "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830D8"
     "3B9B7F469A6C45A717";
 
+// Global Spork Manager
 CSporkManager gSporkManager;
-
-//CSporkData gSporkData;
 
 // Tessa: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB() {
@@ -35,13 +34,11 @@ void CSporkManager::LoadSporksFromDB() {
 
     // attempt to read spork from sporkDB
     CSporkMessage spork;
-    if (!gpSporkDB->ReadSpork(sporkID, spork)) {
+    if (!gSporkDB.ReadSpork(strSpork, spork)) {
       LogPrint(TessaLog::SPORK, "%s : no previous value for %s found in database\n", __func__, strSpork);
-      //gSporkData.WriteSpork(strSpork, spork);
       continue;
     }
 
-    
     // add spork to memory
     mapSporks[spork.GetHash()] = spork;
     mapSporksActive[spork.nSporkID] = spork;
@@ -99,7 +96,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStr
     Relay(spork);
 
     // Tessa: add to spork database.
-    gpSporkDB->WriteSpork(id, spork);
+    gSporkDB.WriteSpork(strSpork, spork);
   }
 
   if (strCommand == "getsporks") {

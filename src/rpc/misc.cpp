@@ -14,7 +14,7 @@
 #include "net.h"
 #include "netbase.h"
 #include "rpc/server.h"
-#include "spork.h"
+#include "spork/spork.h"
 #include "staker.h"
 #include "timedata.h"
 #include "util.h"

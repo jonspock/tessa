@@ -2,7 +2,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1.0 FATAL_ERROR)
 
 add_library(sporklib ${BLS_HEADERS}
   ${CMAKE_CURRENT_SOURCE_DIR}/json_file.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/sporkdata.cpp
 )
 
 # For now just on Mac

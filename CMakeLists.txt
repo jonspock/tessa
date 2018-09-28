@@ -174,12 +174,15 @@ endif()
 add_definitions("-fPIC")
 #add_definitions("-DUSE_LEVELDB")
 
+SET(SPORK
+  ./src/spork/spork.cpp
+  ./src/spork/sporkdb.cpp
+  ./src/json/json_file.cpp # here for now
+  )
+
 SET(COMMON_A
   ./src/support/cleanse.cpp
   ./src/support/lockedpool.cpp
-  ./src/spork.cpp
-  ./src/json/sporkdata.cpp
-  ./src/json/json_file.cpp
   ./src/accumulators.cpp
   ./src/accumulatormap.cpp
   ./src/accumulatorcheckpoints.cpp
@@ -323,7 +326,6 @@ SET(SOURCES
   ./src/script/sigcache.cpp
   ./src/script/sign.cpp
   ./src/script/standard.cpp
-  ./src/sporkdb.cpp
   ./src/timedata.cpp
   ./src/txdb.cpp
   ./src/txmempool.cpp
@@ -424,10 +426,11 @@ source_group("Uni" FILES ${UNI_SOURCES})
 source_group("Zmq" FILES ${ZMQ_SOURCES})
 source_group("Primitives" FILES ${PRIM})
 source_group("CommonA" FILES ${COMMON_A})
+source_group("Spork" FILES ${SPORK})
 
 add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} 
   ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
-  ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+  ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${SPORK} ${CONSENSUS_CRYPTO})
 
 
 if(CLANG_TIDY_EXE)
@@ -505,7 +508,6 @@ SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${Boost_LI
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
 target_link_libraries(tessad ${LIBS_LIST})
 
-add_subdirectory(src/json)
 add_subdirectory(src/qt)
 
 

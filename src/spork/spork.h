@@ -15,22 +15,16 @@ class CPubKey;
 class CKey;
 }  // namespace ecdsa
 
-class CSporkMessage;
-class CSporkManager;
-
-extern CSporkManager gSporkManager;
-
 //
 // Spork Class
 // Keeps track of all of the network spork settings
 //
-
 class CSporkMessage {
  public:
   std::vector<uint8_t> vchSig;
-  int nSporkID=0;
-  int64_t nValue=0;
-  int64_t nTimeSigned=0;
+  int nSporkID = 0;
+  int64_t nValue = 0;
+  int64_t nTimeSigned = 0;
 
   uint256 GetHash() const {
     uint256 n = Hash(BEGIN(nSporkID), END(nTimeSigned));
@@ -45,7 +39,6 @@ class CSporkMessage {
     READWRITE(nTimeSigned);
     READWRITE(vchSig);
   }
-
 };
 
 enum class SporkID { SPORK_PROTOCOL_ENFORCEMENT = 1000, SPORK_ZEROCOIN_MAINTENANCE_MODE };
@@ -82,3 +75,5 @@ class CSporkManager {
   void LoadSporksFromDB();
   void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 };
+
+extern CSporkManager gSporkManager;

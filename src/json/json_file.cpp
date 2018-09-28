@@ -9,12 +9,12 @@ using std::string;
 
 
 bool json_file::open(const string& name) {
+  filename = name;
   m_inf.open(name, std::ifstream::in);
   if (!m_inf) {
     std::cout << "problem opening input file " << name << "\n";
     return false;
   }
-  filename = name;
   read_file();
   return true;
 }

@@ -6,38 +6,55 @@ Tessa Core integration/staging repository
 Tessa is an open source crypto-currency focused on fast private transactions with low transaction fees & environmental footprint.
 - Anonymized transactions using the Zerocoin Protocol
 
-Forked from PIVX SHA 732fa37 - May 16, 2018, with many changes & files from other projects such Bitcoin, Bitcoin-abc, etc
+This repo contains code from Bitcoin, Monero, Dash, Peercoin, Bitcoin-ABC, Chia and PIVX from various point in the past.
+Original tree was forked from PIVX SHA 732fa37 - May 16, 2018, but there has been so many changes,
+it's unlikely to have much resemblance to that code branch.
 
 ### Main code upgrades
 
-- Removal of zerocoin based staking
+- Removal of zerocoin based staking (PIVX)
 
-- Removal of masternodes
+- Removal of masternodes (Dash)
 
-- Removal of Instant transactions
+- Removal of Instant transactions (Dash)
 
 - HD-Wallet for both main coin and zerocoin
 
-- LMDB lightweight db for main wallet (removing Berkeley DB dependancy)
+- LMDB lightweight db for main wallet (removing Berkeley DB dependancy) (from Monero)
 
 - Remove requirement for openssl
 
 - Uses libsodium for randomization/crypto libraries
 
+- Uses relic library for cryptographic primitives
+
 - GMP for numerics (replacing openssl)
 
 - PoW phase uses either Argon2D or SHA256 (To be decided)
 
-- Various options removed such as Multisig GUI. Protocol buffers and related BIP 38
+- BCH32 for Address codes (from Bitcoin's BECH32)
+
+- BLS library from Chia for Signatures
+
+- Various options removed such as Multisig GUI. Protocol buffers and related BIP 38 (from PIVX)
 
 - Various upgrades from Bitcoin/Bitcoin-ABC, such as logging,hd wallets,wrapping boost filesystem, etc
 
-- Uses CMake for builds
-
-- Reduced dependencies on Boost
+- Uses CMake for build
 
 - Rocksdb to replace leveldB (experimental)
 
+- Reduced dependencies on Boost
+
+- Extensive usage of C++11's for range loops, std::thread, std:bind, std::mutex, etc to replace boost library
+
+- Inability to have un-encrypted Wallets
+
+- Change in Fee handling
+
+- Usage of signals-cpp library, mpark's variant library and a filesystem substitute for boost/c++17 filesystem
+
+- Multiple Licenses, including MIT for Bitcoin/Dash/Peercoin/PIVX/Signals-cpp code, RELIC LGPL code, Boost software licencse for Mpark's code, Apache License for Chia, specific license for filesystem components, 
 
 ### Coin Specs
 <table>

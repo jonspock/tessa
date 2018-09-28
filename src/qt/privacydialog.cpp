@@ -16,7 +16,7 @@
 #include "optionsmodel.h"
 #include "primitives/deterministicmint.h"
 #include "sendcoinsentry.h"
-#include "spork.h"
+#include "spork/spork.h"
 #include "timedata.h"
 #include "ui_privacydialog.h"
 #include "utilmoneystr.h"

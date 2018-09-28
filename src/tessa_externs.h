@@ -16,7 +16,6 @@ class CBlockIndex;
 class CBlockTreeDB;
 class CChain;
 class CZerocoinDB;
-class CSporkDB;
 class CTxMemPool;
 class CFeeRate;
 class CCoinsViewCache;
@@ -66,5 +65,3 @@ extern CBlockTreeDB* gpBlockTreeDB;
 /** Global variable that points to the zerocoin database (protected by cs_main) */
 extern CZerocoinDB* gpZerocoinDB;
 
-/** Global variable that points to the spork database (protected by cs_main) */
-extern CSporkDB* gpSporkDB;

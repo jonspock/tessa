@@ -42,6 +42,8 @@ public:
   void print();
   void debug_print();
   bool find(const std::string& name, std::string& line);
+  bool exists(const std::string& name) {   return m_table.contains(name); }
+
 
   template <typename T_> T_ from_string(const std::string& name) { return name; }
   template <typename T_> void get_param(const std::string& name, T_& val) {
