@@ -9,6 +9,7 @@
 #include "libzerocoin/PublicCoin.h"
 #include "main.h"
 #include "txdb.h"
+#include "zerocoindb.h"
 #include "util.h"
 #include "validationstate.h"
 

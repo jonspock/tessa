@@ -7,7 +7,7 @@
 #include "accumulators.h"
 #include "libzerocoin/Denominations.h"
 #include "main.h"
-#include "txdb.h"
+#include "zerocoin/zerocoindb.h"
 
 using namespace libzerocoin;
 using namespace std;

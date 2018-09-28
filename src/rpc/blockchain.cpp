@@ -14,6 +14,7 @@
 #include "rpc/server.h"
 #include "sync.h"
 #include "txdb.h"
+#include "zerocoin/zerocoindb.h"
 #include "txmempool.h"
 #include "verifydb.h"
 

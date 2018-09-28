@@ -33,6 +33,7 @@
 #include "spork/spork.h"
 #include "spork/sporkdb.h"
 #include "txdb.h"
+#include "zerocoin/zerocoindb.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
@@ -40,7 +41,7 @@
 #include "validationinterface.h"
 #include "validationstate.h"
 #include "verifydb.h"
-#include "zerochain.h"
+#include "zerocoin/zerochain.h"
 
 #include "accumulators.h"
 #include "db.h"

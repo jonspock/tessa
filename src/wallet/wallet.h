@@ -31,8 +31,8 @@
 #include "wallet_functions.h"
 #include "wallet_ismine.h"
 #include "walletdb.h"
-#include "zerotracker.h"
-#include "zerowallet.h"
+#include "zerocoin/zerotracker.h"
+#include "zerocoin/zerowallet.h"
 
 #include <algorithm>
 #include <cstdint>

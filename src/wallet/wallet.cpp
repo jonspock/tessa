@@ -29,7 +29,7 @@
 #include "utiltime.h"
 #include "validationstate.h"
 #include "warnings.h"
-#include "zerochain.h"
+#include "zerocoin/zerochain.h"
 
 #include "denomination_functions.h"
 #include "libzerocoin/CoinSpend.h"

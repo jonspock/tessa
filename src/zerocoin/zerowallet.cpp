@@ -9,6 +9,7 @@
 #include "main.h"
 #include "primitives/deterministicmint.h"
 #include "txdb.h"
+#include "zerocoindb.h"
 #include "uint512.h"
 #include "utiltime.h"
 #include "validationstate.h"

@@ -235,14 +235,12 @@ SET(SERVER_A
   ./src/dbwrapper.cpp
   ./src/init.cpp
   ./src/main.cpp
-  ./src/mainzero.cpp
   ./src/mainfile.cpp
   ./src/main_functions.cpp
   ./src/warnings.cpp
   ./src/verifydb.cpp
   ./src/block.cpp
   ./src/blockundo.cpp
-  ./src/zerochain.cpp
   ./src/merkleblock.cpp
   ./src/miner.cpp
   ./src/staker.cpp
@@ -250,6 +248,15 @@ SET(SERVER_A
   ./src/noui.cpp
   ./src/pow.cpp
   ./src/rest.cpp
+  )
+
+SET(ZERO
+  ./src/zerocoin/mainzero.cpp
+  ./src/zerocoin/zerochain.cpp
+  ./src/zerocoin/zerocoindb.cpp
+  ./src/zerocoin/zerowallet.cpp
+  ./src/zerocoin/zerotracker.cpp
+  ./src/zerocoin/zerochain.cpp
   )
 
 SET(RPC
@@ -302,7 +309,6 @@ SET(WALLET
   ./src/wallet/wallet_functions.cpp
   ./src/wallet/db.cpp
   ./src/wallet/crypter.cpp
-  ./src/wallet/zerowallet.cpp
   )
   
 SET(PRIM
@@ -330,7 +336,6 @@ SET(SOURCES
   ./src/txdb.cpp
   ./src/txmempool.cpp
   ./src/denomination_functions.cpp
-  ./src/zerotracker.cpp
   ./src/httprpc.cpp
   ./src/httpserver.cpp
   ./src/validationinterface.cpp
@@ -427,10 +432,11 @@ source_group("Zmq" FILES ${ZMQ_SOURCES})
 source_group("Primitives" FILES ${PRIM})
 source_group("CommonA" FILES ${COMMON_A})
 source_group("Spork" FILES ${SPORK})
+source_group("Zero" FILES ${ZERO})
 
 add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} 
   ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
-  ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${SPORK} ${CONSENSUS_CRYPTO})
+  ${ZERO} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${SPORK} ${CONSENSUS_CRYPTO})
 
 
 if(CLANG_TIDY_EXE)

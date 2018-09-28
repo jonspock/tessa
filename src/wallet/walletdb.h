@@ -14,7 +14,7 @@
 #include "libzerocoin/Accumulator.h"
 #include "libzerocoin/Denominations.h"
 #include "primitives/zerocoin.h"
-#include "zerotracker.h"
+#include "zerocoin/zerotracker.h"
 
 #include <cstdint>
 #include <list>
