@@ -13,6 +13,7 @@
 #include "utiltime.h"
 #include "validationstate.h"
 
+//#include "json/sporkdata.h"
 using namespace std;
 using namespace ecdsa;
 
@@ -22,6 +23,8 @@ const std::string strSporkKey =
     "3B9B7F469A6C45A717";
 
 CSporkManager gSporkManager;
+
+//CSporkData gSporkData;
 
 // Tessa: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB() {
@@ -34,9 +37,11 @@ void CSporkManager::LoadSporksFromDB() {
     CSporkMessage spork;
     if (!gpSporkDB->ReadSpork(sporkID, spork)) {
       LogPrint(TessaLog::SPORK, "%s : no previous value for %s found in database\n", __func__, strSpork);
+      //gSporkData.WriteSpork(strSpork, spork);
       continue;
     }
 
+    
     // add spork to memory
     mapSporks[spork.GetHash()] = spork;
     mapSporksActive[spork.nSporkID] = spork;

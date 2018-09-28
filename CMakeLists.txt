@@ -178,6 +178,8 @@ SET(COMMON_A
   ./src/support/cleanse.cpp
   ./src/support/lockedpool.cpp
   ./src/spork.cpp
+  ./src/json/sporkdata.cpp
+  ./src/json/json_file.cpp
   ./src/accumulators.cpp
   ./src/accumulatormap.cpp
   ./src/accumulatorcheckpoints.cpp
