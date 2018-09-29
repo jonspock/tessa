@@ -18,8 +18,6 @@
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 
-#include "accumulatormap.h"
-#include "accumulators.h"
 #include "addrman.h"
 #include "chainparams.h"
 #include "checkpoints.h"
@@ -28,7 +26,6 @@
 #include "ecdsa/ecdsa.h"
 #include "init.h"
 #include "kernel.h"
-#include "mainzero.h"
 #include "merkleblock.h"
 #include "net.h"
 #include "pow.h"
@@ -40,13 +37,16 @@
 #include "spork/sporkdb.h"
 #include "staker.h"
 #include "txdb.h"
-#include "zerocoin/zerocoindb.h"
 #include "txmempool.h"
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utiltime.h"
 #include "validationinterface.h"
+#include "zerocoin/accumulatormap.h"
+#include "zerocoin/accumulators.h"
+#include "zerocoin/mainzero.h"
 #include "zerocoin/zerochain.h"
+#include "zerocoin/zerocoindb.h"
 
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"
@@ -1971,7 +1971,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         LogPrintf("%s: %s detected zerocoinspend in transaction %s \n", __func__,
                   pSpend.first.getCoinSerialNumber().GetHex(), pSpend.second.GetHex());
         pwalletMain->NotifyZerocoinChanged.fire(pwalletMain, pSpend.first.getCoinSerialNumber().GetHex(), "Used",
-                                           CT_UPDATED);
+                                                CT_UPDATED);
 
         // Don't add the same tx multiple times
         if (setAddedTx.count(pSpend.second)) continue;
@@ -3306,7 +3306,9 @@ bool static LoadBlockIndexDB(string& strError) {
   gpBlockTreeDB->ReadLastBlockFile(nLastBlockFile);
   vinfoBlockFile.resize(nLastBlockFile + 1);
   LogPrintf("%s: last block file = %i\n", __func__, nLastBlockFile);
-  for (int nFile = 0; nFile <= nLastBlockFile; nFile++) { gpBlockTreeDB->ReadBlockFileInfo(nFile, vinfoBlockFile[nFile]); }
+  for (int nFile = 0; nFile <= nLastBlockFile; nFile++) {
+    gpBlockTreeDB->ReadBlockFileInfo(nFile, vinfoBlockFile[nFile]);
+  }
   LogPrintf("%s: last block file info: %s\n", __func__, vinfoBlockFile[nLastBlockFile].ToString());
   for (int nFile = nLastBlockFile + 1; true; nFile++) {
     CBlockFileInfo info;
@@ -3836,7 +3838,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     // Tessa: We use certain sporks during IBD, so check to see if they are
     // available. If not, ask the first peer connected for them.
     bool fMissingSporks = !gSporkDB.SporkExists("SPORK_PROTOCOL_ENFORCEMENT");
-      if (fMissingSporks || !fRequestedSporksIDB) {
+    if (fMissingSporks || !fRequestedSporksIDB) {
       LogPrintf("asking peer for sporks\n");
       pfrom->PushMessage("getsporks");
       fRequestedSporksIDB = true;
@@ -4514,10 +4516,7 @@ int ActiveProtocol() {
   return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 
-void ProcessMessagesSignal(CNode* pfrom, bool* b) {
-  *b = ProcessMessages(pfrom);
-}
-
+void ProcessMessagesSignal(CNode* pfrom, bool* b) { *b = ProcessMessages(pfrom); }
 
 // requires LOCK(cs_vRecvMsg)
 bool ProcessMessages(CNode* pfrom) {
@@ -4607,9 +4606,9 @@ bool ProcessMessages(CNode* pfrom) {
       } else {
         PrintExceptionContinue(&e, "ProcessMessages()");
       }
-    } catch (const thread_interrupted&) {
-        LogPrintf("ProcessMessage interrupted\n");
-    } catch (...) { PrintExceptionContinue(nullptr, "ProcessMessages()"); }
+    } catch (const thread_interrupted&) { LogPrintf("ProcessMessage interrupted\n"); } catch (...) {
+      PrintExceptionContinue(nullptr, "ProcessMessages()");
+    }
 
     if (!fRet)
       LogPrintf("ProcessMessage(%s, %u bytes) FAILED peer=%d\n", SanitizeString(strCommand), nMessageSize, pfrom->id);

@@ -40,9 +40,10 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
   CValidationState state;
   for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
     if (interrupt) return error("VerifyDB() : interrupted");
-    uiInterface.ShowProgress.fire(_("Verifying blocks..."),
-                             std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) /
-                                                            (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100)))));
+    uiInterface.ShowProgress.fire(
+        _("Verifying blocks..."),
+        std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth *
+                                       (nCheckLevel >= 4 ? 50 : 100)))));
     if (pindex->nHeight < chainActive.Height() - nCheckDepth) break;
     CBlock block;
     // check level 0: read from disk
@@ -89,9 +90,10 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
     CBlockIndex* pindex = pindexState;
     while (pindex != chainActive.Tip()) {
       if (interrupt) return error("VerifyDB() : interrupted");
-      uiInterface.ShowProgress.fire(_("Verifying blocks..."),
-                               std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) /
-                                                                    (double)nCheckDepth * 50))));
+      uiInterface.ShowProgress.fire(
+          _("Verifying blocks..."),
+          std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) /
+                                               (double)nCheckDepth * 50))));
       pindex = chainActive.Next(pindex);
       CBlock block;
       if (!ReadBlockFromDisk(block, pindex))

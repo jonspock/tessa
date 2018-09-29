@@ -160,8 +160,8 @@ bool RenameOver(const fs::path& src, fs::path& dest) {
  */
 bool TryCreateDirectory(const fs::path& p) {
 #ifdef NO_BOOST_FILESYSTEM
-    return fs::create_directory(p);
-#else  
+  return fs::create_directory(p);
+#else
   try {
     return fs::create_directory(p);
   } catch (fs::filesystem_error&) {

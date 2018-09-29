@@ -20,7 +20,7 @@
 #include "utiltime.h"
 #include "version.h"
 
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace std;
 

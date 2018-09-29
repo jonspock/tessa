@@ -49,6 +49,7 @@ enum LogFlags : uint32_t {
     LEVELDB = (1 << 20),
     ZKP = (1 << 21),
     SPORK = (1 << 22),
+    MINER = (1 << 23),
     ALL = ~uint32_t(0),
 };
 

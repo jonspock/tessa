@@ -29,6 +29,8 @@
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 
+#include "json/json.hpp"
+
 #ifdef WIN32
 #include <string.h>
 #else
@@ -263,7 +265,7 @@ void AdvertizeLocal(CNode* pnode) {
       addrLocal.SetIP(pnode->addrLocal);
     }
     if (addrLocal.IsRoutable()) {
-      LogPrintf("AdvertizeLocal: advertizing address %s\n", addrLocal.ToString());
+      LogPrint(TessaLog::NET,"AdvertizeLocal: advertizing address %s\n", addrLocal.ToString());
       FastRandomContext insecure_rand;
       pnode->PushAddress(addrLocal, insecure_rand);
     }
@@ -278,7 +280,7 @@ bool AddLocal(const CService& addr, int nScore) {
 
   if (IsLimited(addr)) return false;
 
-  LogPrintf("AddLocal(%s,%i)\n", addr.ToString(), nScore);
+  LogPrint(TessaLog::NET,"AddLocal(%s,%i)\n", addr.ToString(), nScore);
 
   {
     LOCK(cs_mapLocalHost);
@@ -297,7 +299,7 @@ bool AddLocal(const CNetAddr& addr, int nScore) { return AddLocal(CService(addr,
 
 bool RemoveLocal(const CService& addr) {
   LOCK(cs_mapLocalHost);
-  LogPrintf("RemoveLocal(%s)\n", addr.ToString());
+  LogPrint(TessaLog::NET,"RemoveLocal(%s)\n", addr.ToString());
   mapLocalHost.erase(addr);
   return true;
 }
@@ -462,7 +464,7 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, const string& strLastCom
 }
 
 void CNode::PushVersion() {
-  int nBestHeight=0;
+  int nBestHeight = 0;
   g_signals.GetHeight.fire(&nBestHeight);  // HACK ???.get_value_or(0);
 
   /// when NTP implemented, change to just nTime = GetAdjustedTime()
@@ -954,7 +956,7 @@ void ThreadSocketHandler() {
           LogPrint(TessaLog::NET, "connection from %s dropped (full)\n", addr.ToString());
           CloseSocket(hSocket);
         } else if (CNode::IsBanned(addr) && !whitelisted) {
-          LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
+          LogPrint(TessaLog::NET,"connection from %s dropped (banned)\n", addr.ToString());
           CloseSocket(hSocket);
         } else {
           CNode* pnode = new CNode(hSocket, addr, "", true);
@@ -1032,13 +1034,13 @@ void ThreadSocketHandler() {
                    pnode->nLastSend != 0, pnode->id);
           pnode->fDisconnect = true;
         } else if (nTime - pnode->nLastSend > TIMEOUT_INTERVAL) {
-          LogPrintf("socket sending timeout: %is\n", nTime - pnode->nLastSend);
+          LogPrint(TessaLog::NET,"socket sending timeout: %is\n", nTime - pnode->nLastSend);
           pnode->fDisconnect = true;
         } else if (nTime - pnode->nLastRecv > TIMEOUT_INTERVAL) {
-          LogPrintf("socket receive timeout: %is\n", nTime - pnode->nLastRecv);
+          LogPrint(TessaLog::NET,"socket receive timeout: %is\n", nTime - pnode->nLastRecv);
           pnode->fDisconnect = true;
         } else if (pnode->nPingNonceSent && pnode->nPingUsecStart + TIMEOUT_INTERVAL * 1000000 < GetTimeMicros()) {
-          LogPrintf("ping timeout: %fs\n", 0.000001 * (GetTimeMicros() - pnode->nPingUsecStart));
+          LogPrint(TessaLog::NET,"ping timeout: %fs\n", 0.000001 * (GetTimeMicros() - pnode->nPingUsecStart));
           pnode->fDisconnect = true;
         }
       }
@@ -1087,13 +1089,13 @@ void ThreadMapPort() {
       char externalIPAddress[40];
       r = UPNP_GetExternalIPAddress(urls.controlURL, data.first.servicetype, externalIPAddress);
       if (r != UPNPCOMMAND_SUCCESS)
-        LogPrintf("UPnP: GetExternalIPAddress() returned %d\n", r);
+        LogPrint(TessaLog::NET,"UPnP: GetExternalIPAddress() returned %d\n", r);
       else {
         if (externalIPAddress[0]) {
-          LogPrintf("UPnP: ExternalIPAddress = %s\n", externalIPAddress);
+          LogPrint(TessaLog::NET,"UPnP: ExternalIPAddress = %s\n", externalIPAddress);
           AddLocal(CNetAddr(externalIPAddress), LOCAL_UPNP);
         } else
-          LogPrintf("UPnP: GetExternalIPAddress failed.\n");
+          LogPrint(TessaLog::NET,"UPnP: GetExternalIPAddress failed.\n");
       }
     }
 
@@ -1112,9 +1114,9 @@ void ThreadMapPort() {
 #endif
 
       if (r != UPNPCOMMAND_SUCCESS)
-        LogPrintf("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n", port, port, lanaddr, r, strupnperror(r));
+        LogPrint(TessaLog::NET,"AddPortMapping(%s, %s, %s) failed with code %d (%s)\n", port, port, lanaddr, r, strupnperror(r));
       else
-        LogPrintf("UPnP Port Mapping successful.\n");
+        LogPrint(TessaLog::NET,"UPnP Port Mapping successful.\n");
       ;
 
       std::unique_lock<std::mutex> lock(cs_upnp);
@@ -1123,13 +1125,13 @@ void ThreadMapPort() {
     }
     if (interrupted) {
       r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, port.c_str(), "TCP", 0);
-      LogPrintf("UPNP_DeletePortMapping() returned: %d\n", r);
+      LogPrint(TessaLog::NET,"UPNP_DeletePortMapping() returned: %d\n", r);
       freeUPNPDevlist(devlist);
       devlist = 0;
       FreeUPNPUrls(&urls);
     }
   } else {
-    LogPrintf("No valid UPnP IGDs found\n");
+    LogPrint(TessaLog::NET,"No valid UPnP IGDs found\n");
     freeUPNPDevlist(devlist);
     devlist = 0;
     if (r != 0) FreeUPNPUrls(&urls);
@@ -1137,7 +1139,7 @@ void ThreadMapPort() {
 }
 
 void InterruptMapPort() {
-  LogPrintf("Interrupting UPnP\n");
+  LogPrint(TessaLog::NET,"Interrupting UPnP\n");
   {
     std::lock_guard<std::mutex> lock(cs_upnp);
     upnp_interrupted = true;
@@ -1146,7 +1148,7 @@ void InterruptMapPort() {
 }
 void StopMapPort() {
   if (upnp_thread) {
-    LogPrintf("Stopping UPnP\n");
+    LogPrint(TessaLog::NET,"Stopping UPnP\n");
     upnp_thread->join();
     delete upnp_thread;
     upnp_thread = NULL;
@@ -1202,31 +1204,31 @@ void ThreadDNSAddressSeed() {
   int found = 0;
 
   if (vSeeds.size() > 0) {
-      LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
+    LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
 
-      for (const CDNSSeedData& seed : vSeeds) {
-          if (net_interrupted) return;
-          if (HaveNameProxy()) {
-              AddOneShot(seed.host);
-          } else {
-              vector<CNetAddr> vIPs;
-              vector<CAddress> vAdd;
-              if (LookupHost(seed.host.c_str(), vIPs)) {
-                  for (CNetAddr& ip : vIPs) {
-                      int nOneDay = 24 * 3600;
-                      CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
-                      addr.nTime = GetTime() - 3 * nOneDay - GetRand(4 * nOneDay);  // use a random age between 3 and 7 days old
-                      vAdd.push_back(addr);
-                      found++;
-                  }
-              }
-              addrman.Add(vAdd, CNetAddr(seed.name, true));
+    for (const CDNSSeedData& seed : vSeeds) {
+      if (net_interrupted) return;
+      if (HaveNameProxy()) {
+        AddOneShot(seed.host);
+      } else {
+        vector<CNetAddr> vIPs;
+        vector<CAddress> vAdd;
+        if (LookupHost(seed.host.c_str(), vIPs)) {
+          for (CNetAddr& ip : vIPs) {
+            int nOneDay = 24 * 3600;
+            CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
+            addr.nTime = GetTime() - 3 * nOneDay - GetRand(4 * nOneDay);  // use a random age between 3 and 7 days old
+            vAdd.push_back(addr);
+            found++;
           }
+        }
+        addrman.Add(vAdd, CNetAddr(seed.name, true));
       }
-      
-      LogPrintf("%d addresses found from DNS seeds\n", found);
+    }
+
+    LogPrintf("%d addresses found from DNS seeds\n", found);
   } else {
-      LogPrintf("No DNS seeds setup\n");
+    LogPrintf("No DNS seeds setup\n");
   }
 }
 
@@ -1280,9 +1282,7 @@ void ThreadOpenConnections() {
     InterruptibleSleep(500);
 
     CSemaphoreGrant grant(*semOutbound);
-      if (net_interrupted) {
-          break;
-      }
+    if (net_interrupted) { break; }
     // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
     if (addrman.size() == 0 && (GetTime() - nStart > 60)) {
       static bool done = false;
@@ -1460,7 +1460,7 @@ void ThreadMessageHandler() {
         TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
         if (lockRecv) {
           bool ok;
-          g_signals.ProcessMessagesSignal.fire(pnode,&ok);
+          g_signals.ProcessMessagesSignal.fire(pnode, &ok);
           if (!ok) pnode->CloseSocketDisconnect();
 
           if (pnode->nSendSize < SendBufferSize()) {
@@ -1497,15 +1497,8 @@ void static ThreadStakeMinter() {
   try {
     BitcoinMiner(pwallet, true);
     interruption_point(net_interrupted);
-  } catch (std::exception& e) {
-      LogPrintf("ThreadStakeMinter() exception \n");
-  }
-  catch (thread_interrupted& e) {
-    LogPrintf("ThreadStakeMinter() interrupted\n");
-  }
-  catch (...) {
-    LogPrintf("ThreadStakeMinter() error \n");
-  }
+  } catch (thread_interrupted& e) {  LogPrintf("ThreadStakeMinter() interrupted\n");
+  } catch (...) { LogPrintf("ThreadStakeMinter() error \n"); }
   LogPrintf("ThreadStakeMinter exiting,\n");
 }
 
@@ -1581,7 +1574,7 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
     CloseSocket(hListenSocket);
     return false;
   }
-  LogPrintf("Bound to %s\n", addrBind.ToString());
+  LogPrint(TessaLog::NET,"Bound to %s\n", addrBind.ToString());
 
   // Listen for incoming connections
   if (listen(hListenSocket, SOMAXCONN) == SOCKET_ERROR) {
@@ -1609,7 +1602,7 @@ void static Discover() {
     vector<CNetAddr> vaddr;
     if (LookupHost(pszHostName, vaddr)) {
       for (const CNetAddr& addr : vaddr) {
-        if (AddLocal(addr, LOCAL_IF)) LogPrintf("%s: %s - %s\n", __func__, pszHostName, addr.ToString());
+        if (AddLocal(addr, LOCAL_IF)) LogPrint(TessaLog::NET,"%s: %s - %s\n", __func__, pszHostName, addr.ToString());
       }
     }
   }
@@ -1625,11 +1618,11 @@ void static Discover() {
       if (ifa->ifa_addr->sa_family == AF_INET) {
         struct sockaddr_in* s4 = (struct sockaddr_in*)(ifa->ifa_addr);
         CNetAddr addr(s4->sin_addr);
-        if (AddLocal(addr, LOCAL_IF)) LogPrintf("%s: IPv4 %s: %s\n", __func__, ifa->ifa_name, addr.ToString());
+        if (AddLocal(addr, LOCAL_IF)) LogPrint(TessaLog::NET,"%s: IPv4 %s: %s\n", __func__, ifa->ifa_name, addr.ToString());
       } else if (ifa->ifa_addr->sa_family == AF_INET6) {
         struct sockaddr_in6* s6 = (struct sockaddr_in6*)(ifa->ifa_addr);
         CNetAddr addr(s6->sin6_addr);
-        if (AddLocal(addr, LOCAL_IF)) LogPrintf("%s: IPv6 %s: %s\n", __func__, ifa->ifa_name, addr.ToString());
+        if (AddLocal(addr, LOCAL_IF)) LogPrint(TessaLog::NET,"%s: IPv6 %s: %s\n", __func__, ifa->ifa_name, addr.ToString());
       }
     }
     freeifaddrs(myaddrs);
@@ -1660,7 +1653,7 @@ void StartNode(CScheduler& scheduler) {
   // seed after all the file-IO done at this point. Should be good enough even when nodes are started via scripts.
   srand(time(nullptr));
 
-  LogPrintf("Loaded %i addresses from peers.dat  %dms\n", addrman.size(), GetTimeMillis() - nStart);
+  LogPrint(TessaLog::NET,"Loaded %i addresses from peers.dat  %dms\n", addrman.size(), GetTimeMillis() - nStart);
   fAddressesInitialized = true;
 
   if (semOutbound == nullptr) {
@@ -2015,7 +2008,7 @@ CNode::~CNode() {
 
   if (pfilter) delete pfilter;
 
-    // HACK : Check XXXX GetNodeSignals().FinalizeNode(GetId());
+  // HACK : Check XXXX GetNodeSignals().FinalizeNode(GetId());
 }
 
 void CNode::AskFor(const CInv& inv) {
@@ -2183,6 +2176,20 @@ bool CBanDB::Read(banmap_t& banSet) {
   return true;
 }
 
+void SaveJsonBanlist(banmap_t& banmap) {
+  // New Create json file output for reference checking
+  nlohmann::json json_data;
+  for (auto& s : banmap) {
+    std::cout << "s = " << s.first.ToString() << " : " << s.second.banReasonToString() << "\n";
+    json_data[s.first.ToString()] = s.second.banReasonToString();
+  }
+  std::ofstream file_;
+  fs::path jsonpath = GetDataDir() / "banlist.json";
+  file_.open(jsonpath.string(), std::ofstream::out);
+  file_ << json_data.dump(4);
+  file_.close();
+}
+
 void DumpBanlist() {
   CNode::SweepBanned();  // clean unused entries (if bantime has expired)
 
@@ -2195,7 +2202,8 @@ void DumpBanlist() {
   CNode::GetBanned(banmap);
   if (bandb.Write(banmap)) { CNode::SetBannedSetDirty(false); }
 
+  SaveJsonBanlist(banmap);
+
   LogPrint(TessaLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n", banmap.size(),
            GetTimeMillis() - nStart);
 }
-

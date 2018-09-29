@@ -15,7 +15,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace std;
 

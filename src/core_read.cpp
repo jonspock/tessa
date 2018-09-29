@@ -16,7 +16,7 @@
 #include "utilstrencodings.h"
 #include "version.h"
 #include <algorithm>
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace std;
 

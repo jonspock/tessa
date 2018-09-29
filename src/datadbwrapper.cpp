@@ -20,7 +20,7 @@
 #include <memenv.h>
 #endif
 
-void HandleError(const datadb::Status& status)  {
+void HandleError(const datadb::Status& status) {
   if (status.ok()) return;
   LogPrintf("%s\n", status.ToString());
   if (status.IsCorruption()) throw datadb_error("Database corrupted");
@@ -104,7 +104,7 @@ CDataDBWrapper::~CDataDBWrapper() {
   options.env = nullptr;
 }
 
-bool CDataDBWrapper::WriteBatch(CDataDBBatch& batch, bool fSync)  {
+bool CDataDBWrapper::WriteBatch(CDataDBBatch& batch, bool fSync) {
   datadb::Status status = pdb->Write(fSync ? syncoptions : writeoptions, &batch.batch);
   HandleError(status);
   return true;

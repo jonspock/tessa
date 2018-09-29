@@ -14,8 +14,6 @@
 #include <cstdint>
 #include <set>
 
-#include <univalue.h>
-
 using namespace std;
 
 class CRPCConvertParam {

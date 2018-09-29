@@ -31,7 +31,7 @@
 #include "libzerocoin/PrivateCoin.h"
 #include "primitives/deterministicmint.h"
 
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace std;
 using namespace ecdsa;

@@ -12,7 +12,7 @@
 #include "output.h"
 #include "wallettx.h"
 
-#include "accumulators.h"
+#include "zerocoin/accumulators.h"
 #include "chain.h"
 #include "chainparams.h"
 #include "checkpoints.h"

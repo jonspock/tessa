@@ -21,7 +21,7 @@
 
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 #include <QDir>
 #include <QKeyEvent>

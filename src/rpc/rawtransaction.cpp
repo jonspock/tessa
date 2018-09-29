@@ -25,10 +25,10 @@
 #include "validationstate.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
+#include <univalue/univalue.h>
 
 #include <cstdint>
 
-#include <univalue.h>
 
 using namespace ecdsa;
 using namespace std;

@@ -273,8 +273,7 @@ bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t 
   return stakeTargetHit(hashProofOfStake, nValueIn, bnTarget);
 }
 
-bool Stake(CStake* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
-           uint256& hashProofOfStake) {
+bool Stake(CStake* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uint32_t& nTimeTx, uint256& hashProofOfStake) {
   if (nTimeTx < nTimeBlockFrom) return error("CheckStakeKernelHash() : nTime violation");
 
   if (nTimeBlockFrom + Params().StakeMinAge() > nTimeTx)  // Min age requirement
@@ -399,4 +398,3 @@ bool CheckStakeModifierCheckpoints(int nHeight, uint32_t nStakeModifierChecksum)
   }
   return true;
 }
-

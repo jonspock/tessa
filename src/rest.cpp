@@ -19,7 +19,7 @@
 #include "utilstrencodings.h"
 #include "version.h"
 
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace std;
 
@@ -439,7 +439,7 @@ static bool rest_getutxos(HTTPRequest* req, const std::string& strURIPart) {
   vector<CCoin> outs;
   std::string bitmapStringRepresentation;
   std::vector<bool> hits;
-  bitmap.resize(vOutPoints.size()+7/8);
+  bitmap.resize(vOutPoints.size() + 7 / 8);
   {
     LOCK2(cs_main, mempool.cs);
 
@@ -471,9 +471,10 @@ static bool rest_getutxos(HTTPRequest* req, const std::string& strURIPart) {
         }
       }
       hits.push_back(hit);
-      bitmapStringRepresentation.append(hit ? "1" : "0");  // form a binary string representation (human-readable for json output)
+      bitmapStringRepresentation.append(
+          hit ? "1" : "0");  // form a binary string representation (human-readable for json output)
       bitmap[i / 8] |= ((uint8_t)hit) << (i % 8);
-     }
+    }
   }
 
   switch (rf) {

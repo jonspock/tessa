@@ -81,6 +81,7 @@ const CLogCategoryDesc LogCategories[] = {
     {TessaLog::QT, "qt"},
     {TessaLog::LEVELDB, "leveldb"},
     {TessaLog::ZKP, "zero"},
+    {TessaLog::MINER, "miner"},
     {TessaLog::ALL, "1"},
     {TessaLog::ALL, "all"},
 };

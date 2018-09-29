@@ -12,28 +12,37 @@ static CMainSignals g_signals;
 CMainSignals& GetMainSignals() { return g_signals; }
 
 void RegisterValidationInterface(CValidationInterface* pwalletIn) {
-  g_signals.UpdatedBlockTip.connect(std::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, std::placeholders::_1));
-  g_signals.SyncTransaction.connect(std::bind(&CValidationInterface::SyncTransaction, pwalletIn, std::placeholders::_1, std::placeholders::_2));
-  g_signals.NotifyTransactionLock.connect(std::bind(&CValidationInterface::NotifyTransactionLock, pwalletIn, std::placeholders::_1));
-  g_signals.UpdatedTransaction.connect(std::bind(&CValidationInterface::UpdatedTransaction, pwalletIn, std::placeholders::_1));
+  g_signals.UpdatedBlockTip.connect(
+      std::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, std::placeholders::_1));
+  g_signals.SyncTransaction.connect(
+      std::bind(&CValidationInterface::SyncTransaction, pwalletIn, std::placeholders::_1, std::placeholders::_2));
+  g_signals.NotifyTransactionLock.connect(
+      std::bind(&CValidationInterface::NotifyTransactionLock, pwalletIn, std::placeholders::_1));
+  g_signals.UpdatedTransaction.connect(
+      std::bind(&CValidationInterface::UpdatedTransaction, pwalletIn, std::placeholders::_1));
   g_signals.SetBestChain.connect(std::bind(&CValidationInterface::SetBestChain, pwalletIn, std::placeholders::_1));
   g_signals.Inventory.connect(std::bind(&CValidationInterface::Inventory, pwalletIn, std::placeholders::_1));
   g_signals.Broadcast.connect(std::bind(&CValidationInterface::ResendWalletTransactions, pwalletIn));
-  g_signals.BlockChecked.connect(std::bind(&CValidationInterface::BlockChecked, pwalletIn, std::placeholders::_1, std::placeholders::_2));
+  g_signals.BlockChecked.connect(
+      std::bind(&CValidationInterface::BlockChecked, pwalletIn, std::placeholders::_1, std::placeholders::_2));
   g_signals.BlockFound.connect(std::bind(&CValidationInterface::ResetRequestCount, pwalletIn, std::placeholders::_1));
 }
 
 void UnregisterValidationInterface(CValidationInterface* pwalletIn) {
   /*
-  g_signals.BlockFound.disconnect(std::bind(&CValidationInterface::ResetRequestCount, pwalletIn, std::placeholders::_1));
-  g_signals.BlockChecked.disconnect(std::bind(&CValidationInterface::BlockChecked, pwalletIn, std::placeholders::_1, std::placeholders::_2));
+  g_signals.BlockFound.disconnect(std::bind(&CValidationInterface::ResetRequestCount, pwalletIn,
+  std::placeholders::_1)); g_signals.BlockChecked.disconnect(std::bind(&CValidationInterface::BlockChecked, pwalletIn,
+  std::placeholders::_1, std::placeholders::_2));
   g_signals.Broadcast.disconnect(std::bind(&CValidationInterface::ResendWalletTransactions, pwalletIn));
   g_signals.Inventory.disconnect(std::bind(&CValidationInterface::Inventory, pwalletIn, std::placeholders::_1));
   g_signals.SetBestChain.disconnect(std::bind(&CValidationInterface::SetBestChain, pwalletIn, std::placeholders::_1));
-  g_signals.UpdatedTransaction.disconnect(std::bind(&CValidationInterface::UpdatedTransaction, pwalletIn, std::placeholders::_1));
-  g_signals.NotifyTransactionLock.disconnect(std::bind(&CValidationInterface::NotifyTransactionLock, pwalletIn, std::placeholders::_1));
-  g_signals.SyncTransaction.disconnect(std::bind(&CValidationInterface::SyncTransaction, pwalletIn, std::placeholders::_1, std::placeholders::_2));
-  g_signals.UpdatedBlockTip.disconnect(std::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, std::placeholders::_1));
+  g_signals.UpdatedTransaction.disconnect(std::bind(&CValidationInterface::UpdatedTransaction, pwalletIn,
+  std::placeholders::_1));
+  g_signals.NotifyTransactionLock.disconnect(std::bind(&CValidationInterface::NotifyTransactionLock, pwalletIn,
+  std::placeholders::_1)); g_signals.SyncTransaction.disconnect(std::bind(&CValidationInterface::SyncTransaction,
+  pwalletIn, std::placeholders::_1, std::placeholders::_2));
+  g_signals.UpdatedBlockTip.disconnect(std::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn,
+  std::placeholders::_1));
   */
 }
 
@@ -52,4 +61,5 @@ void UnregisterAllValidationInterfaces() {
 }
 
 void SyncWithWallets(const CTransaction& tx, const CBlock* pblock = nullptr) {
-  g_signals.SyncTransaction.fire(tx, pblock); }
+  g_signals.SyncTransaction.fire(tx, pblock);
+}

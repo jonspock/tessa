@@ -183,9 +183,6 @@ SET(SPORK
 SET(COMMON_A
   ./src/support/cleanse.cpp
   ./src/support/lockedpool.cpp
-  ./src/accumulators.cpp
-  ./src/accumulatormap.cpp
-  ./src/accumulatorcheckpoints.cpp
   ./src/stake.cpp
   ./src/mintpool.cpp
   ./src/protocol.cpp
@@ -219,6 +216,7 @@ SET(UTIL_A
   ./src/utiltime.cpp
   ./src/utilmoneystr.cpp
   ./src/util.cpp
+  ./src/utilstrencodings.cpp
   ./src/sync.cpp
   ./src/uint256.cpp
   ./src/arith_uint256.cpp
@@ -251,6 +249,9 @@ SET(SERVER_A
   )
 
 SET(ZERO
+  ./src/zerocoin/accumulators.cpp
+  ./src/zerocoin/accumulatormap.cpp
+  ./src/zerocoin/accumulatorcheckpoints.cpp
   ./src/zerocoin/mainzero.cpp
   ./src/zerocoin/zerochain.cpp
   ./src/zerocoin/zerocoindb.cpp
@@ -274,7 +275,6 @@ SET(RPC
 
 
 SET(CONSENSUS
-  ./src/utilstrencodings.cpp
   ./src/uint256.cpp
   ./src/hash.cpp
 ) 
@@ -334,6 +334,7 @@ SET(SOURCES
   ./src/script/standard.cpp
   ./src/timedata.cpp
   ./src/txdb.cpp
+  ./src/coinsviewdb.cpp
   ./src/txmempool.cpp
   ./src/denomination_functions.cpp
   ./src/httprpc.cpp
@@ -342,9 +343,9 @@ SET(SOURCES
   )
 
 SET(UNI_SOURCES
-  ./src/univalue/lib/univalue_write.cpp
-  ./src/univalue/lib/univalue_read.cpp
-  ./src/univalue/lib/univalue.cpp
+  ./src/univalue/univalue_write.cpp
+  ./src/univalue/univalue_read.cpp
+  ./src/univalue/univalue.cpp
   )
 
 SET(SCH_SOURCES ./src/scheduler.cpp)
@@ -392,12 +393,11 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${sodium_INCLUDE_DIR}
   ${GMP_INCLUDE_DIR}
-  ${ROCKSDB_INCLUDE_DIR}/include
 
   #  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
   #  ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/univalue/include
+  ${ROCKSDB_INCLUDE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/relic/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
   
@@ -407,8 +407,6 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/src
   )
 
-#file(GLOB_RECURSE HEADERS *.h)
-file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
 
 file(GLOB CRYPTO_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/crypto/*.h)
 source_group("CryptHeaders" FILES ${CRYPTO_HEADERS})
@@ -422,6 +420,14 @@ source_group("WalletHeaders" FILES ${WALLET_HEADERS})
 file(GLOB RPC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/rpc/*.h )
 source_group("RpcHeaders" FILES ${RPC_HEADERS})
 
+file(GLOB ZERO_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/zerocoin/*.h )
+source_group("ZeroHeaders" FILES ${ZERO_HEADERS})
+
+file(GLOB SPORK_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/spork/*.h )
+source_group("SporkHeaders" FILES ${SPORK_HEADERS})
+
+file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
+
 source_group("Wallet" FILES ${WALLET})
 source_group("Rpc" FILES ${RPC})
 source_group("Crypt" FILES ${CONSENSUS_CRYPTO})
@@ -434,7 +440,8 @@ source_group("CommonA" FILES ${COMMON_A})
 source_group("Spork" FILES ${SPORK})
 source_group("Zero" FILES ${ZERO})
 
-add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} 
+add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS}
+  ${ZERO_HEADERS} ${SPORK_HEADERS}
   ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
   ${ZERO} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${SPORK} ${CONSENSUS_CRYPTO})
 

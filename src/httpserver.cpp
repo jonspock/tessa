@@ -345,13 +345,6 @@ bool InitHTTPServer() {
 
   if (!InitHTTPAllowList()) return false;
 
-  if (GetBoolArg("-rpcssl", false)) {
-    bool fRet;
-    uiInterface.ThreadSafeMessageBox.fire("SSL mode for RPC (-rpcssl) is no longer supported.", "",
-                                          CClientUIInterface::MSG_ERROR, &fRet);
-    return false;
-  }
-
   // Redirect libevent's logging to our own log
   event_set_log_callback(&libevent_log_cb);
 #if LIBEVENT_VERSION_NUMBER >= 0x02010100

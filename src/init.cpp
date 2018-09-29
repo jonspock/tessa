@@ -12,8 +12,6 @@
 
 #include "init.h"
 
-#include "accumulatorcheckpoints.h"
-#include "accumulators.h"
 #include "addrman.h"
 #include "amount.h"
 #include "checkpoints.h"
@@ -33,7 +31,6 @@
 #include "spork/spork.h"
 #include "spork/sporkdb.h"
 #include "txdb.h"
-#include "zerocoin/zerocoindb.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
@@ -41,14 +38,16 @@
 #include "validationinterface.h"
 #include "validationstate.h"
 #include "verifydb.h"
+#include "zerocoin/accumulatorcheckpoints.h"
 #include "zerocoin/zerochain.h"
+#include "zerocoin/zerocoindb.h"
 
-#include "accumulators.h"
 #include "db.h"
 #include "ecdsa/ecdsa.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "wallet/wallettx.h"
+#include "zerocoin/accumulators.h"
 
 #include <cstdint>
 #include <fstream>
@@ -58,7 +57,7 @@
 #include <signal.h>
 #endif
 
-#ifndef NO_BOOST_FILESYSTEM  
+#ifndef NO_BOOST_FILESYSTEM
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread/thread_time.hpp>
 #endif
@@ -175,10 +174,6 @@ static std::thread scheduler_thread;
 static std::vector<std::thread> script_check_threads;
 static std::thread import_thread;
 
-static bool fHaveGenesis = false;
-//static std::mutex cs_GenesisWait;
-//static CConditionVariable condvar_GenesisWait;
-
 void Interrupt(CScheduler& scheduler) {
   InterruptHTTPServer();
   InterruptHTTPRPC();
@@ -188,7 +183,7 @@ void Interrupt(CScheduler& scheduler) {
   scheduler.interrupt(false);
   if (gpBlockTreeDB) gpBlockTreeDB->InterruptLoadBlockIndexGuts();
   /// HACK TBD!!!!
-  //CVerifyDB().InterruptInit();
+  // CVerifyDB().InterruptInit();
   pcoinsdbview->InterruptGetStats();
   gpZerocoinDB->InterruptWipeCoins();
 
@@ -198,7 +193,6 @@ void Interrupt(CScheduler& scheduler) {
   InterruptMiner();
   //  InterruptWallet();
   InterruptSearch();
-  // condvar_GenesisWait.notify_all();
 }
 
 /** Preparing steps before shutting down or restarting the wallet */
@@ -260,8 +254,8 @@ void PrepareShutdown(CScheduler& scheduler) {
 
 #ifndef WIN32
 #ifdef NO_BOOST_FILESYSTEM
-    fs::remove(GetPidFile());
-#else  
+  fs::remove(GetPidFile());
+#else
   try {
     fs::remove(GetPidFile());
   } catch (const fs::filesystem_error& e) { LogPrintf("%s: Unable to remove pidfile: %s\n", __func__, e.what()); }
@@ -343,7 +337,8 @@ std::string HelpMessage(HelpMessageMode mode) {
   string strUsage = HelpMessageGroup(_("Options:"));
   strUsage += HelpMessageOpt("-?", _("This help message"));
   strUsage += HelpMessageOpt("-version", _("Print version and exit"));
-  strUsage += HelpMessageOpt("-alertnotify=<cmd>", _("Execute command when a we see a really long fork (%s in cmd is replaced by message)"));
+  strUsage += HelpMessageOpt("-alertnotify=<cmd>",
+                             _("Execute command when a we see a really long fork (%s in cmd is replaced by message)"));
   strUsage += HelpMessageOpt("-blocknotify=<cmd>",
                              _("Execute command when the best block changes (%s in cmd is replaced by block hash)"));
   strUsage +=
@@ -532,7 +527,7 @@ std::string HelpMessage(HelpMessageMode mode) {
   }
   string debugCategories =
       "addrman, alert, bench, coindb, db, lock, rand, rpc, selectcoins, tor, mempool, net, proxy, http, libevent, "
-      "tessa, zero, spork)";  // Don't translate these and qt below
+      "tessa, zero, spork, miner)";  // Don't translate these and qt below
   if (mode == HMM_BITCOIN_QT) debugCategories += ", qt";
   strUsage +=
       HelpMessageOpt("-debug=<category>",
@@ -920,15 +915,9 @@ bool AppInit2(CScheduler& scheduler) {
     }
   }
 
-  // Check for -debugnet
-  if (GetBoolArg("-debugnet", false))
-    InitWarning(_("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
-   // Check level must be 4 for zerocoin checks
+  // Check level must be 4 for zerocoin checks
   if (gArgs.IsArgSet("-checklevel"))
     return InitError(_("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
-
-  if (GetBoolArg("-benchmark", false))
-    InitWarning(_("Warning: Unsupported argument -benchmark ignored, use -debug=bench."));
 
   // Checkmempool and checkblockindex default to true in regtest mode
   mempool.setSanityCheck(GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
@@ -1002,7 +991,7 @@ bool AppInit2(CScheduler& scheduler) {
   FILE* file = fopen(pathLockFile.string().c_str(), "a");  // empty lock file; created if it doesn't exist.
   if (file) fclose(file);
 
-#ifndef NO_BOOST_FILESYSTEM  
+#ifndef NO_BOOST_FILESYSTEM
   static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
 
   // Wait maximum 10 seconds if an old wallet is still running. Avoids lockup during restart
@@ -1012,7 +1001,7 @@ bool AppInit2(CScheduler& scheduler) {
 #else
   LogPrintf("Skipping checking of .lock file\n");
 #endif
-  
+
 #ifndef WIN32
   CreatePidFile(GetPidFile(), getpid());
 #endif
@@ -1077,7 +1066,7 @@ bool AppInit2(CScheduler& scheduler) {
       // Always create backup folder to not confuse the operating system's file browser
       create_directories(backupDir);
     }
-#ifndef NO_BOOST_FILESYSTEM        
+#ifndef NO_BOOST_FILESYSTEM
     if (nWalletBackups > 0) {
       if (exists(backupDir)) {
         // Create backup of the wallet
@@ -1129,7 +1118,7 @@ bool AppInit2(CScheduler& scheduler) {
       }
     }
     //#endif
-    
+
     if (GetBoolArg("-resync", false)) {
       uiInterface.InitMessage.fire(_("Preparing for resync..."));
       // Delete the local blockchain folders to force a resync from scratch to get a consitent blockchain-state
@@ -1163,7 +1152,7 @@ bool AppInit2(CScheduler& scheduler) {
       } catch (fs::filesystem_error& error) { LogPrintf("Failed to delete blockchain folders %s\n", error.what()); }
     }
 #endif
-    
+
     LogPrintf("Using wallet %s\n", strWalletDir);
     uiInterface.InitMessage.fire(_("Verifying wallet..."));
 
@@ -1179,7 +1168,7 @@ bool AppInit2(CScheduler& scheduler) {
       }
 #else
       RenameOver(strWalletPath, pathDatabaseBak);
-      //fs::rename(strWalletPath, pathDatabaseBak);
+      // fs::rename(strWalletPath, pathDatabaseBak);
 #endif
 
       // try again
@@ -1313,9 +1302,7 @@ bool AppInit2(CScheduler& scheduler) {
   fReindex = GetBoolArg("-reindex", false);
 
   path blocksDir = GetDataDir() / "blocks";
-  if (!exists(blocksDir)) {
-    create_directories(blocksDir);
-  }
+  if (!exists(blocksDir)) { create_directories(blocksDir); }
 
   // cache size calculations
   size_t nTotalCache = (GetArg("-dbcache", nDefaultDbCache) << 20);
@@ -1350,7 +1337,7 @@ bool AppInit2(CScheduler& scheduler) {
 
         // Tessa specific: zerocoin and spork DB's
         gpZerocoinDB = new CZerocoinDB(0, false, fReindex);
-        gSporkDB.init( (GetDataDir() / "sporks.json").string() );
+        gSporkDB.init((GetDataDir() / "sporks.json").string());
 
         gpBlockTreeDB = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
         pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);
@@ -1521,15 +1508,14 @@ bool AppInit2(CScheduler& scheduler) {
 
     zwalletMain = new CZeroWallet;
     pwalletMain->setZWallet(zwalletMain);
-    
+
     if (fFirstRun) {
-        
       // Get/Set Password
       // Check if QT or Not
       SecureString passphrase;
       passphrase.reserve(1024);
       passphrase.assign("1234");
-        
+
       pwalletMain->SetupCrypter(passphrase);
 
       // Create new keyUser and set as default key
@@ -1545,18 +1531,15 @@ bool AppInit2(CScheduler& scheduler) {
 
       LogPrintf("%s", strErrors.str());
       LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
-      
+
     } else {
-        SecureString passphrase;
-        passphrase.reserve(1024);
-        passphrase.assign("1234");
+      SecureString passphrase;
+      passphrase.reserve(1024);
+      passphrase.assign("1234");
 
-        if (!pwalletMain->Unlock(passphrase)) {
-            throw string("Couldn't unlock wallet with password");
-        }
-
+      if (!pwalletMain->Unlock(passphrase)) { throw string("Couldn't unlock wallet with password"); }
     }
-        
+
     RegisterValidationInterface(pwalletMain);
 
     CBlockIndex* pindexRescan = chainActive.Tip();

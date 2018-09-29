@@ -18,8 +18,7 @@
 #include "utilstrencodings.h"
 
 #include "signals-cpp/signals.hpp"
-
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace RPCServer;
 using namespace std;

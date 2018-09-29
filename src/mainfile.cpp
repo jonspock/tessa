@@ -21,13 +21,12 @@
 #include "init.h"
 #include "staker.h"
 
-
 using namespace std;
 
 fs::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix) {
   return GetDataDir() / "blocks" / strprintf("%s%05u.dat", prefix, pos.nFile);
 }
-fs::path GetBlockPosFilenameDir() {  return GetDataDir() / "blocks"; }
+fs::path GetBlockPosFilenameDir() { return GetDataDir() / "blocks"; }
 
 bool AbortNode(const std::string& strMessage, const std::string& userMessage) {
   strMiscWarning = strMessage;
@@ -41,7 +40,7 @@ bool AbortNode(const std::string& strMessage, const std::string& userMessage) {
 }
 
 bool CheckDiskSpace(uint64_t nAdditionalBytes) {
-#ifndef NO_BOOST_FILESYSTEM  
+#ifndef NO_BOOST_FILESYSTEM
   /** Minimum disk space required - used in CheckDiskSpace() */
   const uint64_t nMinDiskSpace = 52428800;
   uint64_t nFreeBytesAvailable = fs::space(GetDataDir()).available;

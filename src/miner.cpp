@@ -25,10 +25,10 @@
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 
-#include "accumulators.h"
 #include "ecdsa/blocksignature.h"
 #include "validationinterface.h"
 #include "validationstate.h"
+#include "zerocoin/accumulators.h"
 
 #include "libzerocoin/CoinSpend.h"
 #include <cmath>  // for std::pow
@@ -358,7 +358,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       for (const CBigNum& bnSerial : vTxSerials) vBlockSerials.emplace_back(bnSerial);
 
       if (fPrintPriority) {
-        LogPrintf("priority %.1f fee %s txid %s\n", dPriority, feeRate.ToString(), tx.GetHash().ToString());
+        LogPrint(TessaLog::MINER, "priority %.1f fee %s txid %s\n", dPriority, feeRate.ToString(),
+                 tx.GetHash().ToString());
       }
 
       // Add transactions that depend on this one to the priority queue
@@ -403,7 +404,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
     nLastBlockTx = nBlockTx;
     nLastBlockSize = nBlockSize;
-    LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
+    LogPrint(TessaLog::MINER, "CreateNewBlock(): total size %u\n", nBlockSize);
 
     // Calculate the accumulator checkpoint only if the previous cached checkpoint need to be updated
     uint256 nCheckpoint;
@@ -417,7 +418,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         if (pindexPrev->nHeight + 1 >= Params().Zerocoin_StartHeight()) {
           AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
           if (fZerocoinActive && !CalculateAccumulatorCheckpoint(nHeight, nCheckpoint, mapAccumulators)) {
-            LogPrintf("%s: failed to get accumulator checkpoint\n", __func__);
+            LogPrintf("MINER %s: failed to get accumulator checkpoint\n", __func__);
           } else {
             // the next time the accumulator checkpoint should be recalculated ( the next height that is multiple of
             // ACC_BLOCK_INTERVAL)
@@ -437,7 +438,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
     CValidationState state;
     if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
-      LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
+      LogPrintf("MINER CreateNewBlock() : TestBlockValidity failed\n");
       mempool.clear();
       return nullptr;
     }
@@ -485,7 +486,7 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey) {
   //// HACK LogPrintf("%s\n", pblock->ToString());
-  LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
+  LogPrint(TessaLog::MINER, "generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
 
   // Found a solution
   {
@@ -596,13 +597,14 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
 
     // Stake miner main
     if (fProofOfStake) {
-      LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
+      LogPrint(TessaLog::MINER, " : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
       if (!SignBlock(*pblock, *pwallet)) {
         LogPrintf("BitcoinMiner(): Signing new block with UTXO key failed \n");
         continue;
       }
 
-      LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", pblock->GetHash().ToString().c_str());
+      LogPrint(TessaLog::MINER, "CPUMiner : proof-of-stake block was signed %s \n",
+               pblock->GetHash().ToString().c_str());
       SetThreadPriority(THREAD_PRIORITY_NORMAL);
       ProcessBlockFound(pblock, *pwallet, reservekey);
       SetThreadPriority(THREAD_PRIORITY_LOWEST);
@@ -610,8 +612,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
       continue;
     }
 
-    LogPrintf("Running TessaMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
-              ::GetSerializeSize(*pblock));
+    LogPrint(TessaLog::MINER, "Running TessaMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+             ::GetSerializeSize(*pblock));
 
     //
     // Search
@@ -627,8 +629,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
         if (UintToArith256(hash) <= hashTarget) {
           // Found a solution
           SetThreadPriority(THREAD_PRIORITY_NORMAL);
-          LogPrintf("BitcoinMiner:\n");
-          LogPrintf("proof-of-work found : hash: %s  : target: %s\n", hash.GetHex(), hashTarget.GetHex());
+          LogPrint(TessaLog::MINER, "proof-of-work found : hash: %s  : target: %s\n", hash.GetHex(),
+                   hashTarget.GetHex());
           ProcessBlockFound(pblock, *pwallet, reservekey);
           SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
@@ -664,7 +666,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
             static int64_t nLogTime;
             if (GetTime() - nLogTime > 30 * 60) {
               nLogTime = GetTime();
-              LogPrintf("hashmeter %6.0f khash/s\n", dHashesPerSec / 1000.0);
+              LogPrint(TessaLog::MINER, "hashmeter %6.0f khash/s\n", dHashesPerSec / 1000.0);
             }
           }
         }
@@ -698,16 +700,11 @@ void static ThreadBitcoinMiner(void* parg) {
   try {
     BitcoinMiner(pwallet, false);
     interruption_point(miner_interrupted);
-  } catch (std::exception& e) {
-      LogPrintf("ThreadBitcoinMiner() exception\n");
-  }
-  catch (const thread_interrupted&) {
-      LogPrintf("%s thread interrupt\n", "BitcoinMiner");
-  }
-  catch (...) {
+  } catch (const thread_interrupted&) { ///
+    LogPrintf("%s thread interrupt\n", "BitcoinMiner");
+  } catch (...) { ///
     LogPrintf("ThreadBitcoinMiner() exception\n");
   }
-
   LogPrintf("ThreadBitcoinMiner exiting\n");
 }
 

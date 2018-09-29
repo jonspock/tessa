@@ -22,7 +22,7 @@
 #include <event2/http.h>
 #include <event2/keyvalq_struct.h>
 
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 #define _(x) std::string(x) /* Keep the _() around in case gettext or such will be used later to translate non-UI */
 
@@ -99,10 +99,6 @@ static bool AppInitRPC(int argc, char* argv[]) {
   // Check for -testnet or -regtest parameter (BaseParams() calls are only valid after this clause)
   if (!SelectBaseParamsFromCommandLine()) {
     fprintf(stderr, "Error: Invalid combination of -regtest and -testnet.\n");
-    return false;
-  }
-  if (GetBoolArg("-rpcssl", false)) {
-    fprintf(stderr, "Error: SSL mode for RPC (-rpcssl) is no longer supported.\n");
     return false;
   }
   return true;
@@ -262,7 +258,6 @@ int CommandLineRPC(int argc, char* argv[]) {
       }
     } while (fWait);
   } catch (const thread_interrupted&) {
-      
   } catch (...) {
     PrintExceptionContinue(nullptr, "CommandLineRPC()");
     throw;
@@ -281,9 +276,7 @@ int main(int argc, char* argv[]) {
 
   try {
     if (!AppInitRPC(argc, argv)) return EXIT_FAILURE;
-  } catch (const thread_interrupted&) {
-      LogPrintf("main interrupted\n");
-  } catch (...) {
+  } catch (const thread_interrupted&) { LogPrintf("main interrupted\n"); } catch (...) {
     PrintExceptionContinue(nullptr, "AppInitRPC()");
     return EXIT_FAILURE;
   }

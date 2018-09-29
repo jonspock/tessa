@@ -18,9 +18,7 @@ using std::string;
 static bool fLargeWorkForkFound = false;
 static bool fLargeWorkInvalidChainFound = false;
 
-bool CheckLargeWork() {
-    return (fLargeWorkForkFound || fLargeWorkInvalidChainFound);
-}
+bool CheckLargeWork() { return (fLargeWorkForkFound || fLargeWorkInvalidChainFound); }
 
 string GetWarnings(string strFor) {
   string strStatusBar;

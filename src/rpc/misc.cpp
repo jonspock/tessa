@@ -22,10 +22,10 @@
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "wallet/wallettx.h"
+#include <univalue/univalue.h>
 
 #include <cstdint>
 
-#include <univalue.h>
 
 using namespace std;
 using namespace ecdsa;

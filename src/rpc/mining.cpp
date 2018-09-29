@@ -25,7 +25,7 @@
 #include "wallet/wallettx.h"
 
 #include <cstdint>
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace std;
 

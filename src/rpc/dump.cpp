@@ -25,7 +25,7 @@
 #include <secp256k1.h>
 
 #include <chrono>
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace std;
 using namespace ecdsa;

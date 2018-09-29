@@ -6,7 +6,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "accumulatormap.h"
+#include "zerocoin/accumulatormap.h"
 #include "checkpoints.h"
 #include "chainparams.h"
 #include "clientversion.h"
@@ -24,7 +24,7 @@
 #include "validationstate.h"
 
 #include <cstdint>
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 using namespace std;
 

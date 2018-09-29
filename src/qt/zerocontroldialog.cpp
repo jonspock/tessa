@@ -6,7 +6,7 @@
 #include "zerocontroldialog.h"
 #include "ui_zerocontroldialog.h"
 
-#include "accumulators.h"
+#include "zerocoin/accumulators.h"
 #include "main.h"
 #include "walletmodel.h"
 

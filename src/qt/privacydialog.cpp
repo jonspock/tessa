@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "privacydialog.h"
-#include "accumulators.h"
+#include "zerocoin/accumulators.h"
 #include "addressbookpage.h"
 #include "addresstablemodel.h"
 #include "askpassphrasedialog.h"

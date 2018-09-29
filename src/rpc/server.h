@@ -17,7 +17,7 @@
 #include <list>
 #include <map>
 #include <string>
-#include <univalue.h>
+#include <univalue/univalue.h>
 
 class CRPCCommand;
 

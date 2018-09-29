@@ -4,7 +4,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "stake.h"
-#include "accumulators.h"
 #include "blockmap.h"
 #include "chain.h"
 #include "kernel.h"
@@ -12,6 +11,7 @@
 #include "primitives/deterministicmint.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
+#include "zerocoin/accumulators.h"
 
 using namespace std;
 using namespace ecdsa;

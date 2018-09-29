@@ -21,11 +21,7 @@ bool CKeyStore::GetPubKey(const CKeyID& address, CPubKey& vchPubKeyOut) const {
   return true;
 }
 
-bool CKeyStore::AddKey(const CKey& key) {
-    return AddKeyPubKey(key, key.GetPubKey());
-    
-}
-
+bool CKeyStore::AddKey(const CKey& key) { return AddKeyPubKey(key, key.GetPubKey()); }
 
 bool CBasicKeyStore::AddCScript(const CScript& redeemScript) {
   if (redeemScript.size() > MAX_SCRIPT_ELEMENT_SIZE)
@@ -97,6 +93,6 @@ bool CBasicKeyStore::HaveMultiSig() const {
 
 // Should not be used
 bool CBasicKeyStore::HaveKey(const CKeyID& address) const { return false; }
-bool CBasicKeyStore::GetKey(const ecdsa::CKeyID& address, ecdsa::CKey& keyOut) const { return false;}
+bool CBasicKeyStore::GetKey(const ecdsa::CKeyID& address, ecdsa::CKey& keyOut) const { return false; }
 void CBasicKeyStore::GetKeys(std::set<CKeyID>& setAddress) const {}
-bool CBasicKeyStore::AddKeyPubKey(const CKey& key, const CPubKey& pubkey) {  return false;}
+bool CBasicKeyStore::AddKeyPubKey(const CKey& key, const CPubKey& pubkey) { return false; }
