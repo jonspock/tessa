@@ -26,14 +26,20 @@ bool CSporkDB::WriteSpork(const std::string& sporkname, const CSporkMessage& spo
 }
 bool CSporkDB::ReadSpork(const std::string& sporkname, CSporkMessage& spork) {
   if (SporkExists(sporkname)) {
-    spork.nSporkID = jfile.json_data[sporkname]["nSporkID"];
-    spork.nValue = jfile.json_data[sporkname]["nValue"];
-    spork.nTimeSigned = jfile.json_data[sporkname]["nTimeSigned"];
-    std::string sSig = jfile.json_data[sporkname]["sSig"];
-    // convert sSig to vhcSig buffer
-    std::vector<uint8_t> vec(sSig.begin(), sSig.end());
-    spork.vchSig = vec;
-    return true;
+    try {
+      spork.nSporkID = jfile.json_data[sporkname]["nSporkID"];
+      spork.nValue = jfile.json_data[sporkname]["nValue"];
+      spork.nTimeSigned = jfile.json_data[sporkname]["nTimeSigned"];
+      std::string sSig = jfile.json_data[sporkname]["sSig"];
+      // convert sSig to vhcSig buffer
+      std::vector<uint8_t> vec(sSig.begin(), sSig.end());
+      spork.vchSig = vec;
+      return true;
+    }
+    catch(...) {
+      jfile.json_data[sporkname] = {{"nSporkID", 0}, {"nValue", 0}, {"nTimeSigned", 0}, {"sSig", ""}};
+      return false;
+    }
   } else {
     // Set as disabled for future usage
     jfile.json_data[sporkname] = {{"nSporkID", 0}, {"nValue", 0}, {"nTimeSigned", 0}, {"sSig", ""}};
