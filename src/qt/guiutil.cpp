@@ -372,13 +372,16 @@ void TableViewLastColumnResizingFixer::connectViewHeadersSignals() {
   connect(tableView->horizontalHeader(), SIGNAL(sectionResized(int, int, int)), this,
           SLOT(on_sectionResized(int, int, int)));
   connect(tableView->horizontalHeader(), SIGNAL(geometriesChanged()), this, SLOT(on_geometriesChanged()));
+  was_connected = true;
 }
 
 // We need to disconnect these while handling the resize events, otherwise we can enter infinite loops.
 void TableViewLastColumnResizingFixer::disconnectViewHeadersSignals() {
-  disconnect(tableView->horizontalHeader(), SIGNAL(sectionResized(int, int, int)), this,
-             SLOT(on_sectionResized(int, int, int)));
-  disconnect(tableView->horizontalHeader(), SIGNAL(geometriesChanged()), this, SLOT(on_geometriesChanged()));
+  if (was_connected) {
+    disconnect(tableView->horizontalHeader(), SIGNAL(sectionResized(int, int, int)), this,
+               SLOT(on_sectionResized(int, int, int)));
+    disconnect(tableView->horizontalHeader(), SIGNAL(geometriesChanged()), this, SLOT(on_geometriesChanged()));
+  }
 }
 
 // Setup the resize mode, handles compatibility for Qt5 and below as the method signatures changed.

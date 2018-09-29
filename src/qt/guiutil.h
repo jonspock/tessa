@@ -167,6 +167,7 @@ class TableViewLastColumnResizingFixer : public QObject {
   int lastColumnIndex;
   int columnCount;
   int secondToLastColumnIndex;
+  int was_connected = false;
 
   void adjustTableColumnsWidth();
   int getAvailableWidthForColumn(int column);
