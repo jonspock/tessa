@@ -14,12 +14,12 @@
 #include "transactionrecord.h"
 
 #include "chain.h"
-#include "db.h"
 #include "main.h"
 #include "script/script.h"
 #include "timedata.h"
 #include "ui_interface.h"
 #include "util.h"
+#include "wallet/db.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 

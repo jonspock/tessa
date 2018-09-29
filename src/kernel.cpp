@@ -8,7 +8,6 @@
 #include "blockmap.h"
 #include "chain.h"
 #include "chainparams.h"
-#include "db.h"
 #include "main.h"
 #include "primitives/block.h"
 #include "script/interpreter.h"
@@ -17,6 +16,7 @@
 #include "timedata.h"
 #include "util.h"
 #include "utiltime.h"
+#include "wallet/db.h"
 
 using std::make_pair;
 using std::map;
