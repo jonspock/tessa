@@ -11,7 +11,6 @@
 #include "blockmap.h"
 #include "chainparams.h"
 #include "core_io.h"
-#include "db.h"
 #include "init.h"
 #include "main.h"
 #include "miner.h"
@@ -21,6 +20,7 @@
 #include "util.h"
 #include "utiltime.h"
 #include "validationstate.h"
+#include "walletdb.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 

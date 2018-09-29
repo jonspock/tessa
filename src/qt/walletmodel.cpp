@@ -14,12 +14,12 @@
 #include "recentrequeststablemodel.h"
 #include "transactiontablemodel.h"
 
-#include "db.h"
 #include "keystore.h"
 #include "main.h"
 #include "sync.h"
 #include "ui_interface.h"
 #include "output.h"
+#include "wallet/db.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 #include "wallet/walletdb.h"  // for BackupWallet
