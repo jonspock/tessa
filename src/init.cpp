@@ -1593,6 +1593,9 @@ bool AppInit2(CScheduler& scheduler) {
     pwalletMain->zkpTracker->Init();
     zwalletMain->LoadMintPoolFromDB();
     zwalletMain->SyncWithChain();
+      
+    uiInterface.InitMessage.fire(_("ZKP wallet synced"));
+
   }  // (!fDisableWallet)
   // ********************************************************* Step 9: import blocks
 
