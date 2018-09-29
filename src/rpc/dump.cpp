@@ -35,7 +35,7 @@ void EnsureWalletIsUnlocked(bool fAllowAnonOnly);
 std::string static EncodeDumpTime(int64_t nTime) { return DateTimeStrFormat("%Y-%m-%dT%H:%M:%SZ", nTime); }
 
 int64_t static DecodeDumpTime(const std::string& str) {
-#warning "Need to check as converted from boost, also no locale";
+///#warning "Need to check as converted from boost, also no locale";
   std::istringstream iss(str);
   std::tm tm = {};
   iss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
@@ -369,8 +369,8 @@ UniValue dumpwallet(const UniValue& params, bool fHelp) {
       CExtKey masterKey;
       masterKey.SetMaster(key.begin(), key.size());
 
+#ifdef SDFDF
 #warning "Fix this...."
-#ifdef SDFDF      
       CBitcoinExtKey b58extkey;
       b58extkey.SetKey(masterKey);
       file << "# extended private masterkey: " << b58extkey.ToString() << "\n\n";

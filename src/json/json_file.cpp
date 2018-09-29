@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "json_file.h"
-
+#include "logging.h"
 using namespace nlohmann;
 using std::string;
 
@@ -12,7 +12,7 @@ bool json_file::open(const string& name) {
   filename = name;
   m_inf.open(name, std::ifstream::in);
   if (!m_inf) {
-    std::cout << "problem opening input file " << name << "\n";
+    LogPrintf("Unable to open input file %s\n",name);
     return false;
   }
   read_file();

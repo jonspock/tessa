@@ -115,7 +115,7 @@ const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const {
 CPubKey CWallet::GenerateNewKey() {
   bool internal = true;       // FOR NOW XXXX HACK
   AssertLockHeld(cs_wallet);  // mapKeyMetadata
-  bool fCompressed = true;    // default to compressed public keys
+ // bool fCompressed = true;    // default to compressed public keys
 
   CKey secret;
   // Create new metadata
