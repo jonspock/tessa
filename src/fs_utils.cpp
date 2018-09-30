@@ -106,7 +106,7 @@ const fs::path& GetDataDir(bool fNetSpecific) {
   if (!path.empty()) return path;
 
   if (gArgs.IsArgSet("-datadir")) {
-    path = fs::system_complete(gArgs.GetArg("-datadir", ""));
+    path = fs::absolute(gArgs.GetArg("-datadir", ""));
     if (!fs::is_directory(path)) {
       path = "";
       return path;
@@ -123,7 +123,7 @@ const fs::path& GetDataDir(bool fNetSpecific) {
 
 fs::path GetConfigFile() {
   fs::path pathConfigFile(GetArg("-conf", "tessa.conf"));
-  if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
+  if (!pathConfigFile.is_absolute()) pathConfigFile = GetDataDir(false) / pathConfigFile;
 
   return pathConfigFile;
 }
@@ -131,7 +131,7 @@ fs::path GetConfigFile() {
 #ifndef WIN32
 fs::path GetPidFile() {
   fs::path pathPidFile(GetArg("-pid", "tessad.pid"));
-  if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
+  if (!pathPidFile.is_absolute()) pathPidFile = GetDataDir() / pathPidFile;
   return pathPidFile;
 }
 
