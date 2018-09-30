@@ -395,8 +395,13 @@ endif()
 if (USE_BOOST)
   set(FS_LIBS ${Boost_LIBRARIES})
 else()
-  set(FS_LIBS c++fs)
-  link_directories( /usr/local/opt/llvm/lib )
+  if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(FS_LIBS c++fs)
+    link_directories( /usr/local/opt/llvm/lib )
+  else()
+    set(FS_LIBS stdc++fs)
+    # link_dir ??
+  endif()
 endif()
 
 
