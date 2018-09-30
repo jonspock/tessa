@@ -45,6 +45,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 #set(CMAKE_AUTOUIC ON)
 
+add_definitions(-DUSE_QRCODE)
+
+
 unset(Qt5Enables)
 foreach(comp Widgets Core Gui Network LinguistTools DBus)
   find_package(Qt5${comp} REQUIRED)

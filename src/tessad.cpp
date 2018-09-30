@@ -65,7 +65,7 @@ bool AppInit(int argc, char* argv[]) {
   //
   // Parameters
   //
-  // If Qt is used, parameters/tessa.conf are parsed in qt/club.cpp's main()
+  // If Qt is used, parameters/tessa.conf are parsed in qt/tessa.cpp's main()
   ParseParameters(argc, argv);
 
   // Process help and version before taking care about datadir
@@ -110,7 +110,7 @@ bool AppInit(int argc, char* argv[]) {
     }
     if (fCommandLine) {
       fprintf(stderr,
-              "Error: There is no RPC client functionality in tessad anymore. Use the club-cli utility instead.\n");
+              "Error: There is no RPC client functionality in tessad anymore. Use the tessa-cli utility instead.\n");
       exit(1);
     }
 #ifndef WIN32

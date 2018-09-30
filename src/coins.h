@@ -400,7 +400,7 @@ class CCoinsViewCache : public CCoinsViewBacked {
   uint32_t GetCacheSize() const;
 
   /**
-   * Amount of club coming in to a transaction
+   * Amount of tessa coming in to a transaction
    * Note that lightweight clients may not know anything besides the hash of previous transactions,
    * so may not be able to calculate this.
    *

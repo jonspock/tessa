@@ -17,7 +17,7 @@ OpenURIDialog::OpenURIDialog(QWidget* parent)
     : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
       ui(new Ui::OpenURIDialog) {
   ui->setupUi(this);
-  ui->uriEdit->setPlaceholderText("club:");
+  ui->uriEdit->setPlaceholderText("tessa:");
 }
 
 OpenURIDialog::~OpenURIDialog() { delete ui; }
@@ -38,5 +38,5 @@ void OpenURIDialog::on_selectFileButton_clicked() {
   QString filename = GUIUtil::getOpenFileName(this, tr("Select payment request file to open"), "", "", nullptr);
   if (filename.isEmpty()) return;
   QUrl fileUri = QUrl::fromLocalFile(filename);
-  ui->uriEdit->setText("club:?r=" + QUrl::toPercentEncoding(fileUri.toString()));
+  ui->uriEdit->setText("tessa:?r=" + QUrl::toPercentEncoding(fileUri.toString()));
 }

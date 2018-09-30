@@ -15,7 +15,7 @@
 - (NSString *)__bundleIdentifier
 {
     if (self == [NSBundle mainBundle]) {
-        return @"io.club.Tessa-Qt";
+        return @"io.tessa.Tessa-Qt";
     } else {
         return [self __bundleIdentifier];
     }

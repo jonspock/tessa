@@ -73,13 +73,13 @@ std::string DecodeDumpString(const std::string& str) {
 UniValue importprivkey(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() < 1 || params.size() > 3)
     throw runtime_error(
-        "importprivkey \"clubprivkey\" ( \"label\" rescan )\n"
+        "importprivkey \"tessaprivkey\" ( \"label\" rescan )\n"
         "\nAdds a private key (as returned by dumpprivkey) to your wallet.\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nArguments:\n"
-        "1. \"clubprivkey\"   (string, required) The private key (see dumpprivkey)\n"
+        "1. \"tessaprivkey\"   (string, required) The private key (see dumpprivkey)\n"
         "2. \"label\"            (string, optional, default=\"\") An optional label\n"
         "3. rescan               (boolean, optional, default=true) Rescan the wallet for transactions\n"
 
@@ -288,14 +288,14 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
 UniValue dumpprivkey(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 1)
     throw runtime_error(
-        "dumpprivkey \"clubaddress\"\n"
-        "\nReveals the private key corresponding to 'clubaddress'.\n"
+        "dumpprivkey \"tessaaddress\"\n"
+        "\nReveals the private key corresponding to 'tessaaddress'.\n"
         "Then the importprivkey can be used with this output\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nArguments:\n"
-        "1. \"clubaddress\"   (string, required) The club address for the private key\n"
+        "1. \"tessaaddress\"   (string, required) The tessa address for the private key\n"
 
         "\nResult:\n"
         "\"key\"                (string) The private key\n"

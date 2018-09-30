@@ -67,7 +67,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget* parent, bool about)
     ui->helpMessage->setVisible(false);
   } else {
     setWindowTitle(tr("Command-line options"));
-    QString header = tr("Usage:") + "\n" + "  club-qt [" + tr("command-line options") + "]                     " + "\n";
+    QString header = tr("Usage:") + "\n" + "  tessa-qt [" + tr("command-line options") + "]                     " + "\n";
     QTextCursor cursor(ui->helpMessage->document());
     cursor.insertText(version);
     cursor.insertBlock();

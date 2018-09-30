@@ -281,7 +281,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction& tran
 
     // Store PaymentRequests in wtx.vOrderForm in wallet.
     foreach (const SendCoinsRecipient& rcp, recipients) {
-      if (!rcp.message.isEmpty())  // Message from normal club:URI (club:XyZ...?message=example)
+      if (!rcp.message.isEmpty())  // Message from normal tessa:URI (tessa:XyZ...?message=example)
       {
         newTx->vOrderForm.push_back(make_pair("Message", rcp.message.toStdString()));
       }

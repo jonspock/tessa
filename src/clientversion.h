@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2017 The Bitcoin developers
 // Copyright (c) 2009-2017 The PIVX developers
-// Copyright (c) 2018 The ClubChain developers
+// Copyright (c) 2018 The Tessacoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #pragma once
@@ -17,7 +17,7 @@
 #define DO_STRINGIZE(X) #X
 
 /**
- * clubd-res.rc includes this file, but it cannot cope with real c++ code.
+ * tessad-res.rc includes this file, but it cannot cope with real c++ code.
  * WINDRES_PREPROC is defined to indicate that its pre-processor is running.
  * Anything other than a define should be guarded below.
  */

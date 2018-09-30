@@ -252,7 +252,7 @@ QString TransactionDesc::toHTML(CWallet* wallet, CWalletTx& wtx, TransactionReco
   strHTML += "<b>" + tr("Transaction ID") + ":</b> " + rec->getTxID() + "<br>";
   strHTML += "<b>" + tr("Output index") + ":</b> " + QString::number(rec->getOutputIndex()) + "<br>";
 
-  // Message from normal club:URI (club:XyZ...?message=example)
+  // Message from normal tessa:URI (tessa:XyZ...?message=example)
   foreach (const auto& r, wtx.vOrderForm)
     if (r.first == "Message")
       strHTML += "<br><b>" + tr("Message") + ":</b><br>" + GUIUtil::HtmlEscape(r.second, true) + "<br>";

@@ -27,9 +27,9 @@ SendCoinsEntry::SendCoinsEntry(QWidget* parent) : QStackedWidget(parent), ui(new
 #endif
   ui->addAsLabel->setPlaceholderText(tr("Enter a label for this address to add it to your address book"));
 
-  // normal club address field
+  // normal tessa address field
   GUIUtil::setupAddressWidget(ui->payTo, this);
-  // just a label for displaying club address(es)
+  // just a label for displaying tessa address(es)
   ui->payTo_is->setFont(GUIUtil::bitcoinAddressFont());
 
   // Connect signals

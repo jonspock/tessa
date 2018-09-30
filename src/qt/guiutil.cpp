@@ -68,7 +68,7 @@ extern double NSAppKitVersionNumber;
 #endif
 #endif
 
-#define URI_SCHEME "club"
+#define URI_SCHEME "tessa"
 
 namespace GUIUtil {
 QString dateTimeStr(const QDateTime& date) {
@@ -142,9 +142,9 @@ bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out) {
 }
 
 bool parseBitcoinURI(QString uri, SendCoinsRecipient* out) {
-  // Convert club:// to club:
+  // Convert tessa:// to tessa:
   //
-  //    Cannot handle this later, because club:// will cause Qt to see the part after // as host,
+  //    Cannot handle this later, because tessa:// will cause Qt to see the part after // as host,
   //    which will lower-case it (and thus invalidate the address).
   if (uri.startsWith(URI_SCHEME "://", Qt::CaseInsensitive)) {
     uri.replace(0, std::strlen(URI_SCHEME) + 3, URI_SCHEME ":");
@@ -305,7 +305,7 @@ void openDebugLogfile() {
 void openConfigfile() {
   fs::path pathConfig = GetConfigFile();
 
-  /* Open club.conf with the associated application */
+  /* Open tessa.conf with the associated application */
   if (fs::exists(pathConfig)) QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
 }
 
@@ -559,7 +559,7 @@ fs::path static GetAutostartDir() {
   return fs::path();
 }
 
-fs::path static GetAutostartFilePath() { return GetAutostartDir() / "club.desktop"; }
+fs::path static GetAutostartFilePath() { return GetAutostartDir() / "tessa.desktop"; }
 
 bool GetStartOnSystemStartup() {
   fs::ifstream optionFile(GetAutostartFilePath());
@@ -587,7 +587,7 @@ bool SetStartOnSystemStartup(bool fAutoStart) {
 
     fs::ofstream optionFile(GetAutostartFilePath(), std::ios_base::out | std::ios_base::trunc);
     if (!optionFile.good()) return false;
-    // Write a club.desktop file to the autostart directory:
+    // Write a tessa.desktop file to the autostart directory:
     optionFile << "[Desktop Entry]\n";
     optionFile << "Type=Application\n";
     optionFile << "Name=Tessa\n";
@@ -608,7 +608,7 @@ bool SetStartOnSystemStartup(bool fAutoStart) {
 
 LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl);
 LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl) {
-  // loop through the list of startup items and try to find the club app
+  // loop through the list of startup items and try to find the tessa app
   CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(list, nullptr);
   for (int i = 0; i < CFArrayGetCount(listSnapshot); i++) {
     LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(listSnapshot, i);
@@ -649,7 +649,7 @@ bool SetStartOnSystemStartup(bool fAutoStart) {
   LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcoinAppUrl);
 
   if (fAutoStart && !foundItem) {
-    // add club app to startup item list
+    // add tessa app to startup item list
     LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, nullptr, nullptr, bitcoinAppUrl,
                                   nullptr, nullptr);
   } else if (!fAutoStart && foundItem) {

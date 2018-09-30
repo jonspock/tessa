@@ -284,7 +284,7 @@ static const CRPCCommand vRPCCommands[] = {
     {"hidden", "setmocktime", &setmocktime, true, false, false},
 
     /* Tessa features */
-    {"club", "spork", &spork, true, true, false},
+    {"tessa", "spork", &spork, true, true, false},
 
     /* Wallet */
     {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},
@@ -479,7 +479,7 @@ std::vector<std::string> CRPCTable::listCommands() const {
   return commandList;
 }
 
-std::string HelpExampleCli(string methodname, string args) { return "> club-cli " + methodname + " " + args + "\n"; }
+std::string HelpExampleCli(string methodname, string args) { return "> tessa-cli " + methodname + " " + args + "\n"; }
 
 std::string HelpExampleRpc(string methodname, string args) {
   return "> curl --user myusername --data-binary '{\"jsonrpc\": \"1.0\", \"id\":\"curltest\", "

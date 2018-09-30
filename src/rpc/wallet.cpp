@@ -91,7 +91,7 @@ UniValue getnewaddress(const UniValue& params, bool fHelp) {
         "account. The account does not need to exist, it will be created if there is no account by the given name.\n"
 
         "\nResult:\n"
-        "\"clubaddress\"    (string) The new club address\n"
+        "\"tessaaddress\"    (string) The new tessa address\n"
 
         "\nExamples:\n" +
         HelpExampleCli("getnewaddress", "") + HelpExampleCli("getnewaddress", "\"\"") +
@@ -157,7 +157,7 @@ UniValue getaccountaddress(const UniValue& params, bool fHelp) {
         "new address created  if there is no account by the given name.\n"
 
         "\nResult:\n"
-        "\"clubaddress\"   (string) The account club address\n"
+        "\"tessaaddress\"   (string) The account tessa address\n"
 
         "\nExamples:\n" +
         HelpExampleCli("getaccountaddress", "") + HelpExampleCli("getaccountaddress", "\"\"") +
@@ -206,11 +206,11 @@ UniValue getrawchangeaddress(const UniValue& params, bool fHelp) {
 UniValue setaccount(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() < 1 || params.size() > 2)
     throw runtime_error(
-        "setaccount \"clubaddress\" \"account\"\n"
+        "setaccount \"tessaaddress\" \"account\"\n"
         "\nSets the account associated with the given address.\n"
 
         "\nArguments:\n"
-        "1. \"clubaddress\"  (string, required) The club address to be associated with an account.\n"
+        "1. \"tessaaddress\"  (string, required) The tessa address to be associated with an account.\n"
         "2. \"account\"         (string, required) The account to assign the address to.\n"
 
         "\nExamples:\n" +
@@ -243,11 +243,11 @@ UniValue setaccount(const UniValue& params, bool fHelp) {
 UniValue getaccount(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 1)
     throw runtime_error(
-        "getaccount \"clubaddress\"\n"
+        "getaccount \"tessaaddress\"\n"
         "\nReturns the account associated with the given address.\n"
 
         "\nArguments:\n"
-        "1. \"clubaddress\"  (string, required) The club address for account lookup.\n"
+        "1. \"tessaaddress\"  (string, required) The tessa address for account lookup.\n"
 
         "\nResult:\n"
         "\"accountname\"        (string) the account address\n"
@@ -278,7 +278,7 @@ UniValue getaddressesbyaccount(const UniValue& params, bool fHelp) {
 
         "\nResult:\n"
         "[                     (json array of string)\n"
-        "  \"clubaddress\"  (string) a club address associated with the given account\n"
+        "  \"tessaaddress\"  (string) a tessa address associated with the given account\n"
         "  ,...\n"
         "]\n"
 
@@ -338,13 +338,13 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
 UniValue sendtoaddress(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() < 2 || params.size() > 4)
     throw runtime_error(
-        "sendtoaddress \"clubaddress\" amount ( \"comment\" \"comment-to\" )\n"
+        "sendtoaddress \"tessaaddress\" amount ( \"comment\" \"comment-to\" )\n"
         "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nArguments:\n"
-        "1. \"clubaddress\"  (string, required) The club address to send to.\n"
+        "1. \"tessaaddress\"  (string, required) The tessa address to send to.\n"
         "2. \"amount\"      (numeric, required) The amount in Tessa to send. eg 0.1\n"
         "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
         "                             This is not part of the transaction, just kept in your wallet.\n"
@@ -386,13 +386,13 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp) {
 UniValue sendtoaddressix(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() < 2 || params.size() > 4)
     throw runtime_error(
-        "sendtoaddressix \"clubaddress\" amount ( \"comment\" \"comment-to\" )\n"
+        "sendtoaddressix \"tessaaddress\" amount ( \"comment\" \"comment-to\" )\n"
         "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nArguments:\n"
-        "1. \"clubaddress\"  (string, required) The club address to send to.\n"
+        "1. \"tessaaddress\"  (string, required) The tessa address to send to.\n"
         "2. \"amount\"      (numeric, required) The amount in Tessa to send. eg 0.1\n"
         "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
         "                             This is not part of the transaction, just kept in your wallet.\n"
@@ -444,7 +444,7 @@ UniValue listaddressgroupings(const UniValue& params, bool fHelp) {
         "[\n"
         "  [\n"
         "    [\n"
-        "      \"clubaddress\",     (string) The club address\n"
+        "      \"tessaaddress\",     (string) The tessa address\n"
         "      amount,                 (numeric) The amount in Tessa\n"
         "      \"account\"             (string, optional) The account\n"
         "    ]\n"
@@ -480,13 +480,13 @@ UniValue listaddressgroupings(const UniValue& params, bool fHelp) {
 UniValue signmessage(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 2)
     throw runtime_error(
-        "signmessage \"clubaddress\" \"message\"\n"
+        "signmessage \"tessaaddress\" \"message\"\n"
         "\nSign a message with the private key of an address" +
         HelpRequiringPassphrase() +
         "\n"
 
         "\nArguments:\n"
-        "1. \"clubaddress\"  (string, required) The club address to use for the private key.\n"
+        "1. \"tessaaddress\"  (string, required) The tessa address to use for the private key.\n"
         "2. \"message\"         (string, required) The message to create a signature of.\n"
 
         "\nResult:\n"
@@ -530,12 +530,12 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
 UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() < 1 || params.size() > 2)
     throw runtime_error(
-        "getreceivedbyaddress \"clubaddress\" ( minconf )\n"
-        "\nReturns the total amount received by the given clubaddress in transactions with at least minconf "
+        "getreceivedbyaddress \"tessaaddress\" ( minconf )\n"
+        "\nReturns the total amount received by the given tessaaddress in transactions with at least minconf "
         "confirmations.\n"
 
         "\nArguments:\n"
-        "1. \"clubaddress\"  (string, required) The club address for transactions.\n"
+        "1. \"tessaaddress\"  (string, required) The tessa address for transactions.\n"
         "2. minconf             (numeric, optional, default=1) Only include transactions confirmed at least this many "
         "times.\n"
 
@@ -796,8 +796,8 @@ UniValue movecmd(const UniValue& params, bool fHelp) {
 UniValue sendfrom(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() < 3 || params.size() > 6)
     throw runtime_error(
-        "sendfrom \"fromaccount\" \"toclubaddress\" amount ( minconf \"comment\" \"comment-to\" )\n"
-        "\nSent an amount from an account to a club address.\n"
+        "sendfrom \"fromaccount\" \"totessaaddress\" amount ( minconf \"comment\" \"comment-to\" )\n"
+        "\nSent an amount from an account to a tessa address.\n"
         "The amount is a real and is rounded to the nearest 0.00000001." +
         HelpRequiringPassphrase() +
         "\n"
@@ -805,7 +805,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp) {
         "\nArguments:\n"
         "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default "
         "account using \"\".\n"
-        "2. \"toclubaddress\"  (string, required) The club address to send funds to.\n"
+        "2. \"totessaaddress\"  (string, required) The tessa address to send funds to.\n"
         "3. amount                (numeric, required) The amount in Tessa. (transaction fee is added on top).\n"
         "4. minconf               (numeric, optional, default=1) Only use funds with at least this many "
         "confirmations.\n"
@@ -872,7 +872,7 @@ UniValue sendmany(const UniValue& params, bool fHelp) {
         "account\n"
         "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
         "    {\n"
-        "      \"address\":amount   (numeric) The club address is the key, the numeric amount in Tessa is the value\n"
+        "      \"address\":amount   (numeric) The tessa address is the key, the numeric amount in Tessa is the value\n"
         "      ,...\n"
         "    }\n"
         "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many "
@@ -965,15 +965,15 @@ UniValue addmultisigaddress(const UniValue& params, bool fHelp) {
 
         "\nArguments:\n"
         "1. nrequired        (numeric, required) The number of required signatures out of the n keys or addresses.\n"
-        "2. \"keysobject\"   (string, required) A json array of club addresses or hex-encoded public keys\n"
+        "2. \"keysobject\"   (string, required) A json array of tessa addresses or hex-encoded public keys\n"
         "     [\n"
-        "       \"address\"  (string) club address or hex-encoded public key\n"
+        "       \"address\"  (string) tessa address or hex-encoded public key\n"
         "       ...,\n"
         "     ]\n"
         "3. \"account\"      (string, optional) An account to assign the addresses to.\n"
 
         "\nResult:\n"
-        "\"clubaddress\"  (string) A club address associated with the keys.\n"
+        "\"tessaaddress\"  (string) A tessa address associated with the keys.\n"
 
         "\nExamples:\n"
         "\nAdd a multisig address from 2 addresses\n" +
@@ -1294,7 +1294,7 @@ UniValue listtransactions(const UniValue& params, bool fHelp) {
         "  {\n"
         "    \"account\":\"accountname\",       (string) The account name associated with the transaction. \n"
         "                                                It will be \"\" for the default account.\n"
-        "    \"address\":\"clubaddress\",    (string) The club address of the transaction. Not present for \n"
+        "    \"address\":\"tessaaddress\",    (string) The tessa address of the transaction. Not present for \n"
         "                                                move transactions (category = move).\n"
         "    \"category\":\"send|receive|move\", (string) The transaction category. 'move' is a local (off "
         "blockchain)\n"
@@ -1485,7 +1485,7 @@ UniValue listsinceblock(const UniValue& params, bool fHelp) {
         "  \"transactions\": [\n"
         "    \"account\":\"accountname\",       (string) The account name associated with the transaction. Will be "
         "\"\" for the default account.\n"
-        "    \"address\":\"clubaddress\",    (string) The club address of the transaction. Not present for move "
+        "    \"address\":\"tessaaddress\",    (string) The tessa address of the transaction. Not present for move "
         "transactions (category = move).\n"
         "    \"category\":\"send|receive\",     (string) The transaction category. 'send' has negative amounts, "
         "'receive' has positive amounts.\n"
@@ -1589,7 +1589,7 @@ UniValue gettransaction(const UniValue& params, bool fHelp) {
         "    {\n"
         "      \"account\" : \"accountname\",  (string) The account name involved in the transaction, can be \"\" for "
         "the default account.\n"
-        "      \"address\" : \"clubaddress\",   (string) The club address involved in the transaction\n"
+        "      \"address\" : \"tessaaddress\",   (string) The tessa address involved in the transaction\n"
         "      \"category\" : \"send|receive\",    (string) The category, either 'send' or 'receive'\n"
         "      \"amount\" : x.xxx                  (numeric) The amount in Tessa\n"
         "      \"vout\" : n,                       (numeric) the vout value\n"

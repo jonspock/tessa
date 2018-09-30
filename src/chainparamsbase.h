@@ -11,7 +11,7 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between club-cli and clubd)
+ * CBaseChainParams defines the base parameters (shared between tessa-cli and tessad)
  * of a given instance of the Tessa system.
  */
 class CBaseChainParams {
