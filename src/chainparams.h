@@ -33,7 +33,7 @@ struct CDNSSeedData {
 class CChainParams
 {
 public:
-    enum Base58Type {
+    enum BaseType {
         PUBKEY_ADDRESS,
         SCRIPT_ADDRESS,
         SECRET_KEY,     // BIP16
@@ -82,7 +82,7 @@ public:
     /** Return the BIP70 network string (main, test or regtest) */
     std::string NetworkIDString() const { return strNetworkID; }
     const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
-    const std::vector<uint8_t>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
+    const std::vector<uint8_t>& Prefix(BaseType type) const { return Prefixes[type]; }
     const std::vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
     virtual const Checkpoints::CCheckpointData& Checkpoints() const = 0;
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
@@ -124,7 +124,7 @@ protected:
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;
     std::string bch32_hrp;
-    std::vector<uint8_t> base58Prefixes[MAX_BASE58_TYPES];
+    std::vector<uint8_t> Prefixes[MAX_BASE58_TYPES];
     CBaseChainParams::Network networkID;
     std::string strNetworkID;
     CBlock genesis;

@@ -144,13 +144,13 @@ class CMainParams : public CChainParams {
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "tessa.seed.fuzzbawls.pw"));     // Primary DNS Seeder from
     // Fuzzbawls
 
-    base58Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 28);  // Start with "C"
-    base58Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 7);
-    base58Prefixes[SECRET_KEY] = std::vector<uint8_t>(1, 212);
-    base58Prefixes[EXT_PUBLIC_KEY] = {0x02, 0x2D, 0x25, 0x33};
-    base58Prefixes[EXT_SECRET_KEY] = {0x02, 0x21, 0x31, 0x2B};
+    Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 28);  // Start with "C"
+    Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 7);
+    Prefixes[SECRET_KEY] = std::vector<uint8_t>(1, 212);
+    Prefixes[EXT_PUBLIC_KEY] = {0x02, 0x2D, 0x25, 0x33};
+    Prefixes[EXT_SECRET_KEY] = {0x02, 0x21, 0x31, 0x2B};
     // 	BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-    base58Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x77};
+    Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x77};
 
     bch32_hrp = "ct";
 
@@ -215,17 +215,17 @@ class CTestNetParams : public CMainParams {
     vSeeds.clear();
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "tessa-testnet.seed.fuzzbawls.pw"));
 
-    base58Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 87);  // Testnet tessa addresses start with 'c'
-    base58Prefixes[SCRIPT_ADDRESS] =
+    Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 87);  // Testnet tessa addresses start with 'c'
+    Prefixes[SCRIPT_ADDRESS] =
         std::vector<uint8_t>(1, 9);  // Testnet tessa script addresses start with '4' or '5'
-    base58Prefixes[SECRET_KEY] =
+    Prefixes[SECRET_KEY] =
         std::vector<uint8_t>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
     // Testnet tessa BIP32 pubkeys start with 'DRKV'
-    base58Prefixes[EXT_PUBLIC_KEY] = {0x3a, 0x80, 0x61, 0xa0};
+    Prefixes[EXT_PUBLIC_KEY] = {0x3a, 0x80, 0x61, 0xa0};
     // Testnet tessa BIP32 prvkeys start with 'DRKP'
-    base58Prefixes[EXT_SECRET_KEY] = {0x3a, 0x80, 0x58, 0x37};
+    Prefixes[EXT_SECRET_KEY] = {0x3a, 0x80, 0x58, 0x37};
     // Testnet tessa BIP44 coin type is '1' (All coin's testnet default)
-    base58Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x01};
+    Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x01};
 
     bch32_hrp = "tt";
 

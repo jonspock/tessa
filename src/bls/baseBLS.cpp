@@ -203,12 +203,12 @@ class CTessaAddressVisitor : public mpark::variant<bool> {
 }  // namespace
 
 bool CTessaAddress::Set(const CKeyID& id) {
-  SetData(Params().Base58Prefix(CChainParams::PUBKEY_ADDRESS), &id, 20);
+  SetData(Params().Prefix(CChainParams::PUBKEY_ADDRESS), &id, 20);
   return true;
 }
 
 bool CTessaAddress::Set(const CScriptID& id) {
-  SetData(Params().Base58Prefix(CChainParams::SCRIPT_ADDRESS), &id, 20);
+  SetData(Params().Prefix(CChainParams::SCRIPT_ADDRESS), &id, 20);
   return true;
 }
 
@@ -218,8 +218,8 @@ bool CTessaAddress::IsValid() const { return IsValid(Params()); }
 
 bool CTessaAddress::IsValid(const CChainParams& params) const {
   bool fCorrectSize = vchData.size() == 20;
-  bool fKnownVersion = vchVersion == params.Base58Prefix(CChainParams::PUBKEY_ADDRESS) ||
-                       vchVersion == params.Base58Prefix(CChainParams::SCRIPT_ADDRESS);
+  bool fKnownVersion = vchVersion == params.Prefix(CChainParams::PUBKEY_ADDRESS) ||
+                       vchVersion == params.Prefix(CChainParams::SCRIPT_ADDRESS);
   return fCorrectSize && fKnownVersion;
 }
 
@@ -227,16 +227,16 @@ CTxDestination CTessaAddress::Get() const {
   if (!IsValid()) return CNoDestination();
   uint160 id;
   memcpy(&id, &vchData[0], 20);
-  if (vchVersion == Params().Base58Prefix(CChainParams::PUBKEY_ADDRESS))
+  if (vchVersion == Params().Prefix(CChainParams::PUBKEY_ADDRESS))
     return CKeyID(id);
-  else if (vchVersion == Params().Base58Prefix(CChainParams::SCRIPT_ADDRESS))
+  else if (vchVersion == Params().Prefix(CChainParams::SCRIPT_ADDRESS))
     return CScriptID(id);
   else
     return CNoDestination();
 }
 
 bool CTessaAddress::GetKeyID(CKeyID& keyID) const {
-  if (!IsValid() || vchVersion != Params().Base58Prefix(CChainParams::PUBKEY_ADDRESS)) return false;
+  if (!IsValid() || vchVersion != Params().Prefix(CChainParams::PUBKEY_ADDRESS)) return false;
   uint160 id;
   memcpy(&id, &vchData[0], 20);
   keyID = CKeyID(id);
@@ -244,12 +244,12 @@ bool CTessaAddress::GetKeyID(CKeyID& keyID) const {
 }
 
 bool CTessaAddress::IsScript() const {
-  return IsValid() && vchVersion == Params().Base58Prefix(CChainParams::SCRIPT_ADDRESS);
+  return IsValid() && vchVersion == Params().Prefix(CChainParams::SCRIPT_ADDRESS);
 }
 
 void CTessaSecret::SetKey(const CKey& vchSecret) {
   assert(vchSecret.IsValid());
-  SetData(Params().Base58Prefix(CChainParams::SECRET_KEY), vchSecret.begin(), vchSecret.size());
+  SetData(Params().Prefix(CChainParams::SECRET_KEY), vchSecret.begin(), vchSecret.size());
   if (vchSecret.IsCompressed()) vchData.push_back(1);
 }
 
@@ -262,7 +262,7 @@ CKey CTessaSecret::GetKey() {
 
 bool CTessaSecret::IsValid() const {
   bool fExpectedFormat = vchData.size() == 32 || (vchData.size() == 33 && vchData[32] == 1);
-  bool fCorrectVersion = vchVersion == Params().Base58Prefix(CChainParams::SECRET_KEY);
+  bool fCorrectVersion = vchVersion == Params().Prefix(CChainParams::SECRET_KEY);
   return fExpectedFormat && fCorrectVersion;
 }
 
