@@ -110,7 +110,12 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 endif()
 
 add_definitions("-DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
-####add_definitions("-DNO_BOOST_FILESYSTEM")
+
+option(USE_BOOST_FILESYSTEM "Use boost's filesystem routines" ON)
+if (USE_BOOST_FILESYSTEM)
+else()
+  add_definitions("-DNO_BOOST_FILESYSTEM")
+endif()
 
 # Enable warning
 include(AddCompilerFlags)
