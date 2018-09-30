@@ -55,6 +55,9 @@
 
 #ifndef WIN32
 #include <signal.h>
+// for umask
+#include <sys/types.h>
+#include <sys/stat.h>
 #endif
 
 #ifndef NO_BOOST_FILESYSTEM
