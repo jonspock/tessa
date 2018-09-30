@@ -16,3 +16,5 @@ rpc/dump 38 Locale/boost
 Line 373 rpc/dump Master Key/private
 
 Secret Addresses Still using Base58 -> Wait til using BLS before changing
+
+Address Validator in QT bitcoinaddressvalidator is Loose

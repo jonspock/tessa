@@ -48,8 +48,7 @@ QValidator::State BitcoinAddressEntryValidator::validate(QString& input, int& po
   for (int idx = 0; idx < input.size(); ++idx) {
     int ch = input.at(idx).unicode();
 
-    if (((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) && ch != 'l' && ch != 'I' &&
-        ch != '0' && ch != 'O') {
+    if ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z')) {
       // Alphanumeric and not a 'forbidden' character
     } else {
       state = QValidator::Invalid;
