@@ -45,7 +45,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 #set(CMAKE_AUTOUIC ON)
 
-add_definitions(-DUSE_QRCODE)
+
+find_package(QREncode)
+if (QREncode_FOUND)
+  add_definitions(-DUSE_QRCODE)
+  message(STATUS "Found QREncode")
+else()
+  message(STATUS " QREncode NOT FOUND ")
+endif()  
 
 
 unset(Qt5Enables)
