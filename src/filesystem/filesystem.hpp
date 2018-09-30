@@ -305,9 +305,9 @@ namespace std {
 
 				path result(*this);
 
-				for (size_t i = 0; i < other.leafs.size(); ++i) {
-					result.leafs.push_back(other.leafs[i]);
-				}
+        for (size_t i = 0; i < other.leafs.size(); ++i) {
+          result.leafs.push_back(other.leafs[i]);
+        }
 
 				return result;
 			}
@@ -320,9 +320,10 @@ namespace std {
 				return cachedNativePath;
 			}
 
-			const string_type& string() const
+			const string_type string() const
 			{
-				return native();
+        string_type s = str(posix_path);
+				return s;
 			}
 
 			string_type generic_string() const
