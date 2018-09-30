@@ -111,12 +111,6 @@ endif()
 
 add_definitions("-DHAVE_CONFIG_H -D__STDC_FORMAT_MACROS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2")
 
-option(USE_BOOST_FILESYSTEM "Use boost's filesystem routines" ON)
-if (USE_BOOST_FILESYSTEM)
-else()
-  add_definitions("-DNO_BOOST_FILESYSTEM")
-endif()
-
 # Enable warning
 include(AddCompilerFlags)
 
@@ -390,6 +384,22 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS REQUIRED filesystem)
 link_directories ( ${Boost_LIBRARY_DIRS} )
 
+if (Boost_FOUND)
+  set(USE_BOOST true)
+  message(STATUS "will use boost filesystem")
+else()
+  message(STATUS "will use c++fs")
+endif()
+
+
+if (USE_BOOST)
+  set(FS_LIBS ${Boost_LIBRARIES})
+else()
+  set(FS_LIBS c++fs)
+  link_directories( /usr/local/opt/llvm/lib )
+endif()
+
+
 find_package(gmp)
 if (GMP_FOUND)
   message(STATUS "Found libgmp")
@@ -521,10 +531,10 @@ endif()
 #------------------- ------------------- ------------------- ------------------- -------------------
 message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${Boost_LIBRARIES} 
-  miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIB}) # wsock32)
+SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} 
+  miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIB} ${FS_LIBS}) # wsock32)
 
-target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb ${Boost_LIBRARIES} event pthread gmp sodium) # ${ANL} ?
+target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb event pthread gmp sodium ${FS_LIBS}) # wsock32)
 target_link_libraries(tessad ${LIBS_LIST})
 
 add_subdirectory(src/qt)

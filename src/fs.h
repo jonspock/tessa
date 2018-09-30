@@ -6,22 +6,21 @@
 // clang-format off
 #pragma once
 
-// Not ready for this yet (disable via define instead of compiler version)
-#ifdef NO_BOOST_FILESYSTEM
-
-#include "filesystem/filesystem.hpp"
-namespace fs = std::filesystem;
-
+#if _cpp_lib_filesystem
+#include <filesystem>
+#define NO_BOOST_FILESYSTEM
 #else
-
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
+#endif
 
+#ifdef NO_BOOST_FILESYSTEM
+namespace fs = std::filesystem;
+#else
 /** Filesystem operations and types */
 namespace fs = boost::filesystem;
-
 #endif
 
 /** Bridge operations to C stdio */

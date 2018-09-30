@@ -177,7 +177,7 @@ endif()
 
 add_library(qt_stuff ${QT_FILES} ${UI_HEADERS} $<$<BOOL:${DARWIN}>:../rpc/client.cpp> )
 # needed for linux compile integrity
-target_link_libraries(qt_stuff ${Boost_LIBRARIES})
+target_link_libraries(qt_stuff ${FS_LIBS})
 
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
