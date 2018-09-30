@@ -152,6 +152,8 @@ class CMainParams : public CChainParams {
     // 	BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
     base58Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x77};
 
+    bch32_hrp = "ct";
+
     fMiningRequiresPeers = true;
     fAllowMinDifficultyBlocks = false;
     fDefaultConsistencyChecks = false;
@@ -225,6 +227,8 @@ class CTestNetParams : public CMainParams {
     // Testnet tessa BIP44 coin type is '1' (All coin's testnet default)
     base58Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x01};
 
+    bch32_hrp = "tt";
+
     fAllowMinDifficultyBlocks = true;
     fDefaultConsistencyChecks = false;
     fRequireStandard = true;
@@ -273,6 +277,8 @@ class CRegTestParams : public CTestNetParams {
     std::cout << hashGenesisBlock.ToString() << "\n";
     // assert(hashGenesisBlock == uint256("0x57939ce0a96bf42965fee5956528a456d0edfb879b8bd699bcbb4786d27b979d"));
 
+    bch32_hrp = "xx"; //??
+    
     vFixedSeeds.clear();  //! Testnet mode doesn't have any fixed seeds.
     vSeeds.clear();       //! Testnet mode doesn't have any DNS seeds.
 

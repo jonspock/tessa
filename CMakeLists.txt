@@ -195,6 +195,8 @@ SET(COMMON_A
   ./src/coins.cpp
   ./src/chainparams.cpp
   ./src/base58.cpp
+  ./src/bch32/bch32.cpp
+  ./src/bch32/bch_addr.cpp
   ./src/key_io.cpp
   ./src/amount.cpp
   ./src/logging.cpp
@@ -505,7 +507,6 @@ set(PP_EXT "LAZYR" CACHE STRING "")
 set(PP_METHD "LAZYR;OATEP" CACHE STRING "")
 
 add_subdirectory(src/relic)
-add_subdirectory(src/bch32)
 
 # For now
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
