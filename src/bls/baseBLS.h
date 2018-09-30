@@ -143,12 +143,12 @@ class CTessaSecret : public CBaseBLSData {
   CTessaSecret() {}
 };
 
-template <typename K, int Size, CChainParams::Base58Type Type> class CTessaExtKeyBase : public CBaseBLSData {
+template <typename K, int Size, CChainParams::BaseType Type> class CTessaExtKeyBase : public CBaseBLSData {
  public:
   void SetKey(const K& key) {
     uint8_t vch[Size];
     key.Encode(vch);
-    SetData(Params().Base58Prefix(Type), vch, vch + Size);
+    SetData(Params().Prefix(Type), vch, vch + Size);
   }
 
   K GetKey() {
