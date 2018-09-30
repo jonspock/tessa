@@ -374,7 +374,11 @@ void SetThreadPriority(int nPriority) {
 inline bool not_space(int c) { return !std::isspace(c); }
 
 void ArgsManager::ReadConfigFile() {
+#ifndef NO_BOOST_FILESYSTEM
   fs::ifstream config_file(GetConfigFile());
+#else
+  std::ifstream config_file(GetConfigFile());
+#endif
   if (!config_file.is_open()) return;  // No bitcoin.conf file is OK
 
   {
