@@ -41,8 +41,7 @@ static CCriticalSection cs_nWalletUnlockTime;
 static std::atomic<bool> search_interrupted(false);
 
 std::string HelpRequiringPassphrase() {
-  return pwalletMain ? "\nRequires wallet passphrase to be set with walletpassphrase call."
-                                                 : "";
+  return pwalletMain ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
 }
 
 void EnsureWalletIsUnlocked(bool fAllowAnonOnly) {
@@ -220,8 +219,7 @@ UniValue setaccount(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+  if (!IsValidDestinationString(params[0].get_str())) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(params[0].get_str());
 
@@ -261,8 +259,7 @@ UniValue getaccount(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   CTxDestination address = DecodeDestination(params[0].get_str());
-  if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+  if (!IsValidDestinationString(params[0].get_str())) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   string strAccount;
   map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(address);
@@ -366,8 +363,7 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+  if (!IsValidDestinationString(params[0].get_str())) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(params[0].get_str());
   // Amount
@@ -415,8 +411,7 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp) {
 
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
-  if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+  if (!IsValidDestinationString(params[0].get_str())) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(params[0].get_str());
 
@@ -512,12 +507,11 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
   string strAddress = params[0].get_str();
   string strMessage = params[1].get_str();
 
-  if (!IsValidDestinationString(strAddress))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(strAddress);
 
-  CKeyID *keyID = &mpark::get<CKeyID>(address);
+  CKeyID* keyID = &mpark::get<CKeyID>(address);
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
   CKey key;
@@ -560,8 +554,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
   LOCK2(cs_main, pwalletMain->cs_wallet);
 
   // Amount
-  if (!IsValidDestinationString(params[0].get_str()))
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+  if (!IsValidDestinationString(params[0].get_str())) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(params[0].get_str());
   CScript scriptPubKey = GetScriptForDestination(address);
@@ -576,7 +569,7 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
   for (auto& it : pwalletMain->mapWallet) {
     const CWalletTx& wtx = it.second;
     if (wtx.IsCoinBase() || !IsFinalTx(wtx)) continue;
-    
+
     for (const CTxOut& txout : wtx.vout)
       if (txout.scriptPubKey == scriptPubKey)
         if (wtx.GetDepthInMainChain() >= nMinDepth) nAmount += txout.nValue;
@@ -621,9 +614,8 @@ UniValue getreceivedbyaccount(const UniValue& params, bool fHelp) {
 
   // Tally
   CAmount nAmount = 0;
-  for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end();
-       ++it) {
-    const CWalletTx& wtx = (*it).second;
+  for (auto& it : pwalletMain->mapWallet) {
+    const CWalletTx& wtx = it.second;
     if (wtx.IsCoinBase() || !IsFinalTx(wtx)) continue;
 
     for (const CTxOut& txout : wtx.vout) {
@@ -640,9 +632,8 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
   CAmount nBalance = 0;
 
   // Tally wallet transactions
-  for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end();
-       ++it) {
-    const CWalletTx& wtx = (*it).second;
+  for (auto& it : pwalletMain->mapWallet) {
+    const CWalletTx& wtx = it.second;
     if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0) continue;
 
     CAmount nReceived, nSent, nFee;
@@ -708,9 +699,8 @@ UniValue getbalance(const UniValue& params, bool fHelp) {
     // (GetBalance() sums up all unspent TxOuts)
     // getbalance and "getbalance * 1 true" should return the same number
     CAmount nBalance = 0;
-    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end();
-         ++it) {
-      const CWalletTx& wtx = (*it).second;
+    for (auto& it : pwalletMain->mapWallet) {
+      const CWalletTx& wtx = it.second;
       if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0) continue;
 
       CAmount allFee;
@@ -844,8 +834,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp) {
 
   string strAccount = AccountFromValue(params[0]);
 
-  if (!IsValidDestinationString(params[1].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+  if (!IsValidDestinationString(params[1].get_str())) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
 
   CTxDestination address = DecodeDestination(params[1].get_str());
   CAmount nAmount = AmountFromValue(params[2]);
@@ -930,7 +919,8 @@ UniValue sendmany(const UniValue& params, bool fHelp) {
   CAmount totalAmount = 0;
   vector<string> keys = sendTo.getKeys();
   for (const string& name_ : keys) {
-    if (!IsValidDestinationString(name_)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid address: ") + name_);
+    if (!IsValidDestinationString(name_))
+      throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid address: ") + name_);
     CTxDestination address = DecodeDestination(name_);
 
     if (setAddress.count(address))
@@ -1038,9 +1028,8 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts) {
 
   // Tally
   map<CTxDestination, tallyitem> mapTally;
-  for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end();
-       ++it) {
-    const CWalletTx& wtx = (*it).second;
+  for (auto& it : pwalletMain->mapWallet) {
+    const CWalletTx& wtx = it.second;
 
     if (wtx.IsCoinBase() || !IsFinalTx(wtx)) continue;
 
@@ -1108,13 +1097,13 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts) {
   }
 
   if (fByAccounts) {
-    for (map<string, tallyitem>::iterator it = mapAccountTally.begin(); it != mapAccountTally.end(); ++it) {
-      CAmount nAmount = (*it).second.nAmount;
-      int nConf = (*it).second.nConf;
-      int nBCConf = (*it).second.nBCConf;
+    for (auto& it : mapAccountTally) {
+      CAmount nAmount = it.second.nAmount;
+      int nConf = it.second.nConf;
+      int nBCConf = it.second.nBCConf;
       UniValue obj(UniValue::VOBJ);
-      if ((*it).second.fIsWatchonly) obj.push_back(std::make_pair("involvesWatchonly", true));
-      obj.push_back(std::make_pair("account", (*it).first));
+      if (it.second.fIsWatchonly) obj.push_back(std::make_pair("involvesWatchonly", true));
+      obj.push_back(std::make_pair("account", it.first));
       obj.push_back(std::make_pair("amount", ValueFromAmount(nAmount)));
       obj.push_back(std::make_pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
       obj.push_back(std::make_pair("bcconfirmations", (nBCConf == std::numeric_limits<int>::max() ? 0 : nBCConf)));
@@ -1229,7 +1218,8 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
       entry.push_back(std::make_pair("account", strSentAccount));
       MaybePushAddress(entry, s.destination);
       std::map<std::string, std::string>::const_iterator it = wtx.mapValue.find("DS");
-      entry.push_back(std::make_pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
+      entry.push_back(
+          std::make_pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
       entry.push_back(std::make_pair("amount", ValueFromAmount(-s.amount)));
       entry.push_back(std::make_pair("vout", s.vout));
       entry.push_back(std::make_pair("fee", ValueFromAmount(-nFee)));
@@ -1448,9 +1438,8 @@ UniValue listaccounts(const UniValue& params, bool fHelp) {
       mapAccountBalances[entry.second.name] = 0;
   }
 
-  for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end();
-       ++it) {
-    const CWalletTx& wtx = (*it).second;
+  for (auto it : pwalletMain->mapWallet) {
+    const CWalletTx& wtx = it.second;
     CAmount nFee;
     string strSentAccount;
     list<COutputEntry> listReceived;
@@ -1559,10 +1548,8 @@ UniValue listsinceblock(const UniValue& params, bool fHelp) {
 
   UniValue transactions(UniValue::VARR);
 
-  for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end();
-       it++) {
-    CWalletTx tx = (*it).second;
-
+  for (auto& it : pwalletMain->mapWallet) {
+    CWalletTx tx = it.second;
     if (depth == -1 || tx.GetDepthInMainChain(false) < depth) ListTransactions(tx, "*", 0, true, transactions, filter);
   }
 
@@ -2180,10 +2167,10 @@ UniValue printAddresses() {
   }
 
   UniValue ret(UniValue::VARR);
-  for (map<std::string, double>::const_iterator it = mapAddresses.begin(); it != mapAddresses.end(); ++it) {
+  for (auto& it : mapAddresses) {
     UniValue obj(UniValue::VOBJ);
-    const std::string* strAdd = &(*it).first;
-    const double* nBalance = &(*it).second;
+    const std::string* strAdd = &it.first;
+    const double* nBalance = &it.second;
     obj.push_back(std::make_pair("Address ", *strAdd));
     obj.push_back(std::make_pair("Balance ", *nBalance));
     ret.push_back(obj);
@@ -2571,7 +2558,8 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp) {
   for (CDeterministicMint dMint : vDMints) {
     UniValue m(UniValue::VOBJ);
     m.push_back(std::make_pair("txid", wtx.GetHash().ToString()));
-    m.push_back(std::make_pair("value", ValueFromAmount(libzerocoin::ZerocoinDenominationToAmount(dMint.GetDenomination()))));
+    m.push_back(
+        std::make_pair("value", ValueFromAmount(libzerocoin::ZerocoinDenominationToAmount(dMint.GetDenomination()))));
     m.push_back(std::make_pair("pubcoinhash", dMint.GetPubcoinHash().GetHex()));
     m.push_back(std::make_pair("serialhash", dMint.GetSerialHash().GetHex()));
     m.push_back(std::make_pair("seedhash", dMint.GetSeedHash().GetHex()));
@@ -2640,11 +2628,11 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp) {
   bool fMinimizeChange = params[2].get_bool();   // Minimize change
   int nSecurityLevel = params[3].get_int();      // Security level
 
-  CTxDestination address = CNoDestination(); // Optional sending address. Dummy initialization here.
+  CTxDestination address = CNoDestination();  // Optional sending address. Dummy initialization here.
   if (params.size() == 5) {
     // Destination address was supplied as params[4]. Optional parameters MUST be at the end
     // to avoid type confusion from the JSON interpreter
-    if(!IsValidDestinationString(params[4].get_str())) {
+    if (!IsValidDestinationString(params[4].get_str())) {
       throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     } else {
       address = DecodeDestination(params[4].get_str());
@@ -2858,8 +2846,8 @@ UniValue getarchivedzerocoin(const UniValue& params, bool fHelp) {
   for (const CDeterministicMint& dMint : listDMints) {
     UniValue objDMint(UniValue::VOBJ);
     objDMint.push_back(std::make_pair("txid", dMint.GetTxHash().GetHex()));
-    objDMint.push_back(
-        std::make_pair("denomination", ValueFromAmount(libzerocoin::ZerocoinDenominationToAmount(dMint.GetDenomination()))));
+    objDMint.push_back(std::make_pair(
+        "denomination", ValueFromAmount(libzerocoin::ZerocoinDenominationToAmount(dMint.GetDenomination()))));
     objDMint.push_back(std::make_pair("serialhash", dMint.GetSerialHash().GetHex()));
     objDMint.push_back(std::make_pair("pubcoinhash", dMint.GetPubcoinHash().GetHex()));
     objDMint.push_back(std::make_pair("seedhash", dMint.GetSeedHash().GetHex()));

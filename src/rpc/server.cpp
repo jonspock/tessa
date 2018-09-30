@@ -140,8 +140,7 @@ string CRPCTable::help(string strCommand) const {
   set<rpcfn_type> setDone;
   vector<pair<string, const CRPCCommand*> > vCommands;
 
-  for (map<string, const CRPCCommand*>::const_iterator mi = mapCommands.begin(); mi != mapCommands.end(); ++mi)
-    vCommands.push_back(make_pair(mi->second->category + mi->first, mi->second));
+  for (auto& mi : mapCommands) vCommands.push_back(make_pair(mi.second->category + mi.first, mi.second));
   sort(vCommands.begin(), vCommands.end());
 
   for (const auto& command : vCommands) {

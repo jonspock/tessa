@@ -72,6 +72,8 @@ CTxDestination DecodeDestination(const std::string& str, const CChainParams& par
   return CNoDestination();
 }
 
+// These are just used in Wallet? Can be changed later?
+
 CKey DecodeSecret(const std::string& str) {
   CKey key;
   std::vector<uint8_t> data;

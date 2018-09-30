@@ -299,13 +299,13 @@ UniValue getaddednodeinfo(const UniValue& params, bool fHelp) {
   }
 
   LOCK(cs_vNodes);
-  for (list<pair<string, vector<CService> > >::iterator it = laddedAddreses.begin(); it != laddedAddreses.end(); it++) {
+  for (auto& it : laddedAddreses) {
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(std::make_pair("addednode", it->first));
+    obj.push_back(std::make_pair("addednode", it.first));
 
     UniValue addresses(UniValue::VARR);
     bool fConnected = false;
-    for (CService& addrNode : it->second) {
+    for (CService& addrNode : it.second) {
       bool fFound = false;
       UniValue node(UniValue::VOBJ);
       node.push_back(std::make_pair("address", addrNode.ToString()));
@@ -521,10 +521,10 @@ UniValue listbanned(const UniValue& params, bool fHelp) {
   CNode::GetBanned(banMap);
 
   UniValue bannedAddresses(UniValue::VARR);
-  for (banmap_t::iterator it = banMap.begin(); it != banMap.end(); it++) {
-    CBanEntry banEntry = (*it).second;
+  for (auto& it : banMap) {
+    CBanEntry banEntry = it.second;
     UniValue rec(UniValue::VOBJ);
-    rec.push_back(std::make_pair("address", (*it).first.ToString()));
+    rec.push_back(std::make_pair("address", it.first.ToString()));
     rec.push_back(std::make_pair("banned_until", banEntry.nBanUntil));
     rec.push_back(std::make_pair("ban_created", banEntry.nCreateTime));
     rec.push_back(std::make_pair("ban_reason", banEntry.banReasonToString()));

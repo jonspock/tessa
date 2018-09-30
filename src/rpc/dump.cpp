@@ -6,8 +6,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chain.h"
-#include "key_io.h"
 #include "init.h"
+#include "key_io.h"
 #include "main.h"
 #include "rpc/server.h"
 #include "script/script.h"
@@ -35,13 +35,13 @@ void EnsureWalletIsUnlocked(bool fAllowAnonOnly);
 std::string static EncodeDumpTime(int64_t nTime) { return DateTimeStrFormat("%Y-%m-%dT%H:%M:%SZ", nTime); }
 
 int64_t static DecodeDumpTime(const std::string& str) {
-///#warning "Need to check as converted from boost, also no locale";
+  ///#warning "Need to check as converted from boost, also no locale";
   std::istringstream iss(str);
   std::tm tm = {};
   iss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
   auto tp = std::chrono::system_clock::from_time_t(std::mktime(&tm));
   return std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-  //return (ptime - epoch).total_seconds();
+  // return (ptime - epoch).total_seconds();
 }
 
 std::string static EncodeDumpString(const std::string& str) {
@@ -229,7 +229,8 @@ UniValue importwallet(const UniValue& params, bool fHelp) {
 
   pwalletMain->ShowProgress.fire(_("Importing..."), 0);  // show progress dialog in GUI
   while (file.good()) {
-    pwalletMain->ShowProgress.fire("", std::max(1, std::min(99, (int)(((double)file.tellg() / (double)nFilesize) * 100))));
+    pwalletMain->ShowProgress.fire("",
+                                   std::max(1, std::min(99, (int)(((double)file.tellg() / (double)nFilesize) * 100))));
     std::string line;
     std::getline(file, line);
     if (line.empty() || line[0] == '#') continue;
@@ -310,7 +311,7 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp) {
   string strAddress = params[0].get_str();
   if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
   CTxDestination address = DecodeDestination(strAddress);
-  CKeyID *keyID = &mpark::get<CKeyID>(address);
+  CKeyID* keyID = &mpark::get<CKeyID>(address);
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
   CKey vchSecret;
   if (!pwalletMain->GetKey(*keyID, vchSecret))
@@ -347,9 +348,8 @@ UniValue dumpwallet(const UniValue& params, bool fHelp) {
 
   // sort time/key pairs
   std::vector<std::pair<int64_t, CKeyID> > vKeyBirth;
-  for (std::map<CKeyID, int64_t>::const_iterator it = mapKeyBirth.begin(); it != mapKeyBirth.end(); it++) {
-    vKeyBirth.push_back(std::make_pair(it->second, it->first));
-  }
+  // pair is reversed
+  for (auto& it : mapKeyBirth) vKeyBirth.push_back(std::make_pair(it.second, it.first));
   mapKeyBirth.clear();
   std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
@@ -378,9 +378,9 @@ UniValue dumpwallet(const UniValue& params, bool fHelp) {
     }
   }
 
-  for (std::vector<std::pair<int64_t, CKeyID> >::const_iterator it = vKeyBirth.begin(); it != vKeyBirth.end(); it++) {
-    const CKeyID& keyid = it->second;
-    std::string strTime = EncodeDumpTime(it->first);
+  for (const auto& it : vKeyBirth) {
+    const CKeyID& keyid = it.second;
+    std::string strTime = EncodeDumpTime(it.first);
     std::string strAddr = EncodeDestination(keyid);
     CKey key;
     if (pwalletMain->GetKey(keyid, key)) {

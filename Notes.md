@@ -14,3 +14,5 @@ Line 33 for pow.cpp Quick Exit for testnet
 Zerocoin Start 2848 main.cpp
 rpc/dump 38 Locale/boost
 Line 373 rpc/dump Master Key/private
+
+Secret Addresses Still using Base58 -> Wait til using BLS before changing
