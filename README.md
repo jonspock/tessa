@@ -48,13 +48,15 @@ it's unlikely to have much resemblance to that code branch.
 
 - Extensive usage of C++11's for range loops, std::thread, std:bind, std::mutex, etc to replace boost library
 
+- Usage of C++17 std::variant library and std::filesystem substitutes for boost features
+
 - Inability to have un-encrypted Wallets
 
 - Change in Fee handling
 
-- Usage of signals-cpp library, mpark's variant library and a filesystem substitute for boost/c++17 filesystem
+- Usage of signals-cpp library substitute for boost signals2
 
-- Multiple Licenses, including MIT for Bitcoin/Dash/Peercoin/PIVX/Signals-cpp code, RELIC LGPL code, Boost software licencse for Mpark's code, Apache License for Chia, specific license for filesystem components, 
+- Multiple Licenses, including MIT for Bitcoin/Dash/Peercoin/PIVX/Signals-cpp code, RELIC LGPL code, Apache License for Chia, specific license for filesystem components, 
 
 ### Coin Specs
 <table>
