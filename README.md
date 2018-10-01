@@ -56,7 +56,7 @@ it's unlikely to have much resemblance to that code branch.
 
 - Usage of signals-cpp library substitute for boost signals2
 
-- Multiple Licenses, including MIT for Bitcoin/Dash/Peercoin/PIVX/Signals-cpp code, RELIC LGPL code, Apache License for Chia, specific license for filesystem components, 
+- Multiple Licenses, including MIT for Bitcoin/Dash/Peercoin/PIVX/Signals-cpp code, RELIC LGPL code, Apache License for Chia 
 
 ### Coin Specs
 <table>
