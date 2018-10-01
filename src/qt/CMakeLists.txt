@@ -50,6 +50,7 @@ find_package(QREncode)
 if (QREncode_FOUND)
   add_definitions(-DUSE_QRCODE)
   message(STATUS "Found QREncode")
+  set(QR_LIB qrencode)
 else()
   message(STATUS " QREncode NOT FOUND ")
 endif()  
@@ -207,9 +208,9 @@ add_executable(tessa-qt tessa.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} $
 add_dependencies(tessa-qt translations_target)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} qrencode ${ZMQ_LIB} "-framework Cocoa")
+  TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} ${QR_LIB} ${ZMQ_LIB} "-framework Cocoa")
 else()
-	TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${Qt5_LIBRARIES} ${ZMQ_LIB} ${ANL} miniupnpc qrencode event event_pthreads pthread)
+	TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${Qt5_LIBRARIES} ${ANL} ${QR_LIB} ${ZMQ_LIB} miniupnpc event event_pthreads pthread)
 endif()
 
 #############################################################
