@@ -424,7 +424,7 @@ bool MultisigDialog::createMultisigTransaction(vector<CTxIn> vUserIn, vector<CTx
     CTxDestination address;
     if (!ExtractDestination(prevPubKey, address)) { throw runtime_error("Could not find address for destination."); }
 
-    CScriptID hash = mpark::get<CScriptID>(address);
+    CScriptID hash = std::get<CScriptID>(address);
     CScript redeemScript;
 
     if (!pwalletMain->GetCScript(hash, redeemScript)) { throw runtime_error("could not redeem"); }
@@ -587,7 +587,7 @@ bool MultisigDialog::signMultisigTx(CMutableTransaction& tx, string& errorOut, Q
         }
 
         // get redeem script related to destination
-        CScriptID hash = mpark::get<CScriptID>(address);
+        CScriptID hash = std::get<CScriptID>(address);
         CScript redeemScript;
 
         if (!pwalletMain->GetCScript(hash, redeemScript)) { errorOut = "could not redeem"; }
@@ -731,7 +731,7 @@ bool MultisigDialog::createRedeemScript(int m, vector<string> vKeys, CScript& re
         // Case 1: Tessa address and we have full public key:
         if (pwalletMain && IsValidDestinationString(keyString)) {
           CTxDestination address = DecodeDestination(keyString);
-          CKeyID *keyID = &mpark::get<CKeyID>(address);
+          CKeyID *keyID = &std::get<CKeyID>(address);
           if (!keyID) { throw runtime_error(strprintf("%s does not refer to a key", keyString)); }
           CPubKey vchPubKey;
           if (!pwalletMain->GetPubKey(*keyID, vchPubKey))

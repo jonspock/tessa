@@ -1447,7 +1447,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
           // coin control: send change to custom address
           if (coinControl) {
             try {
-              mpark::get<CNoDestination>(coinControl->destChange);
+              std::get<CNoDestination>(coinControl->destChange);
               scriptChange = GetScriptForDestination(coinControl->destChange);
 
               auto it = txNew.vout.begin();
@@ -1461,7 +1461,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
                 }
                 ++it;
               }
-            } catch (mpark::bad_variant_access&) { LogPrintf("bad variant access"); }
+            } catch (std::bad_variant_access&) { LogPrintf("bad variant access"); }
           }
 
           // no coin control: send change to newly generated address
@@ -2155,7 +2155,7 @@ void CWallet::ListLockedCoins(std::vector<COutPoint>& vOutpts) {
 
 /** @} */  // end of Actions
 
-class CAffectedKeysVisitor {  //: public mpark::variant<void> {
+class CAffectedKeysVisitor {  
  private:
   const CKeyStore& keystore;
   std::vector<CKeyID>& vKeys;
@@ -2169,7 +2169,7 @@ class CAffectedKeysVisitor {  //: public mpark::variant<void> {
     std::vector<CTxDestination> vDest;
     int nRequired;
     if (ExtractDestinations(script, type, vDest, nRequired)) {
-      for (const CTxDestination& dest : vDest) mpark::visit(*this, dest);
+      for (const CTxDestination& dest : vDest) std::visit(*this, dest);
     }
   }
 
@@ -2273,8 +2273,8 @@ uint32_t CWallet::ComputeTimeSmart(const CWalletTx& wtx) const {
 
 bool CWallet::AddDestData(const CTxDestination& dest, const std::string& key, const std::string& value) {
   try {
-    mpark::get<CNoDestination>(dest);
-  } catch (mpark::bad_variant_access&) { return false; }
+    std::get<CNoDestination>(dest);
+  } catch (std::bad_variant_access&) { return false; }
   mapAddressBook[dest].destdata.insert(std::make_pair(key, value));
   if (!fFileBacked) return true;
   return gWalletDB.WriteDestData(EncodeDestination(dest), key, value);

@@ -12,7 +12,7 @@
 #include "hash.h"
 #include "support/cleanse.h"
 #include "uint256.h"
-#include "mpark/variant.hpp"
+#include <variant>
 #include <cassert>
 #include <cstdint>
 #include <iomanip>
@@ -188,7 +188,7 @@ int CBaseBLSData::CompareTo(const CBaseBLSData& b58) const {
 }
 
 namespace {
-class CTessaAddressVisitor : public mpark::variant<bool> {
+class CTessaAddressVisitor : public std::variant<bool> {
  private:
   CTessaAddress* addr;
 
@@ -212,7 +212,7 @@ bool CTessaAddress::Set(const CScriptID& id) {
   return true;
 }
 
-bool CTessaAddress::Set(const CTxDestination& dest) { return mpark::visit(CTessaAddressVisitor(this), dest); }
+bool CTessaAddress::Set(const CTxDestination& dest) { return std::visit(CTessaAddressVisitor(this), dest); }
 
 bool CTessaAddress::IsValid() const { return IsValid(Params()); }
 

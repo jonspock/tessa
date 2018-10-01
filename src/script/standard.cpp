@@ -8,7 +8,7 @@
 #include "script/standard.h"
 #include "ecdsa/pubkey.h"
 #include "hash.h"
-#include "mpark/variant.hpp"
+#include <variant>
 #include "script/script.h"
 #include "util.h"
 #include "utilstrencodings.h"
@@ -242,7 +242,7 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
 }
 
 namespace {
-class CScriptVisitor : public mpark::variant<bool> {
+class CScriptVisitor : public std::variant<bool> {
  private:
   CScript* script;
 
@@ -271,7 +271,7 @@ class CScriptVisitor : public mpark::variant<bool> {
 CScript GetScriptForDestination(const CTxDestination& dest) {
   CScript script;
 
-  mpark::visit(CScriptVisitor(&script), dest);
+  std::visit(CScriptVisitor(&script), dest);
   return script;
 }
 
@@ -288,5 +288,5 @@ CScript GetScriptForMultisig(int nRequired, const std::vector<CPubKey>& keys) {
   return script;
 }
 bool IsValidDestination(const CTxDestination& dest) {
-  return !mpark::holds_alternative<CNoDestination>(dest);
+  return !std::holds_alternative<CNoDestination>(dest);
 }

@@ -511,7 +511,7 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
 
   CTxDestination address = DecodeDestination(strAddress);
 
-  CKeyID* keyID = &mpark::get<CKeyID>(address);
+  CKeyID* keyID = &std::get<CKeyID>(address);
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
   CKey key;
@@ -1193,7 +1193,7 @@ UniValue listreceivedbyaccount(const UniValue& params, bool fHelp) {
 }
 
 static void MaybePushAddress(UniValue& entry, const CTxDestination& dest) {
-  if (!mpark::holds_alternative<CNoDestination>(dest))
+  if (!std::holds_alternative<CNoDestination>(dest))
     entry.push_back(std::make_pair("address", EncodeDestination(dest)));
 }
 

@@ -246,8 +246,8 @@ bool AddressTableModel::setData(const QModelIndex& index, const QVariant& value,
       CTxDestination newAddress = DecodeDestination(value.toString().toStdString());
       // Refuse to set invalid address, set error status and return false
       try {
-        mpark::get<CNoDestination>(newAddress);
-      } catch (mpark::bad_variant_access&) {
+        std::get<CNoDestination>(newAddress);
+      } catch (std::bad_variant_access&) {
         editStatus = INVALID_ADDRESS;
         return false;
       }

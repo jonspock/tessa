@@ -9,7 +9,7 @@
 
 #include "script/interpreter.h"
 #include "uint256.h"
-#include <mpark/variant.hpp>
+#include <variant>
 #include <cstdint>
 
 namespace ecdsa {
@@ -77,7 +77,7 @@ class CNoDestination {
  *  * CScriptID: TX_SCRIPTHASH destination
  *  A CTxDestination is the internal data type encoded in a CBitcoinAddress
  */
-typedef mpark::variant<CNoDestination, ecdsa::CKeyID, CScriptID> CTxDestination;
+typedef std::variant<CNoDestination, ecdsa::CKeyID, CScriptID> CTxDestination;
 
 /** Check whether a CTxDestination is a CNoDestination. */
 bool IsValidDestination(const CTxDestination& dest);

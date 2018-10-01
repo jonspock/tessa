@@ -290,7 +290,7 @@ UniValue listunspent(const UniValue& params, bool fHelp) {
     if (pk.IsPayToScriptHash()) {
       CTxDestination address;
       if (ExtractDestination(pk, address)) {
-        const CScriptID& hash = mpark::get<CScriptID>(address);
+        const CScriptID& hash = std::get<CScriptID>(address);
         CScript redeemScript;
         if (pwalletMain->GetCScript(hash, redeemScript))
           entry.push_back(std::make_pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));

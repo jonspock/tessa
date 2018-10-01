@@ -311,7 +311,7 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp) {
   string strAddress = params[0].get_str();
   if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
   CTxDestination address = DecodeDestination(strAddress);
-  CKeyID* keyID = &mpark::get<CKeyID>(address);
+  CKeyID* keyID = &std::get<CKeyID>(address);
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
   CKey vchSecret;
   if (!pwalletMain->GetKey(*keyID, vchSecret))

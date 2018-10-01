@@ -140,7 +140,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   return obj;
 }
 
-class DescribeAddressVisitor : public mpark::variant<UniValue> {
+class DescribeAddressVisitor : public std::variant<UniValue> {
  private:
   isminetype mine;
 
@@ -282,7 +282,7 @@ UniValue validateaddress(const UniValue& params, bool fHelp) {
     ret.push_back(std::make_pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
     if (mine != ISMINE_NO) {
       ret.push_back(std::make_pair("iswatchonly", (mine & ISMINE_WATCH_ONLY) ? true : false));
-      UniValue detail = mpark::visit(DescribeAddressVisitor(mine), dest);
+      UniValue detail = std::visit(DescribeAddressVisitor(mine), dest);
       ret.pushKVs(detail);
     }
     if (pwalletMain && pwalletMain->mapAddressBook.count(dest))
@@ -314,7 +314,7 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
     // Case 1: address and we have full public key:
     if (pwalletMain && IsValidDestinationString(ks)) {
       CTxDestination address = DecodeDestination(ks);
-      CKeyID *keyID = &mpark::get<CKeyID>(address);
+      CKeyID *keyID = &std::get<CKeyID>(address);
       if (!keyID) throw runtime_error(strprintf("%s does not refer to a key", ks));
       CPubKey vchPubKey;
       if (!pwalletMain->GetPubKey(*keyID, vchPubKey))
@@ -415,7 +415,7 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
 
   CTxDestination address = DecodeDestination(strAddress);
-  CKeyID *keyID = &mpark::get<CKeyID>(address);
+  CKeyID *keyID = &std::get<CKeyID>(address);
   
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 

@@ -8,16 +8,16 @@
 #include "bch32/bch32.h"
 #include "script/script.h"
 #include "utilstrencodings.h"
-#include "mpark/variant.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <string>
+#include <variant>
 
 using namespace ecdsa;
 using namespace bch32;
 
-class DestinationEncoder : public mpark::variant<std::string> {
+class DestinationEncoder : public std::variant<std::string> {
  private:
   const CChainParams& m_params;
 
@@ -143,7 +143,7 @@ std::string EncodeExtKey(const CExtKey& key) {
   return ret;
 }
 
-std::string EncodeDestination(const CTxDestination& dest) { return mpark::visit(DestinationEncoder(Params()), dest); }
+std::string EncodeDestination(const CTxDestination& dest) { return std::visit(DestinationEncoder(Params()), dest); }
 
 CTxDestination DecodeDestination(const std::string& str) { return DecodeDestination(str, Params()); }
 

@@ -91,7 +91,7 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
                                 tr("Please check the address and try again."));
     return;
   }
-  ecdsa::CKeyID *keyID = &mpark::get<ecdsa::CKeyID>(addr);
+  ecdsa::CKeyID *keyID = &std::get<ecdsa::CKeyID>(addr);
   if (!keyID) {
     ui->addressIn_SM->setValid(false);
     ui->statusLabel_SM->setStyleSheet("QLabel { color: red; }");
@@ -160,7 +160,7 @@ void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
                                 tr("Please check the address and try again."));
     return;
   }
-  ecdsa::CKeyID* keyID = &mpark::get<ecdsa::CKeyID>(addr);
+  ecdsa::CKeyID* keyID = &std::get<ecdsa::CKeyID>(addr);
   if (!keyID) {
     ui->addressIn_VM->setValid(false);
     ui->statusLabel_VM->setStyleSheet("QLabel { color: red; }");
