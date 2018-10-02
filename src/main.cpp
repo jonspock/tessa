@@ -110,17 +110,6 @@ void updateMapZerocoinSpends(const uint256& txid, int64_t& nTimeSeen) {
   }
 }
 
-// If not seen already, update, otherwise return Time Seen, for miner.cpp
-void updateMapZerocoinSpends(const uint256& txid, int64_t& nTimeSeen) {
-  auto it = mapZerocoinspends.find(txid);
-  if (it != mapZerocoinspends.end()) {
-    nTimeSeen = it->second;
-  } else {
-    // for some reason not in map, add it
-    mapZerocoinspends[txid] = nTimeSeen;
-  }
-}
-
 void EraseOrphansFor(NodeId peer);
 
 static void CheckBlockIndex();
