@@ -15,6 +15,7 @@
 #include "askpassphrasedialog.h"
 #include "init.h"
 #include "coin_constants.h"
+#include "wallet_externs.h"
 #include "wallet/wallet.h"
 
 #include <string>

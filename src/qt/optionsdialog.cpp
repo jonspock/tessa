@@ -8,7 +8,7 @@
 #include "coin-config.h"
 #endif
 
-#include "externs.h"
+#include "wallet_externs.h"
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
 

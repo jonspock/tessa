@@ -4,9 +4,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_BLOOM_H
-#define BITCOIN_BLOOM_H
-
+#pragma once
 #include "serialize.h"
 
 #include <vector>
@@ -95,5 +93,3 @@ class CBloomFilter {
   //! Checks for empty and full filters to avoid wasting cpu
   void UpdateEmptyFull();
 };
-
-#endif  // BITCOIN_BLOOM_H

@@ -5,8 +5,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_AMOUNT_H
-#define BITCOIN_AMOUNT_H
+#pragma once
 
 #include "serialize.h"
 
@@ -16,21 +15,19 @@
 using CAmount = int64_t;
 
 static const CAmount COIN = 100000000;
-static const CAmount CENT = 1000000;
+static const int COIN_PLACES = 8;
+static const CAmount COINCENT = 1000000;
 
-/** Type-safe wrapper class to for fee rates
- * (how much to pay based on transaction size)
- */
+/** Type-safe wrapper class to for fee rates */
 class CFeeRate {
  private:
-  CAmount fee;  // unit is satoshis-per-1,000-bytes
+  CAmount fee = COINCENT;
  public:
-  CFeeRate() : fee(1000) {}
+  CFeeRate() = default;
   explicit CFeeRate(const CAmount& _fee) : fee(_fee) {}
-  CFeeRate(const CAmount& nFeePaid, size_t nSize);
   CFeeRate(const CFeeRate& other) { fee = other.fee; }
 
-  CAmount GetFee() const; 
+  CAmount GetFee() const {  return fee;}
 
   friend bool operator<(const CFeeRate& a, const CFeeRate& b) { return a.fee < b.fee; }
   friend bool operator>(const CFeeRate& a, const CFeeRate& b) { return a.fee > b.fee; }
@@ -46,4 +43,3 @@ class CFeeRate {
   }
 };
 
-#endif  //  BITCOIN_AMOUNT_H

@@ -21,6 +21,7 @@
 #include "txdb.h"  // for -dbcache defaults
 #include "util.h"
 
+#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 #include "wallet/walletdb.h"

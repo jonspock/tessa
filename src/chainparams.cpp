@@ -168,7 +168,7 @@ class CMainParams : public CChainParams {
 
     /** Zerocoin */
     nMaxZerocoinSpendsPerTransaction = 7;  // Assume about 20kb each
-    nMinZerocoinMintFee = 1 * CENT;        // high fee required for zerocoin mints
+    nMinZerocoinMintFee = 1 * COINCENT;        // high fee required for zerocoin mints
     nMintRequiredConfirmations = 20;       // the maximum amount of confirmations until accumulated in 19
     nRequiredAccumulation = 1;
     nDefaultSecurityLevel = 100;  // full security level for accumulators

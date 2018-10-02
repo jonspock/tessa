@@ -3,6 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 #include "multisenddialog.h"

@@ -16,6 +16,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include "wallet_externs.h"
 
 #include "signals-cpp/signals.hpp"
 #include <univalue/univalue.h>

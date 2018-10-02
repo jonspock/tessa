@@ -17,16 +17,14 @@ BitcoinUnits::BitcoinUnits(QObject* parent) : QAbstractListModel(parent), unitli
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits() {
   QList<BitcoinUnits::Unit> unitlist;
   unitlist.append(Tessa);
-  unitlist.append(mTessa);
-  unitlist.append(uTessa);
+  unitlist.append(cTessa);
   return unitlist;
 }
 
 bool BitcoinUnits::valid(int unit) {
   switch (unit) {
     case Tessa:
-    case mTessa:
-    case uTessa:
+    case cTessa:
       return true;
     default:
       return false;
@@ -37,10 +35,8 @@ QString BitcoinUnits::id(int unit) {
   switch (unit) {
     case Tessa:
       return QString("Tessa");
-    case mTessa:
-      return QString("mTessa");
-    case uTessa:
-      return QString::fromUtf8("uTessa");
+    case cTessa:
+      return QString("cTessa");
     default:
       return QString("???");
   }
@@ -51,10 +47,8 @@ QString BitcoinUnits::name(int unit) {
     switch (unit) {
       case Tessa:
         return QString("Tessa");
-      case mTessa:
-        return QString("mTessa");
-      case uTessa:
-        return QString::fromUtf8("μTessa");
+      case cTessa:
+        return QString("cTessa");
       default:
         return QString("???");
     }
@@ -62,10 +56,8 @@ QString BitcoinUnits::name(int unit) {
     switch (unit) {
       case Tessa:
         return QString("tTessa");
-      case mTessa:
-        return QString("mtTessa");
-      case uTessa:
-        return QString::fromUtf8("μtTessa");
+      case cTessa:
+        return QString("ctTessa");
       default:
         return QString("???");
     }
@@ -77,10 +69,8 @@ QString BitcoinUnits::description(int unit) {
     switch (unit) {
       case Tessa:
         return QString("Tessa");
-      case mTessa:
-        return QString("Milli-Tessa (1 / 1" THIN_SP_UTF8 "000)");
-      case uTessa:
-        return QString("Micro-Tessa (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+      case cTessa:
+        return QString("centi-Tessa (1 / 100)");
       default:
         return QString("???");
     }
@@ -88,10 +78,8 @@ QString BitcoinUnits::description(int unit) {
     switch (unit) {
       case Tessa:
         return QString("TestTessas");
-      case mTessa:
-        return QString("Milli-TestTessa (1 / 1" THIN_SP_UTF8 "000)");
-      case uTessa:
-        return QString("Micro-TestTessa (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+      case cTessa:
+        return QString("centi-TestTessa (1 / 100)");
       default:
         return QString("???");
     }
@@ -101,24 +89,20 @@ QString BitcoinUnits::description(int unit) {
 qint64 BitcoinUnits::factor(int unit) {
   switch (unit) {
     case Tessa:
-      return 100000000;
-    case mTessa:
-      return 100000;
-    case uTessa:
-      return 100;
+      return COIN;
+    case cTessa:
+      return COIN/100;
     default:
-      return 100000000;
+      return COIN;
   }
 }
 
 int BitcoinUnits::decimals(int unit) {
   switch (unit) {
     case Tessa:
-      return 8;
-    case mTessa:
-      return 5;
-    case uTessa:
-      return 2;
+      return COIN_PLACES;
+    case cTessa:
+      return COIN_PLACES-2;
     default:
       return 0;
   }

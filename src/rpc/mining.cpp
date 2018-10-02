@@ -20,6 +20,7 @@
 #include "util.h"
 #include "utiltime.h"
 #include "validationstate.h"
+#include "wallet_externs.h"
 #include "wallet/db.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"

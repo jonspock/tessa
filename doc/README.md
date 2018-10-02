@@ -13,7 +13,6 @@ The following are some helpful notes on how to run Tessa on your native platform
 
 Unpack the files into a directory and run:
 
-- bin/32/tessa-qt (GUI, 32-bit) or bin/32/tessad (headless, 32-bit)
 - bin/64/tessa-qt (GUI, 64-bit) or bin/64/tessad (headless, 64-bit)
 
 ### Windows
@@ -26,11 +25,7 @@ Drag Tessa-Qt to your applications folder, and then run Tessa-Qt.
 
 ### Need Help?
 
-* See the documentation at the [Tessa Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO***
-for help and more information.
-* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [Tessa Forum](http://forum.tessa.org/).
-* Join our Discord server [Discord Server](https://discord.tessa.org)
-* Join one of our Slack groups [Tessa Slack Groups](https://tessa.org/slack-logins/) (Main community is replaced by Discord).
+* See the documentation at the [Tessa Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO*** for help and more information.
 
 Building
 ---------------------

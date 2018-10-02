@@ -10,7 +10,7 @@
 #include "askpassphrasedialog.h"
 #include "coinunits.h"
 #include "coincontroldialog.h"
-#include "externs.h"
+#include "wallet_externs.h"
 #include "libzerocoin/Denominations.h"
 #include "main.h"
 #include "optionsmodel.h"

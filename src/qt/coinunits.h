@@ -56,7 +56,7 @@ class BitcoinUnits : public QAbstractListModel {
   /** Tessa units.
     @note Source: https://en.bitcoin.it/wiki/Units . Please add only sensible ones
    */
-  enum Unit { Tessa, mTessa, uTessa };
+  enum Unit { Tessa, cTessa };
 
   enum SeparatorStyle { separatorNever, separatorStandard, separatorAlways };
 
@@ -74,7 +74,7 @@ class BitcoinUnits : public QAbstractListModel {
   static QString name(int unit);
   //! Longer description
   static QString description(int unit);
-  //! Number of Satoshis (1e-8) per unit
+  //! Number per unit
   static qint64 factor(int unit);
   //! Number of decimals left
   static int decimals(int unit);

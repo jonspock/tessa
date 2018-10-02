@@ -6,11 +6,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "amount.h"
-
 #include "tinyformat.h"
 
-CAmount CFeeRate::GetFee() const {  return fee;}
-
-std::string CFeeRate::ToString() const {
-  return strprintf("%d.%08d Tessa/kB", fee / COIN, fee % COIN);
-}
+std::string CFeeRate::ToString() const {  return strprintf("%d.%08d Tessa/kB", fee / COIN, fee % COIN);}

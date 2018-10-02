@@ -6,13 +6,13 @@ and tests weren't explicitly disabled.
 
 After configuring, they can be run with 'make check'.
 
-To run the clubd tests manually, launch src/test/test_club .
+To run the tessad tests manually, launch src/test/test_tessa .
 
-To add more clubd tests, add `BOOST_AUTO_TEST_CASE` functions to the existing
+To add more tessad tests, add `BOOST_AUTO_TEST_CASE` functions to the existing
 .cpp files in the test/ directory or add new .cpp files that
 implement new BOOST_AUTO_TEST_SUITE sections.
 
-To run the club-qt tests manually, launch src/qt/test/club-qt_test
+To run the tessa-qt tests manually, launch src/qt/test/tessa-qt_test
 
-To add more club-qt tests, add them to the `src/qt/test/` directory and
+To add more tessa-qt tests, add them to the `src/qt/test/` directory and
 the `src/qt/test/test_main.cpp` file.

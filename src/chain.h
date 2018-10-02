@@ -6,8 +6,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CHAIN_H
-#define BITCOIN_CHAIN_H
+#pragma once
 
 #include "arith_uint256.h"
 #include "libzerocoin/Denominations.h"
@@ -492,4 +491,3 @@ class CChain {
   const CBlockIndex* FindFork(const CBlockIndex* pindex) const;
 };
 
-#endif  // BITCOIN_CHAIN_H

@@ -1,28 +1,18 @@
 UNIX BUILD NOTES
 ====================
-Some notes on how to build Club in Unix.
-
-Note
----------------------
-Always use absolute paths to configure and compile club and the dependencies,
-for example, when specifying the path of the dependency:
-
-	../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX
-
-Here BDB_PREFIX must absolute path - it is defined using $(pwd) which ensures
-the usage of the absolute path.
+Some notes on how to build Tessa in Unix.
 
 To Build
 ---------------------
 
 ```bash
-./autogen.sh
-./configure
+mkdir build
+cd build
+cmake ..
 make
-make install # optional
 ```
 
-This will build club-qt as well if the dependencies are met.
+This will build tessa-qt as well if the dependencies are met.
 
 Dependencies
 ---------------------
@@ -31,8 +21,10 @@ These dependencies are required:
 
  Library     | Purpose          | Description
  ------------|------------------|----------------------
- libboost    | Boost            | C++ Library
  libevent    | Events           | Asynchronous event notification
+ libsodium   | Cryptography     | Cryptographic library
+ libgmp      | Math library     | Math library
+ rocksdb     | Database         | Facebook database key/value storage library
 
 Optional dependencies:
 
@@ -41,7 +33,7 @@ Optional dependencies:
  miniupnpc   | UPnP Support     | Firewall-jumping support
  qt          | GUI              | GUI toolkit (only needed when GUI enabled)
  libqrencode | QR codes in GUI  | Optional for generating QR codes (only needed when GUI enabled)
- univalue    | Utility          | JSON parsing and encoding (bundled version will be used unless --with-system-univalue passed to configure)
+ zeromq      |   |
 
 For the versions used in the release, see [release-process.md](release-process.md) under *Fetch and build inputs*.
 
@@ -49,120 +41,32 @@ System requirements
 --------------------
 
 C++ compilers are memory-hungry. It is recommended to have at least 1 GB of
-memory available when compiling Club Core. With 512MB of memory or less
+memory available when compiling Core. With 512MB of memory or less
 compilation will take much longer due to swap thrashing.
 
 Dependency Build Instructions: Ubuntu & Debian
 ----------------------------------------------
-Build requirements:
+Build requirements: (check packages names ***)
 
-	sudo apt-get install build-essential libtool autotools-dev autoconf pkg-config libevent-dev
-
-For Ubuntu 12.04 and later or Debian 7 and later libboost-all-dev has to be installed:
-
-	sudo apt-get install libboost-all-dev
+	sudo apt-get install build-essential cmake libevent-dev rocksdb
 
 Optional:
 
-	sudo apt-get install libminiupnpc-dev (see --with-miniupnpc and --enable-upnp-default)
+	sudo apt-get install libminiupnpc-dev zeromq 
 
 Dependencies for the GUI: Ubuntu & Debian
 -----------------------------------------
 
-If you want to build Club-Qt, make sure that the required packages for Qt development
+If you want to build Tessa-Qt, make sure that the required packages for Qt development
 are installed. Qt 5 is necessary to build the GUI.
-To build without GUI pass `--without-gui`.
 
 For Qt 5 you need the following:
 
-    sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
+    sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools 
 
 libqrencode (optional) can be installed with:
 
     sudo apt-get install libqrencode-dev
 
-Once these are installed, they will be found by configure and a club-qt executable will be
-built by default.
+Once these are installed, they will be found by cmake and tessa-qt executable will be built by default.
 
-Notes
------
-The release is built with GCC and then "strip clubd" to strip the debug
-symbols, which reduces the executable size by about 90%.
-
-
-miniupnpc
----------
-
-[miniupnpc](http://miniupnp.free.fr/) may be used for UPnP port mapping.  It can be downloaded from [here](
-http://miniupnp.tuxfamily.org/files/).  UPnP support is compiled in and
-turned off by default.  See the configure options for upnp behavior desired:
-
-	--without-miniupnpc      No UPnP support miniupnp not required
-	--disable-upnp-default   (the default) UPnP support turned off by default at runtime
-	--enable-upnp-default    UPnP support turned on by default at runtime
-
-To build:
-
-	tar -xzvf miniupnpc-1.6.tar.gz
-	cd miniupnpc-1.6
-	make
-	sudo su
-	make install
-
-
-Boost
------
-If you need to build Boost yourself:
-
-	sudo su
-	./bootstrap.sh
-	./bjam install
-
-
-Security
---------
-To help make your Club installation more secure by making certain attacks impossible to
-exploit even if a vulnerability is found, binaries are hardened by default.
-This can be disabled with:
-
-Hardening Flags:
-
-	./configure --enable-hardening
-	./configure --disable-hardening
-
-
-Hardening enables the following features:
-
-* Position Independent Executable
-    Build position independent code to take advantage of Address Space Layout Randomization
-    offered by some kernels. An attacker who is able to cause execution of code at an arbitrary
-    memory location is thwarted if he doesn't know where anything useful is located.
-    The stack and heap are randomly located by default but this allows the code section to be
-    randomly located as well.
-
-    On an Amd64 processor where a library was not compiled with -fPIC, this will cause an error
-    such as: "relocation R_X86_64_32 against `......' can not be used when making a shared object;"
-
-    To test that you have built PIE executable, install scanelf, part of paxutils, and use:
-
-    	scanelf -e ./clubd
-
-    The output should contain:
-     TYPE
-    ET_DYN
-
-* Non-executable Stack
-    If the stack is executable then trivial stack based buffer overflow exploits are possible if
-    vulnerable buffers are found. By default, club should be built with a non-executable stack
-    but if one of the libraries it uses asks for an executable stack or someone makes a mistake
-    and uses a compiler extension which requires an executable stack, it will silently build an
-    executable without the non-executable stack protection.
-
-    To verify that the stack is non-executable after compiling use:
-    `scanelf -e ./clubd`
-
-    the output should contain:
-	STK/REL/PTL
-	RW- R-- RW-
-
-    The STK RW- means that the stack is readable and writeable but not executable.

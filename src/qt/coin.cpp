@@ -23,6 +23,7 @@
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
 
+#include "wallet_externs.h"
 #include "walletmodel.h"
 
 #include "init.h"

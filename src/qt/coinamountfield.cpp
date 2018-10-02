@@ -5,7 +5,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "coinamountfield.h"
-
 #include "coinunits.h"
 #include "guiconstants.h"
 #include "guiutil.h"
@@ -27,7 +26,7 @@ class AmountSpinBox : public QAbstractSpinBox {
   explicit AmountSpinBox(QWidget* parent)
       : QAbstractSpinBox(parent),
         currentUnit(BitcoinUnits::Tessa),
-        singleStep(100000)  // satoshis
+        singleStep(COINCENT)  // cents
   {
     setAlignment(Qt::AlignRight);
 

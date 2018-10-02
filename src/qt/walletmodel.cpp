@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletmodel.h"
-#include "externs.h"
+#include "wallet_externs.h"
 
 #include "chain.h"
 #include "addresstablemodel.h"

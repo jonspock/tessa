@@ -360,7 +360,7 @@ else()
   message(STATUS "ZMQ not found")
 endif()
 
-find_package(RocksDB)
+find_package(RocksDB REQUIRED)
 if (RocksDB_FOUND)
   message(STATUS "Found RocksDB")
   message(STATUS "Libs : ${ROCKSDB_LIBRARIES}")
@@ -368,7 +368,7 @@ else()
   message(STATUS "FAILED to FIND RocksDB")
 endif()  
 
-find_package(sodium)
+find_package(sodium REQUIRED)
 if (SODIUM_FOUND)
   message(STATUS "Found libsodium")
   message(STATUS "Sodium include dir = ${sodium_INCLUDE_DIR}")
@@ -398,12 +398,21 @@ else()
   endif()
 endif()
 
-
-find_package(gmp)
+find_package(gmp REQUIRED)
 if (GMP_FOUND)
   message(STATUS "Found libgmp")
 endif()
-  
+
+find_package(Miniupnpc)
+if (MINIUPNPC_FOUND)
+  message(STATUS "Found miniupnpc")
+  add_definitions("-DUSE_UPNP")
+  set(UPNP_LIB miniupnpc)
+else()
+  message(STATUS "Miniupnpc not found")
+endif()
+
+
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${Boost_INCLUDE_DIRS}
@@ -508,7 +517,7 @@ ELSE()
 ENDIF()
 
 set(FP_METHD "INTEG;INTEG;INTEG;MONTY;LOWER;SLIDE" CACHE STRING "")
-set(COMP "-O3 -funroll-loops -fomit-frame-pointer -march=native -mtune=native" CACHE STRING "")
+set(COMP "-O3 -funroll-loops -fomit-frame-pointer" CACHE STRING "")
 set(FP_PMERS "off" CACHE STRING "")
 set(FPX_METHD "INTEG;INTEG;LAZYR" CACHE STRING "")
 set(EP_PLAIN "off" CACHE STRING "")
@@ -530,8 +539,8 @@ endif()
 #------------------- ------------------- ------------------- ------------------- -------------------
 message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} 
-  miniupnpc event event_pthreads pthread gmp sodium ${ZMQ_LIB} ${FS_LIBS}) # wsock32)
+SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${UPNP_LIB}
+  event event_pthreads pthread gmp sodium ${ZMQ_LIB} ${FS_LIBS}) # wsock32)
 
 target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb event pthread gmp sodium ${FS_LIBS}) # wsock32)
 target_link_libraries(tessad ${LIBS_LIST})
@@ -549,3 +558,23 @@ endif()
 #add_subdirectory(src/test)
 
 include(cmake/modules/doxygen.cmake)
+
+message(STATUS "Summary of found packages")
+if (ZeroMQ_FOUND)
+  message(STATUS "Found ZMQ adding define ENABLE_ZMQ")
+endif()
+if (RocksDB_FOUND)
+  message(STATUS "Found RocksDB")
+endif()
+if (SODIUM_FOUND)
+  message(STATUS "Found Sodium")
+endif()
+if (Boost_FOUND)
+  message(STATUS "Found Boost")
+endif()
+if (GMP_FOUND)
+  message(STATUS "Found GMP")
+endif()
+if (MINIUPNPC_FOUND)
+  message(STATUS "Found miniupnpc")
+endif()

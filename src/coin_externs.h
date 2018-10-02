@@ -5,10 +5,6 @@
 #pragma once
 
 #include <cstdint>
-#include <map>
-#include <set>
-#include <string>
-
 #include "sync.h"
 // from sync.h  CCriticalSection, CConditionVariable, CWaitableCriticalSection;
 

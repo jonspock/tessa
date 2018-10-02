@@ -7,6 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
+#include "wallet_externs.h"
 #include "init.h"
 #include "main.h"
 #include "output.h"
@@ -1229,7 +1230,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
       setCoinsRet.insert(coin.second);
       nValueRet += coin.first;
       return true;
-    } else if (n < nTargetValue + CENT) {
+    } else if (n < nTargetValue + COINCENT) {
       vValue.push_back(coin);
       nTotalLower += n;
     } else if (n < coinLowestLarger.first) {
@@ -1262,13 +1263,13 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
   CAmount nBest;
 
   ApproximateBestSubset(vValue, nTotalLower, nTargetValue, vfBest, nBest, 1000);
-  if (nBest != nTargetValue && nTotalLower >= nTargetValue + CENT)
-    ApproximateBestSubset(vValue, nTotalLower, nTargetValue + CENT, vfBest, nBest, 1000);
+  if (nBest != nTargetValue && nTotalLower >= nTargetValue + COINCENT)
+    ApproximateBestSubset(vValue, nTotalLower, nTargetValue + COINCENT, vfBest, nBest, 1000);
 
   // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
   //                                   or the next bigger coin is closer), return the bigger coin
   if (coinLowestLarger.second.first &&
-      ((nBest != nTargetValue && nBest < nTargetValue + CENT) || coinLowestLarger.first <= nBest)) {
+      ((nBest != nTargetValue && nBest < nTargetValue + COINCENT) || coinLowestLarger.first <= nBest)) {
     setCoinsRet.insert(coinLowestLarger.second);
     nValueRet += coinLowestLarger.first;
   } else {
@@ -1351,7 +1352,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
                                 CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason,
                                 const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX,
                                 CAmount nFeePay) {
-  if (useIX && nFeePay < CENT) nFeePay = CENT;
+  if (useIX && nFeePay < COINCENT) nFeePay = COINCENT;
 
   CAmount nValue = 0;
 
@@ -1641,7 +1642,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
       if (!stakeInput->IsZKP()) {
         // Set output amount
         if (txNew.vout.size() == 3) {
-          txNew.vout[1].nValue = ((nCredit - nMinFee) / 2 / CENT) * CENT;
+          txNew.vout[1].nValue = ((nCredit - nMinFee) / 2 / COINCENT) * COINCENT;
           txNew.vout[2].nValue = nCredit - nMinFee - txNew.vout[1].nValue;
         } else
           txNew.vout[1].nValue = nCredit - nMinFee;
@@ -2689,7 +2690,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
   // any change that is less than 0.0100000 will be ignored and given as an extra fee
   // also assume that a zerocoinspend that is minting the change will not have any change that goes to Tessa
   CAmount nChange = nValueIn - nTotalValue;  // Fee already accounted for in nTotalValue
-  if (nChange > 1 * CENT && !isZCSpendChange) {
+  if (nChange > 1 * COINCENT && !isZCSpendChange) {
     // Fill a vout to ourself using the largest contributing address
     CScript scriptChange = GetLargestContributor(setCoins);
 

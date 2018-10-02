@@ -15,6 +15,7 @@
 #include "blockfileinfo.h"
 #include "blockundo.h"
 
+#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 
@@ -68,14 +69,14 @@ using namespace libzerocoin;
  */
 
 CCriticalSection cs_main;
-
 BlockMap mapBlockIndex;
-map<uint256, uint256> mapProofOfStake;
 CChain chainActive;
 CBlockIndex* pindexBestHeader = nullptr;
-int64_t nTimeBestReceived = 0;
+CBlockIndex* pindexBestInvalid = nullptr;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
+
+int64_t nTimeBestReceived = 0;
 int32_t nScriptCheckThreads = 0;
 bool fImporting = false;
 bool fReindex = false;
@@ -84,20 +85,30 @@ bool fIsBareMultisigStd = true;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 
-/** Fees smaller than this (in upiv) are considered zero fee (for relaying and mining)
- * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
- * so it's still 10 times lower comparing to bitcoin.
- */
+/** Fees smaller than this (in upiv) are considered zero fee (for relaying and mining)  */
 CTxMemPool mempool(::minRelayTxFee);
 
+/** End Globals */
+
 struct COrphanTx {
-  CTransaction tx;
-  NodeId fromPeer;
+    CTransaction tx;
+    NodeId fromPeer;
 };
+map<uint256, uint256> mapProofOfStake;
 map<uint256, COrphanTx> mapOrphanTransactions;
 map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 static map<uint256, int64_t> mapZerocoinspends;  // txid, time received
-CBlockIndex* pindexBestInvalid = nullptr;
+
+// If not seen already, update, otherwise return Time Seen, for miner.cpp
+void updateMapZerocoinSpends(const uint256& txid, int64_t& nTimeSeen) {
+  auto it = mapZerocoinspends.find(txid);
+  if (it != mapZerocoinspends.end()) {
+    nTimeSeen = it->second;
+  } else {
+    // for some reason not in map, add it
+    mapZerocoinspends[txid] = nTimeSeen;
+  }
+}
 
 // If not seen already, update, otherwise return Time Seen, for miner.cpp
 void updateMapZerocoinSpends(const uint256& txid, int64_t& nTimeSeen) {

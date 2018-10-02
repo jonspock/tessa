@@ -8,7 +8,7 @@
 #include "clientmodel.h"
 #include "bantablemodel.h"
 #include "chain.h"
-#include "externs.h"
+#include "wallet_externs.h"
 #include "guiconstants.h"
 #include "peertablemodel.h"
 

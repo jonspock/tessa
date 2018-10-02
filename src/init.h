@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "externs.h"
 #include <string>
 class CScheduler;
 

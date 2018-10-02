@@ -10,8 +10,8 @@
 #include "consensus/consensus.h"  // Mostly other defs
 
 const std::string strMessageMagic = "TessaChain Signed Message:\n";
-static const CFeeRate minRelayTxFee = CFeeRate(10000);
-static const CFeeRate minTxFee = CFeeRate(10000);
+static const CFeeRate minRelayTxFee = CFeeRate();
+static const CFeeRate minTxFee = CFeeRate();
 
 
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */

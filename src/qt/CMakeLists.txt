@@ -210,7 +210,7 @@ add_dependencies(tessa-qt translations_target)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${MAC_LIBS} ${Qt5_LIBRARIES} ${QR_LIB} ${ZMQ_LIB} "-framework Cocoa")
 else()
-	TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${Qt5_LIBRARIES} ${ANL} ${QR_LIB} ${ZMQ_LIB} miniupnpc event event_pthreads pthread)
+	TARGET_LINK_LIBRARIES(tessa-qt ${LIBS_LIST} qt_stuff ${Qt5_LIBRARIES} ${ANL} ${QR_LIB} ${ZMQ_LIB} event event_pthreads pthread)
 endif()
 
 #############################################################

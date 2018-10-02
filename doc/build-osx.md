@@ -1,11 +1,11 @@
 Mac OS X Build Instructions and Notes
 ====================================
-This guide will show you how to build clubd (headless client) for OSX.
+This guide will show you how to build tessad (headless client) for OSX.
 
 Notes
 -----
 
-* Tested on OS X 10.7 through 10.10 on 64-bit Intel processors only.
+* Tested on OS X 10.14 on 64-bit Intel processors only.
 
 * All of the commands should be executed in a Terminal application. The
 built-in one is located in `/Applications/Utilities`.
@@ -36,20 +36,23 @@ sections below.
 Instructions: Homebrew
 ----------------------
 
-#### Install dependencies using Homebrew
+#### Install dependencies using Homebrew - REQUIRED
 
-        brew install autoconf automake libtool boost miniupnpc pkg-config qt5 zmq libevent
+        brew install cmake git libevent libsodium gmp rocksdb  (boost)
 
-### Building `clubd`
+#### Install optional dependencies using Homebrew 
+
+        brew install zeromq miniupnpc qrencode qt5
+
+### Building `tessad`
 
 1. Clone the github tree to get the source code and go into the directory.
 
-        git clone https://github.com/Club-Project/Club.git
-        cd Club
+        git clone https://github.com/Tessa-Project/tessa.git
+        cd tessa
 
-2.  Build clubd:
+2.  Build tessad:
 
-        ./autogen.sh
         mkdir build
         cd build
         cmake ..
@@ -57,11 +60,11 @@ Instructions: Homebrew
 
 Creating a release build
 ------------------------
-You can ignore this section if you are building `clubd` for your own use.
+You can ignore this section if you are building `tessad` for your own use.
 
-clubd/club-cli binaries are not included in the club-Qt.app bundle.
+tessad/tessa-cli binaries are not included in the tessa-Qt.app bundle.
 
-If you are building `clubd` or `club-qt` for others, your build machine should be set up
+If you are building `tessad` or `tessa-qt` for others, your build machine should be set up
 as follows for maximum compatibility:
 
 All dependencies should be compiled with these flags:
@@ -70,30 +73,30 @@ All dependencies should be compiled with these flags:
  -arch x86_64
  -isysroot $(xcode-select --print-path)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk
 
-Once dependencies are compiled, see release-process.md for how the Club-Qt.app
+Once dependencies are compiled, see release-process.md for how the Tessa-Qt.app
 bundle is packaged and signed to create the .dmg disk image that is distributed.
 
 Running
 -------
 
-It's now available at `./clubd`, provided that you are still in the `src`
+It's now available at `./tessad`, provided that you are still in the `src`
 directory. We have to first create the RPC configuration file, though.
 
-Run `./clubd` to get the filename where it should be put, or just try these
+Run `./tessad` to get the filename where it should be put, or just try these
 commands:
 
-    echo -e "rpcuser=clubrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Club/club.conf"
-    chmod 600 "/Users/${USER}/Library/Application Support/Club/club.conf"
+    echo -e "rpcuser=tessarpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Tessa/tessa.conf"
+    chmod 600 "/Users/${USER}/Library/Application Support/Tessa/tessa.conf"
 
 The next time you run it, it will start downloading the blockchain, but it won't
 output anything while it's doing this. This process may take several hours;
 you can monitor its process by looking at the debug.log file, like this:
 
-    tail -f $HOME/Library/Application\ Support/Club/debug.log
+    tail -f $HOME/Library/Application\ Support/Tessa/debug.log
 
 Other commands:
 -------
 
-    ./clubd -daemon # to start the club daemon.
-    ./club-cli --help  # for a list of command-line options.
-    ./club-cli help    # When the daemon is running, to get a list of RPC commands
+    ./tessad -daemon # to start the tessa daemon.
+    ./tessa-cli --help  # for a list of command-line options.
+    ./tessa-cli help    # When the daemon is running, to get a list of RPC commands

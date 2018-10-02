@@ -23,6 +23,7 @@
 #include "uint256.h"
 #include "utilmoneystr.h"
 #include "validationstate.h"
+#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 #include <univalue/univalue.h>

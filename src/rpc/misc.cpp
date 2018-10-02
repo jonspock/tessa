@@ -20,6 +20,7 @@
 #include "timedata.h"
 #include "util.h"
 #include "utiltime.h"
+#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "wallet/wallettx.h"

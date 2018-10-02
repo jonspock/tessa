@@ -11,7 +11,7 @@
 #include "coin-config.h"
 #endif
 
-#include "externs.h"
+#include "wallet_externs.h"
 #include "net.h"
 
 #include "addrman.h"
@@ -1160,15 +1160,12 @@ void StopMapPort() {
 }
 
 void MapPort(bool fUseUPnP) {
-  static std::thread* upnp_thread = nullptr;
-
+  static std::thread upnp_thread;
   if (fUseUPnP) {
-    if (upnp_thread) {
-      InterruptMapPort();
-      StopMapPort();
-    }
+    InterruptMapPort();
+    StopMapPort();
     upnp_thread = std::thread(([&] { TraceThread<void (*)()>("upnp", &ThreadMapPort); }));
-  } else if (upnp_thread) {
+  } else {
     InterruptMapPort();
     StopMapPort();
   }

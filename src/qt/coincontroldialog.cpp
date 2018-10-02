@@ -19,6 +19,7 @@
 #include "output.h"
 #include "multisigdialog.h"
 #include "wallet/coincontrol.h"
+#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 
@@ -599,7 +600,7 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog) {
       nChange = nAmount - nPayFee - nPayAmount;
 
       // Never create dust outputs; if we would, just add the dust to the fee.
-      if (nChange > 0 && nChange < CENT) {
+      if (nChange > 0 && nChange < COINCENT) {
         CTxOut txout(nChange, (CScript)vector<unsigned char>(24, 0));
         if (txout.IsDust(::minRelayTxFee)) {
           nPayFee += nChange;

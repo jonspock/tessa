@@ -6,6 +6,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "amount.h"
 #include "blockmap.h"
@@ -2018,7 +2019,7 @@ UniValue reservebalance(const UniValue& params, bool fHelp) {
     if (fReserve) {
       if (params.size() == 1) throw runtime_error("must provide amount to reserve balance.\n");
       CAmount nAmount = AmountFromValue(params[1]);
-      nAmount = (nAmount / CENT) * CENT;  // round to cent
+      nAmount = (nAmount / COINCENT) * COINCENT;  // round to cent
       if (nAmount < 0) throw runtime_error("amount cannot be negative.\n");
       setReserveBalance(nAmount);
     } else {
