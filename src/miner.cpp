@@ -355,8 +355,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       for (const CBigNum& bnSerial : vTxSerials) vBlockSerials.emplace_back(bnSerial);
 
       if (fPrintPriority) {
-        LogPrint(TessaLog::MINER, "priority %.1f fee %d txid %s\n", dPriority, feeRate,
-                 tx.GetHash().ToString());
+        LogPrint(TessaLog::MINER, "priority %.1f fee %d txid %s\n", dPriority, feeRate, tx.GetHash().ToString());
       }
 
       // Add transactions that depend on this one to the priority queue
