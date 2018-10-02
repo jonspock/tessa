@@ -18,28 +18,3 @@ using CAmount = int64_t;
 static const CAmount COIN = COIN_AMOUNT;
 static const CAmount COINCENT = COINCENT_AMOUNT;
 
-/** Type-safe wrapper class to for fee rates */
-class CFeeRate {
- private:
-  CAmount fee = COINCENT;
-
- public:
-  CFeeRate() = default;
-  explicit CFeeRate(const CAmount& _fee) : fee(_fee) {}
-  CFeeRate(const CFeeRate& other) { fee = other.fee; }
-
-  CAmount GetFee() const { return fee; }
-
-  friend bool operator<(const CFeeRate& a, const CFeeRate& b) { return a.fee < b.fee; }
-  friend bool operator>(const CFeeRate& a, const CFeeRate& b) { return a.fee > b.fee; }
-  friend bool operator==(const CFeeRate& a, const CFeeRate& b) { return a.fee == b.fee; }
-  friend bool operator<=(const CFeeRate& a, const CFeeRate& b) { return a.fee <= b.fee; }
-  friend bool operator>=(const CFeeRate& a, const CFeeRate& b) { return a.fee >= b.fee; }
-  std::string ToString() const;
-
-  ADD_SERIALIZE_METHODS
-
-  template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
-    READWRITE(fee);
-  }
-};

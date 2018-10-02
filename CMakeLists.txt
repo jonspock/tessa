@@ -191,7 +191,6 @@ SET(COMMON_A
   ./src/bch32/bch32.cpp
   ./src/bch32/bch_addr.cpp
   ./src/key_io.cpp
-  ./src/amount.cpp
   ./src/logging.cpp
   ./src/fs.cpp
   ./src/fs_utils.cpp
