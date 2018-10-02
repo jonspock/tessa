@@ -129,7 +129,7 @@ class CDataDBWrapper {
     return true;
   }
 
-  template <typename K> bool Erase(const K& key, bool fSync = false)  {
+  template <typename K> bool Erase(const K& key, bool fSync = false) {
     CDataDBBatch batch;
     batch.Erase(key);
     return WriteBatch(batch, fSync);

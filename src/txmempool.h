@@ -90,7 +90,7 @@ class CTxMemPool {
   uint32_t nTransactionsUpdated;
   CMinerPolicyEstimator* minerPolicyEstimator;
 
-  CFeeRate minRelayFee;  //! Passed to constructor to avoid dependency on main
+  CAmount minRelayFee;  //! Passed to constructor to avoid dependency on main
   uint64_t totalTxSize;  //! sum of all mempool tx' byte sizes
 
  public:
@@ -99,7 +99,7 @@ class CTxMemPool {
   std::map<COutPoint, CInPoint> mapNextTx;
   std::map<uint256, std::pair<double, CAmount> > mapDeltas;
 
-  CTxMemPool(const CFeeRate& _minRelayFee);
+  CTxMemPool(const CAmount& _minRelayFee);
   ~CTxMemPool();
 
   /**
@@ -146,7 +146,7 @@ class CTxMemPool {
   bool lookup(uint256 hash, CTransaction& result) const;
 
   /** Estimate fee rate needed to get into the next nBlocks */
-  CFeeRate estimateFee(int nBlocks) const;
+  CAmount estimateFee(int nBlocks) const;
 
   /** Estimate priority needed to get into the next nBlocks */
   double estimatePriority(int nBlocks) const;

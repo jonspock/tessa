@@ -53,7 +53,7 @@ class CMinerPolicyEstimator {
    * three blocks etc.
    */
   std::vector<CBlockAverage> history;
-  std::vector<CFeeRate> sortedFeeSamples;
+  std::vector<CAmount> sortedFeeSamples;
   std::vector<double> sortedPrioritySamples;
 
   int nBestSeenHeight;
@@ -85,7 +85,7 @@ class CMinerPolicyEstimator {
  public:
   CMinerPolicyEstimator(int nEntries) : nBestSeenHeight(0) { history.resize(nEntries); }
 
-  void seenBlock(const std::vector<CTxMemPoolEntry>& entries, int nBlockHeight, const CFeeRate& minRelayFee) {
+  void seenBlock(const std::vector<CTxMemPoolEntry>& entries, int nBlockHeight, const CAmount& minRelayFee) {
     if (nBlockHeight <= nBestSeenHeight) {
       // Ignore side chains and re-orgs; assuming they are random
       // they don't affect the estimate.
@@ -143,11 +143,11 @@ class CMinerPolicyEstimator {
   }
 
   /**
-   * Can return CFeeRate(0) if we don't have any data for that many blocks back. nBlocksToConfirm is 1 based.
+   * Can return CAmount(0) if we don't have any data for that many blocks back. nBlocksToConfirm is 1 based.
    */
-  CFeeRate estimateFee(int nBlocksToConfirm) {
+  CAmount estimateFee(int nBlocksToConfirm) {
     nBlocksToConfirm--;
-    return CFeeRate(minRelayTxFee);
+    return minRelayTxFee;
   }
   double estimatePriority(int nBlocksToConfirm) {
     nBlocksToConfirm--;
@@ -179,7 +179,7 @@ class CMinerPolicyEstimator {
     for (const CBlockAverage& entry : history) { entry.Write(fileout); }
   }
 
-  void Read(CAutoFile& filein, const CFeeRate& minRelayFee) {
+  void Read(CAutoFile& filein, const CAmount& minRelayFee) {
     int nFileBestSeenHeight;
     filein >> nFileBestSeenHeight;
     uint64_t numEntries;
@@ -203,7 +203,7 @@ class CMinerPolicyEstimator {
   }
 };
 
-CTxMemPool::CTxMemPool(const CFeeRate& _minRelayFee) : nTransactionsUpdated(0), minRelayFee(_minRelayFee) {
+CTxMemPool::CTxMemPool(const CAmount& _minRelayFee) : nTransactionsUpdated(0), minRelayFee(_minRelayFee) {
   // Sanity checks off by default for performance, because otherwise
   // accepting transactions becomes O(N^2) where N is the number
   // of transactions in the pool
@@ -458,7 +458,7 @@ bool CTxMemPool::lookup(uint256 hash, CTransaction& result) const {
   return true;
 }
 
-CFeeRate CTxMemPool::estimateFee(int nBlocks) const {
+CAmount CTxMemPool::estimateFee(int nBlocks) const {
   LOCK(cs);
   return minerPolicyEstimator->estimateFee(nBlocks);
 }

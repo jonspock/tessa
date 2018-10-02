@@ -16,8 +16,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 bool CheckStake(const CDataStream& ssUniqueID, CAmount nValueIn, const uint64_t nStakeModifier,
                 const arith_uint256& bnTarget, uint32_t nTimeBlockFrom, uint32_t& nTimeTx, uint256& hashProofOfStake);
 
-bool Stake(CStake* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uint32_t& nTimeTx,
-           uint256& hashProofOfStake);
+bool Stake(CStake* stakeInput, uint32_t nBits, uint32_t nTimeBlockFrom, uint32_t& nTimeTx, uint256& hashProofOfStake);
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return

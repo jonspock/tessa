@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "streams.h"
 #include "logging.h"
+#include "streams.h"
 #include <stdexcept>
 
 /**
@@ -15,10 +15,10 @@
  */
 class CBlockAverage {
  private:
-  static const int cb_size=100;
+  static const int cb_size = 100;
   double prioritySamples[cb_size];
-  int cb_index=0;
-  int current_size=0;
+  int cb_index = 0;
+  int current_size = 0;
 
  public:
   CBlockAverage() {}
@@ -31,9 +31,9 @@ class CBlockAverage {
   size_t size() const { return current_size; }
   size_t GetPrioritySamples(std::vector<double>& insertInto) const {
     if (current_size < cb_size) {
-      for (int i=0;i<current_size;i++) insertInto.push_back(prioritySamples[i]);
+      for (int i = 0; i < current_size; i++) insertInto.push_back(prioritySamples[i]);
     } else {
-      for (int i=0;i<cb_size;i++) {
+      for (int i = 0; i < cb_size; i++) {
         int index = cb_index + i;
         if (index > cb_size) index -= cb_size;
         double val = prioritySamples[index];
@@ -65,10 +65,9 @@ class CBlockAverage {
     std::vector<double> vecPriority;
     filein >> vecPriority;
     if (AreSane(vecPriority))
-      for (size_t i=0;i<vecPriority.size();i++) RecordPriority(vecPriority[i]);
+      for (size_t i = 0; i < vecPriority.size(); i++) RecordPriority(vecPriority[i]);
     else
       throw std::runtime_error("Corrupt priority value in estimates file.");
-    if (size() > 0)
-      LogPrint(TessaLog::ESTIMATEFEE, "Read %d priority samples\n", size());
+    if (size() > 0) LogPrint(TessaLog::ESTIMATEFEE, "Read %d priority samples\n", size());
   }
 };

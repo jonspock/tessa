@@ -815,7 +815,7 @@ CAmount GetMinRelayFee(const CTransaction& tx, uint32_t nBytes, bool fAllowFree)
     if (dPriorityDelta > 0 || nFeeDelta > 0) return 0;
   }
 
-  CAmount nMinFee = ::minRelayTxFee.GetFee();
+  CAmount nMinFee = ::minRelayTxFee;
 
   if (!MoneyRange(nMinFee)) nMinFee = Params().MaxMoneyOut();
   return nMinFee;
@@ -971,7 +971,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       if (tx.IsZerocoinMint()) {
         if (nFees < Params().Zerocoin_MintFee() * tx.GetZerocoinMintCount())
           return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient fee for zerocoinmint");
-      } else if (!tx.IsZerocoinSpend() && GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee.GetFee() &&
+      } else if (!tx.IsZerocoinSpend() && GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee &&
                  !AllowFree(view.GetPriority(tx, chainActive.Height() + 1))) {
         return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
       }
@@ -979,7 +979,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       // Continuously rate-limit free (really, very-low-fee) transactions
       // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
       // be annoying or make others' transactions take longer to confirm.
-      if (fLimitFree && nFees < ::minRelayTxFee.GetFee() && !tx.IsZerocoinSpend()) {
+      if (fLimitFree && nFees < ::minRelayTxFee && !tx.IsZerocoinSpend()) {
         static CCriticalSection csFreeLimiter;
         static double dFreeCount;
         static int64_t nLastTime;
@@ -1000,9 +1000,9 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       }
     }
 
-    if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee() * 10000)
+    if (fRejectInsaneFee && nFees > ::minRelayTxFee * 10000)
       return error("AcceptToMemoryPool: : insane fees %s, %d > %d", hash.ToString(), nFees,
-                   ::minRelayTxFee.GetFee() * 10000);
+                   ::minRelayTxFee * 10000);
 
     // Check against previous transactions
     // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -1146,7 +1146,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
                          REJECT_INSUFFICIENTFEE, "insufficient fee");
 
       // Require that free transactions have sufficient priority to be mined in the next block.
-      if (GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee.GetFee() &&
+      if (GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee&&
           !AllowFree(view.GetPriority(tx, chainActive.Height() + 1))) {
         return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
       }
@@ -1154,7 +1154,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
       // Continuously rate-limit free (really, very-low-fee) transactions
       // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
       // be annoying or make others' transactions take longer to confirm.
-      if (fLimitFree && nFees < ::minRelayTxFee.GetFee() && !tx.IsZerocoinSpend()) {
+      if (fLimitFree && nFees < ::minRelayTxFee && !tx.IsZerocoinSpend()) {
         static CCriticalSection csFreeLimiter;
         static double dFreeCount;
         static int64_t nLastTime;
@@ -1175,9 +1175,9 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
       }
     }
 
-    if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee() * 10000)
+    if (fRejectInsaneFee && nFees > ::minRelayTxFee * 10000)
       return error("AcceptableInputs: : insane fees %s, %d > %d", hash.ToString(), nFees,
-                   ::minRelayTxFee.GetFee() * 10000);
+                   ::minRelayTxFee * 10000);
 
     // Check against previous transactions
     // This is done last to help prevent CPU exhaustion denial-of-service attacks.

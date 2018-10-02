@@ -1533,11 +1533,11 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
           if (dPriorityNeeded > 0 && dPriority >= dPriorityNeeded) break;
         }
 
-        CAmount nFeeNeeded = max(nFeePay, minTxFee.GetFee());
+        CAmount nFeeNeeded = max(nFeePay,minTxFee);
 
         // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
         // because we must be at the maximum allowed fee.
-        if (nFeeNeeded < ::minRelayTxFee.GetFee()) {
+        if (nFeeNeeded < ::minRelayTxFee) {
           strFailReason = _("Transaction too large for fee policy");
           return false;
         }

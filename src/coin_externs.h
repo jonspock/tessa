@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include "sync.h"
+#include <cstdint>
 // from sync.h  CCriticalSection, CConditionVariable, CWaitableCriticalSection;
 
 class CBlockIndex;
@@ -44,8 +44,7 @@ extern CChain chainActive;
 extern CCoinsViewCache* gpCoinsTip;
 
 /** Global variable that points to the active block tree (protected by cs_main) */
-extern CBlockTreeDB* gpBlockTreeDB; // init.cpp/main.cpp 
+extern CBlockTreeDB* gpBlockTreeDB;  // init.cpp/main.cpp
 
 /** Global variable that points to the zerocoin database (protected by cs_main) */
 extern CZerocoinDB* gpZerocoinDB;
-

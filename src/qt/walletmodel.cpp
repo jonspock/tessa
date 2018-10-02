@@ -263,7 +263,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
     }
 
     // reject insane fee
-    if (nFeeRequired > ::minRelayTxFee.GetFee() * 10000) return InsaneFee;
+    if (nFeeRequired > ::minRelayTxFee * 10000) return InsaneFee;
   }
 
   return SendCoinsReturn(OK);

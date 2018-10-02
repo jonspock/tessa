@@ -444,7 +444,7 @@ bool MultisigDialog::createMultisigTransaction(vector<CTxIn> vUserIn, vector<CTx
 
     // calculate fee
     //unsigned int nBytes = tx.GetSerializeSize();
-    CAmount fee = ::minRelayTxFee.GetFee();
+      CAmount fee = ::minRelayTxFee;
 
     if (tx.vout.at(changeIndex).nValue > fee) {
       tx.vout.at(changeIndex).nValue -= fee;

@@ -68,7 +68,7 @@ class COrphan {
  public:
   const CTransaction* ptx;
   set<uint256> setDependsOn;
-  CFeeRate feeRate;
+  CAmount feeRate;
   double dPriority;
 
   COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), dPriority(0) {}
@@ -81,7 +81,7 @@ uint64_t getLastBlockTx() { return nLastBlockTx; }
 uint64_t getLastBlockSize() { return nLastBlockSize; }
 
 // We want to sort transactions by priority and fee rate, so:
-typedef std::tuple<double, CFeeRate, const CTransaction*> TxPriority;
+typedef std::tuple<double, CAmount, const CTransaction*> TxPriority;
 class TxPriorityCompare {
   bool byFee;
 
@@ -275,7 +275,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     while (!vecPriority.empty()) {
       // Take highest priority transaction off the priority queue:
       double dPriority = get<0>(vecPriority.front());
-      CFeeRate feeRate = get<1>(vecPriority.front());
+      CAmount feeRate = get<1>(vecPriority.front());
       const CTransaction& tx = *(get<2>(vecPriority.front()));
 
       std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
@@ -296,7 +296,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       CAmount nFeeDelta = 0;
       mempool.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
       if (!tx.IsZerocoinSpend() && fSortedByFee && (dPriorityDelta <= 0) && (nFeeDelta <= 0) &&
-          (feeRate < ::minRelayTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
+          (feeRate < minRelayTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
         continue;
 
       // Prioritise by fee once past the priority size or we run out of high-priority
@@ -355,7 +355,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       for (const CBigNum& bnSerial : vTxSerials) vBlockSerials.emplace_back(bnSerial);
 
       if (fPrintPriority) {
-        LogPrint(TessaLog::MINER, "priority %.1f fee %s txid %s\n", dPriority, feeRate.ToString(),
+        LogPrint(TessaLog::MINER, "priority %.1f fee %d txid %s\n", dPriority, feeRate,
                  tx.GetHash().ToString());
       }
 

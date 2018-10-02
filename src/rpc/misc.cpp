@@ -130,7 +130,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   }
   if (pwalletMain) obj.push_back(std::make_pair("unlocked_until", nWalletUnlockTime));
 
-  obj.push_back(std::make_pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFee())));
+  obj.push_back(std::make_pair("relayfee", ValueFromAmount(::minRelayTxFee)));
   bool nStaking = false;
   if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
     nStaking = true;

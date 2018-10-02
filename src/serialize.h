@@ -634,11 +634,11 @@ template <typename Stream, typename T> inline void SerReadWrite(Stream& s, T& ob
 
 class CSizeComputer {
  protected:
-  size_t nSize=0;
+  size_t nSize = 0;
 
  public:
-  int nType=0;
-  int nVersion=0;
+  int nType = 0;
+  int nVersion = 0;
 
   CSizeComputer(int nTypeIn, int nVersionIn) {}
   CSizeComputer() = default;

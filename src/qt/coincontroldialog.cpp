@@ -586,7 +586,7 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog) {
     sPriorityLabel = CoinControlDialog::getPriorityLabel(dPriority, mempoolEstimatePriority);
 
     // Fee
-    nPayFee = minTxFee.GetFee();
+    nPayFee = minTxFee;
 
     // Allow free?
     double dPriorityNeeded = mempoolEstimatePriority;
@@ -658,7 +658,7 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog) {
   // tool tips
   QString toolTip1 = tr("This label turns red, if the transaction size is greater than 1000 bytes.") + "<br /><br />";
   toolTip1 += tr("This means a fee of at least %1 per kB is required.")
-                  .arg(BitcoinUnits::formatWithUnit(nDisplayUnit, minTxFee.GetFee())) +
+                  .arg(BitcoinUnits::formatWithUnit(nDisplayUnit, minTxFee)) +
               "<br /><br />";
   toolTip1 += tr("Can vary +/- 1 byte per input.");
 
@@ -666,13 +666,13 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog) {
       tr("Transactions with higher priority are more likely to get included into a block.") + "<br /><br />";
   toolTip2 += tr("This label turns red, if the priority is smaller than \"medium\".") + "<br /><br />";
   toolTip2 += tr("This means a fee of at least %1 per kB is required.")
-                  .arg(BitcoinUnits::formatWithUnit(nDisplayUnit, minTxFee.GetFee()));
+                  .arg(BitcoinUnits::formatWithUnit(nDisplayUnit, minTxFee));
 
   QString toolTip3 = tr("This label turns red, if any recipient receives an amount smaller than %1.")
-                         .arg(BitcoinUnits::formatWithUnit(nDisplayUnit, ::minRelayTxFee.GetFee()));
+                         .arg(BitcoinUnits::formatWithUnit(nDisplayUnit, ::minRelayTxFee));
 
   // how many satoshis the estimated fee can vary per byte we guess wrong
-  double dFeeVary = minTxFee.GetFee();
+  double dFeeVary = minTxFee;
   QString toolTip4 = tr("Can vary +/- %1 upiv per input.").arg(dFeeVary);
 
   l3->setToolTip(toolTip4);

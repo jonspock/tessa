@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "streams.h"
 #include "logging.h"
-#include <stdexcept>
+#include "streams.h"
 #include <boost/circular_buffer.hpp>
+#include <stdexcept>
 
 /**
  * Keep track of fee/priority for transactions confirmed within N blocks
@@ -63,4 +63,3 @@ class CBlockAverage {
       LogPrint(TessaLog::ESTIMATEFEE, "Read %d priority samples\n", prioritySamples.size());
   }
 };
-

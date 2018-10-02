@@ -665,10 +665,10 @@ UniValue estimatefee(const UniValue& params, bool fHelp) {
   int nBlocks = params[0].get_int();
   if (nBlocks < 1) nBlocks = 1;
 
-  CFeeRate feeRate = mempool.estimateFee(nBlocks);
-  if (feeRate == CFeeRate(0)) return -1.0;
+  CAmount feeRate = mempool.estimateFee(nBlocks);
+  if (feeRate == 0) return -1.0;
 
-  return ValueFromAmount(feeRate.GetFee());
+  return ValueFromAmount(feeRate);
 }
 
 UniValue estimatepriority(const UniValue& params, bool fHelp) {

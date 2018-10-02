@@ -10,8 +10,8 @@
 #include "blockfileinfo.h"
 #include "blockmap.h"
 #include "coins.h"
-#include "disktxpos.h"
 #include "datadbwrapper.h"
+#include "disktxpos.h"
 #include "primitives/zerocoin.h"
 
 #include <map>
@@ -76,4 +76,3 @@ class CBlockTreeDB : public CDataDBWrapper {
   bool LoadBlockIndexGuts();
   void InterruptLoadBlockIndexGuts();
 };
-

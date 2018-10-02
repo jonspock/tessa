@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <functional>
 #include "signals-cpp/signals.hpp"
+#include <functional>
 
 class CBlock;
 struct CBlockLocator;

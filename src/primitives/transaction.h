@@ -133,7 +133,7 @@ class CTxOut {
 
   uint256 GetHash() const;
 
-  bool IsDust(const CFeeRate& minRelayTxFee) const {
+  bool IsDust(const int& minRelayTxFee) const {
     // "Dust" is defined in terms of CTransaction::minRelayTxFee, which has units upiv-per-kilobyte.
     // If you'd pay more than 1/3 in fees to spend something, then we consider it dust.
     // A typical txout is 34 bytes big, and will need a CTxIn of at least 148 bytes to spend
@@ -141,7 +141,7 @@ class CTxOut {
     // and that means that fee per txout is 182 * 10000 / 1000 = 1820 upiv.
     // So dust is a txout less than 1820 *3 = 5460 upiv
     // with default -minrelaytxfee = minRelayTxFee = 10000 upiv per kB.
-    return (nValue < 3 * minRelayTxFee.GetFee());
+    return (nValue < 3 * minRelayTxFee);
   }
 
   bool IsZerocoinMint() const { return !scriptPubKey.empty() && scriptPubKey.IsZerocoinMint(); }

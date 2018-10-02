@@ -12,10 +12,10 @@
 #include "coin-config.h"
 #endif
 
-#include "nodeid.h"
-#include "primitives/block.h"
 #include "coin_constants.h"
 #include "coin_externs.h"
+#include "nodeid.h"
+#include "primitives/block.h"
 
 class uint256;
 class CScriptCheck;

@@ -8,7 +8,6 @@
 
 #pragma once
 
-
 #ifdef WIN32
 #include <mswsock.h>
 #include <windows.h>
@@ -23,9 +22,9 @@
 #else
 // Forward decl
 namespace boost {
-  namespace filesystem {
-    class path;
-  }
+namespace filesystem {
+class path;
+}
 }  // namespace boost
 namespace fs = boost::filesystem;
 #endif

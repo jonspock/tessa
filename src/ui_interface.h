@@ -69,7 +69,8 @@ class CClientUIInterface {
   };
 
   /** Show message box. */
-  sigs::signal<void(const std::string& message, const std::string& caption, unsigned int style, bool* b)> ThreadSafeMessageBox;
+  sigs::signal<void(const std::string& message, const std::string& caption, unsigned int style, bool* b)>
+      ThreadSafeMessageBox;
 
   /** Progress message during initialization. */
   sigs::signal<void(const std::string& message)> InitMessage;

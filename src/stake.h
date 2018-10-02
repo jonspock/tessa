@@ -17,7 +17,6 @@ class CWallet;
 class CWalletTx;
 class CDataStream;
 
-
 class CStake {
  private:
   CBlockIndex* pindexFrom;

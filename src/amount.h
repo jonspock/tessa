@@ -11,23 +11,24 @@
 
 #include <cstdlib>
 #include <string>
+#include "coin_constants.h"
 
 using CAmount = int64_t;
 
-static const CAmount COIN = 100000000;
-static const int COIN_PLACES = 8;
-static const CAmount COINCENT = 1000000;
+static const CAmount COIN = COIN_AMOUNT;
+static const CAmount COINCENT = COINCENT_AMOUNT;
 
 /** Type-safe wrapper class to for fee rates */
 class CFeeRate {
  private:
   CAmount fee = COINCENT;
+
  public:
   CFeeRate() = default;
   explicit CFeeRate(const CAmount& _fee) : fee(_fee) {}
   CFeeRate(const CFeeRate& other) { fee = other.fee; }
 
-  CAmount GetFee() const {  return fee;}
+  CAmount GetFee() const { return fee; }
 
   friend bool operator<(const CFeeRate& a, const CFeeRate& b) { return a.fee < b.fee; }
   friend bool operator>(const CFeeRate& a, const CFeeRate& b) { return a.fee > b.fee; }
@@ -42,4 +43,3 @@ class CFeeRate {
     READWRITE(fee);
   }
 };
-
