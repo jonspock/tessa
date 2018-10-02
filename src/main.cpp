@@ -15,9 +15,9 @@
 #include "blockfileinfo.h"
 #include "blockundo.h"
 
-#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
+#include "wallet_externs.h"
 
 #include "addrman.h"
 #include "chainparams.h"
@@ -91,8 +91,8 @@ CTxMemPool mempool(::minRelayTxFee);
 /** End Globals */
 
 struct COrphanTx {
-    CTransaction tx;
-    NodeId fromPeer;
+  CTransaction tx;
+  NodeId fromPeer;
 };
 map<uint256, uint256> mapProofOfStake;
 map<uint256, COrphanTx> mapOrphanTransactions;
@@ -2831,7 +2831,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
   // Check transactions
   // bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
-// #warning "Check zerocoin start here"
+  // #warning "Check zerocoin start here"
   bool fZerocoinActive = true;  // FOR NOW XXXX
   vector<CBigNum> vBlockSerials;
   for (const CTransaction& tx : block.vtx) {

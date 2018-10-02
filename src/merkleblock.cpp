@@ -6,8 +6,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "merkleblock.h"
-#include "hash.h"
 #include "coin_constants.h"  // for MAX_BLOCK_SIZE
+#include "hash.h"
 #include "utilstrencodings.h"
 
 using namespace std;

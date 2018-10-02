@@ -56,8 +56,8 @@
 #ifndef WIN32
 #include <signal.h>
 // for umask
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #endif
 
 #ifndef NO_BOOST_FILESYSTEM
@@ -144,7 +144,7 @@ CClientUIInterface uiInterface;
 
 volatile bool fRequestShutdown = false;
 
-bool WalletDisabled() { return fDisableWallet;}
+bool WalletDisabled() { return fDisableWallet; }
 void StartShutdown() { fRequestShutdown = true; }
 bool ShutdownRequested() { return fRequestShutdown || fRestartRequested; }
 
@@ -179,7 +179,7 @@ static std::thread import_thread;
 
 static uint32_t nCoinCacheSize = 5000;
 
-uint32_t getCoinCacheSize() { return nCoinCacheSize;}
+uint32_t getCoinCacheSize() { return nCoinCacheSize; }
 
 void Interrupt(CScheduler& scheduler) {
   InterruptHTTPServer();
@@ -890,7 +890,7 @@ bool AppInit2(CScheduler& scheduler) {
       InitError(_("Invalid amount for -reservebalance=<amount>"));
       return false;
     }
-      setReserveBalance(bal);
+    setReserveBalance(bal);
   }
 
   // Make sure enough file descriptors are available
@@ -1322,10 +1322,9 @@ bool AppInit2(CScheduler& scheduler) {
 
     nStart = GetTimeMillis();
     do {
-
       UnloadBlockIndex();
       gSporkDB.init((GetDataDir() / "sporks.json").string());
-      
+
       try {
         delete gpZerocoinDB;
         // Tessa specific: zerocoin and spork DB's
@@ -1336,8 +1335,7 @@ bool AppInit2(CScheduler& scheduler) {
         fVerifyingBlocks = false;
         break;
       }
-      
-      
+
       try {
         delete gpBlockTreeDB;
         gpBlockTreeDB = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
@@ -1347,7 +1345,7 @@ bool AppInit2(CScheduler& scheduler) {
         fVerifyingBlocks = false;
         break;
       }
-      
+
       try {
         delete pcoinsdbview;
         pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);
@@ -1627,7 +1625,7 @@ bool AppInit2(CScheduler& scheduler) {
     pwalletMain->zkpTracker->Init();
     zwalletMain->LoadMintPoolFromDB();
     zwalletMain->SyncWithChain();
-      
+
     uiInterface.InitMessage.fire(_("ZKP wallet synced"));
 
   }  // (!fDisableWallet)

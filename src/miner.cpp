@@ -12,13 +12,13 @@
 #include "ecdsa/key.h"
 #include "hash.h"
 #include "init.h"
-#include "main.h"  // for CBlockTemplate, updateMapZerocoinSpends
+#include "kernel.h"  // mapHashedBlocks
+#include "main.h"    // for CBlockTemplate, updateMapZerocoinSpends
 #include "net.h"
 #include "pow.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "staker.h"
-#include "kernel.h" // mapHashedBlocks
 #include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
@@ -198,7 +198,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
           double nConfs = 100000;
 
           // update MapZerocoinSpends if not seen, otherwise return nTimeSeen
-          updateMapZerocoinSpends(txid,nTimeSeen);
+          updateMapZerocoinSpends(txid, nTimeSeen);
 
           double nTimePriority = std::pow(GetAdjustedTime() - nTimeSeen, 6);
 
@@ -697,9 +697,9 @@ void static ThreadBitcoinMiner(void* parg) {
   try {
     BitcoinMiner(pwallet, false);
     interruption_point(miner_interrupted);
-  } catch (const thread_interrupted&) { ///
+  } catch (const thread_interrupted&) {  ///
     LogPrintf("%s thread interrupt\n", "BitcoinMiner");
-  } catch (...) { ///
+  } catch (...) {  ///
     LogPrintf("ThreadBitcoinMiner() exception\n");
   }
   LogPrintf("ThreadBitcoinMiner exiting\n");

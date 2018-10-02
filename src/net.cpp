@@ -11,19 +11,19 @@
 #include "coin-config.h"
 #endif
 
-#include "wallet_externs.h"
 #include "net.h"
+#include "wallet_externs.h"
 
 #include "addrman.h"
 #include "chainparams.h"
 #include "clientversion.h"
+#include "coin_constants.h"  // REJECT message codes
 #include "fs.h"
 #include "fs_utils.h"
 #include "main_functions.h"  // For ActiveProtocol
 #include "miner.h"
 #include "primitives/transaction.h"
 #include "scheduler.h"
-#include "coin_constants.h"  // REJECT message codes
 #include "ui_interface.h"
 #include "utiltime.h"
 #include "wallet/wallet.h"
@@ -45,9 +45,9 @@
 #endif
 
 #include <condition_variable>
+#include <fstream>
 #include <mutex>
 #include <thread>
-#include <fstream>
 
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
@@ -1496,11 +1496,10 @@ void static ThreadStakeMinter() {
   try {
     BitcoinMiner(pwallet, true);
     interruption_point(net_interrupted);
-  } catch (thread_interrupted& e) { LogPrintf("ThreadStakeMinter() interrupted\n"); ///
-      //
-  } catch (...) {
-    LogPrintf("ThreadStakeMinter() error \n");
-  }
+  } catch (thread_interrupted& e) {
+    LogPrintf("ThreadStakeMinter() interrupted\n");  ///
+                                                     //
+  } catch (...) { LogPrintf("ThreadStakeMinter() error \n"); }
   LogPrintf("ThreadStakeMinter exiting,\n");
 }
 

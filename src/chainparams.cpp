@@ -168,7 +168,7 @@ class CMainParams : public CChainParams {
 
     /** Zerocoin */
     nMaxZerocoinSpendsPerTransaction = 7;  // Assume about 20kb each
-    nMinZerocoinMintFee = 1 * COINCENT;        // high fee required for zerocoin mints
+    nMinZerocoinMintFee = 1 * COINCENT;    // high fee required for zerocoin mints
     nMintRequiredConfirmations = 20;       // the maximum amount of confirmations until accumulated in 19
     nRequiredAccumulation = 1;
     nDefaultSecurityLevel = 100;  // full security level for accumulators
@@ -216,8 +216,7 @@ class CTestNetParams : public CMainParams {
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "tessa-testnet.seed.fuzzbawls.pw"));
 
     Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 87);  // Testnet tessa addresses start with 'c'
-    Prefixes[SCRIPT_ADDRESS] =
-        std::vector<uint8_t>(1, 9);  // Testnet tessa script addresses start with '4' or '5'
+    Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 9);   // Testnet tessa script addresses start with '4' or '5'
     Prefixes[SECRET_KEY] =
         std::vector<uint8_t>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
     // Testnet tessa BIP32 pubkeys start with 'DRKV'
@@ -277,8 +276,8 @@ class CRegTestParams : public CTestNetParams {
     std::cout << hashGenesisBlock.ToString() << "\n";
     // assert(hashGenesisBlock == uint256("0x57939ce0a96bf42965fee5956528a456d0edfb879b8bd699bcbb4786d27b979d"));
 
-    bch32_hrp = "xx"; //??
-    
+    bch32_hrp = "xx";  //??
+
     vFixedSeeds.clear();  //! Testnet mode doesn't have any fixed seeds.
     vSeeds.clear();       //! Testnet mode doesn't have any DNS seeds.
 

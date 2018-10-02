@@ -8,4 +8,4 @@
 #include "amount.h"
 #include "tinyformat.h"
 
-std::string CFeeRate::ToString() const {  return strprintf("%d.%08d Tessa/kB", fee / COIN, fee % COIN);}
+std::string CFeeRate::ToString() const { return strprintf("%d.%08d Tessa/kB", fee / COIN, fee % COIN); }
