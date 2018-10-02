@@ -8,11 +8,11 @@
 
 #include "rpc/server.h"
 
+#include "coin_externs.h"
 #include "init.h"
 #include "main.h"
 #include "random.h"
 #include "sync.h"
-#include "coin_externs.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "utilstrencodings.h"

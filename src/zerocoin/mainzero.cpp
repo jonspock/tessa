@@ -15,11 +15,11 @@
 #include "main.h"
 #include "primitives/zerocoin.h"
 #include "txdb.h"
-#include "zerocoindb.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
 #include "validationstate.h"
 #include "zerochain.h"
+#include "zerocoindb.h"
 
 #include <sstream>
 

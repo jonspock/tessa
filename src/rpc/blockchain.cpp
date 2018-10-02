@@ -6,17 +6,17 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "zerocoin/accumulatormap.h"
-#include "checkpoints.h"
 #include "chainparams.h"
+#include "checkpoints.h"
 #include "clientversion.h"
 #include "main.h"
 #include "rpc/server.h"
 #include "sync.h"
 #include "txdb.h"
-#include "zerocoin/zerocoindb.h"
 #include "txmempool.h"
 #include "verifydb.h"
+#include "zerocoin/accumulatormap.h"
+#include "zerocoin/zerocoindb.h"
 
 #include "util.h"
 #include "utilmoneystr.h"
@@ -74,7 +74,8 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex) {
   result.push_back(std::make_pair("chainwork", blockindex->nChainWork.GetHex()));
   result.push_back(std::make_pair("acc_checkpoint", blockindex->nAccumulatorCheckpoint.GetHex()));
 
-  if (blockindex->pprev) result.push_back(std::make_pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
+  if (blockindex->pprev)
+    result.push_back(std::make_pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
   CBlockIndex* pnext = chainActive.Next(blockindex);
   if (pnext) result.push_back(std::make_pair("nextblockhash", pnext->GetBlockHash().GetHex()));
   return result;
@@ -108,7 +109,8 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
   result.push_back(std::make_pair("difficulty", GetDifficulty(blockindex)));
   result.push_back(std::make_pair("chainwork", blockindex->nChainWork.GetHex()));
 
-  if (blockindex->pprev) result.push_back(std::make_pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
+  if (blockindex->pprev)
+    result.push_back(std::make_pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
   CBlockIndex* pnext = chainActive.Next(blockindex);
   if (pnext) result.push_back(std::make_pair("nextblockhash", pnext->GetBlockHash().GetHex()));
 
@@ -116,7 +118,8 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
 
   UniValue zkpObj(UniValue::VOBJ);
   for (auto denom : libzerocoin::zerocoinDenomList) {
-    zkpObj.push_back(std::make_pair(to_string(denom), ValueFromAmount(blockindex->mapZerocoinSupply.at(denom) * (denom * COIN))));
+    zkpObj.push_back(
+        std::make_pair(to_string(denom), ValueFromAmount(blockindex->mapZerocoinSupply.at(denom) * (denom * COIN))));
   }
   zkpObj.push_back(std::make_pair("total", ValueFromAmount(blockindex->GetZerocoinSupply())));
   result.push_back(std::make_pair("Zkpsupply", zkpObj));

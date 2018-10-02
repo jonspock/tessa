@@ -9,9 +9,9 @@
 #include "wallettx.h"
 #include "blockmap.h"
 #include "chain.h"
+#include "coin_externs.h"  // for mempool
 #include "init.h"
 #include "net.h"  // need all of that?
-#include "coin_externs.h" // for mempool
 #include "uint256.h"
 #include "wallet.h"
 #include <cassert>

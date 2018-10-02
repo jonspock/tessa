@@ -6,28 +6,27 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "key_io.h"
 #include "chain.h"
 #include "clientversion.h"
 #include "init.h"
+#include "kernel.h"  // mapHashedBlocks
+#include "key_io.h"
 #include "main.h"
 #include "net.h"
 #include "netbase.h"
 #include "rpc/server.h"
 #include "spork/spork.h"
 #include "staker.h"
-#include "kernel.h" // mapHashedBlocks
 #include "timedata.h"
 #include "util.h"
 #include "utiltime.h"
-#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "wallet/wallettx.h"
+#include "wallet_externs.h"
 #include <univalue/univalue.h>
 
 #include <cstdint>
-
 
 using namespace std;
 using namespace ecdsa;
@@ -119,8 +118,8 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   obj.push_back(std::make_pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply)));
   UniValue zkpObj(UniValue::VOBJ);
   for (auto denom : libzerocoin::zerocoinDenomList) {
-    zkpObj.push_back(
-        std::make_pair(to_string(denom), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * (denom * COIN))));
+    zkpObj.push_back(std::make_pair(to_string(denom),
+                                    ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * (denom * COIN))));
   }
   zkpObj.push_back(std::make_pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
   obj.push_back(std::make_pair("Zkpsupply", zkpObj));
@@ -316,7 +315,7 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
     // Case 1: address and we have full public key:
     if (pwalletMain && IsValidDestinationString(ks)) {
       CTxDestination address = DecodeDestination(ks);
-      CKeyID *keyID = &std::get<CKeyID>(address);
+      CKeyID* keyID = &std::get<CKeyID>(address);
       if (!keyID) throw runtime_error(strprintf("%s does not refer to a key", ks));
       CPubKey vchPubKey;
       if (!pwalletMain->GetPubKey(*keyID, vchPubKey))
@@ -417,8 +416,8 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
 
   CTxDestination address = DecodeDestination(strAddress);
-  CKeyID *keyID = &std::get<CKeyID>(address);
-  
+  CKeyID* keyID = &std::get<CKeyID>(address);
+
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
   bool fInvalid = false;

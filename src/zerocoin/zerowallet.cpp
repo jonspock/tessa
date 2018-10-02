@@ -9,15 +9,15 @@
 #include "main.h"
 #include "primitives/deterministicmint.h"
 #include "txdb.h"
-#include "zerocoindb.h"
 #include "uint512.h"
 #include "utiltime.h"
 #include "validationstate.h"
-#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "wallet/wallettx.h"
+#include "wallet_externs.h"
 #include "zerochain.h"
+#include "zerocoindb.h"
 
 using namespace std;
 using namespace ecdsa;

@@ -17,9 +17,9 @@
 #include "utilsplitstring.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
-#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
+#include "wallet_externs.h"
 
 #include <cstdint>
 #include <fstream>

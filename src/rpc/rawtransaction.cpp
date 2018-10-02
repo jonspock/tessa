@@ -23,13 +23,12 @@
 #include "uint256.h"
 #include "utilmoneystr.h"
 #include "validationstate.h"
-#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
+#include "wallet_externs.h"
 #include <univalue/univalue.h>
 
 #include <cstdint>
-
 
 using namespace ecdsa;
 using namespace std;
@@ -365,7 +364,8 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp) {
   set<CTxDestination> setAddress;
   vector<string> addrList = sendTo.getKeys();
   for (const string& name_ : addrList) {
-    if (!IsValidDestinationString(name_)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid address: ") + name_);
+    if (!IsValidDestinationString(name_))
+      throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid address: ") + name_);
     CTxDestination address = DecodeDestination(name_);
 
     if (setAddress.count(address))

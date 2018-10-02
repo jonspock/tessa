@@ -9,10 +9,10 @@
 #include "primitives/deterministicmint.h"
 #include "sync.h"
 #include "txdb.h"
-#include "zerocoindb.h"
 #include "txmempool.h"
 #include "util.h"
 #include "wallet/walletdb.h"
+#include "zerocoindb.h"
 
 using std::make_pair;
 using std::vector;

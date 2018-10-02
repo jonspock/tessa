@@ -7,13 +7,12 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
-#include "wallet_externs.h"
 #include "init.h"
 #include "main.h"
 #include "output.h"
+#include "wallet_externs.h"
 #include "wallettx.h"
 
-#include "zerocoin/accumulators.h"
 #include "chain.h"
 #include "chainparams.h"
 #include "checkpoints.h"
@@ -30,6 +29,7 @@
 #include "utiltime.h"
 #include "validationstate.h"
 #include "warnings.h"
+#include "zerocoin/accumulators.h"
 #include "zerocoin/zerochain.h"
 
 #include "denomination_functions.h"
@@ -113,7 +113,7 @@ const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const {
 CPubKey CWallet::GenerateNewKey() {
   bool internal = true;       // FOR NOW XXXX HACK
   AssertLockHeld(cs_wallet);  // mapKeyMetadata
- // bool fCompressed = true;    // default to compressed public keys
+                              // bool fCompressed = true;    // default to compressed public keys
 
   CKey secret;
   // Create new metadata
@@ -523,7 +523,7 @@ bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
 
     CMasterKey kkMasterKey;
     if (!gWalletDB.ReadMasterKey(nMasterKeyMaxID, kkMasterKey)) { LogPrintf("Problem reading back kMasterKey"); }
-     // std::cout << "Set mapMasterKeys[" << nMasterKeyMaxID << "]\n";
+    // std::cout << "Set mapMasterKeys[" << nMasterKeyMaxID << "]\n";
   }
 
   CCryptoKeyStore::SetMaster(vTempMasterKey);
@@ -727,7 +727,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
       pindex = chainActive.Next(pindex);
 
     ShowProgress.fire(_("Rescanning..."),
-                 0);  // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
+                      0);  // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
     double dProgressStart = Checkpoints::GuessVerificationProgress(pindex, false);
     double dProgressTip = Checkpoints::GuessVerificationProgress(chainActive.Tip(), false);
     set<uint256> setAddedToWallet;
@@ -1170,7 +1170,7 @@ bool CWallet::MintableCoins() {
 
   // Regular Tessa
   if (nBalance > 0) {
-    int64_t bal=0;
+    int64_t bal = 0;
     if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), bal))
       return error("%s : invalid reserve balance amount", __func__);
     setReserveBalance(bal);
@@ -1800,7 +1800,7 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const string& strNam
       mapAddressBook[address].purpose = strPurpose;
   }
   NotifyAddressBookChanged.fire(this, address, strName, ::IsMine(*this, address) != ISMINE_NO, strPurpose,
-                           (fUpdated ? CT_UPDATED : CT_NEW));
+                                (fUpdated ? CT_UPDATED : CT_NEW));
   if (!fFileBacked) return false;
   if (!strPurpose.empty() && !gWalletDB.WritePurpose(EncodeDestination(address), strPurpose)) return false;
   return gWalletDB.WriteName(EncodeDestination(address), strName);
@@ -1902,14 +1902,14 @@ void CWallet::ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool) {
     if (!gWalletDB.ReadPool(nIndex, keypool)) throw runtime_error("ReserveKeyFromKeyPool() : read failed");
     if (!HaveKey(keypool.vchPubKey.GetID())) throw runtime_error("ReserveKeyFromKeyPool() : unknown key in key pool");
     assert(keypool.vchPubKey.IsValid());
-    //LogPrintf("keypool reserve %d\n", nIndex);
+    // LogPrintf("keypool reserve %d\n", nIndex);
   }
 }
 
 void CWallet::KeepKey(int64_t nIndex) {
   // Remove from key pool
   if (fFileBacked) { gWalletDB.ErasePool(nIndex); }
-  //LogPrintf("keypool keep %d\n", nIndex);
+  // LogPrintf("keypool keep %d\n", nIndex);
 }
 
 void CWallet::ReturnKey(int64_t nIndex) {
@@ -1918,7 +1918,7 @@ void CWallet::ReturnKey(int64_t nIndex) {
     LOCK(cs_wallet);
     setKeyPool.insert(nIndex);
   }
-  //LogPrintf("keypool return %d\n", nIndex);
+  // LogPrintf("keypool return %d\n", nIndex);
 }
 
 bool CWallet::GetKeyFromPool(CPubKey& result) {
@@ -2152,7 +2152,7 @@ void CWallet::ListLockedCoins(std::vector<COutPoint>& vOutpts) {
 
 /** @} */  // end of Actions
 
-class CAffectedKeysVisitor {  
+class CAffectedKeysVisitor {
  private:
   const CKeyStore& keystore;
   std::vector<CKeyID>& vKeys;
@@ -2241,7 +2241,7 @@ uint32_t CWallet::ComputeTimeSmart(const CWalletTx& wtx) const {
         // Tolerate times up to the last timestamp in the wallet not more than 5 minutes into the future
         int64_t latestTolerated = latestNow + 300;
         TxItems txOrdered = wtxOrdered;
-        for (const auto& it : reverse_iterate(txOrdered))  {
+        for (const auto& it : reverse_iterate(txOrdered)) {
           CWalletTx* const pwtx = it.second.first;
           if (pwtx == &wtx) continue;
           CAccountingEntry* const pacentry = it.second.second;
@@ -2304,8 +2304,7 @@ void CWallet::AutoCombineDust() {
   LOCK2(cs_main, cs_wallet);
   if (chainActive.Tip()->nTime < (GetAdjustedTime() - 300) || IsLocked()) { return; }
 
-  map<CTxDestination, vector<COutput> > mapCoinsByAddress =
-      AvailableCoinsByAddress(true, nAutoCombineThreshold * COIN);
+  map<CTxDestination, vector<COutput> > mapCoinsByAddress = AvailableCoinsByAddress(true, nAutoCombineThreshold * COIN);
 
   // coins are sectioned by address. This combination code only wants to combine inputs that belong to the same address
   for (auto& it : mapCoinsByAddress) {
@@ -3395,4 +3394,3 @@ bool CWallet::SetHDChain(const CHDChain& chain, bool memonly) {
 }
 
 bool CWallet::IsHDEnabled() { return !hdChain.masterKeyID.IsNull(); }
-

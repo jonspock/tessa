@@ -9,9 +9,9 @@
 #include "libzerocoin/PublicCoin.h"
 #include "main.h"
 #include "txdb.h"
-#include "zerocoindb.h"
 #include "util.h"
 #include "validationstate.h"
+#include "zerocoindb.h"
 
 // 6 comes from OPCODE (1) + vch.size() (1) + BIGNUM size (4)
 #define SCRIPT_OFFSET 6
@@ -197,7 +197,9 @@ bool IsSerialInBlockchain(const uint256& hashSerial, int& nHeightTx, uint256& tx
 }
 
 std::string ReindexZerocoinDB() {
-  if (!gpZerocoinDB->WipeCoins("spends") || !gpZerocoinDB->WipeCoins("mints")) { return _("Failed to wipe zerocoinDB"); }
+  if (!gpZerocoinDB->WipeCoins("spends") || !gpZerocoinDB->WipeCoins("mints")) {
+    return _("Failed to wipe zerocoinDB");
+  }
 
   CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
   while (pindex) {

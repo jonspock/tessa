@@ -7,11 +7,11 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "amount.h"
-#include "key_io.h"
 #include "blockmap.h"
 #include "chainparams.h"
 #include "core_io.h"
 #include "init.h"
+#include "key_io.h"
 #include "main.h"
 #include "miner.h"
 #include "net.h"
@@ -20,10 +20,10 @@
 #include "util.h"
 #include "utiltime.h"
 #include "validationstate.h"
-#include "wallet_externs.h"
 #include "wallet/db.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
+#include "wallet_externs.h"
 
 #include <cstdint>
 #include <univalue/univalue.h>
@@ -544,8 +544,8 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp) {
   result.push_back(std::make_pair("transactions", transactions));
   result.push_back(std::make_pair("coinbaseaux", aux));
   result.push_back(std::make_pair("coinbasevalue", (int64_t)pblock->vtx[0].GetValueOut()));
-  result.push_back(
-      std::make_pair("longpollid", chainActive.Tip()->GetBlockHash().GetHex() + std::to_string(nTransactionsUpdatedLast)));
+  result.push_back(std::make_pair(
+      "longpollid", chainActive.Tip()->GetBlockHash().GetHex() + std::to_string(nTransactionsUpdatedLast)));
   result.push_back(std::make_pair("target", hashTarget.GetHex()));
   result.push_back(std::make_pair("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1));
   result.push_back(std::make_pair("mutable", aMutable));

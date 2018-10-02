@@ -7,13 +7,13 @@
 #include "accumulatorcheckpoints.h"
 #include "accumulatormap.h"
 #include "chainparams.h"
+#include "coin_constants.h"
 #include "init.h"
 #include "main.h"
 #include "rand_bignum.h"
-#include "coin_constants.h"
-#include "zerocoin/zerocoindb.h"
 #include "txdb.h"
 #include "utiltime.h"
+#include "zerocoin/zerocoindb.h"
 
 using namespace libzerocoin;
 using namespace std;
@@ -222,10 +222,10 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
   CBlockIndex* pindex = chainActive[nHeightCheckpoint - 2 * ACC_BLOCK_INTERVAL];
 
   if (pindex == nullptr) {
-     LogPrintf("%s: got nullptr for pindex prior to accumulation", __func__);
-     return true;
+    LogPrintf("%s: got nullptr for pindex prior to accumulation", __func__);
+    return true;
   }
-    
+
   while (pindex->nHeight < nHeight - ACC_BLOCK_INTERVAL) {
     // checking whether we should stop this process due to a shutdown request
     if (ShutdownRequested()) return false;

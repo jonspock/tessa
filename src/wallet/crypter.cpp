@@ -15,9 +15,9 @@
 #include "util.h"
 #include "utilstrencodings.h"
 
-#include "wallet_externs.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
+#include "wallet_externs.h"
 
 using namespace std;
 using namespace ecdsa;
@@ -291,4 +291,3 @@ bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &see
   return error("%s: Failed to %s\n", __func__, strErr);
   //    return error("Failed to decrypt deterministic seed %s", IsLocked() ? "Wallet is locked!" : "");
 }
-

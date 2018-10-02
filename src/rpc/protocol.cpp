@@ -114,8 +114,8 @@ bool GetAuthCookie(std::string* cookie_out) {
 
 void DeleteAuthCookie() {
 #ifdef NO_BOOST_FILESYSTEM
-    fs::remove(GetAuthCookieFile());
-#else  
+  fs::remove(GetAuthCookieFile());
+#else
   try {
     fs::remove(GetAuthCookieFile());
   } catch (const fs::filesystem_error& e) {

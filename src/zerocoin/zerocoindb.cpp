@@ -6,10 +6,10 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "zerocoindb.h"
-#include "primitives/zerocoin.h"
 #include "fs.h"
 #include "fs_utils.h"
 #include "libzerocoin/CoinSpend.h"
+#include "primitives/zerocoin.h"
 #include "uint256.h"
 #include <cstdint>
 
