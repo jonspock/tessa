@@ -481,8 +481,8 @@ link_directories(${LMDB_ROOT_DIR}/lib)
 #target_link_libraries(coin ${ROCKSDB_LIBRARIES} leveldb)
 target_link_libraries(coin ${ROCKSDB_LIBRARIES})
 
-add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/tessa-cli.cpp)
-add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/tessad.cpp)
+add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/coin-cli.cpp)
+add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/coind.cpp)
 
 #------------------- ------------------- ------------------- ------------------- -------------------
 # For Relic

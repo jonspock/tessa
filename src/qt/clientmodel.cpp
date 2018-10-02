@@ -162,9 +162,4 @@ void ClientModel::subscribeToCoreSignals() {
   uiInterface.BannedListChanged.connect(std::bind(BannedListChanged, this));
 }
 
-void ClientModel::unsubscribeFromCoreSignals() {
-  // Disconnect signals from client
- // uiInterface.ShowProgress.disconnect(std::bind(ShowProgress, this, std::placeholders::_1, _2));
- // uiInterface.NotifyNumConnectionsChanged.disconnect(std::bind(NotifyNumConnectionsChanged, this, std::placeholders::_1));
-  //uiInterface.BannedListChanged.disconnect(std::bind(BannedListChanged, this));
-}
+void ClientModel::unsubscribeFromCoreSignals() {}

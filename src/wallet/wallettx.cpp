@@ -11,7 +11,7 @@
 #include "chain.h"
 #include "init.h"
 #include "net.h"  // need all of that?
-#include "tessa_externs.h"
+#include "coin_externs.h" // for mempool
 #include "uint256.h"
 #include "wallet.h"
 #include <cassert>

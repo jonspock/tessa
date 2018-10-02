@@ -7,7 +7,7 @@
 
 #include "merkleblock.h"
 #include "hash.h"
-#include "tessa_constants.h"  // for MAX_BLOCK_SIZE
+#include "coin_constants.h"  // for MAX_BLOCK_SIZE
 #include "utilstrencodings.h"
 
 using namespace std;

@@ -28,3 +28,5 @@ uint32_t GetStakeModifierChecksum(const CBlockIndex* pindex);
 
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(int nHeight, uint32_t nStakeModifierChecksum);
+
+extern std::map<uint32_t, uint32_t> mapHashedBlocks;

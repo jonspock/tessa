@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "blockexplorer.h"
-#include "bitcoinunits.h"
+#include "coinunits.h"
 #include "chainparams.h"
 #include "clientmodel.h"
 #include "coins.h"

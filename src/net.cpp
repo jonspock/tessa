@@ -8,7 +8,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "tessa-config.h"
+#include "coin-config.h"
 #endif
 
 #include "externs.h"
@@ -23,7 +23,7 @@
 #include "miner.h"
 #include "primitives/transaction.h"
 #include "scheduler.h"
-#include "tessa_constants.h"  // REJECT message codes
+#include "coin_constants.h"  // REJECT message codes
 #include "ui_interface.h"
 #include "utiltime.h"
 #include "wallet/wallet.h"

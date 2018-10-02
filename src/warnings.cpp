@@ -1,5 +1,5 @@
 #include "warnings.h"
-#include "tessa_externs.h"
+#include "coin_externs.h"
 #include "ui_interface.h"
 #include "utiltime.h"
 
@@ -7,7 +7,7 @@
 #include <cmath>
 
 #if defined(HAVE_CONFIG_H)
-#include "tessa-config.h"
+#include "coin-config.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////////////

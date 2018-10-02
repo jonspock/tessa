@@ -7,8 +7,8 @@
 
 #include "guiutil.h"
 
-#include "bitcoinaddressvalidator.h"
-#include "bitcoinunits.h"
+#include "coinaddressvalidator.h"
+#include "coinunits.h"
 #include "fs_utils.h"
 #include "init.h"
 #include "main.h"

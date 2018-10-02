@@ -6,7 +6,7 @@
 #include "multisigdialog.h"
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
-#include "bitcoinamountfield.h"
+#include "coinamountfield.h"
 #include "coins.h"
 #include "core_io.h"
 #include "guiutil.h"
@@ -19,7 +19,7 @@
 #include "script/interpreter.h"
 #include "script/script.h"
 #include "script/sign.h"
-#include "tessa_externs.h"
+#include "coin_externs.h"
 #include "ui_multisigdialog.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
@@ -442,8 +442,8 @@ bool MultisigDialog::createMultisigTransaction(vector<CTxIn> vUserIn, vector<CTx
     }
 
     // calculate fee
-    unsigned int nBytes = tx.GetSerializeSize();
-    CAmount fee = ::minRelayTxFee.GetFee(nBytes);
+    //unsigned int nBytes = tx.GetSerializeSize();
+    CAmount fee = ::minRelayTxFee.GetFee();
 
     if (tx.vout.at(changeIndex).nValue > fee) {
       tx.vout.at(changeIndex).nValue -= fee;

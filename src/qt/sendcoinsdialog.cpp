@@ -10,7 +10,7 @@
 
 #include "addresstablemodel.h"
 #include "askpassphrasedialog.h"
-#include "bitcoinunits.h"
+#include "coinunits.h"
 #include "clientmodel.h"
 #include "coincontroldialog.h"
 #include "guiutil.h"
@@ -18,7 +18,8 @@
 #include "sendcoinsentry.h"
 #include "walletmodel.h"
 
-#include "tessa_externs.h"
+#include "coin_externs.h"
+#include "coin_constants.h"
 #include "ui_interface.h"
 #include "utilmoneystr.h"
 #include "wallet/coincontrol.h"
@@ -489,7 +490,7 @@ void SendCoinsDialog::processSendCoinsReturn(const WalletModel::SendCoinsReturn&
       msgParams.first = tr("A fee %1 times higher than %2 per kB is considered an insanely high fee.")
                             .arg(10000)
                             .arg(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(),
-                                                              ::minRelayTxFee.GetFeePerK()));
+                                                              ::minRelayTxFee.GetFee()));
       break;
     // included to prevent a compiler warning.
     case WalletModel::OK:

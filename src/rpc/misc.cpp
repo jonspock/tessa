@@ -16,6 +16,7 @@
 #include "rpc/server.h"
 #include "spork/spork.h"
 #include "staker.h"
+#include "kernel.h" // mapHashedBlocks
 #include "timedata.h"
 #include "util.h"
 #include "utiltime.h"
@@ -129,7 +130,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   }
   if (pwalletMain) obj.push_back(std::make_pair("unlocked_until", nWalletUnlockTime));
 
-  obj.push_back(std::make_pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
+  obj.push_back(std::make_pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFee())));
   bool nStaking = false;
   if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
     nStaking = true;
@@ -481,7 +482,7 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp) {
   if (pwalletMain) {
     obj.push_back(std::make_pair("walletunlocked", !pwalletMain->IsLocked()));
     obj.push_back(std::make_pair("mintablecoins", pwalletMain->MintableCoins()));
-    obj.push_back(std::make_pair("enoughcoins", nReserveBalance <= pwalletMain->GetBalance()));
+    obj.push_back(std::make_pair("enoughcoins", getReserveBalance() <= pwalletMain->GetBalance()));
   }
 
   bool nStaking = false;

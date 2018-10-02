@@ -6,10 +6,10 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "tessa-config.h"
+#include "coin-config.h"
 #endif
 
-#include "bitcoingui.h"
+#include "coingui.h"
 
 #include "clientmodel.h"
 #include "fs_utils.h"
@@ -207,7 +207,7 @@ class BitcoinApplication : public QApplication {
   void startThread();
 };
 
-#include "tessa.moc"
+#include "coin.moc"
 
 BitcoinCore::BitcoinCore() : QObject() {}
 
@@ -421,8 +421,8 @@ int main(int argc, char* argv[]) {
 
   /// 2. Basic Qt initialization (not dependent on parameters or configuration)
 
-  Q_INIT_RESOURCE(tessa_locale);
-  Q_INIT_RESOURCE(tessa);
+  Q_INIT_RESOURCE(coin_locale);
+  Q_INIT_RESOURCE(coin);
 
   BitcoinApplication app(argc, argv);
   // Generate high-dpi pixmaps

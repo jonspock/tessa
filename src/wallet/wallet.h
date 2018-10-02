@@ -76,7 +76,8 @@ enum AvailableCoinsType {
   STAKABLE_COINS = 2  // UTXO's that are valid for staking
 };
 
-// void InterruptWallet();
+int64_t getReserveBalance();
+void setReserveBalance(int64_t b);
 
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
@@ -398,9 +399,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
                        uint32_t& nTxNewTime);
   bool MultiSend();
   void AutoCombineDust();
-
-  static CFeeRate minTxFee;
-  static CAmount GetMinimumFee(uint32_t nTxBytes, uint32_t nConfirmTarget, const CTxMemPool& pool);
 
   bool NewKeyPool();
   bool TopUpKeyPool(uint32_t kpSize = 0);

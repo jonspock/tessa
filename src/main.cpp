@@ -71,7 +71,6 @@ CCriticalSection cs_main;
 
 BlockMap mapBlockIndex;
 map<uint256, uint256> mapProofOfStake;
-map<uint32_t, uint32_t> mapHashedBlocks;
 CChain chainActive;
 CBlockIndex* pindexBestHeader = nullptr;
 int64_t nTimeBestReceived = 0;
@@ -84,16 +83,11 @@ bool fTxIndex = true;
 bool fIsBareMultisigStd = true;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
-uint32_t nCoinCacheSize = 5000;
-
-int64_t nReserveBalance = 0;
 
 /** Fees smaller than this (in upiv) are considered zero fee (for relaying and mining)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
  */
-CFeeRate minRelayTxFee = CFeeRate(10000);
-
 CTxMemPool mempool(::minRelayTxFee);
 
 struct COrphanTx {
@@ -102,8 +96,19 @@ struct COrphanTx {
 };
 map<uint256, COrphanTx> mapOrphanTransactions;
 map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
-map<uint256, int64_t> mapZerocoinspends;  // txid, time received
+static map<uint256, int64_t> mapZerocoinspends;  // txid, time received
 CBlockIndex* pindexBestInvalid = nullptr;
+
+// If not seen already, update, otherwise return Time Seen, for miner.cpp
+void updateMapZerocoinSpends(const uint256& txid, int64_t& nTimeSeen) {
+  auto it = mapZerocoinspends.find(txid);
+  if (it != mapZerocoinspends.end()) {
+    nTimeSeen = it->second;
+  } else {
+    // for some reason not in map, add it
+    mapZerocoinspends[txid] = nTimeSeen;
+  }
+}
 
 void EraseOrphansFor(NodeId peer);
 
@@ -111,7 +116,6 @@ static void CheckBlockIndex();
 
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
-const string strMessageMagic = "TessaChain Signed Message:\n";
 
 // Internal stuff
 namespace {
@@ -417,15 +421,7 @@ void RegisterNodeSignals(CNodeSignals& nodeSignals) {
   nodeSignals.FinalizeNode.connect(&FinalizeNode);
 }
 
-void UnregisterNodeSignals(CNodeSignals& nodeSignals) {
-  /*
-  nodeSignals.GetHeight.disconnect(&GetHeight);
-  nodeSignals.ProcessMessages.disconnect(&ProcessMessages);
-  nodeSignals.SendMessages.disconnect(&SendMessages);
-  nodeSignals.InitializeNode.disconnect(&InitializeNode);
-  nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
-  */
-}
+void UnregisterNodeSignals(CNodeSignals& nodeSignals) {}
 
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator) {
   // Find the first block the caller has in the main chain
@@ -819,15 +815,7 @@ CAmount GetMinRelayFee(const CTransaction& tx, uint32_t nBytes, bool fAllowFree)
     if (dPriorityDelta > 0 || nFeeDelta > 0) return 0;
   }
 
-  CAmount nMinFee = ::minRelayTxFee.GetFee(nBytes);
-
-  if (fAllowFree) {
-    // There is a free transaction area in blocks created by most miners,
-    // * If we are relaying we allow transactions up to DEFAULT_BLOCK_PRIORITY_SIZE - 1000
-    //   to be considered to fall into this category. We don't want to encourage sending
-    //   multiple transactions instead of one big transaction to avoid fees.
-    if (nBytes < (DEFAULT_BLOCK_PRIORITY_SIZE - 1000)) nMinFee = 0;
-  }
+  CAmount nMinFee = ::minRelayTxFee.GetFee();
 
   if (!MoneyRange(nMinFee)) nMinFee = Params().MaxMoneyOut();
   return nMinFee;
@@ -983,7 +971,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       if (tx.IsZerocoinMint()) {
         if (nFees < Params().Zerocoin_MintFee() * tx.GetZerocoinMintCount())
           return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient fee for zerocoinmint");
-      } else if (!tx.IsZerocoinSpend() && GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee.GetFee(nSize) &&
+      } else if (!tx.IsZerocoinSpend() && GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee.GetFee() &&
                  !AllowFree(view.GetPriority(tx, chainActive.Height() + 1))) {
         return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
       }
@@ -991,7 +979,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       // Continuously rate-limit free (really, very-low-fee) transactions
       // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
       // be annoying or make others' transactions take longer to confirm.
-      if (fLimitFree && nFees < ::minRelayTxFee.GetFee(nSize) && !tx.IsZerocoinSpend()) {
+      if (fLimitFree && nFees < ::minRelayTxFee.GetFee() && !tx.IsZerocoinSpend()) {
         static CCriticalSection csFreeLimiter;
         static double dFreeCount;
         static int64_t nLastTime;
@@ -1012,9 +1000,9 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
       }
     }
 
-    if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee(nSize) * 10000)
+    if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee() * 10000)
       return error("AcceptToMemoryPool: : insane fees %s, %d > %d", hash.ToString(), nFees,
-                   ::minRelayTxFee.GetFee(nSize) * 10000);
+                   ::minRelayTxFee.GetFee() * 10000);
 
     // Check against previous transactions
     // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -1158,7 +1146,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
                          REJECT_INSUFFICIENTFEE, "insufficient fee");
 
       // Require that free transactions have sufficient priority to be mined in the next block.
-      if (GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee.GetFee(nSize) &&
+      if (GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee.GetFee() &&
           !AllowFree(view.GetPriority(tx, chainActive.Height() + 1))) {
         return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
       }
@@ -1166,7 +1154,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
       // Continuously rate-limit free (really, very-low-fee) transactions
       // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
       // be annoying or make others' transactions take longer to confirm.
-      if (fLimitFree && nFees < ::minRelayTxFee.GetFee(nSize) && !tx.IsZerocoinSpend()) {
+      if (fLimitFree && nFees < ::minRelayTxFee.GetFee() && !tx.IsZerocoinSpend()) {
         static CCriticalSection csFreeLimiter;
         static double dFreeCount;
         static int64_t nLastTime;
@@ -1187,9 +1175,9 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
       }
     }
 
-    if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee(nSize) * 10000)
+    if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee() * 10000)
       return error("AcceptableInputs: : insane fees %s, %d > %d", hash.ToString(), nFees,
-                   ::minRelayTxFee.GetFee(nSize) * 10000);
+                   ::minRelayTxFee.GetFee() * 10000);
 
     // Check against previous transactions
     // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -2038,7 +2026,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode) {
   try {
     if ((mode == FLUSH_STATE_ALWAYS) ||
         ((mode == FLUSH_STATE_PERIODIC || mode == FLUSH_STATE_IF_NEEDED) &&
-         gpCoinsTip->GetCacheSize() > nCoinCacheSize) ||
+         gpCoinsTip->GetCacheSize() > getCoinCacheSize()) ||
         (mode == FLUSH_STATE_PERIODIC && GetTimeMicros() > nLastWrite + DATABASE_WRITE_INTERVAL * 1000000)) {
       // Typical CCoins structures on disk are around 100 bytes in size.
       // Pushing a new one to the database can cause it to be written

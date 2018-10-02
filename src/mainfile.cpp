@@ -8,7 +8,6 @@
 
 #include "blockmap.h"
 #include "net.h"  // all needed?
-#include "tessa_externs.h"
 #include "uint256.h"
 // for "_"
 #include "util.h"

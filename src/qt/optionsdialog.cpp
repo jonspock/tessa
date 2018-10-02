@@ -5,14 +5,14 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "tessa-config.h"
+#include "coin-config.h"
 #endif
 
 #include "externs.h"
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
 
-#include "bitcoinunits.h"
+#include "coinunits.h"
 #include "fs_utils.h"  // GetDataDir()
 #include "guiutil.h"
 #include "main.h"  // for MAX_SCRIPTCHECK_THREADS

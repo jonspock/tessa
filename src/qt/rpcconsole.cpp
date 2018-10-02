@@ -12,6 +12,7 @@
 #include "fs_utils.h"
 #include "guiutil.h"
 #include "main.h"
+#include "init.h"
 #include "peertablemodel.h"
 #include "rpc/client.h"
 #include "rpc/server.h"
@@ -268,7 +269,7 @@ RPCConsole::RPCConsole(QWidget* parent)
   connect(ui->btn_resync, SIGNAL(clicked()), this, SLOT(walletResync()));
 
   // set library version labels
-  if (!fDisableWallet) {
+  if (!WalletDisabled()) {
     std::string strPathCustom = GetArg("-backuppath", "");
     std::string strZKPPathCustom = GetArg("-zkpbackuppath", "");
     int nCustomBackupThreshold = GetArg("-custombackupthreshold", DEFAULT_CUSTOMBACKUPTHRESHOLD);

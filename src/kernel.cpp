@@ -26,6 +26,8 @@ using std::string;
 using std::unique_ptr;
 using std::vector;
 
+std::map<uint32_t, uint32_t> mapHashedBlocks;
+
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static map<int, uint32_t> mapStakeModifierCheckpoints = {{0, 0xfd11f4e7u}};
 

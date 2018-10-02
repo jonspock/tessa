@@ -4,9 +4,9 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "bitcoinamountfield.h"
+#include "coinamountfield.h"
 
-#include "bitcoinunits.h"
+#include "coinunits.h"
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "qvaluecombobox.h"
@@ -163,7 +163,7 @@ class AmountSpinBox : public QAbstractSpinBox {
   void valueChanged();
 };
 
-#include "bitcoinamountfield.moc"
+#include "coinamountfield.moc"
 
 BitcoinAmountField::BitcoinAmountField(QWidget* parent) : QWidget(parent), amount(0) {
   this->setObjectName("BitcoinAmountField");  // ID as CSS-reference

@@ -7,7 +7,7 @@
 #include "walletview.h"
 
 #include "addressbookpage.h"
-#include "bitcoingui.h"
+#include "coingui.h"
 #include "blockexplorer.h"
 #include "clientmodel.h"
 #include "guiutil.h"

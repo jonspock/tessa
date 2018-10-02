@@ -20,6 +20,7 @@ void Shutdown(CScheduler& scheduler);
 void PrepareShutdown(CScheduler& scheduler);
 void InitLogging();
 bool AppInit2(CScheduler& scheduler);
+bool WalletDisabled();
 
 /** The help message mode determines what help message to show */
 enum HelpMessageMode { HMM_BITCOIND, HMM_BITCOIN_QT };
@@ -28,3 +29,4 @@ enum HelpMessageMode { HMM_BITCOIND, HMM_BITCOIN_QT };
 std::string HelpMessage(HelpMessageMode mode);
 /** Returns licensing information (for -version) */
 std::string LicenseInfo();
+uint32_t getCoinCacheSize();

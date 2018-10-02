@@ -12,7 +12,7 @@
 #include "main.h"
 #include "random.h"
 #include "sync.h"
-#include "tessa_externs.h"
+#include "coin_externs.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "utilstrencodings.h"
@@ -150,7 +150,7 @@ string CRPCTable::help(string strCommand) const {
     if (strMethod.find("label") != string::npos) continue;
     if ((strCommand != "" || pcmd->category == "hidden") && strMethod != strCommand) continue;
 
-    if (!fDisableWallet) {
+    if (!WalletDisabled()) {
       if (pcmd->reqWallet && !pwalletMain) continue;
     }
 

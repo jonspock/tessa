@@ -7,7 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "tessa-config.h"
+#include "coin-config.h"
 #endif
 
 #include "init.h"
@@ -85,10 +85,9 @@ const int nWalletBackups = 10;
 // Specific to LMDB, may have to change some related code otherwise
 const std::string strWalletFile = "data.mdb";
 
-volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false;  // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
-bool fDisableWallet = false;
+static bool fDisableWallet = false;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = nullptr;
@@ -145,6 +144,7 @@ CClientUIInterface uiInterface;
 
 volatile bool fRequestShutdown = false;
 
+bool WalletDisabled() { return fDisableWallet;}
 void StartShutdown() { fRequestShutdown = true; }
 bool ShutdownRequested() { return fRequestShutdown || fRestartRequested; }
 
@@ -176,6 +176,10 @@ static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 static std::thread scheduler_thread;
 static std::vector<std::thread> script_check_threads;
 static std::thread import_thread;
+
+static uint32_t nCoinCacheSize = 5000;
+
+uint32_t getCoinCacheSize() { return nCoinCacheSize;}
 
 void Interrupt(CScheduler& scheduler) {
   InterruptHTTPServer();
@@ -228,7 +232,6 @@ void PrepareShutdown(CScheduler& scheduler) {
   for (auto&& thread : script_check_threads) thread.join();
   script_check_threads.clear();
   if (import_thread.joinable()) import_thread.join();
-  if (fFeeEstimatesInitialized) { fFeeEstimatesInitialized = false; }
 
   UnregisterNodeSignals(GetNodeSignals());
 
@@ -459,12 +462,6 @@ std::string HelpMessage(HelpMessageMode mode) {
         strprintf(_("Number of custom location backups to retain (default: %d)"), DEFAULT_CUSTOMBACKUPTHRESHOLD));
     strUsage += HelpMessageOpt("-disablewallet", _("Do not load the wallet and disable wallet RPC calls"));
     strUsage += HelpMessageOpt("-keypool=<n>", strprintf(_("Set key pool size to <n> (default: %u)"), 100));
-    if (GetBoolArg("-help-debug", false))
-      strUsage += HelpMessageOpt(
-          "-mintxfee=<amt>",
-          strprintf(
-              _("Fees (in Tessa/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
-              FormatMoney(CWallet::minTxFee.GetFeePerK())));
     strUsage +=
         HelpMessageOpt("-rescan", _("Rescan the block chain for missing wallet transactions") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-sendfreetransactions",
@@ -888,10 +885,12 @@ bool AppInit2(CScheduler& scheduler) {
   }
 
   if (gArgs.IsArgSet("-reservebalance")) {
-    if (!ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance)) {
+    int64_t bal;
+    if (!ParseMoney(gArgs.GetArg("-reservebalance", ""), bal)) {
       InitError(_("Invalid amount for -reservebalance=<amount>"));
       return false;
     }
+      setReserveBalance(bal);
   }
 
   // Make sure enough file descriptors are available
@@ -949,13 +948,6 @@ bool AppInit2(CScheduler& scheduler) {
   if (nConnectTimeout <= 0) nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 
   if (!fDisableWallet) {
-    if (gArgs.IsArgSet("-mintxfee")) {
-      CAmount n = 0;
-      if (ParseMoney(gArgs.GetArg("-mintxfee", ""), n) && n > 0)
-        CWallet::minTxFee = CFeeRate(n);
-      else
-        return InitError(strprintf(_("Invalid amount for -mintxfee=<amount>: '%s'"), gArgs.GetArg("-mintxfee", "")));
-    }
     nTxConfirmTarget = GetArg("-txconfirmtarget", 1);
     bSpendZeroConfChange = GetBoolArg("-spendzeroconfchange", false);
     bdisableSystemnotifications = GetBoolArg("-disablesystemnotifications", false);
@@ -1330,23 +1322,63 @@ bool AppInit2(CScheduler& scheduler) {
 
     nStart = GetTimeMillis();
     do {
-      try {
-        UnloadBlockIndex();
-        delete gpCoinsTip;
-        delete pcoinsdbview;
-        delete pcoinscatcher;
-        delete gpBlockTreeDB;
-        delete gpZerocoinDB;
 
+      UnloadBlockIndex();
+      gSporkDB.init((GetDataDir() / "sporks.json").string());
+      
+      try {
+        delete gpZerocoinDB;
         // Tessa specific: zerocoin and spork DB's
         gpZerocoinDB = new CZerocoinDB(0, false, fReindex);
-        gSporkDB.init((GetDataDir() / "sporks.json").string());
-
+      } catch (std::exception& e) {
+        if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
+        strLoadError = _("Error opening Zerocoin DB");
+        fVerifyingBlocks = false;
+        break;
+      }
+      
+      
+      try {
+        delete gpBlockTreeDB;
         gpBlockTreeDB = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
+      } catch (std::exception& e) {
+        if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
+        strLoadError = _("Error opening block DB");
+        fVerifyingBlocks = false;
+        break;
+      }
+      
+      try {
+        delete pcoinsdbview;
         pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);
-        pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
-        gpCoinsTip = new CCoinsViewCache(pcoinscatcher);
+      } catch (std::exception& e) {
+        if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
+        strLoadError = _("Error opening CoinsView DB");
+        fVerifyingBlocks = false;
+        break;
+      }
 
+      try {
+        delete pcoinscatcher;
+        pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
+      } catch (std::exception& e) {
+        if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
+        strLoadError = _("Error opening coinscatcher");
+        fVerifyingBlocks = false;
+        break;
+      }
+
+      try {
+        delete gpCoinsTip;
+        gpCoinsTip = new CCoinsViewCache(pcoinscatcher);
+      } catch (std::exception& e) {
+        if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
+        strLoadError = _("Error opening CoinsTip/CoinvViewCache");
+        fVerifyingBlocks = false;
+        break;
+      }
+
+      try {
         if (fReindex) gpBlockTreeDB->WriteReindexing(true);
 
         // Tessa: load previous sessions sporks if we have them.
@@ -1414,13 +1446,13 @@ bool AppInit2(CScheduler& scheduler) {
 
         // Zerocoin must check at level 4
         if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, GetArg("-checkblocks", 100))) {
-          strLoadError = _("Corrupted block database detected");
+          strLoadError = _("Corrupted block database detected during VerifyDB");
           fVerifyingBlocks = false;
           break;
         }
       } catch (std::exception& e) {
         if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
-        strLoadError = _("Error opening block database");
+        strLoadError = _("Other Error/Exception on Initialization");
         fVerifyingBlocks = false;
         break;
       }
@@ -1429,6 +1461,7 @@ bool AppInit2(CScheduler& scheduler) {
       fLoaded = true;
     } while (false);
 
+    // When Fails...
     if (!fLoaded) {
       // first suggest a reindex
       if (!fReset) {
@@ -1457,8 +1490,6 @@ bool AppInit2(CScheduler& scheduler) {
     return false;
   }
   LogPrintf(" block index %15dms\n", GetTimeMillis() - nStart);
-
-  fFeeEstimatesInitialized = true;
 
   // ********************************************************* Step 8: load wallet
 

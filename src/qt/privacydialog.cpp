@@ -8,7 +8,7 @@
 #include "addressbookpage.h"
 #include "addresstablemodel.h"
 #include "askpassphrasedialog.h"
-#include "bitcoinunits.h"
+#include "coinunits.h"
 #include "coincontroldialog.h"
 #include "externs.h"
 #include "libzerocoin/Denominations.h"

@@ -12,12 +12,13 @@
 #include "ecdsa/key.h"
 #include "hash.h"
 #include "init.h"
-#include "main.h"  // for CBlockTemplate
+#include "main.h"  // for CBlockTemplate, updateMapZerocoinSpends
 #include "net.h"
 #include "pow.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "staker.h"
+#include "kernel.h" // mapHashedBlocks
 #include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
@@ -73,8 +74,11 @@ class COrphan {
   COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), dPriority(0) {}
 };
 
-uint64_t nLastBlockTx = 0;
-uint64_t nLastBlockSize = 0;
+static uint64_t nLastBlockTx = 0;
+static uint64_t nLastBlockSize = 0;
+
+uint64_t getLastBlockTx() { return nLastBlockTx; }
+uint64_t getLastBlockSize() { return nLastBlockSize; }
 
 // We want to sort transactions by priority and fee rate, so:
 typedef std::tuple<double, CFeeRate, const CTransaction*> TxPriority;
@@ -193,13 +197,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
           int64_t nTimeSeen = GetAdjustedTime();
           double nConfs = 100000;
 
-          auto it = mapZerocoinspends.find(txid);
-          if (it != mapZerocoinspends.end()) {
-            nTimeSeen = it->second;
-          } else {
-            // for some reason not in map, add it
-            mapZerocoinspends[txid] = nTimeSeen;
-          }
+          // update MapZerocoinSpends if not seen, otherwise return nTimeSeen
+          updateMapZerocoinSpends(txid,nTimeSeen);
 
           double nTimePriority = std::pow(GetAdjustedTime() - nTimeSeen, 6);
 
@@ -255,13 +254,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       uint256 hash = tx.GetHash();
       mempool.ApplyDeltas(hash, dPriority, nTotalIn);
 
-      CFeeRate feeRate(nTotalIn - tx.GetValueOut(), nTxSize);
-
       if (porphan) {
         porphan->dPriority = dPriority;
-        porphan->feeRate = feeRate;
+        porphan->feeRate = minTxFee;
       } else
-        vecPriority.push_back(TxPriority(dPriority, feeRate, &mi.second.GetTx()));
+        vecPriority.push_back(TxPriority(dPriority, minTxFee, &mi.second.GetTx()));
     }
 
     // Collect transactions into block
@@ -552,7 +549,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
       // nReserveBalance >= pwallet->GetBalance())) {
 
       while (pwallet->IsLocked() || !fMintableCoins ||
-             (pwallet->GetBalance() > 0 && nReserveBalance >= pwallet->GetBalance())) {
+             (pwallet->GetBalance() > 0 && getReserveBalance() >= pwallet->GetBalance())) {
         gStaker.setLastCoinStakeSearchInterval(0);
         // Do a separate 1 minute check here to ensure fMintableCoins is updated
         if (!fMintableCoins) {

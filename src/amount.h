@@ -23,27 +23,26 @@ static const CAmount CENT = 1000000;
  */
 class CFeeRate {
  private:
-  CAmount nSatoshisPerK;  // unit is satoshis-per-1,000-bytes
+  CAmount fee;  // unit is satoshis-per-1,000-bytes
  public:
-  CFeeRate() : nSatoshisPerK(0) {}
-  explicit CFeeRate(const CAmount& _nSatoshisPerK) : nSatoshisPerK(_nSatoshisPerK) {}
+  CFeeRate() : fee(1000) {}
+  explicit CFeeRate(const CAmount& _fee) : fee(_fee) {}
   CFeeRate(const CAmount& nFeePaid, size_t nSize);
-  CFeeRate(const CFeeRate& other) { nSatoshisPerK = other.nSatoshisPerK; }
+  CFeeRate(const CFeeRate& other) { fee = other.fee; }
 
-  CAmount GetFee(size_t size) const;                   // unit returned is satoshis
-  CAmount GetFeePerK() const { return GetFee(1000); }  // satoshis-per-1000-bytes
+  CAmount GetFee() const; 
 
-  friend bool operator<(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK < b.nSatoshisPerK; }
-  friend bool operator>(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK > b.nSatoshisPerK; }
-  friend bool operator==(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK == b.nSatoshisPerK; }
-  friend bool operator<=(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK <= b.nSatoshisPerK; }
-  friend bool operator>=(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK >= b.nSatoshisPerK; }
+  friend bool operator<(const CFeeRate& a, const CFeeRate& b) { return a.fee < b.fee; }
+  friend bool operator>(const CFeeRate& a, const CFeeRate& b) { return a.fee > b.fee; }
+  friend bool operator==(const CFeeRate& a, const CFeeRate& b) { return a.fee == b.fee; }
+  friend bool operator<=(const CFeeRate& a, const CFeeRate& b) { return a.fee <= b.fee; }
+  friend bool operator>=(const CFeeRate& a, const CFeeRate& b) { return a.fee >= b.fee; }
   std::string ToString() const;
 
   ADD_SERIALIZE_METHODS
 
   template <typename Stream, typename Operation> inline void SerializationOp(Stream& s, Operation ser_action) {
-    READWRITE(nSatoshisPerK);
+    READWRITE(fee);
   }
 };
 

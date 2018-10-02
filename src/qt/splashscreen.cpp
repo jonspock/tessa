@@ -112,13 +112,7 @@ void SplashScreen::subscribeToCoreSignals() {
   if (pwalletMain) uiInterface.LoadWallet.connect(std::bind(ConnectWallet, this, std::placeholders::_1));
 }
 
-void SplashScreen::unsubscribeFromCoreSignals() {
-  // Disconnect signals from client
-  //uiInterface.InitMessage_disconnect(std::bind(InitMessage, this, std::placeholders::_1));
-  //uiInterface.ShowProgress_disconnect(std::bind(ShowProgress, this, std::placeholders::_1, std::placeholders::_2));
-
-  //if (pwalletMain) pwalletMain->ShowProgress_disconnect(std::bind(ShowProgress, this, std::placeholders::_1, std::placeholders::_2));
-}
+void SplashScreen::unsubscribeFromCoreSignals() {}
 
 void SplashScreen::showMessage(const QString& message, int alignment, const QColor& color) {
   curMessage = message;

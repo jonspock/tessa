@@ -6,7 +6,7 @@
 #pragma once
 
 #if defined(HAVE_CONFIG_H)
-#include "tessa-config.h"
+#include "coin-config.h"
 #endif
 
 /**

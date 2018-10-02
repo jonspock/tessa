@@ -595,7 +595,7 @@ struct TransactionNotification {
 
   void invoke(QObject* ttm) {
     QString strHash = QString::fromStdString(hash.GetHex());
-    qDebug() << "NotifyTransactionChanged : " + strHash + " status= " + QString::number(status);
+    //qDebug() << "NotifyTransactionChanged : " + strHash + " status= " + QString::number(status);
     QMetaObject::invokeMethod(ttm, "updateTransaction", Qt::QueuedConnection, Q_ARG(QString, strHash),
                               Q_ARG(int, status), Q_ARG(bool, showTransaction));
   }
@@ -649,8 +649,4 @@ void TransactionTableModel::subscribeToCoreSignals() {
   wallet->ShowProgress.connect(std::bind(ShowProgress, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void TransactionTableModel::unsubscribeFromCoreSignals() {
-  // Disconnect signals from wallet
- // wallet->NotifyTransactionChanged_disconnect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
-  //wallet->ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
-}
+void TransactionTableModel::unsubscribeFromCoreSignals() {}

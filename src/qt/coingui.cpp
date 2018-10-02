@@ -5,9 +5,9 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "bitcoingui.h"
+#include "coingui.h"
 
-#include "bitcoinunits.h"
+#include "coinunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
@@ -329,7 +329,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle) {
   tabGroup->addAction(privacyAction);
 
   QSettings settings;
-  if (!fDisableWallet) {
+  if (!WalletDisabled()) {
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -1120,10 +1120,7 @@ void BitcoinGUI::subscribeToCoreSignals() {
   uiInterface.ThreadSafeMessageBox.connect(std::bind(ThreadSafeMessageBox, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 }
 
-void BitcoinGUI::unsubscribeFromCoreSignals() {
-  // Disconnect signals from client
- // uiInterface.ThreadSafeMessageBox_disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
-}
+void BitcoinGUI::unsubscribeFromCoreSignals() {}
 
 /** Get restart command-line parameters and request restart */
 void BitcoinGUI::handleRestart(QStringList args) {

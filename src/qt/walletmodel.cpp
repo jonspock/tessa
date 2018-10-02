@@ -263,7 +263,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
     }
 
     // reject insane fee
-    if (nFeeRequired > ::minRelayTxFee.GetFee(transaction.getTransactionSize()) * 10000) return InsaneFee;
+    if (nFeeRequired > ::minRelayTxFee.GetFee() * 10000) return InsaneFee;
   }
 
   return SendCoinsReturn(OK);
@@ -469,18 +469,7 @@ void WalletModel::subscribeToCoreSignals() {
   wallet->NotifyWalletBacked.connect(std::bind(NotifyWalletBacked, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void WalletModel::unsubscribeFromCoreSignals() {
-  // Disconnect signals from wallet
-  //wallet->NotifyStatusChanged.disconnect(std::bind(&NotifyKeyStoreStatusChanged, this, _1));
-  //  wallet->NotifyAddressBookChanged_disconnect(std::bind(NotifyAddressBookChanged, this, _1, _2, _3, _4, _5, _6));
-  //  wallet->NotifyTransactionChanged_disconnect(std::bind(NotifyTransactionChanged, this, _1, _2, _3));
-  //  wallet->ShowProgress_disconnect(std::bind(ShowProgress, this, _1, _2));
-  //  wallet->NotifyWatchonlyChanged_disconnect(std::bind(NotifyWatchonlyChanged, this, _1));
-  //  wallet->NotifyMultiSigChanged_disconnect(std::bind(NotifyMultiSigChanged, this, _1));
-  //  wallet->NotifyZerocoinChanged_disconnect(std::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
-  //  wallet->NotifyZkpReset_disconnect(std::bind(NotifyZkpReset, this));
-  //  wallet->NotifyWalletBacked_disconnect(std::bind(NotifyWalletBacked, this, _1, _2));
-}
+void WalletModel::unsubscribeFromCoreSignals() {}
 
 // WalletModel::UnlockContext implementation
 WalletModel::UnlockContext WalletModel::requestUnlock(AskPassphraseDialog::Context context, bool relock) {

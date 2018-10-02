@@ -9,18 +9,8 @@
 
 #include "tinyformat.h"
 
-CFeeRate::CFeeRate(const CAmount& nFeePaid, size_t nSize) {
-  if (nSize > 0)
-    nSatoshisPerK = nFeePaid * 1000 / nSize;
-  else
-    nSatoshisPerK = 0;
-}
-
-CAmount CFeeRate::GetFee(size_t nSize) const {
-  CAmount nFee = nSatoshisPerK;
-  return nFee;
-}
+CAmount CFeeRate::GetFee() const {  return fee;}
 
 std::string CFeeRate::ToString() const {
-  return strprintf("%d.%08d Tessa/kB", nSatoshisPerK / COIN, nSatoshisPerK % COIN);
+  return strprintf("%d.%08d Tessa/kB", fee / COIN, fee % COIN);
 }

@@ -8,7 +8,7 @@
 #include "verifydb.h"
 #include "blockdisk.h"
 #include "blockundo.h"
-#include "tessa_externs.h"
+#include "coin_externs.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "validationstate.h"
@@ -66,7 +66,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
     }
     // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
     if (nCheckLevel >= 3 && pindex == pindexState &&
-        (coins.GetCacheSize() + gpCoinsTip->GetCacheSize()) <= nCoinCacheSize) {
+        (coins.GetCacheSize() + gpCoinsTip->GetCacheSize()) <= getCoinCacheSize()) {
       bool fClean = true;
       if (!DisconnectBlock(block, state, pindex, coins, &fClean))
         return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight,

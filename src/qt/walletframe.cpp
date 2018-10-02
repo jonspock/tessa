@@ -6,7 +6,7 @@
 
 #include "walletframe.h"
 
-#include "bitcoingui.h"
+#include "coingui.h"
 #include "utiltime.h"
 #include "walletview.h"
 

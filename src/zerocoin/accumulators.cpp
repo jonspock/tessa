@@ -10,7 +10,7 @@
 #include "init.h"
 #include "main.h"
 #include "rand_bignum.h"
-#include "tessa_constants.h"
+#include "coin_constants.h"
 #include "zerocoin/zerocoindb.h"
 #include "txdb.h"
 #include "utiltime.h"

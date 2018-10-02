@@ -417,7 +417,7 @@ UniValue getnetworkinfo(const UniValue& params, bool fHelp) {
   obj.push_back(std::make_pair("timeoffset", GetTimeOffset()));
   obj.push_back(std::make_pair("connections", (int)vNodes.size()));
   obj.push_back(std::make_pair("networks", GetNetworksInfo()));
-  obj.push_back(std::make_pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
+  obj.push_back(std::make_pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFee())));
   UniValue localAddresses(UniValue::VARR);
   {
     LOCK(cs_mapLocalHost);

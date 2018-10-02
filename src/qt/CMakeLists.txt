@@ -124,10 +124,10 @@ SET(QT_FILES
 	multisigdialog.cpp
 	bantablemodel.cpp
 	blockexplorer.cpp
-	bitcoinaddressvalidator.cpp
-	bitcoinamountfield.cpp
-	bitcoingui.cpp
-	bitcoinunits.cpp
+	coinaddressvalidator.cpp
+	coinamountfield.cpp
+	coingui.cpp
+	coinunits.cpp
 	clientmodel.cpp
 	csvmodelwriter.cpp
 	guiutil.cpp
@@ -190,8 +190,8 @@ target_link_libraries(qt_stuff ${FS_LIBS})
 file(GLOB QT_TRANSLATIONS_FILES locale/*.ts)
 
 SET(QT_TRANSLATIONS_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/tessa_en.ts
-	${CMAKE_CURRENT_SOURCE_DIR}/locale/tessa_en_US.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/coin_en.ts
+	${CMAKE_CURRENT_SOURCE_DIR}/locale/coin_en_US.ts
 	)
 
 get_filename_component(QM_FILES_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/locale" ABSOLUTE)
@@ -200,10 +200,10 @@ set_source_files_properties(${QT_TRANSLATIONS_FILES} PROPERTIES OUTPUT_LOCATION 
 QT5_ADD_TRANSLATION( QM ${QT_TRANSLATIONS_FILES} )
 add_custom_target (translations_target DEPENDS ${QM}) 
 
-QT5_ADD_RESOURCES(QRC_RESOURCE tessa.qrc)
-QT5_ADD_RESOURCES(QRC_LOCALE_RESOURCE tessa_locale.qrc)
+QT5_ADD_RESOURCES(QRC_RESOURCE coin.qrc)
+QT5_ADD_RESOURCES(QRC_LOCALE_RESOURCE coin_locale.qrc)
 
-add_executable(tessa-qt tessa.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} ${GUI_FORM_HEADERS})
+add_executable(tessa-qt coin.cpp ${QM} ${QRC_RESOURCE} ${QRC_LOCALE_RESOURCE} ${GUI_FORM_HEADERS})
 
 add_dependencies(tessa-qt translations_target)
 

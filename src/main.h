@@ -9,13 +9,13 @@
 #pragma once
 
 #if defined(HAVE_CONFIG_H)
-#include "tessa-config.h"
+#include "coin-config.h"
 #endif
 
 #include "nodeid.h"
 #include "primitives/block.h"
-#include "tessa_constants.h"
-#include "tessa_externs.h"
+#include "coin_constants.h"
+#include "coin_externs.h"
 
 class uint256;
 class CScriptCheck;
@@ -214,6 +214,8 @@ void RecalculateZKPSpent();
 void RecalculateZKPMinted();
 bool RecalculateTessaSupply(int nHeightStart);
 bool ReindexAccumulators(std::list<uint256>& listMissingCheckpoints, std::string& strError);
+
+void updateMapZerocoinSpends(const uint256& txid, int64_t& nTimeSeen);
 
 /**
  * Check if transaction will be final in the next block to be created.

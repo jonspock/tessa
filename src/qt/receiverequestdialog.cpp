@@ -7,7 +7,7 @@
 #include "receiverequestdialog.h"
 #include "ui_receiverequestdialog.h"
 
-#include "bitcoinunits.h"
+#include "coinunits.h"
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
@@ -21,7 +21,7 @@
 #include <QPixmap>
 
 #if defined(HAVE_CONFIG_H)
-#include "tessa-config.h" /* for USE_QRCODE */
+#include "coin-config.h" /* for USE_QRCODE */
 #endif
 
 #ifdef USE_QRCODE

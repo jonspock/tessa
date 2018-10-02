@@ -692,8 +692,6 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp) {
         "  \"txcount\": xxxxx                (numeric) Current tx count\n"
         "  \"txbytes\": xxxxx                (numeric) Sum of all tx sizes\n"
         "  \"ttlfee\": xxxxx                 (numeric) Sum of all fees\n"
-        "  \"feeperkb\": xxxxx               (numeric) Average fee per kb over the block range\n"
-        "  \"rec_highpriorityfee_perkb\": xxxxx    (numeric) Recommended fee per kb to use for a high priority tx\n"
         "}\n"
 
         "\nExamples:\n" +
@@ -745,12 +743,9 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp) {
   }
 
   UniValue ret(UniValue::VOBJ);
-  CFeeRate nFeeRate = CFeeRate(nFees, nBytes);
   ret.push_back(std::make_pair("txcount", (int64_t)nTotal));
   ret.push_back(std::make_pair("txbytes", (int64_t)nBytes));
   ret.push_back(std::make_pair("ttlfee", FormatMoney(nFees)));
-  ret.push_back(std::make_pair("feeperkb", FormatMoney(nFeeRate.GetFeePerK())));
-  ret.push_back(std::make_pair("rec_highpriorityfee_perkb", FormatMoney(nFeeRate.GetFeePerK() + 1000)));
 
   return ret;
 }

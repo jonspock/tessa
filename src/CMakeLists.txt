@@ -111,7 +111,7 @@ check_symbol_exists(strnlen "string.h" HAVE_DECL_STRNLEN)
 set(ENABLE_ZMQ ${ENABLE_ZMQ})
 
 # Generate the config
-configure_file(tessa-config.h.in tessa-config.h ESCAPE_QUOTES)
+configure_file(coin-config.h.in coin-config.h ESCAPE_QUOTES)
 
 IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/leveldb)
   add_subdirectory(leveldb)

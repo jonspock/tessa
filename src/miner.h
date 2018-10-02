@@ -31,6 +31,8 @@ void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
 
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake);
 void InterruptMiner();
+uint64_t getLastBlockTx();
+uint64_t getLastBlockSize();
 
 extern double dHashesPerSec;
 extern int64_t nHPSTimerStart;

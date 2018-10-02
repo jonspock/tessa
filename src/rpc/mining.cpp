@@ -233,8 +233,8 @@ UniValue getmininginfo(const UniValue& params, bool fHelp) {
 
   UniValue obj(UniValue::VOBJ);
   obj.push_back(std::make_pair("blocks", (int)chainActive.Height()));
-  obj.push_back(std::make_pair("currentblocksize", (uint64_t)nLastBlockSize));
-  obj.push_back(std::make_pair("currentblocktx", (uint64_t)nLastBlockTx));
+  obj.push_back(std::make_pair("currentblocksize", (uint64_t)getLastBlockSize()));
+  obj.push_back(std::make_pair("currentblocktx", getLastBlockTx()));
   obj.push_back(std::make_pair("difficulty", (double)GetDifficulty()));
   obj.push_back(std::make_pair("errors", GetWarnings("statusbar")));
   obj.push_back(std::make_pair("genproclimit", (int)GetArg("-genproclimit", -1)));
@@ -242,7 +242,7 @@ UniValue getmininginfo(const UniValue& params, bool fHelp) {
   obj.push_back(std::make_pair("pooledtx", (uint64_t)mempool.size()));
   obj.push_back(std::make_pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
   obj.push_back(std::make_pair("chain", Params().NetworkIDString()));
-  if (!fDisableWallet) {
+  if (!WalletDisabled()) {
     obj.push_back(std::make_pair("generate", getgenerate(params, false)));
     obj.push_back(std::make_pair("hashespersec", gethashespersec(params, false)));
   }
@@ -667,7 +667,7 @@ UniValue estimatefee(const UniValue& params, bool fHelp) {
   CFeeRate feeRate = mempool.estimateFee(nBlocks);
   if (feeRate == CFeeRate(0)) return -1.0;
 
-  return ValueFromAmount(feeRate.GetFeePerK());
+  return ValueFromAmount(feeRate.GetFee());
 }
 
 UniValue estimatepriority(const UniValue& params, bool fHelp) {

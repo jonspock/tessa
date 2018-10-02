@@ -9,7 +9,7 @@
 #include "blockmap.h"
 #include "main_functions.h"
 
-#include "bitcoinunits.h"
+#include "coinunits.h"
 #include "guiutil.h"
 #include "transactionrecord.h"
 

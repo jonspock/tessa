@@ -79,13 +79,10 @@ bool fPayAtLeastCustomFee = true;
 int64_t nStartupTime = GetTime();  //!< Client startup time for use with automint
 const uint32_t BIP32_HARDENED_KEY_LIMIT = 0x80000000;
 
-/**
- * Fees smaller than this (in u) are considered zero fee (for transaction creation)
- * We are ~100 times smaller then bitcoin now (2015-06-23), set minTxFee 10 times higher
- * so it's still 10 times lower comparing to bitcoin.
- * Override with -mintxfee
- */
-CFeeRate CWallet::minTxFee = CFeeRate(10000);
+static int64_t nReserveBalance = 0;
+
+int64_t getReserveBalance() { return nReserveBalance; }
+void setReserveBalance(int64_t b) { nReserveBalance = b; }
 
 /** @defgroup mapWallet
  *
@@ -1172,9 +1169,11 @@ bool CWallet::MintableCoins() {
 
   // Regular Tessa
   if (nBalance > 0) {
-    if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
+    int64_t bal=0;
+    if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), bal))
       return error("%s : invalid reserve balance amount", __func__);
-    if (nBalance <= nReserveBalance) return false;
+    setReserveBalance(bal);
+    if (nBalance <= bal) return false;
 
     vector<COutput> vCoins;
     AvailableCoins(vCoins, true);
@@ -1533,11 +1532,11 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend, 
           if (dPriorityNeeded > 0 && dPriority >= dPriorityNeeded) break;
         }
 
-        CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(nBytes, nTxConfirmTarget, mempool));
+        CAmount nFeeNeeded = max(nFeePay, minTxFee.GetFee());
 
         // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
         // because we must be at the maximum allowed fee.
-        if (nFeeNeeded < ::minRelayTxFee.GetFee(nBytes)) {
+        if (nFeeNeeded < ::minRelayTxFee.GetFee()) {
           strFailReason = _("Transaction too large for fee policy");
           return false;
         }
@@ -1579,14 +1578,15 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
   // Choose coins to use
   CAmount nBalance = GetBalance();
 
-  if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance))
+  int64_t bal;
+  if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), bal))
     return error("CreateCoinStake : invalid reserve balance amount");
-
-  if (nBalance > 0 && nBalance <= nReserveBalance) return false;
+  setReserveBalance(bal);
+  if (nBalance > 0 && nBalance <= bal) return false;
 
   // Get the list of stakable inputs
   std::list<std::unique_ptr<CStake> > listInputs;
-  if (!SelectStakeCoins(listInputs, nBalance - nReserveBalance)) return false;
+  if (!SelectStakeCoins(listInputs, nBalance - bal)) return false;
 
   if (listInputs.empty()) return false;
 
@@ -1755,10 +1755,6 @@ bool CWallet::AddAccountingEntry(const CAccountingEntry& acentry) {
   wtxOrdered.insert(make_pair(entry.nOrderPos, TxPair((CWalletTx*)nullptr, &entry)));
 
   return true;
-}
-
-CAmount CWallet::GetMinimumFee(uint32_t nTxBytes, uint32_t nConfirmTarget, const CTxMemPool& pool) {
-  return minTxFee.GetFee(nTxBytes);
 }
 
 CAmount CWallet::GetTotalValue(std::vector<CTxIn> vCoins) {
