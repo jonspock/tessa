@@ -19,10 +19,10 @@
 #include "util.hpp"
 #include "pubkey.h"
 
-namespace bls {
+namespace ecdsa {
 
 CPubKey CPubKey::FromBytes(const uint8_t *key) {
-  BLS::AssertInitialized();
+  bls::BLS::AssertInitialized();
   CPubKey pk = CPubKey();
   std::memcpy(pk.data, key, PUBLIC_KEY_SIZE);
   uint8_t uncompressed[PUBLIC_KEY_SIZE + 1];
@@ -38,7 +38,7 @@ CPubKey CPubKey::FromBytes(const uint8_t *key) {
 }
 
 CPubKey CPubKey::FromG1(const relic::g1_t *pubKey) {
-  BLS::AssertInitialized();
+  bls::BLS::AssertInitialized();
   CPubKey pk = CPubKey();
   g1_copy(pk.q, *pubKey);
   CompressPoint(pk.data, &pk.q);
@@ -46,7 +46,7 @@ CPubKey CPubKey::FromG1(const relic::g1_t *pubKey) {
 }
 
 CPubKey::CPubKey(const CPubKey &pubKey) {
-  BLS::AssertInitialized();
+  bls::BLS::AssertInitialized();
   relic::g1_t tmp;
   pubKey.GetPoint(tmp);
   g1_copy(q, tmp);
@@ -63,14 +63,14 @@ const uint8_t &CPubKey::operator[](size_t pos) const { return data[pos]; }
 
 /*
 void CPubKey::Serialize(uint8_t *buffer) const {
-  BLS::AssertInitialized();
+  bls::BLS::AssertInitialized();
   std::memcpy(buffer, data, PUBLIC_KEY_SIZE);
 }
 */
 
 // Comparator implementation.
 bool operator==(CPubKey const &a, CPubKey const &b) {
-  BLS::AssertInitialized();
+  bls::BLS::AssertInitialized();
   return g1_cmp(a.q, b.q) == CMP_EQ;
 }
 
@@ -79,17 +79,17 @@ bool operator!=(CPubKey const &a, CPubKey const &b) { return !(a == b); }
 bool operator<(CPubKey const &a, CPubKey const &b) { return std::memcmp(a.data, b.data, CPubKey::PUBLIC_KEY_SIZE) < 0; }
 
 std::ostream &operator<<(std::ostream &os, CPubKey const &pk) {
-  BLS::AssertInitialized();
-  return os << Util::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
+  bls::BLS::AssertInitialized();
+  return os << bls::Util::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
 }
 
 uint32_t CPubKey::GetFingerprint() const {
-  BLS::AssertInitialized();
+  bls::BLS::AssertInitialized();
   uint8_t buffer[CPubKey::PUBLIC_KEY_SIZE];
   uint8_t hash[32];
   Serialize(buffer);
-  Util::Hash256(hash, buffer, CPubKey::PUBLIC_KEY_SIZE);
-  return Util::FourBytesToInt(hash);
+  bls::Util::Hash256(hash, buffer, CPubKey::PUBLIC_KEY_SIZE);
+  return bls::Util::FourBytesToInt(hash);
 }
 
 void CPubKey::CompressPoint(uint8_t *result, const relic::g1_t *point) {

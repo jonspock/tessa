@@ -1596,7 +1596,7 @@ void ThreadScriptCheck() {
   scriptcheckqueue.Thread();
 }
 
-void InterruptThreadScriptCheck() { scriptcheckqueue.Interrupt(); };
+void InterruptThreadScriptCheck() { scriptcheckqueue.Interrupt(); }
 
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError) {
   // Tessa: recalculate Accumulator Checkpoints that failed to database properly

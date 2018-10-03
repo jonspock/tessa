@@ -71,9 +71,13 @@ class PrivateKey {
     Signature Sign(const uint8_t *msg, size_t len) const;
     Signature SignPrehashed(const uint8_t *hash) const;
 
+    // public construction
+
+    // NEW ADDITIONS *****
+    PrivateKey() = default;
+    bool valid() const { return !(keydata == nullptr); } 
+  
  private:
-    // Don't allow public construction, force static methods
-    PrivateKey() {}
 
     // Multiply private key with n
     PrivateKey Mul(const relic::bn_t n) const;
@@ -81,7 +85,6 @@ class PrivateKey {
     // Allocate memory for private key
     void AllocateKeyData();
 
- private:
     // The actual byte data
     relic::bn_t *keydata{nullptr};
 };

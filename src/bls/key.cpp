@@ -11,62 +11,75 @@
 #include "random.h"
 #include "uint256.h"
 
-namespace bls {
+namespace ecdsa {
 
 bool CKey::Check(const uint8_t* vch) { return false; }
 
 void CKey::MakeNewKey(bool fCompressedIn) {
-  do { GetStrongRandBytes(keydata.data(), keydata.size()); } while (!Check(keydata.data()));
-  fValid = true;
+  uint8_t keydata[bls::PrivateKey::PRIVATE_KEY_SIZE];
+  do { GetRandBytes(keydata, bls::PrivateKey::PRIVATE_KEY_SIZE); } while (!Check(keydata));
+  PK = bls::PrivateKey::FromSeed(keydata, bls::PrivateKey::PRIVATE_KEY_SIZE);
   fCompressed = fCompressedIn;
 }
 
 bool CKey::SetPrivKey(const CPrivKey& privkey, bool fCompressedIn) {
   //  if (!ec_privkey_import_der(secp256k1_context_sign, (uint8_t*)begin(), &privkey[0], privkey.size())) return false;
   fCompressed = fCompressedIn;
-  fValid = true;
   return true;
 }
 
 uint256 CKey::GetPrivKey_256() {
-  void* key = keydata.data();
-  uint256* key_256 = (uint256*)key;
-
+  uint8_t keydata[bls::PrivateKey::PRIVATE_KEY_SIZE];
+  PK.Serialize(keydata);
+  uint256* key_256 = (uint256*)keydata;
   return *key_256;
 }
 
 CPrivKey CKey::GetPrivKey() const {
-  assert(fValid);
-  CPrivKey privkey;
+  assert(IsValid());
+  CPrivKey privkey; // TBD!!!!
   return privkey;
 }
 
 CPubKey CKey::GetPubKey() const {
-  assert(fValid);
+  assert(IsValid());
+  //bls::PublicKey tmp_result = PK.GetPublicKey();
+  // Wrap to CPubKey....
   CPubKey result;
   return result;
 }
 
 bool CKey::Sign(const uint256& hash, std::vector<uint8_t>& vchSig, uint32_t test_case) const {
-  if (!fValid) return false;
-  return true;
+
+  /// First Sign,
+  bls::Signature sig = PK.Sign(hash.begin(), 32);
+  uint8_t sigBytes[bls::Signature::SIGNATURE_SIZE];    // 96 byte array
+  sig.Serialize(sigBytes);
+  vchSig.resize(bls::Signature::SIGNATURE_SIZE);
+  for (size_t i=0;i<bls::Signature::SIGNATURE_SIZE;i++) vchSig[i] = sigBytes[i];
+  
+  // Then Verify
+  return sig.Verify();
 }
 
-bool CKey::VerifyPubKey(const CPubKey& pubkey) const { return true; }
+// Verify that this public key belong to this private Key
+bool CKey::VerifyPubKey(const CPubKey& pubkey) const {
+  return (pubkey == GetPubKey()); // Check after GetPubKey is fixed
+}
 
 bool CKey::SignCompact(const uint256& hash, std::vector<uint8_t>& vchSig) const {
-  if (!fValid) return false;
+  if (!IsValid()) return false;
   return true;
 }
 
 bool CKey::Load(const CPrivKey& privkey, const CPubKey& vchPubKey, bool fSkipCheck = false) {
-  fValid = true;
   if (fSkipCheck) return true;
   return false;
 }
 
 bool CKey::Derive(CKey& keyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const { return true; }
 
+  /*
 bool CExtKey::Derive(CExtKey& out, unsigned int nChild) const {
   out.nDepth = nDepth + 1;
   CKeyID id = key.GetPubKey().GetID();
@@ -117,5 +130,5 @@ void CExtKey::Decode(const uint8_t code[74]) {
   //  memcpy(chaincode.begin(), code + 9, 32);
   key.Set(code + 42, code + 74, true);
 }
-
+  */
 }  // namespace bls

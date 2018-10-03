@@ -25,8 +25,8 @@ class json_file {
     filename = name;
     return true;
   }
-  template <typename T_> void write(const std::string& k, T_ v) { json_data[k] = v; };
-  template <typename T_> void write(int k, T_ v) { json_data[k] = v; };
+  template <typename T_> void write(const std::string& k, T_ v) { json_data[k] = v; }
+  template <typename T_> void write(int k, T_ v) { json_data[k] = v; }
   nlohmann::json& get_json() { return json_data; }
 
  private:

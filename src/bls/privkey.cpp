@@ -77,12 +77,12 @@ CPrivKey::~CPrivKey() {
   Util::SecFree(keydata);
 }
 
-CPubKey CPrivKey::GetPublicKey() const {
+ecdsa::CPubKey CPrivKey::GetPublicKey() const {
   BLS::AssertInitialized();
   relic::g1_t* q = Util::SecAlloc<relic::g1_t>(1);
   g1_mul_gen(*q, *keydata);
 
-  const CPubKey ret = CPubKey::FromG1(q);
+  const ecdsa::CPubKey ret = ecdsa::CPubKey::FromG1(q);
   Util::SecFree(*q);
   return ret;
 }

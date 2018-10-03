@@ -1934,29 +1934,6 @@ UniValue listlockunspent(const UniValue& params, bool fHelp) {
   return ret;
 }
 
-UniValue settxfee(const UniValue& params, bool fHelp) {
-  if (fHelp || params.size() < 1 || params.size() > 1)
-    throw runtime_error(
-        "settxfee amount\n"
-        "\nSet the transaction fee per kB.\n"
-
-        "\nArguments:\n"
-        "1. amount         (numeric, required) The transaction fee in Tessa/kB rounded to the nearest 0.00000001\n"
-
-        "\nResult\n"
-        "true|false        (boolean) Returns true if successful\n"
-        "\nExamples:\n" +
-        HelpExampleCli("settxfee", "0.00001") + HelpExampleRpc("settxfee", "0.00001"));
-
-  LOCK2(cs_main, pwalletMain->cs_wallet);
-
-  // Amount
-  CAmount nAmount = 0;
-  if (params[0].get_real() != 0.0) nAmount = AmountFromValue(params[0]);  // rejects 0.0 amounts
-
-  return true;
-}
-
 UniValue getwalletinfo(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(

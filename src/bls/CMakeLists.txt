@@ -15,7 +15,6 @@ add_library(bls ${BLS_HEADERS}
   ${CMAKE_CURRENT_SOURCE_DIR}/extendedprivatekey.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/chaincode.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/signature.cpp
-
   ${CMAKE_CURRENT_SOURCE_DIR}/privatekey.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/publickey.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/bls.cpp

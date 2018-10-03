@@ -92,6 +92,8 @@ bool CBasicKeyStore::HaveMultiSig() const {
 }
 
 // Should not be used
+// HACK -> MAYBE NEEDED FOR WATCH ONLY ADDRESSES!
+
 bool CBasicKeyStore::HaveKey(const CKeyID& address) const { return false; }
 bool CBasicKeyStore::GetKey(const ecdsa::CKeyID& address, ecdsa::CKey& keyOut) const { return false; }
 void CBasicKeyStore::GetKeys(std::set<CKeyID>& setAddress) const {}

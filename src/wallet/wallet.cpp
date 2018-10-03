@@ -1625,10 +1625,8 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
       LogPrintf("CreateCoinStake : kernel found\n");
       nCredit += stakeInput->GetValue();
 
-      // Calculate reward
-      CAmount nReward;
-      nReward = GetBlockValue(chainActive.Height() + 1);
-      nCredit += nReward;
+      // Add reward
+      nCredit += GetBlockValue(chainActive.Height() + 1);
 
       // Create the output transaction(s)
       vector<CTxOut> vout;

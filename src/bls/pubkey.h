@@ -20,7 +20,7 @@
 #include "uint256.h"
 #include <vector>
 
-namespace bls {
+namespace ecdsa {
 
 static const size_t BIP32_EXTKEY_SIZE = 1;  // TBD
 
@@ -166,4 +166,4 @@ struct CExtPubKey {
   }
 };
 
-}  // namespace bls
+}  // namespace 
