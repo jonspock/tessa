@@ -138,34 +138,22 @@ check_cxx_compiler_flag(-std=c++17 HAVE_FLAG_STD_CXX17)
 if (HAVE_FLAG_STD_CXX17)
   set(CMAKE_CXX_STANDARD 17)
   message(STATUS "Compiler supports C++17")
-  add_definitions("-D_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR")
+  add_definitions("-D_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR") # still needed?
 else()
-  message(STATUS "Compiler Doesn't support C++17")
-  check_cxx_compiler_flag(-std=c++14 HAVE_FLAG_STD_CXX14)
-  if (HAVE_FLAG_STD_CXX14)
-    set(CMAKE_CXX_STANDARD 14)
-    message(STATUS "Compiler supports C++14")
-  else()
-    message(ERROR "Compile must at least support C++14")
-  endif()
+  message(ERROR "Compiler must at least support C++17")
 endif()
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   add_compiler_flag(-Wrange-loop-analysis)
   # For 17 we need BOOST_NO_AUTO_PTR defined for boost
-  if (HAVE_FLAG_STD_CXX17)
-    add_definitions("-DOS_MACOSX -DBOOST_NO_AUTO_PTR")
-  else()
-    add_definitions("-DOS_MACOSX")
-  endif()
+  add_definitions("-DOS_MACOSX -DBOOST_NO_AUTO_PTR") # still needed?
 else()
   # secp256k1 Linux gcc
-  add_definitions("-Wno-cpp -Wno-unused-function -Wno-nonnull-compare -Wno-implicit-fallthrough")
+  add_compiler_flag(-Wno-cpp -Wno-unused-function -Wno-nonnull-compare -Wno-implicit-fallthrough)
   set(ANL anl) # Not used ATM
 endif()
 
-add_definitions("-fPIC")
-#add_definitions("-DUSE_LEVELDB")
+set(CMAKE_POSITION_INDEPENDENT_CODE ON) # for all targets
 
 SET(SPORK
   ./src/spork/spork.cpp
@@ -359,10 +347,13 @@ else()
   message(STATUS "ZMQ not found")
 endif()
 
+# Can change to LevelDB if needed
 find_package(RocksDB REQUIRED)
 if (RocksDB_FOUND)
   message(STATUS "Found RocksDB")
   message(STATUS "Libs : ${ROCKSDB_LIBRARIES}")
+  #add_definitions("-DUSE_LEVELDB")
+  set(DB_LIBRARIES ${ROCKSDB_LIBRARIES})
 else()
   message(STATUS "FAILED to FIND RocksDB")
 endif()  
@@ -479,15 +470,12 @@ endif()
 
 add_subdirectory(src/secp256k1)
 add_subdirectory(src)
-
 add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
-
 add_subdirectory(src/ecdsa)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
-#target_link_libraries(coin ${ROCKSDB_LIBRARIES} leveldb)
-target_link_libraries(coin ${ROCKSDB_LIBRARIES})
+target_link_libraries(coin ${DB_LIBRARIES})
 
 add_executable(tessa-cli ${CMAKE_CURRENT_SOURCE_DIR}/src/coin-cli.cpp)
 add_executable(tessad ${CMAKE_CURRENT_SOURCE_DIR}/src/coind.cpp)
@@ -538,14 +526,15 @@ endif()
 #------------------- ------------------- ------------------- ------------------- -------------------
 message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${ROCKSDB_LIBRARIES} ${UPNP_LIB}
+SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${DB_LIBRARIES} ${UPNP_LIB}
   event event_pthreads pthread gmp sodium ${ZMQ_LIB} ${FS_LIBS}) # wsock32)
 
-target_link_libraries(tessa-cli coin zerocoin ecdsa lmdb rocksdb event pthread gmp sodium ${FS_LIBS}) # wsock32)
 target_link_libraries(tessad ${LIBS_LIST})
 
-add_subdirectory(src/qt)
+# Subset of libraries needed for cli
+target_link_libraries(tessa-cli coin event pthread sodium ${FS_LIBS}) # wsock32)
 
+add_subdirectory(src/qt)
 
 #---------------------------------------------------------------------------------------------------------
 # Create a target in Xcode to setup coverage script
