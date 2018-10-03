@@ -19,7 +19,7 @@
 #include <vector>
 
 using namespace std;
-using namespace bls12_381;
+using namespace bls;
 
 static const string strSecret1("87vK7Vayi3QLsuiva5yWSuVwSMhMcRM9dBsaD6JXMD1P5vnjRFn");
 static const string strSecret2("87FGYGFDg5SYfdD4XL593hr7do6f52czPecVsYSAXi8N4RGeS9i");

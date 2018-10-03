@@ -15,7 +15,7 @@
 
 #include <vector>
 
-namespace bls12_381 {
+namespace bls {
 
 class CPubKey;
 
@@ -156,4 +156,4 @@ struct CExtKey {
   void SetMaster(const uint8_t* seed, unsigned int nSeedLen);
 };
 
-}  // namespace bls12_381
+}  // namespace bls

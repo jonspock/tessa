@@ -14,13 +14,13 @@
 
 #pragma once
 
-#include "blsutil.h"
-#include "chaincode.h"
+#include "util.hpp"
+#include "chaincode.hpp"
 #include "hash.h"
 #include "uint256.h"
 #include <vector>
 
-namespace bls12_381 {
+namespace bls {
 
 static const size_t BIP32_EXTKEY_SIZE = 1;  // TBD
 
@@ -131,12 +131,13 @@ struct CExtPubKey {
   uint8_t nDepth;
   uint8_t vchFingerprint[4];
   unsigned int nChild;
-  ChainCode chaincode;
+  //  ChainCode chaincode;
   CPubKey pubkey;
 
   friend bool operator==(const CExtPubKey &a, const CExtPubKey &b) {
     return a.nDepth == b.nDepth && memcmp(&a.vchFingerprint[0], &b.vchFingerprint[0], sizeof(vchFingerprint)) == 0 &&
-           a.nChild == b.nChild && a.chaincode == b.chaincode && a.pubkey == b.pubkey;
+      a.nChild == b.nChild && a.pubkey == b.pubkey;
+      // && a.chaincode == b.chaincode;
   }
 
   void Encode(uint8_t code[BIP32_EXTKEY_SIZE]) const;
@@ -165,4 +166,4 @@ struct CExtPubKey {
   }
 };
 
-}  // namespace bls12_381
+}  // namespace bls

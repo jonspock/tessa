@@ -12,179 +12,200 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "extendedprivatekey.h"
-#include "bls.h"
-#include "blsutil.h"
-#include <cstring>
 #include <string>
+#include <cstring>
+#include "extendedprivatekey.hpp"
+#include "util.hpp"
+#include "bls.hpp"
+namespace bls {
 
-namespace bls12_381 {
+ExtendedPrivateKey ExtendedPrivateKey::FromSeed(const uint8_t* seed,
+                                                size_t seedLen) {
+    BLS::AssertInitialized();
 
-ExtendedPrivateKey ExtendedPrivateKey::FromSeed(const uint8_t* seed, size_t seedLen) {
-  BLS::AssertInitialized();
+    // "BLS HD seed" in ascii
+    const uint8_t prefix[] = {66, 76, 83, 32, 72, 68, 32, 115, 101, 101, 100};
 
-  // "BLS HD seed" in ascii
-  const uint8_t prefix[] = {66, 76, 83, 32, 72, 68, 32, 115, 101, 101, 100};
+    uint8_t* hashInput = Util::SecAlloc<uint8_t>(seedLen + 1);
+    std::memcpy(hashInput, seed, seedLen);
 
-  uint8_t* hashInput = BLSUtil::SecAlloc<uint8_t>(seedLen + 1);
-  std::memcpy(hashInput, seed, seedLen);
+    // 32 bytes for secret key, and 32 bytes for chaincode
+    uint8_t* ILeft = Util::SecAlloc<uint8_t>(
+            PrivateKey::PRIVATE_KEY_SIZE);
+    uint8_t IRight[ChainCode::CHAIN_CODE_SIZE];
 
-  // 32 bytes for secret key, and 32 bytes for chaincode
-  uint8_t* ILeft = BLSUtil::SecAlloc<uint8_t>(CPrivKey::PRIVATE_KEY_SIZE);
-  uint8_t IRight[ChainCode::CHAIN_CODE_SIZE];
+    // Hash the seed into 64 bytes, half will be sk, half will be cc
+    hashInput[seedLen] = 0;
+    relic::md_hmac(ILeft, hashInput, seedLen + 1, prefix, sizeof(prefix));
 
-  // Hash the seed into 64 bytes, half will be sk, half will be cc
-  hashInput[seedLen] = 0;
-  relic::md_hmac(ILeft, hashInput, seedLen + 1, prefix, sizeof(prefix));
+    hashInput[seedLen] = 1;
+    relic::md_hmac(IRight, hashInput, seedLen + 1, prefix, sizeof(prefix));
 
-  hashInput[seedLen] = 1;
-  relic::md_hmac(IRight, hashInput, seedLen + 1, prefix, sizeof(prefix));
+    // Make sure private key is less than the curve order
+    relic::bn_t* skBn = Util::SecAlloc<relic::bn_t>(1);
+    relic::bn_t order;
+    bn_new(order);
+    g1_get_ord(order);
 
-  // Make sure private key is less than the curve order
-  relic::bn_t* skBn = BLSUtil::SecAlloc<relic::bn_t>(1);
-  relic::bn_t order;
-  bn_new(order);
-  g1_get_ord(order);
+    bn_new(*skBn);
+    bn_read_bin(*skBn, ILeft, PrivateKey::PRIVATE_KEY_SIZE);
+    bn_mod_basic(*skBn, *skBn, order);
+    bn_write_bin(ILeft, PrivateKey::PRIVATE_KEY_SIZE, *skBn);
 
-  bn_new(*skBn);
-  bn_read_bin(*skBn, ILeft, CPrivKey::PRIVATE_KEY_SIZE);
-  bn_mod_basic(*skBn, *skBn, order);
-  bn_write_bin(ILeft, CPrivKey::PRIVATE_KEY_SIZE, *skBn);
+    ExtendedPrivateKey esk(ExtendedPublicKey::VERSION, 0, 0, 0,
+                           ChainCode::FromBytes(IRight),
+                           PrivateKey::FromBytes(ILeft));
 
-  ExtendedPrivateKey esk(ExtendedPublicKey::VERSION, 0, 0, 0, ChainCode::FromBytes(IRight), CPrivKey::FromBytes(ILeft));
-
-  BLSUtil::SecFree(skBn);
-  BLSUtil::SecFree(ILeft);
-  BLSUtil::SecFree(hashInput);
-  return esk;
+    Util::SecFree(skBn);
+    Util::SecFree(ILeft);
+    Util::SecFree(hashInput);
+    return esk;
 }
 
 ExtendedPrivateKey ExtendedPrivateKey::FromBytes(const uint8_t* serialized) {
-  BLS::AssertInitialized();
-  uint32_t version = BLSUtil::FourBytesToInt(serialized);
-  uint32_t depth = serialized[4];
-  uint32_t parentFingerprint = BLSUtil::FourBytesToInt(serialized + 5);
-  uint32_t childNumber = BLSUtil::FourBytesToInt(serialized + 9);
-  const uint8_t* ccPointer = serialized + 13;
-  const uint8_t* skPointer = ccPointer + ChainCode::CHAIN_CODE_SIZE;
+    BLS::AssertInitialized();
+    uint32_t version = Util::FourBytesToInt(serialized);
+    uint32_t depth = serialized[4];
+    uint32_t parentFingerprint = Util::FourBytesToInt(serialized + 5);
+    uint32_t childNumber = Util::FourBytesToInt(serialized + 9);
+    const uint8_t* ccPointer = serialized + 13;
+    const uint8_t* skPointer = ccPointer + ChainCode::CHAIN_CODE_SIZE;
 
-  ExtendedPrivateKey esk(version, depth, parentFingerprint, childNumber, ChainCode::FromBytes(ccPointer),
-                         CPrivKey::FromBytes(skPointer));
-  return esk;
+    ExtendedPrivateKey esk(version, depth, parentFingerprint, childNumber,
+                          ChainCode::FromBytes(ccPointer),
+                          PrivateKey::FromBytes(skPointer));
+    return esk;
 }
 
 ExtendedPrivateKey ExtendedPrivateKey::PrivateChild(uint32_t i) const {
-  BLS::AssertInitialized();
-  if (depth >= 255) { throw std::string("Cannot go further than 255 levels"); }
-  // Hardened keys have i >= 2^31. Non-hardened have i < 2^31
-  uint32_t cmp = (1 << 31);
-  bool hardened = i >= cmp;
+    BLS::AssertInitialized();
+    if (depth >= 255) {
+        throw std::string("Cannot go further than 255 levels");
+    }
+    // Hardened keys have i >= 2^31. Non-hardened have i < 2^31
+    uint32_t cmp = (1 << 31);
+    bool hardened = i >= cmp;
 
-  uint8_t* ILeft = BLSUtil::SecAlloc<uint8_t>(CPrivKey::PRIVATE_KEY_SIZE);
-  uint8_t IRight[ChainCode::CHAIN_CODE_SIZE];
+    uint8_t* ILeft = Util::SecAlloc<uint8_t>(
+            PrivateKey::PRIVATE_KEY_SIZE);
+    uint8_t IRight[ChainCode::CHAIN_CODE_SIZE];
 
-  // Chain code is used as hmac key
-  uint8_t hmacKey[ChainCode::CHAIN_CODE_SIZE];
-  //  chainCode.Serialize(hmacKey);
+    // Chain code is used as hmac key
+    uint8_t hmacKey[ChainCode::CHAIN_CODE_SIZE];
+    chainCode.Serialize(hmacKey);
 
-  size_t inputLen = hardened ? CPrivKey::PRIVATE_KEY_SIZE + 4 + 1 : CPubKey::PUBLIC_KEY_SIZE + 4 + 1;
-  // Hmac input includes sk or pk, int i, and byte with 0 or 1
-  uint8_t* hmacInput = BLSUtil::SecAlloc<uint8_t>(inputLen);
+    size_t inputLen = hardened ? PrivateKey::PRIVATE_KEY_SIZE + 4 + 1
+                                : PublicKey::PUBLIC_KEY_SIZE + 4 + 1;
+    // Hmac input includes sk or pk, int i, and byte with 0 or 1
+    uint8_t* hmacInput = Util::SecAlloc<uint8_t>(inputLen);
 
-  // Fill the input with the required data
-  if (hardened) {
-    // sk.Serialize(hmacInput);
-    BLSUtil::IntToFourBytes(hmacInput + CPrivKey::PRIVATE_KEY_SIZE, i);
-  } else {
-    // sk.GetPublicKey().Serialize(hmacInput);
-    BLSUtil::IntToFourBytes(hmacInput + CPubKey::PUBLIC_KEY_SIZE, i);
-  }
-  hmacInput[inputLen - 1] = 0;
+    // Fill the input with the required data
+    if (hardened) {
+        sk.Serialize(hmacInput);
+        Util::IntToFourBytes(hmacInput + PrivateKey::PRIVATE_KEY_SIZE, i);
+    } else {
+        sk.GetPublicKey().Serialize(hmacInput);
+        Util::IntToFourBytes(hmacInput + PublicKey::PUBLIC_KEY_SIZE, i);
+    }
+    hmacInput[inputLen - 1] = 0;
 
-  relic::md_hmac(ILeft, hmacInput, inputLen, hmacKey, ChainCode::CHAIN_CODE_SIZE);
+    relic::md_hmac(ILeft, hmacInput, inputLen,
+                    hmacKey, ChainCode::CHAIN_CODE_SIZE);
 
-  // Change 1 byte to generate a different sequence for chaincode
-  hmacInput[inputLen - 1] = 1;
+    // Change 1 byte to generate a different sequence for chaincode
+    hmacInput[inputLen - 1] = 1;
 
-  relic::md_hmac(IRight, hmacInput, inputLen, hmacKey, ChainCode::CHAIN_CODE_SIZE);
+    relic::md_hmac(IRight, hmacInput, inputLen,
+                    hmacKey, ChainCode::CHAIN_CODE_SIZE);
 
-  relic::bn_t* newSk = BLSUtil::SecAlloc<relic::bn_t>(1);
-  bn_new(*newSk);
-  bn_read_bin(*newSk, ILeft, CPrivKey::PRIVATE_KEY_SIZE);
+    PrivateKey newSk = PrivateKey::FromBytes(ILeft, true);
+    newSk = PrivateKey::AggregateInsecure({sk, newSk});
 
-  relic::bn_t order;
-  bn_new(order);
-  g2_get_ord(order);
+    ExtendedPrivateKey esk(version, depth + 1,
+                           sk.GetPublicKey().GetFingerprint(), i,
+                           ChainCode::FromBytes(IRight),
+                           newSk);
 
-  bn_add(*newSk, *newSk, *sk.GetValue());
-  bn_mod_basic(*newSk, *newSk, order);
+    Util::SecFree(ILeft);
+    Util::SecFree(hmacInput);
 
-  uint8_t* newSkBytes = BLSUtil::SecAlloc<uint8_t>(CPrivKey::PRIVATE_KEY_SIZE);
-  bn_write_bin(newSkBytes, CPrivKey::PRIVATE_KEY_SIZE, *newSk);
-
-  ExtendedPrivateKey esk(version, depth + 1, sk.GetPublicKey().GetFingerprint(), i, ChainCode::FromBytes(IRight),
-                         CPrivKey::FromBytes(newSkBytes));
-
-  BLSUtil::SecFree(newSk);
-  BLSUtil::SecFree(ILeft);
-  BLSUtil::SecFree(hmacInput);
-  BLSUtil::SecFree(newSkBytes);
-
-  return esk;
+    return esk;
 }
 
-uint32_t ExtendedPrivateKey::GetVersion() const { return version; }
-
-uint8_t ExtendedPrivateKey::GetDepth() const { return depth; }
-
-uint32_t ExtendedPrivateKey::GetParentFingerprint() const { return parentFingerprint; }
-
-uint32_t ExtendedPrivateKey::GetChildNumber() const { return childNumber; }
-
-ExtendedPublicKey ExtendedPrivateKey::PublicChild(uint32_t i) const { return PrivateChild(i).GetExtendedPublicKey(); }
-
-CPrivKey ExtendedPrivateKey::GetPrivateKey() const { return sk; }
-
-CPubKey ExtendedPrivateKey::GetPublicKey() const {
-  BLS::AssertInitialized();
-  return sk.GetPublicKey();
+uint32_t ExtendedPrivateKey::GetVersion() const {
+    return version;
 }
 
-ChainCode ExtendedPrivateKey::GetChainCode() const { return chainCode; }
+uint8_t ExtendedPrivateKey::GetDepth() const {
+    return depth;
+}
+
+uint32_t ExtendedPrivateKey::GetParentFingerprint() const {
+    return parentFingerprint;
+}
+
+uint32_t ExtendedPrivateKey::GetChildNumber() const {
+    return childNumber;
+}
+
+ExtendedPublicKey ExtendedPrivateKey::PublicChild(uint32_t i) const {
+    return PrivateChild(i).GetExtendedPublicKey();
+}
+
+PrivateKey ExtendedPrivateKey::GetPrivateKey() const {
+    return sk;
+}
+
+PublicKey ExtendedPrivateKey::GetPublicKey() const {
+    BLS::AssertInitialized();
+    return sk.GetPublicKey();
+}
+
+ChainCode ExtendedPrivateKey::GetChainCode() const {
+    return chainCode;
+}
 
 ExtendedPublicKey ExtendedPrivateKey::GetExtendedPublicKey() const {
-  BLS::AssertInitialized();
-  uint8_t buffer[ExtendedPublicKey::EXTENDED_PUBLIC_KEY_SIZE];
-  BLSUtil::IntToFourBytes(buffer, version);
-  buffer[4] = depth;
-  BLSUtil::IntToFourBytes(buffer + 5, parentFingerprint);
-  BLSUtil::IntToFourBytes(buffer + 9, childNumber);
+    BLS::AssertInitialized();
+    uint8_t buffer[ExtendedPublicKey::EXTENDED_PUBLIC_KEY_SIZE];
+    Util::IntToFourBytes(buffer, version);
+    buffer[4] = depth;
+    Util::IntToFourBytes(buffer + 5, parentFingerprint);
+    Util::IntToFourBytes(buffer + 9, childNumber);
 
-  // chainCode.Serialize(buffer + 13);
-  // sk.GetPublicKey().Serialize(buffer + 13 + ChainCode::CHAIN_CODE_SIZE);
+    chainCode.Serialize(buffer + 13);
+    sk.GetPublicKey().Serialize(buffer + 13 + ChainCode::CHAIN_CODE_SIZE);
 
-  return ExtendedPublicKey::FromBytes(buffer);
+    return ExtendedPublicKey::FromBytes(buffer);
 }
 
 // Comparator implementation.
-bool operator==(ExtendedPrivateKey const& a, ExtendedPrivateKey const& b) {
-  BLS::AssertInitialized();
-  return (a.GetPrivateKey() == b.GetPrivateKey() && a.GetChainCode() == b.GetChainCode());
+bool operator==(ExtendedPrivateKey const &a,  ExtendedPrivateKey const &b) {
+    BLS::AssertInitialized();
+    return (a.GetPrivateKey() == b.GetPrivateKey() &&
+            a.GetChainCode() == b.GetChainCode());
 }
 
-bool operator!=(ExtendedPrivateKey const& a, ExtendedPrivateKey const& b) { return !(a == b); }
-/*
-void ExtendedPrivateKey::Serialize(uint8_t* buffer) const {
-  BLS::AssertInitialized();
-  BLSUtil::IntToFourBytes(buffer, version);
-  buffer[4] = depth;
-  BLSUtil::IntToFourBytes(buffer + 5, parentFingerprint);
-  BLSUtil::IntToFourBytes(buffer + 9, childNumber);
-  chainCode.Serialize(buffer + 13);
-  sk.Serialize(buffer + 13 + ChainCode::CHAIN_CODE_SIZE);
+bool operator!=(ExtendedPrivateKey const&a,  ExtendedPrivateKey const&b) {
+    return !(a == b);
 }
-*/
 
-// Destructors in CPrivKey and ChainCode handle cleaning of memory
+void ExtendedPrivateKey::Serialize(uint8_t *buffer) const {
+    BLS::AssertInitialized();
+    Util::IntToFourBytes(buffer, version);
+    buffer[4] = depth;
+    Util::IntToFourBytes(buffer + 5, parentFingerprint);
+    Util::IntToFourBytes(buffer + 9, childNumber);
+    chainCode.Serialize(buffer + 13);
+    sk.Serialize(buffer + 13 + ChainCode::CHAIN_CODE_SIZE);
+}
+
+std::vector<uint8_t> ExtendedPrivateKey::Serialize() const {
+    std::vector<uint8_t> data(EXTENDED_PRIVATE_KEY_SIZE);
+    Serialize(data.data());
+    return data;
+}
+
+// Destructors in PrivateKey and ChainCode handle cleaning of memory
 ExtendedPrivateKey::~ExtendedPrivateKey() {}
-}  // namespace bls12_381
+} // end namespace bls

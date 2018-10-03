@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-using namespace bls12_381;
+using namespace bls;
 
 /** All alphanumeric characters except for "0", "I", "O", and "l" */
 static const char* pszBaseBLS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";

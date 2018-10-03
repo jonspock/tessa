@@ -17,6 +17,8 @@ add_library(bls ${BLS_HEADERS}
   ${CMAKE_CURRENT_SOURCE_DIR}/signature.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/pubkey.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/privkey.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/privatekey.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/publickey.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/bls.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/aggregationinfo.cpp
 
@@ -25,7 +27,7 @@ add_library(bls ${BLS_HEADERS}
   ${CMAKE_CURRENT_SOURCE_DIR}/key.cpp
 
 )
-
+SET(ENABLE_TESTS true)
 # For now just on Mac
 if (ENABLE_TESTS)
   add_executable(runtest test.cpp)

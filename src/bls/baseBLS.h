@@ -111,7 +111,7 @@ class CBaseBLSData {
  */
 class CTessaAddress : public CBaseBLSData {
  public:
-  bool Set(const bls12_381::CKeyID& id);
+  bool Set(const bls::CKeyID& id);
   bool Set(const CScriptID& id);
   bool Set(const CTxDestination& dest);
   bool IsValid() const;
@@ -123,7 +123,7 @@ class CTessaAddress : public CBaseBLSData {
   CTessaAddress(const char* pszAddress) { SetString(pszAddress); }
 
   CTxDestination Get() const;
-  bool GetKeyID(bls12_381::CKeyID& keyID) const;
+  bool GetKeyID(bls::CKeyID& keyID) const;
   bool IsScript() const;
 };
 
@@ -133,13 +133,13 @@ class CTessaAddress : public CBaseBLSData {
 
 class CTessaSecret : public CBaseBLSData {
  public:
-  void SetKey(const bls12_381::CKey& vchSecret);
-  bls12_381::CKey GetKey();
+  void SetKey(const bls::CKey& vchSecret);
+  bls::CKey GetKey();
   bool IsValid() const;
   bool SetString(const char* pszSecret);
   bool SetString(const std::string& strSecret);
 
-  CTessaSecret(const bls12_381::CKey& vchSecret) { SetKey(vchSecret); }
+  CTessaSecret(const bls::CKey& vchSecret) { SetKey(vchSecret); }
   CTessaSecret() {}
 };
 
@@ -162,5 +162,5 @@ template <typename K, int Size, CChainParams::BaseType Type> class CTessaExtKeyB
   CTessaExtKeyBase() {}
 };
 
-typedef CTessaExtKeyBase<bls12_381::CExtKey, 74, CChainParams::EXT_SECRET_KEY> CTessaExtKey;
-typedef CTessaExtKeyBase<bls12_381::CExtPubKey, 74, CChainParams::EXT_PUBLIC_KEY> CTessaExtPubKey;
+typedef CTessaExtKeyBase<bls::CExtKey, 74, CChainParams::EXT_SECRET_KEY> CTessaExtKey;
+typedef CTessaExtKeyBase<bls::CExtPubKey, 74, CChainParams::EXT_PUBLIC_KEY> CTessaExtPubKey;

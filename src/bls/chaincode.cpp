@@ -12,37 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "chaincode.h"
-#include "bls.h"
-namespace bls12_381 {
+#include "chaincode.hpp"
+#include "bls.hpp"
+namespace bls {
 
-ChainCode ChainCode::FromBytes(const uint8_t *bytes) {
-  BLS::AssertInitialized();
-  ChainCode c = ChainCode();
-  bn_new(c.chainCode);
-  bn_read_bin(c.chainCode, bytes, ChainCode::CHAIN_CODE_SIZE);
-  return c;
+ChainCode ChainCode::FromBytes(const uint8_t* bytes) {
+    BLS::AssertInitialized();
+    ChainCode c = ChainCode();
+    bn_new(c.chainCode);
+    bn_read_bin(c.chainCode, bytes, ChainCode::CHAIN_CODE_SIZE);
+    return c;
 }
 
 ChainCode::ChainCode(const ChainCode &cc) {
-  BLS::AssertInitialized();
-  uint8_t bytes[ChainCode::CHAIN_CODE_SIZE];
-  cc.Serialize(bytes);
-  bn_new(chainCode);
-  bn_read_bin(chainCode, bytes, ChainCode::CHAIN_CODE_SIZE);
+    BLS::AssertInitialized();
+    uint8_t bytes[ChainCode::CHAIN_CODE_SIZE];
+    cc.Serialize(bytes);
+    bn_new(chainCode);
+    bn_read_bin(chainCode, bytes, ChainCode::CHAIN_CODE_SIZE);
 }
 
 // Comparator implementation.
-bool operator==(ChainCode const &a, ChainCode const &b) { return bn_cmp(a.chainCode, b.chainCode) == CMP_EQ; }
-
-bool operator!=(ChainCode const &a, ChainCode const &b) { return !(a == b); }
-
-std::ostream &operator<<(std::ostream &os, ChainCode const &s) {
-  uint8_t buffer[ChainCode::CHAIN_CODE_SIZE];
-  s.Serialize(buffer);
-  return os << BLSUtil::HexStr(buffer, ChainCode::CHAIN_CODE_SIZE);
+bool operator==(ChainCode const &a,  ChainCode const &b) {
+    return bn_cmp(a.chainCode, b.chainCode) == CMP_EQ;
 }
 
-void ChainCode::Serialize(uint8_t *buffer) const { bn_write_bin(buffer, ChainCode::CHAIN_CODE_SIZE, chainCode); }
+bool operator!=(ChainCode const &a,  ChainCode const &b) {
+    return !(a == b);
+}
 
-}  // namespace bls12_381
+std::ostream &operator<<(std::ostream &os, ChainCode const &s) {
+    uint8_t buffer[ChainCode::CHAIN_CODE_SIZE];
+    s.Serialize(buffer);
+    return os << Util::HexStr(buffer, ChainCode::CHAIN_CODE_SIZE);
+}
+
+void ChainCode::Serialize(uint8_t *buffer) const {
+    bn_write_bin(buffer, ChainCode::CHAIN_CODE_SIZE, chainCode);
+}
+
+std::vector<uint8_t> ChainCode::Serialize() const {
+    std::vector<uint8_t> data(CHAIN_CODE_SIZE);
+    Serialize(data.data());
+    return data;
+}
+} // end namespace bls

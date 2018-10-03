@@ -15,11 +15,11 @@
 #include <cstring>
 #include <iostream>
 
-#include "bls.h"
-#include "blsutil.h"
+#include "bls.hpp"
+#include "util.hpp"
 #include "pubkey.h"
 
-namespace bls12_381 {
+namespace bls {
 
 CPubKey CPubKey::FromBytes(const uint8_t *key) {
   BLS::AssertInitialized();
@@ -80,7 +80,7 @@ bool operator<(CPubKey const &a, CPubKey const &b) { return std::memcmp(a.data, 
 
 std::ostream &operator<<(std::ostream &os, CPubKey const &pk) {
   BLS::AssertInitialized();
-  return os << BLSUtil::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
+  return os << Util::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
 }
 
 uint32_t CPubKey::GetFingerprint() const {
@@ -88,8 +88,8 @@ uint32_t CPubKey::GetFingerprint() const {
   uint8_t buffer[CPubKey::PUBLIC_KEY_SIZE];
   uint8_t hash[32];
   Serialize(buffer);
-  BLSUtil::Hash256(hash, buffer, CPubKey::PUBLIC_KEY_SIZE);
-  return BLSUtil::FourBytesToInt(hash);
+  Util::Hash256(hash, buffer, CPubKey::PUBLIC_KEY_SIZE);
+  return Util::FourBytesToInt(hash);
 }
 
 void CPubKey::CompressPoint(uint8_t *result, const relic::g1_t *point) {
@@ -100,4 +100,4 @@ void CPubKey::CompressPoint(uint8_t *result, const relic::g1_t *point) {
   std::memcpy(result, buffer + 1, PUBLIC_KEY_SIZE);
 }
 
-}  // namespace bls12_381
+}  // namespace bls

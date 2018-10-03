@@ -11,7 +11,7 @@
 #include "random.h"
 #include "uint256.h"
 
-namespace bls12_381 {
+namespace bls {
 
 bool CKey::Check(const uint8_t* vch) { return false; }
 
@@ -93,7 +93,7 @@ CExtPubKey CExtKey::Neuter() const {
   memcpy(&ret.vchFingerprint[0], &vchFingerprint[0], 4);
   ret.nChild = nChild;
   ret.pubkey = key.GetPubKey();
-  ret.chaincode = chaincode;
+  //  ret.chaincode = chaincode;
   return ret;
 }
 
@@ -118,4 +118,4 @@ void CExtKey::Decode(const uint8_t code[74]) {
   key.Set(code + 42, code + 74, true);
 }
 
-}  // namespace bls12_381
+}  // namespace bls

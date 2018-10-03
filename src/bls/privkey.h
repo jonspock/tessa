@@ -15,7 +15,7 @@
 #pragma once
 
 #include "pubkey.h"
-#include "signature.h"
+#include "signature.hpp"
 
 class CPrivKey {
  public:
@@ -37,7 +37,7 @@ class CPrivKey {
 
   ~CPrivKey();
 
-  bls12_381::CPubKey GetPublicKey() const;
+  bls::CPubKey GetPublicKey() const;
 
   // Compare to different private key
   friend bool operator==(const CPrivKey& a, const CPrivKey& b);
@@ -78,15 +78,15 @@ class CPrivKey {
   }
 
   // Sign a message
-  bls12_381::Signature Sign(uint8_t* msg, size_t len) const;
-  bls12_381::Signature SignPrehashed(uint8_t* hash) const;
+  bls::Signature Sign(uint8_t* msg, size_t len) const;
+  bls::Signature SignPrehashed(uint8_t* hash) const;
 
   // FOR NOW : ALLOW : Don't allow public construction, force static methods
   CPrivKey() {}
 
   void clear() {
     // BLS::AssertInitialized();
-    BLSUtil::SecFree(keydata);
+    bls::Util::SecFree(keydata);
   }
 
   // private:
