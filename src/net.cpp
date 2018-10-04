@@ -1492,9 +1492,8 @@ void ThreadMessageHandler() {
 // ppcoin: stake minter thread
 void static ThreadStakeMinter() {
   LogPrintf("ThreadStakeMinter started\n");
-  CWallet* pwallet = pwalletMain;
   try {
-    BitcoinMiner(pwallet, true);
+    BitcoinMiner(pwalletMain, true);
     interruption_point(net_interrupted);
   } catch (thread_interrupted& e) {
     LogPrintf("ThreadStakeMinter() interrupted\n");  ///
