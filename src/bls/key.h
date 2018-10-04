@@ -30,9 +30,6 @@ class CKey {
  private:
   bls::PrivateKey PK;
   
-  //! Whether the public key corresponding to this private key is (to be) compressed.
-  bool fCompressed=false;
-
   //! Check whether the 32-byte array pointed to be vch is valid keydata.
   bool static Check(const uint8_t* vch);
 
@@ -45,10 +42,9 @@ class CKey {
   }
 
   //! Initialize using begin and end iterators to byte data.
-  template <typename T> void Set(const T pbegin, const T pend, bool fCompressedIn) {
+  template <typename T> void Set(const T pbegin, const T pend) {
     if ((size_t(pend - pbegin) == bls::PrivateKey::PRIVATE_KEY_SIZE) && (Check(&pbegin[0]))) {
       PK.FromBytes((uint8_t*)&pbegin[0], bls::PrivateKey::PRIVATE_KEY_SIZE);
-      fCompressed = fCompressedIn;
     }
   }
 
@@ -61,7 +57,8 @@ class CKey {
   bool IsValid() const { return PK.valid(); }
 
   //! Check whether the public key corresponding to this private key is (to be) compressed.
-  bool IsCompressed() const { return fCompressed; }
+  // Legacy interface
+  bool IsCompressed() const { return true; }
 
   //! Initialize from a CPrivKey
   bool SetPrivKey(const CPrivKey& vchPrivKey, bool fCompressed);
@@ -83,20 +80,7 @@ class CKey {
    */
   CPubKey GetPubKey() const;
 
-  /**
-   * Create a DER-serialized signature.
-   * The test_case parameter tweaks the deterministic nonce.
-   */
-  bool Sign(const uint256& hash, std::vector<uint8_t>& vchSig, uint32_t test_case = 0) const;
-
-  /**
-   * Create a compact signature (65 bytes), which allows reconstructing the used public key.
-   * The format is one header byte, followed by two times 32 bytes for the serialized r and s values.
-   * The header byte: 0x1B = first key with even y, 0x1C = first key with odd y,
-   *                  0x1D = second key with even y, 0x1E = second key with odd y,
-   *                  add 0x04 for compressed keys.
-   */
-  bool SignCompact(const uint256& hash, std::vector<uint8_t>& vchSig) const;
+  bool Sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
 
   //! Derive BIP32 child key.
   bool Derive(CKey& keyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const;
@@ -106,34 +90,6 @@ class CKey {
    * This is done using a different mechanism than just regenerating it.
    */
   bool VerifyPubKey(const CPubKey& vchPubKey) const;
-
-  //! Load private key and check that public key matches.
-  bool Load(const CPrivKey& privkey, const CPubKey& vchPubKey, bool fSkipCheck);
-
-  //! Check whether an element of a signature (r or s) is valid.
-  static bool CheckSignatureElement(const uint8_t* vch, int len, bool half);
-
     
 };
-  /*
-struct CExtKey {
-  uint8_t nDepth;
-  uint8_t vchFingerprint[4];
-  unsigned int nChild;
-  ChainCode chaincode;
-  CKey key;
-
-  friend bool operator==(const CExtKey& a, const CExtKey& b) {
-    return a.nDepth == b.nDepth && memcmp(&a.vchFingerprint[0], &b.vchFingerprint[0], sizeof(vchFingerprint)) == 0 &&
-           a.nChild == b.nChild && a.chaincode == b.chaincode && a.key == b.key;
-  }
-
-  void Encode(uint8_t code[BIP32_EXTKEY_SIZE]) const;
-  void Decode(const uint8_t code[BIP32_EXTKEY_SIZE]);
-  bool Derive(CExtKey& out, unsigned int nChild) const;
-  CExtPubKey Neuter() const;
-  void SetMaster(const uint8_t* seed, unsigned int nSeedLen);
-};
-  */
-
 }  // namespace bls

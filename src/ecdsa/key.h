@@ -109,9 +109,8 @@ class CKey {
 
   /**
    * Create a DER-serialized signature.
-   * The test_case parameter tweaks the deterministic nonce.
    */
-  bool Sign(const uint256& hash, std::vector<uint8_t>& vchSig, uint32_t test_case = 0) const;
+  bool Sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
 
   /**
    * Create a compact signature (65 bytes), which allows reconstructing the used public key.
@@ -131,11 +130,6 @@ class CKey {
    */
   bool VerifyPubKey(const CPubKey& vchPubKey) const;
 
-  //! Load private key and check that public key matches.
-  bool Load(const CPrivKey& privkey, const CPubKey& vchPubKey, bool fSkipCheck);
-
-  //! Check whether an element of a signature (r or s) is valid.
-  static bool CheckSignatureElement(const uint8_t* vch, int len, bool half);
 };
 
 struct CExtKey {

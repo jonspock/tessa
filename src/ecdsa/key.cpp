@@ -188,7 +188,8 @@ CPubKey CKey::GetPubKey() const {
   return result;
 }
 
-bool CKey::Sign(const uint256& hash, std::vector<uint8_t>& vchSig, uint32_t test_case) const {
+bool CKey::Sign(const uint256& hash, std::vector<uint8_t>& vchSig) const {
+  const uint32_t test_case = 0;
   if (!fValid) return false;
   vchSig.resize(CPubKey::SIGNATURE_SIZE);
   size_t nSigLen = CPubKey::SIGNATURE_SIZE;
@@ -230,15 +231,6 @@ bool CKey::SignCompact(const uint256& hash, std::vector<uint8_t>& vchSig) const 
   return true;
 }
 
-bool CKey::Load(const CPrivKey& privkey, const CPubKey& vchPubKey, bool fSkipCheck = false) {
-  if (!ec_privkey_import_der(secp256k1_context_sign, (uint8_t*)begin(), privkey.data(), privkey.size())) return false;
-  fCompressed = vchPubKey.IsCompressed();
-  fValid = true;
-
-  if (fSkipCheck) return true;
-
-  return VerifyPubKey(vchPubKey);
-}
 
 bool CKey::Derive(CKey& keyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const {
   assert(IsValid());
