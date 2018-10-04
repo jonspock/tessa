@@ -436,8 +436,8 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
 }
 
 CCoinsViewCache* gpCoinsTip = nullptr;
-CBlockTreeDB* gpBlockTreeDB = nullptr;
-CZerocoinDB* gpZerocoinDB = nullptr;
+std::unique_ptr<CBlockTreeDB> gpBlockTreeDB;
+std::unique_ptr<CZerocoinDB> gpZerocoinDB;
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -246,8 +246,8 @@ void PrepareShutdown(CScheduler& scheduler) {
     if (gpCoinsTip) delete gpCoinsTip;
     if (pcoinscatcher) delete pcoinscatcher;
     if (pcoinsdbview) delete pcoinsdbview;
-    if (gpBlockTreeDB) delete gpBlockTreeDB;
-    if (gpZerocoinDB) delete gpZerocoinDB;
+    gpBlockTreeDB.reset(nullptr);
+    gpZerocoinDB.reset(nullptr);
   }
 
 #if ENABLE_ZMQ
@@ -1326,9 +1326,8 @@ bool AppInit2(CScheduler& scheduler) {
       gSporkDB.init((GetDataDir() / "sporks.json").string());
 
       try {
-        delete gpZerocoinDB;
         // Tessa specific: zerocoin and spork DB's
-        gpZerocoinDB = new CZerocoinDB(0, false, fReindex);
+        gpZerocoinDB.reset(new CZerocoinDB(0, false, fReindex));
       } catch (std::exception& e) {
         if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
         strLoadError = _("Error opening Zerocoin DB");
@@ -1337,8 +1336,7 @@ bool AppInit2(CScheduler& scheduler) {
       }
 
       try {
-        delete gpBlockTreeDB;
-        gpBlockTreeDB = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
+        gpBlockTreeDB.reset(new CBlockTreeDB(nBlockTreeDBCache, false, fReindex));
       } catch (std::exception& e) {
         if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
         strLoadError = _("Error opening block DB");

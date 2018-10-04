@@ -44,7 +44,7 @@ extern CChain chainActive;
 extern CCoinsViewCache* gpCoinsTip;
 
 /** Global variable that points to the active block tree (protected by cs_main) */
-extern CBlockTreeDB* gpBlockTreeDB;  // init.cpp/main.cpp
+extern std::unique_ptr<CBlockTreeDB> gpBlockTreeDB;  // init.cpp/main.cpp
 
 /** Global variable that points to the zerocoin database (protected by cs_main) */
-extern CZerocoinDB* gpZerocoinDB;
+extern std::unique_ptr<CZerocoinDB> gpZerocoinDB;
