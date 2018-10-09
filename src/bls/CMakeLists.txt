@@ -23,7 +23,7 @@ add_library(bls ${BLS_HEADERS} ${OTHER_HEADERS}
   ${CMAKE_CURRENT_SOURCE_DIR}/aggregationinfo.cpp
 
   # legacy functions
-  ${CMAKE_CURRENT_SOURCE_DIR}/ecdsa.cpp
+  #${CMAKE_CURRENT_SOURCE_DIR}/ecdsa.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/blocksignature.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/extkey.cpp
 

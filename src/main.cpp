@@ -24,7 +24,8 @@
 #include "checkpoints.h"
 #include "checkqueue.h"
 #include "bls/blocksignature.h"
-#include "bls/ecdsa.h"
+#include "ecdsa/key.h"
+#include "ecdsa/pubkey.h"
 #include "init.h"
 #include "kernel.h"
 #include "merkleblock.h"
@@ -2857,8 +2858,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
   // Check transactions
 #ifndef ZEROCOIN_DISABLED
 #warning "Check zerocoin start here"
-  bool fZerocoinActive = (chainActive.Tip()->nHeight) >= Params().Zerocoin_StartHeight();
+  //bool fZerocoinActive = (chainActive.Tip()->nHeight) >= Params().Zerocoin_StartHeight();
   //bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
+    bool fZerocoinActive = false;
 #else
   bool fZerocoinActive = false;
 #endif

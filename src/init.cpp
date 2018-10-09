@@ -41,7 +41,7 @@
 #include "zerocoin/zerochain.h"
 #include "zerocoin/zerocoindb.h"
 
-#include "bls/ecdsa.h"
+#include "ecdsa/key.h"
 #include "wallet/db.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"

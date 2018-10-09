@@ -199,7 +199,6 @@ struct CExtPubKey {
 
 } // end namespace ecdsa
 
-#ifdef NEED_ECC  
 /** Users of this module must hold an ECCVerifyHandle. The constructor and
  *  destructor of these are not allowed to run in parallel, though. */
 class ECCVerifyHandle {
@@ -209,4 +208,3 @@ class ECCVerifyHandle {
   ECCVerifyHandle();
   ~ECCVerifyHandle();
 };
-#endif

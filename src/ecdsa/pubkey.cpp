@@ -239,7 +239,6 @@ bool CExtPubKey::Derive(CExtPubKey& out, unsigned int _nChild) const {
   return (!secp256k1_ecdsa_signature_normalize(secp256k1_context_verify, nullptr, &sig));
 }
 
-#ifdef NEED_ECC
 /* static */ int ECCVerifyHandle::refcount = 0;
 
 ECCVerifyHandle::ECCVerifyHandle() {
@@ -259,4 +258,3 @@ ECCVerifyHandle::~ECCVerifyHandle() {
     secp256k1_context_verify = nullptr;
   }
 }
-#endif

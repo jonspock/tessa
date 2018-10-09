@@ -310,7 +310,7 @@ void CExtKey::Decode(const uint8_t code[74]) {
   memcpy(chaincode.begin(), code + 9, 32);
   key.Set(code + 42, code + 74, true);
 }
-#ifdef NEED_ECC
+
 bool ECC_InitSanityCheck() {
   CKey key;
   key.MakeNewKey(true);
@@ -341,4 +341,3 @@ void ECC_Stop() {
 
   if (ctx) { secp256k1_context_destroy(ctx); }
 }
-#endif
