@@ -30,7 +30,7 @@
 
 #include <cstdint>
 
-using namespace ecdsa;
+using namespace bls;
 using namespace std;
 
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, UniValue& out, bool fIncludeHex) {
@@ -768,7 +768,7 @@ UniValue sendrawtransaction(const UniValue& params, bool fHelp) {
   return hashTx.GetHex();
 }
 
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 UniValue getspentzerocoinamount(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 2)
     throw runtime_error(

@@ -48,14 +48,14 @@ class PrivateCoin {
   const CBigNum& getSerialNumber() const { return this->serialNumber; }
   const CBigNum& getRandomness() const { return this->randomness; }
   const uint8_t& getVersion() const { return this->version; }
-  const CPrivKey& getPrivKey() const { return this->privkey; }
+  const CSecretKey& getPrivKey() const { return this->privkey; }
   ecdsa::CPubKey getPubKey() const;
 
   void setPublicCoin(const PublicCoin& p) { publicCoin = p; }
   void setRandomness(const Bignum& n) { randomness = n; }
   void setSerialNumber(const Bignum& n) { serialNumber = n; }
   void setVersion(uint8_t nVersion) { this->version = nVersion; }
-  void setPrivKey(const CPrivKey& privkey) { this->privkey = privkey; }
+  void setPrivKey(const CSecretKey& privkey) { this->privkey = privkey; }
   bool sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
   bool IsValid();
 
@@ -78,7 +78,7 @@ class PrivateCoin {
   CBigNum randomness;
   CBigNum serialNumber;
   uint8_t version = 1;
-  CPrivKey privkey;
+  CSecretKey privkey;
 };
 
 } /* namespace libzerocoin */

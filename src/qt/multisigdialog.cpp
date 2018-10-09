@@ -41,7 +41,7 @@
 #include <QtGlobal>
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 extern bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow);
 

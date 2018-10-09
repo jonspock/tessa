@@ -38,7 +38,7 @@ class CZerocoinMint {
   CBigNum randomness;
   CBigNum serialNumber;
   uint256 txid;
-  CPrivKey privkey;
+  CSecretKey privkey;
   uint8_t nMintVersion;
   bool isUsed;
 
@@ -48,7 +48,7 @@ class CZerocoinMint {
   CZerocoinMint() { SetNull(); }
 
   CZerocoinMint(libzerocoin::CoinDenomination denom, const CBigNum& value, const CBigNum& randomness,
-                const CBigNum& serialNumber, bool isUsed, const uint8_t& nVersion, CPrivKey* privkey = nullptr) {
+                const CBigNum& serialNumber, bool isUsed, const uint8_t& nVersion, CSecretKey* privkey = nullptr) {
     SetNull();
     this->denomination = denom;
     this->value = value;
@@ -89,8 +89,8 @@ class CZerocoinMint {
   void SetTxHash(uint256 txid) { this->txid = txid; }
   uint8_t GetVersion() const { return this->nMintVersion; }
   void SetVersion(const uint8_t ver) { this->nMintVersion = ver; }
-  CPrivKey GetPrivKey() const { return this->privkey; }
-  void SetPrivKey(const CPrivKey& privkey) { this->privkey = privkey; }
+  CSecretKey GetPrivKey() const { return this->privkey; }
+  void SetPrivKey(const CSecretKey& privkey) { this->privkey = privkey; }
   bool GetKeyPair(ecdsa::CKey& key) const;
 
   inline bool operator<(const CZerocoinMint& a) const { return GetHeight() < a.GetHeight(); }

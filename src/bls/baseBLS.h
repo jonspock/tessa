@@ -162,5 +162,3 @@ template <typename K, int Size, CChainParams::BaseType Type> class CTessaExtKeyB
   CTessaExtKeyBase() {}
 };
 
-typedef CTessaExtKeyBase<bls::CExtKey, 74, CChainParams::EXT_SECRET_KEY> CTessaExtKey;
-typedef CTessaExtKeyBase<bls::CExtPubKey, 74, CChainParams::EXT_PUBLIC_KEY> CTessaExtPubKey;

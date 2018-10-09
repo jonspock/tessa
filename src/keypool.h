@@ -2,7 +2,7 @@
 
 #include "serialize.h"
 
-namespace ecdsa {
+namespace bls {
 class CPubKey;
 }
 
@@ -10,10 +10,10 @@ class CPubKey;
 class CKeyPool {
  public:
   int64_t nTime;
-  ecdsa::CPubKey vchPubKey;
+  bls::CPubKey vchPubKey;
 
   CKeyPool();
-  CKeyPool(const ecdsa::CPubKey& vchPubKeyIn);
+  CKeyPool(const bls::CPubKey& vchPubKeyIn);
 
   ADD_SERIALIZE_METHODS
 

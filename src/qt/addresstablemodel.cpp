@@ -17,7 +17,7 @@
 #include <QDebug>
 #include <QFont>
 
-using namespace ecdsa;
+using namespace bls;
 
 const QString AddressTableModel::Send = "S";
 const QString AddressTableModel::Receive = "R";

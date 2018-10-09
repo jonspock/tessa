@@ -9,14 +9,14 @@
 #include "crypto/ripemd160.h"
 #include "crypto/sha1.h"
 #include "crypto/sha256.h"
-#include "ecdsa/pubkey.h"
+#include "bls/pubkey.h"
 #include "hash.h"
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "uint256.h"
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 typedef vector<uint8_t> valtype;
 

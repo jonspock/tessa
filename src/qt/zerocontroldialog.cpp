@@ -41,7 +41,7 @@ void ZPivControlDialog::setModel(WalletModel* model) {
 
 // Update the tree widget
 void ZPivControlDialog::updateList() {
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   // need to prevent the slot from being called each time something is changed
   ui->treeWidget->blockSignals(true);
   ui->treeWidget->clear();

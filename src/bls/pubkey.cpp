@@ -16,50 +16,59 @@
 #include <iostream>
 
 #include "bls.hpp"
-#include "util.hpp"
 #include "pubkey.h"
+#include "util.hpp"
 
-namespace ecdsa {
+namespace bls {
+
+CKeyID CPubKey::GetID() const { return CKeyID(Hash160(data.get(), data.get() + size())); }
+uint256 CPubKey::GetHash() const { return Hash(data.get(), data.get() + size()); }
+std::vector<uint8_t> CPubKey::ToStdVector() const { return std::vector<uint8_t>(data.get(), data.get() + size()); }
+std::string CPubKey::GetHex() const {
+  std::string my_std_string(reinterpret_cast<const char *>(data.get()), size());
+  return my_std_string;
+}
 
 CPubKey CPubKey::FromBytes(const uint8_t *key) {
-  bls::BLS::AssertInitialized();
-  CPubKey pk = CPubKey();
-  std::memcpy(pk.data, key, PUBLIC_KEY_SIZE);
-  uint8_t uncompressed[PUBLIC_KEY_SIZE + 1];
-  std::memcpy(uncompressed + 1, key, PUBLIC_KEY_SIZE);
-  if (key[0] & 0x80) {
-    uncompressed[0] = 0x03;   // Insert extra byte for Y=1
-    uncompressed[1] &= 0x7f;  // Remove initial Y bit
-  } else {
-    uncompressed[0] = 0x02;  // Insert extra byte for Y=0
-  }
-  relic::g1_read_bin(pk.q, uncompressed, PUBLIC_KEY_SIZE + 1);
+  CPubKey pk;
+  pk.data.reset(new uint8_t[PUBLIC_KEY_SIZE]);
+  for (size_t i = 0; i < PUBLIC_KEY_SIZE; i++) pk.data[i] = key[i];
   return pk;
 }
 
-CPubKey CPubKey::FromG1(const relic::g1_t *pubKey) {
-  bls::BLS::AssertInitialized();
-  CPubKey pk = CPubKey();
-  g1_copy(pk.q, *pubKey);
-  CompressPoint(pk.data, &pk.q);
-  return pk;
+//! Initialize a public key using begin/end iterators to byte data.
+void CPubKey::Set(const uint8_t *pbegin, const uint8_t *pend) {
+  if (pbegin - pend == PUBLIC_KEY_SIZE) {
+    data.reset(new uint8_t[PUBLIC_KEY_SIZE]);
+    for (size_t i = 0; i < PUBLIC_KEY_SIZE; i++) data[i] = pbegin[i];
+  }
+}
+
+CPubKey &CPubKey::operator=(const CPubKey &a) {
+  if (a.data != nullptr) {
+    data.reset(new uint8_t[PUBLIC_KEY_SIZE]);
+    for (size_t i = 0; i < PUBLIC_KEY_SIZE; i++) data[i] = a.data[i];
+  }
+  return *this;
 }
 
 CPubKey::CPubKey(const CPubKey &pubKey) {
-  bls::BLS::AssertInitialized();
-  relic::g1_t tmp;
-  pubKey.GetPoint(tmp);
-  g1_copy(q, tmp);
-  CompressPoint(data, &q);
+  if (pubKey.data != nullptr) {
+    data.reset(new uint8_t[PUBLIC_KEY_SIZE]);
+    for (size_t i = 0; i < PUBLIC_KEY_SIZE; i++) data[i] = pubKey.data[i];
+  }
 }
 
-size_t CPubKey::size() const { return PUBLIC_KEY_SIZE; }
+CPubKey::CPubKey(const std::vector<uint8_t> &vchPubKey) {
+  data.reset(new uint8_t[PUBLIC_KEY_SIZE]);
+  for (size_t i = 0; i < PUBLIC_KEY_SIZE; i++) data[i] = vchPubKey[i];
+}
 
-const uint8_t *CPubKey::begin() const { return data; }
+size_t CPubKey::size() const { return (data == nullptr) ? 0 : PUBLIC_KEY_SIZE; }
 
-const uint8_t *CPubKey::end() const { return data + size(); }
-
-const uint8_t &CPubKey::operator[](size_t pos) const { return data[pos]; }
+// const uint8_t *CPubKey::begin() const { return data; }
+// const uint8_t *CPubKey::end() const { return data + size(); }
+// const uint8_t &CPubKey::operator[](size_t pos) const { return data[pos]; }
 
 /*
 void CPubKey::Serialize(uint8_t *buffer) const {
@@ -70,34 +79,36 @@ void CPubKey::Serialize(uint8_t *buffer) const {
 
 // Comparator implementation.
 bool operator==(CPubKey const &a, CPubKey const &b) {
-  bls::BLS::AssertInitialized();
-  return g1_cmp(a.q, b.q) == CMP_EQ;
+  for (size_t i = 0; i < CPubKey::PUBLIC_KEY_SIZE; i++) {
+    if (a.data[i] != b.data[i]) return false;
+  }
+  return true;
 }
 
 bool operator!=(CPubKey const &a, CPubKey const &b) { return !(a == b); }
 
-bool operator<(CPubKey const &a, CPubKey const &b) { return std::memcmp(a.data, b.data, CPubKey::PUBLIC_KEY_SIZE) < 0; }
-
+//??  ???
+bool operator<(CPubKey const &a, CPubKey const &b) {
+  std::vector<uint8_t> ar = a.ToStdVector();
+  std::vector<uint8_t> br = b.ToStdVector();
+  return std::memcmp(&ar[0], &br[0], CPubKey::PUBLIC_KEY_SIZE) < 0;
+}
+/*
 std::ostream &operator<<(std::ostream &os, CPubKey const &pk) {
-  bls::BLS::AssertInitialized();
-  return os << bls::Util::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
+bls::BLS::AssertInitialized();
+return os << bls::Util::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
 }
+*/
 
-uint32_t CPubKey::GetFingerprint() const {
-  bls::BLS::AssertInitialized();
-  uint8_t buffer[CPubKey::PUBLIC_KEY_SIZE];
-  uint8_t hash[32];
-  Serialize(buffer);
-  bls::Util::Hash256(hash, buffer, CPubKey::PUBLIC_KEY_SIZE);
-  return bls::Util::FourBytesToInt(hash);
-}
+bool CPubKey::Verify(const uint256 &hash, const std::vector<uint8_t> &vchSig) const { return true; }
 
-void CPubKey::CompressPoint(uint8_t *result, const relic::g1_t *point) {
+CPubKey CPubKey::FromG1(const relic::g1_t *point) {
+  CPubKey pk = CPubKey();
   uint8_t buffer[CPubKey::PUBLIC_KEY_SIZE + 1];
   g1_write_bin(buffer, CPubKey::PUBLIC_KEY_SIZE + 1, *point, 1);
-
   if (buffer[0] == 0x03) { buffer[1] |= 0x80; }
-  std::memcpy(result, buffer + 1, PUBLIC_KEY_SIZE);
+  for (size_t i = 0; i < PUBLIC_KEY_SIZE; i++) pk.data[i] = buffer[i + 1];
+  return pk;
 }
 
 }  // namespace bls

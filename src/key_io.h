@@ -7,13 +7,13 @@
 #pragma once
 
 #include <chainparams.h>
-#include <ecdsa/key.h>
+#include <bls/key.h>
 #include <script/standard.h>
 
 #include <string>
 
-ecdsa::CKey DecodeSecret(const std::string& str);
-std::string EncodeSecret(const ecdsa::CKey& key);
+bls::CKey DecodeSecret(const std::string& str);
+std::string EncodeSecret(const bls::CKey& key);
 
 std::string EncodeDestination(const CTxDestination& dest);
 CTxDestination DecodeDestination(const std::string& str);

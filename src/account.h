@@ -7,7 +7,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-#include "ecdsa/pubkey.h"
+#include "bls/pubkey.h"
 #include "streams.h"
 #include "wallet/wallet_functions.h"
 
@@ -17,11 +17,11 @@
  */
 class CAccount {
  public:
-  ecdsa::CPubKey vchPubKey;
+  bls::CPubKey vchPubKey;
 
   CAccount() { SetNull(); }
 
-  void SetNull() { vchPubKey = ecdsa::CPubKey(); }
+  void SetNull() { vchPubKey = bls::CPubKey(); }
 
   ADD_SERIALIZE_METHODS
 

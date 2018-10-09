@@ -15,9 +15,7 @@
 #include "net.h"
 #include "netbase.h"
 #include "rpc/server.h"
-#ifdef HAVE_SPORKS
 #include "spork/spork.h"
-#endif
 #include "staker.h"
 #include "timedata.h"
 #include "util.h"
@@ -31,7 +29,6 @@
 #include <cstdint>
 
 using namespace std;
-using namespace ecdsa;
 
 /**
  * @note Do not add or change anything in the information returned by this
@@ -102,7 +99,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   if (pwalletMain) {
     obj.push_back(std::make_pair("walletversion", pwalletMain->GetVersion()));
     obj.push_back(std::make_pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
     obj.push_back(std::make_pair("zerocoinbalance", ValueFromAmount(pwalletMain->GetZerocoinBalance(true))));
 #endif
   }
@@ -120,7 +117,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   }
 
   obj.push_back(std::make_pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply)));
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   UniValue zkpObj(UniValue::VOBJ);
   for (auto denom : libzerocoin::zerocoinDenomList) {
     zkpObj.push_back(std::make_pair(to_string(denom),
@@ -156,9 +153,9 @@ class DescribeAddressVisitor : public std::variant<UniValue> {
 
   UniValue operator()(const CNoDestination& dest) const { return UniValue(UniValue::VOBJ); }
 
-  UniValue operator()(const CKeyID& keyID) const {
+  UniValue operator()(const bls::CKeyID& keyID) const {
     UniValue obj(UniValue::VOBJ);
-    CPubKey vchPubKey;
+    bls::CPubKey vchPubKey;
     obj.push_back(std::make_pair("isscript", false));
     if (mine == ISMINE_SPENDABLE) {
       pwalletMain->GetPubKey(keyID, vchPubKey);
@@ -317,16 +314,16 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
                   keys.size(), nRequired));
   if (keys.size() > 16)
     throw runtime_error("Number of addresses involved in the multisignature address creation > 16\nReduce the number");
-  std::vector<CPubKey> pubkeys;
+  std::vector<bls::CPubKey> pubkeys;
   pubkeys.resize(keys.size());
   for (uint32_t i = 0; i < keys.size(); i++) {
     const std::string& ks = keys[i].get_str();
     // Case 1: address and we have full public key:
     if (pwalletMain && IsValidDestinationString(ks)) {
       CTxDestination address = DecodeDestination(ks);
-      CKeyID* keyID = &std::get<CKeyID>(address);
+      bls::CKeyID* keyID = &std::get<bls::CKeyID>(address);
       if (!keyID) throw runtime_error(strprintf("%s does not refer to a key", ks));
-      CPubKey vchPubKey;
+      bls::CPubKey vchPubKey;
       if (!pwalletMain->GetPubKey(*keyID, vchPubKey))
         throw runtime_error(strprintf("no full public key for address %s", ks));
       if (!vchPubKey.IsFullyValid()) throw runtime_error(" Invalid public key: " + ks);
@@ -335,7 +332,7 @@ CScript _createmultisig_redeemScript(const UniValue& params) {
 
     // Case 2: hex public key
     else if (IsHex(ks)) {
-      CPubKey vchPubKey(ParseHex(ks));
+      bls::CPubKey vchPubKey(ParseHex(ks));
       if (!vchPubKey.IsFullyValid()) throw runtime_error(" Invalid public key: " + ks);
       pubkeys[i] = vchPubKey;
     } else {
@@ -426,7 +423,8 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
 
   CTxDestination address = DecodeDestination(strAddress);
-  CKeyID* keyID = &std::get<CKeyID>(address);
+  // Only BLS Supported for now -> Change to add ECDSA???
+  bls::CKeyID* keyID = &std::get<bls::CKeyID>(address);
 
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
@@ -439,13 +437,9 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   ss << strMessageMagic;
   ss << strMessage;
 
-  CPubKey pubkey;
+  ecdsa::CPubKey pubkey;
   if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return false;
-
-  return (pubkey.GetID() == *keyID);
-#else
-    return false;
-#endif
+  return ((uint160)pubkey.GetID() == (uint160)*keyID);
 }
 
 UniValue setmocktime(const UniValue& params, bool fHelp) {

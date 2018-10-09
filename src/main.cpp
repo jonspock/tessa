@@ -23,8 +23,8 @@
 #include "chainparams.h"
 #include "checkpoints.h"
 #include "checkqueue.h"
-#include "ecdsa/blocksignature.h"
-#include "ecdsa/ecdsa.h"
+#include "bls/blocksignature.h"
+#include "bls/ecdsa.h"
 #include "init.h"
 #include "kernel.h"
 #include "merkleblock.h"
@@ -34,7 +34,6 @@
 #include "reverse_iterate.h"
 #include "script/sigcache.h"
 #include "scriptcheck.h"
-#ifdef HAVE_SPORKS
 #include "spork/spork.h"
 #include "spork/sporkdb.h"
 #endif
@@ -47,7 +46,6 @@
 #include "validationinterface.h"
 #include "zerocoin/accumulatormap.h"
 #include "zerocoin/accumulators.h"
-#include "zerocoin/mainzero.h"
 #include "zerocoin/zerochain.h"
 #include "zerocoin/zerocoindb.h"
 
@@ -720,7 +718,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
     if (!MoneyRange(nValueOut))
       return state.DoS(100, error("CheckTransaction() : txout total out of range"), REJECT_INVALID,
                        "bad-txns-txouttotal-toolarge");
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
     if (fZerocoinActive && txout.IsZerocoinMint()) {
       if (!CheckZerocoinMint(tx.GetHash(), txout, state, true)) {
         return state.DoS(100, error("CheckTransaction() : invalid zerocoin mint"));
@@ -730,7 +728,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
 #endif    
   }
 
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
   if (fZerocoinActive) {
     if (nZCSpendCount > Params().Zerocoin_MaxSpendsPerTransaction())
       return state.DoS(
@@ -767,7 +765,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
     if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 150)
       return state.DoS(100, error("CheckTransaction() : coinbase script size=%d", tx.vin[0].scriptSig.size()),
                        REJECT_INVALID, "bad-cb-length");
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
   } else if (fZerocoinActive && tx.IsZerocoinSpend()) {
     if (tx.vin.size() < 1 || static_cast<int>(tx.vin.size()) > Params().Zerocoin_MaxSpendsPerTransaction())
       return state.DoS(10, error("CheckTransaction() : Zerocoin Spend has more than allowed txin's"), REJECT_INVALID,
@@ -872,7 +870,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
     CAmount nValueIn = 0;
     if (tx.IsZerocoinSpend()) {
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
       nValueIn = tx.GetZerocoinSpent();
 
       // Check that txid is not already in the chain
@@ -912,7 +910,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
       // Check that ZKP mints are not already known
       if (tx.IsZerocoinMint()) {
-#ifdef HAVE_ZERO        
+#ifndef ZEROCOIN_DISABLED        
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
@@ -1468,7 +1466,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
      * addresses should still be handled by the typical bitcoin based undo code
      * */
     if (tx.ContainsZerocoins()) {
-#ifdef HAVE_ZERO      
+#ifndef ZEROCOIN_DISABLED      
       if (tx.IsZerocoinSpend()) {
         // erase all zerocoinspends in this transaction
         for (const CTxIn& txin : tx.vin) {
@@ -1563,7 +1561,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 
   if (!fVerifyingBlocks) {
     // if block is an accumulator checkpoint block, remove checkpoint and checksums from db
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
     uint256 nCheckpoint = pindex->nAccumulatorCheckpoint;
     if (nCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {
       if (!EraseAccumulatorValues(nCheckpoint, pindex->pprev->nAccumulatorCheckpoint))
@@ -1611,7 +1609,7 @@ void ThreadScriptCheck() {
 
 void InterruptThreadScriptCheck() { scriptcheckqueue.Interrupt(); }
 
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError) {
   // Tessa: recalculate Accumulator Checkpoints that failed to database properly
   if (!listMissingCheckpoints.empty() && chainActive.Height() >= Params().Zerocoin_StartHeight()) {
@@ -1628,7 +1626,7 @@ bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError
 
       // find checkpoints by iterating through the blockchain beginning with the first zerocoin block
       if (pindex->nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {
-#ifdef HAVE_ZERO        
+#ifndef ZEROCOIN_DISABLED        
         if (find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint) !=
             listMissingCheckpoints.end()) {
           uint256 nCheckpointCalculated;
@@ -1803,7 +1801,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
       return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
     if (tx.IsZerocoinSpend()) {
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
       int nHeightTx = 0;
       uint256 txid = tx.GetHash();
       vSpendsInBlock.emplace_back(txid);
@@ -1856,7 +1854,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
       // Check that ZKP mints are not already known
       if (tx.IsZerocoinMint()) {
-#ifdef HAVE_ZERO        
+#ifndef ZEROCOIN_DISABLED        
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
@@ -1900,7 +1898,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   }
 
   // Track ZKP money supply in the block index
-#ifdef HAVE_ZERO  
+#ifndef ZEROCOIN_DISABLED  
   if (!UpdateZKPSupply(block, pindex))
     return state.DoS(100,
                      error("%s: Failed to calculate new ZKP supply for block=%s height=%d", __func__,
@@ -1933,7 +1931,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   */
 
   // Ensure that accumulator checkpoints are valid and in the same state as this instance of the chain
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
   if (!ValidateAccumulatorCheckpoint(block, pindex, mapAccumulators))
     return state.DoS(100,
@@ -1970,7 +1968,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   }
 
   // Record ZKP serials
-#ifdef HAVE_ZERO      
+#ifndef ZEROCOIN_DISABLED      
   set<uint256> setAddedTx;
   for (pair<CoinSpend, uint256> pSpend : vSpends) {
     // record spend to database
@@ -2005,7 +2003,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   
   // Flush spend/mint info to disk
   // if (!gpZerocoinDB->WriteCoinSpendBatch(vSpends)) return state.Abort(("Failed to record coin serials to database"));
-#ifdef HAVE_ZERO  
+#ifndef ZEROCOIN_DISABLED  
   if (!gpZerocoinDB->WriteCoinMintBatch(vMints)) return state.Abort(("Failed to record new mints to database"));
 
   // Record accumulator checksums
@@ -2857,9 +2855,10 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
   }
 
   // Check transactions
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 #warning "Check zerocoin start here"
-  bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
+  bool fZerocoinActive = (chainActive.Tip()->nHeight) >= Params().Zerocoin_StartHeight();
+  //bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
 #else
   bool fZerocoinActive = false;
 #endif
@@ -2870,7 +2869,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     // double check that there are no double spent ZKP spends in this block
     if (tx.IsZerocoinSpend()) {
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
       for (const CTxIn& txIn : tx.vin) {
         if (txIn.scriptSig.IsZerocoinSpend()) {
           libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
@@ -3859,7 +3858,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       Misbehaving(pfrom->GetId(), 1);
       return false;
     }
-#ifdef HAVE_SPORKS
     // Tessa: We use certain sporks during IBD, so check to see if they are
     // available. If not, ask the first peer connected for them.
     bool fMissingSporks = !gSporkDB.SporkExists("SPORK_PROTOCOL_ENFORCEMENT");

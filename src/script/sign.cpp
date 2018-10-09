@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "script/sign.h"
-#include "ecdsa/pubkey.h"
+#include "bls/pubkey.h"
 #include "primitives/transaction.h"
 #include "uint256.h"
 #include "util.h"
@@ -15,9 +15,9 @@ using namespace std;
 
 typedef vector<uint8_t> valtype;
 
-bool Sign1(const ecdsa::CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType,
+bool Sign1(const bls::CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType,
            CScript& scriptSigRet) {
-  ecdsa::CKey key;
+  bls::CKey key;
   if (!keystore.GetKey(address, key)) return false;
 
   vector<uint8_t> vchSig;
@@ -34,7 +34,7 @@ bool SignN(const vector<valtype>& multisigdata, const CKeyStore& keystore, uint2
   int nRequired = multisigdata.front()[0];
   for (uint32_t i = 1; i < multisigdata.size() - 1 && nSigned < nRequired; i++) {
     const valtype& pubkey = multisigdata[i];
-    ecdsa::CKeyID keyID = ecdsa::CPubKey(pubkey).GetID();
+    bls::CKeyID keyID = bls::CPubKey(pubkey).GetID();
     if (Sign1(keyID, keystore, hash, nHashType, scriptSigRet)) ++nSigned;
   }
   return nSigned == nRequired;
@@ -56,7 +56,7 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
     return false;
   }
 
-  ecdsa::CKeyID keyID;
+  bls::CKeyID keyID;
   switch (whichTypeRet) {
     case TX_NONSTANDARD:
     case TX_NULL_DATA: {
@@ -66,19 +66,19 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
     case TX_ZEROCOINMINT:
       return false;
     case TX_PUBKEY:
-      keyID = ecdsa::CPubKey(vSolutions[0]).GetID();
+      keyID = bls::CPubKey(vSolutions[0]).GetID();
       if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet)) {
         LogPrintf("*** Sign1 failed \n");
         return false;
       }
       return true;
     case TX_PUBKEYHASH:
-      keyID = ecdsa::CKeyID(uint160(vSolutions[0]));
+      keyID = bls::CKeyID(uint160(vSolutions[0]));
       if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet)) {
         LogPrintf("*** solver failed to sign \n");
         return false;
       } else {
-        ecdsa::CPubKey vch;
+        bls::CPubKey vch;
         keystore.GetPubKey(keyID, vch);
         scriptSigRet << vch.ToStdVector();
       }

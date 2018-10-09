@@ -1,10 +1,11 @@
 #pragma once
 
 #include <vector>
+#include "hash.h"
+#include "key.h"
 
-namespace ecdsa {
+namespace bls {
 
-  class ChainCode;
   class CKey;
 
   struct CExtKey {
@@ -19,11 +20,10 @@ namespace ecdsa {
         a.nChild == b.nChild && a.chaincode == b.chaincode && a.key == b.key;
     }
     
-    void Encode(uint8_t code[BIP32_EXTKEY_SIZE]) const;
-    void Decode(const uint8_t code[BIP32_EXTKEY_SIZE]);
     bool Derive(CExtKey& out, unsigned int nChild) const;
-    CExtPubKey Neuter() const;
     void SetMaster(const uint8_t* seed, unsigned int nSeedLen);
-};
+    void SetMaster(const CKey& k);
 
+    void PrintString() const;
+  };
 }  // namespace bls

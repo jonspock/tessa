@@ -13,11 +13,11 @@
 #include <set>
 #include <vector>
 
-namespace ecdsa {
+namespace bls {
 class CPubKey;
 class CKey;
 class CKeyID;
-}  // namespace ecdsa
+}  // namespace bls
 
 class CScript;
 class CScriptID;
@@ -31,14 +31,14 @@ class CKeyStore {
   virtual ~CKeyStore() {}
 
   //! Add a key to the store.
-  virtual bool AddKeyPubKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey) = 0;
-  virtual bool AddKey(const ecdsa::CKey& key);
+  virtual bool AddKeyPubKey(const bls::CKey& key, const bls::CPubKey& pubkey) = 0;
+  virtual bool AddKey(const bls::CKey& key);
 
   //! Check whether a key corresponding to a given address is present in the store.
-  virtual bool HaveKey(const ecdsa::CKeyID& address) const = 0;
-  virtual bool GetKey(const ecdsa::CKeyID& address, ecdsa::CKey& keyOut) const = 0;
-  virtual void GetKeys(std::set<ecdsa::CKeyID>& setAddress) const = 0;
-  virtual bool GetPubKey(const ecdsa::CKeyID& address, ecdsa::CPubKey& vchPubKeyOut) const;
+  virtual bool HaveKey(const bls::CKeyID& address) const = 0;
+  virtual bool GetKey(const bls::CKeyID& address, bls::CKey& keyOut) const = 0;
+  virtual void GetKeys(std::set<bls::CKeyID>& setAddress) const = 0;
+  virtual bool GetPubKey(const bls::CKeyID& address, bls::CPubKey& vchPubKeyOut) const;
 
   //! Support for BIP 0013 : see https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki
   virtual bool AddCScript(const CScript& redeemScript) = 0;
@@ -58,7 +58,7 @@ class CKeyStore {
   virtual bool HaveMultiSig() const = 0;
 };
 
-using KeyMap = std::map<ecdsa::CKeyID, ecdsa::CKey>;
+using KeyMap = std::map<bls::CKeyID, bls::CKey>;
 using ScriptMap = std::map<CScriptID, CScript>;
 using WatchOnlySet = std::set<CScript>;
 using MultiSigScriptSet = std::set<CScript>;
@@ -71,10 +71,10 @@ class CBasicKeyStore : public CKeyStore {
   MultiSigScriptSet setMultiSig;
 
  public:
-  bool AddKeyPubKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey);
-  bool HaveKey(const ecdsa::CKeyID& address) const;
-  void GetKeys(std::set<ecdsa::CKeyID>& setAddress) const;
-  bool GetKey(const ecdsa::CKeyID& address, ecdsa::CKey& keyOut) const;
+  bool AddKeyPubKey(const bls::CKey& key, const bls::CPubKey& pubkey);
+  bool HaveKey(const bls::CKeyID& address) const;
+  void GetKeys(std::set<bls::CKeyID>& setAddress) const;
+  bool GetKey(const bls::CKeyID& address, bls::CKey& keyOut) const;
 
   virtual bool AddCScript(const CScript& redeemScript);
   virtual bool HaveCScript(const CScriptID& hash) const;
@@ -92,6 +92,6 @@ class CBasicKeyStore : public CKeyStore {
 };
 
 using CKeyingMaterial = std::vector<uint8_t, secure_allocator<uint8_t> >;
-using CryptedKeyMap = std::map<ecdsa::CKeyID, std::pair<ecdsa::CPubKey, std::vector<uint8_t> > >;
+using CryptedKeyMap = std::map<bls::CKeyID, std::pair<bls::CPubKey, std::vector<uint8_t> > >;
 
 #endif  // BITCOIN_KEYSTORE_H

@@ -12,7 +12,7 @@
 #include <variant>
 #include <cstdint>
 
-namespace ecdsa {
+namespace bls {
   class CPubKey;
 }
 
@@ -77,7 +77,7 @@ class CNoDestination {
  *  * CScriptID: TX_SCRIPTHASH destination
  *  A CTxDestination is the internal data type encoded in a CBitcoinAddress
  */
-typedef std::variant<CNoDestination, ecdsa::CKeyID, CScriptID> CTxDestination;
+typedef std::variant<CNoDestination, bls::CKeyID, CScriptID> CTxDestination;
 
 /** Check whether a CTxDestination is a CNoDestination. */
 bool IsValidDestination(const CTxDestination& dest);
@@ -92,6 +92,6 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::
                          int& nRequiredRet);
 
 CScript GetScriptForDestination(const CTxDestination& dest);
-CScript GetScriptForRawPubKey(const ecdsa::CPubKey &pubkey);
-CScript GetScriptForMultisig(int nRequired, const std::vector<ecdsa::CPubKey>& keys);
+CScript GetScriptForRawPubKey(const bls::CPubKey &pubkey);
+CScript GetScriptForMultisig(int nRequired, const std::vector<bls::CPubKey>& keys);
 

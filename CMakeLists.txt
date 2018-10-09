@@ -134,6 +134,8 @@ add_compiler_flag(
 #  message("${i}")
 #endforeach()
 
+##add_definitions("-DZEROCOIN_DISABLED") 
+
 check_cxx_compiler_flag(-std=c++17 HAVE_FLAG_STD_CXX17)
 if (HAVE_FLAG_STD_CXX17)
   set(CMAKE_CXX_STANDARD 17)
@@ -234,7 +236,6 @@ SET(ZERO
   ./src/zerocoin/accumulators.cpp
   ./src/zerocoin/accumulatormap.cpp
   ./src/zerocoin/accumulatorcheckpoints.cpp
-  ./src/zerocoin/mainzero.cpp
   ./src/zerocoin/zerochain.cpp
   ./src/zerocoin/zerocoindb.cpp
   ./src/zerocoin/zerowallet.cpp
@@ -302,9 +303,6 @@ SET(PRIM
 
 SET(SOURCES
 #   ./src/main_hdr.cpp
-  ./src/compat/strnlen.cpp
-  ./src/compat/glibcxx_compat.cpp
-  ./src/compat/glibc_sanity.cpp
   ./src/kernel.cpp
   ./src/miner.cpp
   ./src/script/bitcoinconsensus.cpp
@@ -455,9 +453,10 @@ source_group("CommonA" FILES ${COMMON_A})
 source_group("Spork" FILES ${SPORK})
 source_group("Zero" FILES ${ZERO})
 
-add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS}
-  ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
-  ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
+add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${SPORK_HEADERS}
+  ${ZERO_HEADERS} ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
+  ${ZERO}
+  ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${SPORK} ${CONSENSUS_CRYPTO})
 
 
 if(CLANG_TIDY_EXE)
@@ -472,6 +471,7 @@ add_subdirectory(src)
 #add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 add_subdirectory(src/ecdsa)
+add_subdirectory(src/bls)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
 target_link_libraries(coin ${DB_LIBRARIES})
@@ -525,7 +525,7 @@ endif()
 #------------------- ------------------- ------------------- ------------------- -------------------
 message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin ecdsa secp256k1 lmdb ${DB_LIBRARIES} ${UPNP_LIB}
+SET(LIBS_LIST coin ecdsa zerocoin bls secp256k1 lmdb ${DB_LIBRARIES} ${UPNP_LIB}
   event event_pthreads pthread gmp sodium ${ZMQ_LIB} ${FS_LIBS}) # wsock32)
 
 target_link_libraries(tessad ${LIBS_LIST})

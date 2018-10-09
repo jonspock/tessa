@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace ecdsa {
+namespace bls {
 class CPubKey;
 }
 
@@ -19,7 +19,7 @@ class CReserveKey {
  protected:
   CWallet* pwallet;
   int64_t nIndex;
-  ecdsa::CPubKey vchPubKey;
+  bls::CPubKey vchPubKey;
 
  public:
   CReserveKey(CWallet* pwalletIn) {
@@ -30,6 +30,6 @@ class CReserveKey {
   ~CReserveKey() { ReturnKey(); }
 
   void ReturnKey();
-  bool GetReservedKey(ecdsa::CPubKey& pubkey);
+  bool GetReservedKey(bls::CPubKey& pubkey);
   void KeepKey();
 };

@@ -9,27 +9,28 @@
 
 #include "privkey.h"
 #include "pubkey.h"
-#include "serialize.h"
-#include "support/allocators/secure.h"
 #include "uint256.h"
 
-// from BLS
 #include "privatekey.hpp"
-
 #include <vector>
 
-namespace ecdsa {
+inline void ShowBytes(const std::vector<uint8_t>& b) {
+  std::cout << "Bytes = " << std::hex;
+  for (size_t i = 0; i < b.size(); i++) {
+    std::cout << (int)b[i];  // << " ";
+    //    if ((i+1)%16 == 0) std::cout << "\n";
+  }
+  std::cout << std::dec << "\n";
+}
+
+namespace bls {
 
 class CPubKey;
 
-struct CExtPubKey;
-
-// An encapsulated private key that wraps BLS 
+// An encapsulated private key that wraps BLS
 class CKey {
-
  private:
   bls::PrivateKey PK;
-  
   //! Check whether the 32-byte array pointed to be vch is valid keydata.
   bool static Check(const uint8_t* vch);
 
@@ -37,37 +38,32 @@ class CKey {
   //! Construct an invalid private key.
   CKey() {}
 
-  friend bool operator==(const CKey& a, const CKey& b) {
-    return a.PK == b.PK;
-  }
+  friend bool operator==(const CKey& a, const CKey& b) { return a.PK == b.PK; }
 
   //! Initialize using begin and end iterators to byte data.
   template <typename T> void Set(const T pbegin, const T pend) {
     if ((size_t(pend - pbegin) == bls::PrivateKey::PRIVATE_KEY_SIZE) && (Check(&pbegin[0]))) {
-      PK.FromBytes((uint8_t*)&pbegin[0], bls::PrivateKey::PRIVATE_KEY_SIZE);
+      PK = bls::PrivateKey::FromBytes((uint8_t*)&pbegin[0], bls::PrivateKey::PRIVATE_KEY_SIZE);
     }
   }
 
   //! Simple read-only vector-like interface.
   unsigned int size() const { return (PK.valid() ? bls::PrivateKey::PRIVATE_KEY_SIZE : 0); }
-//const uint8_t* begin() const { return keydata.data(); }
-//  const uint8_t* end() const { return keydata.data() + size(); }
+
+  std::vector<uint8_t> getBytes() const { return PK.Serialize(); }
+
+  void PrintString() const { ::ShowBytes(getBytes()); }
 
   //! Check whether this private key is valid.
   bool IsValid() const { return PK.valid(); }
 
-  //! Check whether the public key corresponding to this private key is (to be) compressed.
-  // Legacy interface
-  bool IsCompressed() const { return true; }
-
   //! Initialize from a CPrivKey
-  bool SetPrivKey(const CPrivKey& vchPrivKey, bool fCompressed);
+  bool SetPrivKey(const CPrivKey& vchPrivKey);
 
   //! Generate a new private key using a cryptographic PRNG.
-  void MakeNewKey(bool fCompressed);
+  void MakeNewKey();
 
   uint256 GetPrivKey_256();
-
   /**
    * Convert the private key to a CPrivKey
    * This is expensive.
@@ -90,6 +86,5 @@ class CKey {
    * This is done using a different mechanism than just regenerating it.
    */
   bool VerifyPubKey(const CPubKey& vchPubKey) const;
-    
 };
 }  // namespace bls

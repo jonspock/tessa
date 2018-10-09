@@ -117,7 +117,7 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
   result.push_back(std::make_pair("moneysupply", ValueFromAmount(blockindex->nMoneySupply)));
 
   UniValue zkpObj(UniValue::VOBJ);
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   for (auto denom : libzerocoin::zerocoinDenomList) {
     zkpObj.push_back(
         std::make_pair(to_string(denom), ValueFromAmount(blockindex->mapZerocoinSupply.at(denom) * (denom * COIN))));
@@ -844,7 +844,7 @@ UniValue reconsiderblock(const UniValue& params, bool fHelp) {
 
   return NullUniValue;
 }
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 UniValue findserial(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 1)
     throw runtime_error(

@@ -12,10 +12,10 @@
 #include "script/script.h"
 #include "serialize.h"
 
-namespace ecdsa {
+namespace bls {
 class CPubKey;
 class CKeyID;
-}  // namespace ecdsa
+}  // namespace bls
 
 class CScriptID;
 
@@ -50,7 +50,7 @@ class CScriptCompressor {
    * whether the public key is valid (as invalid ones cannot be represented in compressed
    * form).
    */
-  bool IsToKeyID(ecdsa::CKeyID& hash) const;
+  bool IsToKeyID(bls::CKeyID& hash) const;
   bool IsToScriptID(CScriptID& hash) const;
 
   bool Compress(std::vector<uint8_t>& out) const;

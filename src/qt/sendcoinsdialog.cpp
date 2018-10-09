@@ -30,7 +30,7 @@
 #include <QSettings>
 #include <QTextDocument>
 
-using namespace ecdsa;
+using namespace bls;
 
 SendCoinsDialog::SendCoinsDialog(QWidget* parent)
     : QDialog(parent),

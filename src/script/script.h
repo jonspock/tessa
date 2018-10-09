@@ -9,7 +9,7 @@
 #ifndef BITCOIN_SCRIPT_SCRIPT_H
 #define BITCOIN_SCRIPT_SCRIPT_H
 
-#include "ecdsa/pubkey.h"
+#include "bls/pubkey.h"
 #include <cassert>
 #include <climits>
 #include <limits>
@@ -397,7 +397,7 @@ class CScript : public std::vector<uint8_t> {
     return *this;
   }
 
-  CScript& operator<<(const ecdsa::CPubKey& key) {
+  CScript& operator<<(const bls::CPubKey& key) {
     std::vector<uint8_t> vchKey = key.ToStdVector();
     return (*this) << vchKey;
   }

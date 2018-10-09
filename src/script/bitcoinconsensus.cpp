@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "bitcoinconsensus.h"
-#include "ecdsa/ecdsa.h"
+#include "bls/ecdsa.h"
 
 #include "primitives/transaction.h"
 #include "script/interpreter.h"

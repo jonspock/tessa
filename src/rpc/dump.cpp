@@ -8,7 +8,7 @@
 #include "chain.h"
 #include "init.h"
 #include "key_io.h"
-#include "ecdsa/extkey.h"
+#include "bls/extkey.h"
 #include "main.h"
 #include "rpc/server.h"
 #include "script/script.h"
@@ -30,7 +30,7 @@
 #include <univalue/univalue.h>
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 void EnsureWalletIsUnlocked(bool fAllowAnonOnly);
 

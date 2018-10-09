@@ -7,13 +7,14 @@
 #include "bch32/bch32.h"
 #include "script/script.h"
 #include "utilstrencodings.h"
+#include "support/allocators/secure.h"
 
 #include <algorithm>
 #include <cassert>
 #include <string>
 #include <variant>
 
-using namespace ecdsa;
+using namespace bls;
 using namespace bch32;
 
 class DestinationEncoder : public std::variant<std::string> {

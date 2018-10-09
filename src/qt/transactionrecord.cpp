@@ -40,7 +40,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
   std::map<std::string, std::string> mapValue = wtx.mapValue;
   bool fZSpendFromMe = false;
 
-#ifdef HAVE_ZERO  
+#ifndef ZEROCOIN_DISABLED  
   if (wtx.IsZerocoinSpend()) {
     // a zerocoin spend that was created by this wallet
     libzerocoin::CoinSpend zcspend = TxInToZerocoinSpend(wtx.vin[0]);
@@ -53,7 +53,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
     CTxDestination address;
     if (!wtx.IsZerocoinSpend() && !ExtractDestination(wtx.vout[1].scriptPubKey, address)) return parts;
 
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
     if (wtx.IsZerocoinSpend() && (fZSpendFromMe || wallet->zkpTracker->HasMintTx(hash))) {
       // ZKP stake reward - not valid
     } else if (isminetype mine = wallet->IsMine(wtx.vout[1])) {
@@ -76,7 +76,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
 
     parts.append(sub);
   } else if (wtx.IsZerocoinSpend()) {
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
     // zerocoin spend outputs
     bool fFeeAssigned = false;
     for (const CTxOut& txout : wtx.vout) {

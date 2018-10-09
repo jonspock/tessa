@@ -7,11 +7,11 @@
 
 #include "compressor.h"
 
-#include "ecdsa/pubkey.h"
+#include "bls/pubkey.h"
 #include "hash.h"
 #include "script/standard.h"
 
-using namespace ecdsa;
+using namespace bls;
 
 bool CScriptCompressor::IsToKeyID(CKeyID& hash) const {
   if (script.size() == 25 && script[0] == OP_DUP && script[1] == OP_HASH160 && script[2] == 20 &&

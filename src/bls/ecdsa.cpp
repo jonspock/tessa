@@ -4,8 +4,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "ecdsa/key.h"
+#include "bls/key.h"
+#include "bls/ecdsa.h"
 
+#include "support/allocators/secure.h"
 #include "crypto/common.h"
 #include "crypto/hmac_sha512.h"
 #include "random.h"
@@ -14,9 +16,143 @@
 #include <secp256k1.h>
 #include <secp256k1_recovery.h>
 
-using namespace ecdsa;
+using namespace bls;
+
+
+namespace {
+/* Global secp256k1_context object used for verification. */
+secp256k1_context* secp256k1_context_verify = nullptr;
+}  // namespace
+
 
 static secp256k1_context* secp256k1_context_sign = nullptr;
+
+/** This function is taken from the libsecp256k1 distribution and implements
+ *  DER parsing for ECDSA signatures, while supporting an arbitrary subset of
+ *  format violations.
+ *
+ *  Supported violations include negative integers, excessive padding, garbage
+ *  at the end, and overly long length descriptors. This is safe to use in
+ *  Bitcoin because since the activation of BIP66, signatures are verified to be
+ *  strict DER before being passed to this module, and we know it supports all
+ *  violations present in the blockchain before that point.
+ */
+static int ecdsa_signature_parse_der_lax(const secp256k1_context* ctx, secp256k1_ecdsa_signature* sig,
+                                         const uint8_t* input, size_t inputlen) {
+  size_t rpos, rlen, spos, slen;
+  size_t pos = 0;
+  size_t lenbyte;
+  uint8_t tmpsig[64] = {0};
+  int overflow = 0;
+
+  /* Hack to initialize sig with a correctly-parsed but invalid signature. */
+  secp256k1_ecdsa_signature_parse_compact(ctx, sig, tmpsig);
+
+  /* Sequence tag byte */
+  if (pos == inputlen || input[pos] != 0x30) { return 0; }
+  pos++;
+
+  /* Sequence length bytes */
+  if (pos == inputlen) { return 0; }
+  lenbyte = input[pos++];
+  if (lenbyte & 0x80) {
+    lenbyte -= 0x80;
+    if (lenbyte > inputlen - pos) { return 0; }
+    pos += lenbyte;
+  }
+
+  /* Integer tag byte for R */
+  if (pos == inputlen || input[pos] != 0x02) { return 0; }
+  pos++;
+
+  /* Integer length for R */
+  if (pos == inputlen) { return 0; }
+  lenbyte = input[pos++];
+  if (lenbyte & 0x80) {
+    lenbyte -= 0x80;
+    if (lenbyte > inputlen - pos) { return 0; }
+    while (lenbyte > 0 && input[pos] == 0) {
+      pos++;
+      lenbyte--;
+    }
+    static_assert(sizeof(size_t) >= 4, "size_t too small");
+    if (lenbyte >= 4) { return 0; }
+    rlen = 0;
+    while (lenbyte > 0) {
+      rlen = (rlen << 8) + input[pos];
+      pos++;
+      lenbyte--;
+    }
+  } else {
+    rlen = lenbyte;
+  }
+  if (rlen > inputlen - pos) { return 0; }
+  rpos = pos;
+  pos += rlen;
+
+  /* Integer tag byte for S */
+  if (pos == inputlen || input[pos] != 0x02) { return 0; }
+  pos++;
+
+  /* Integer length for S */
+  if (pos == inputlen) { return 0; }
+  lenbyte = input[pos++];
+  if (lenbyte & 0x80) {
+    lenbyte -= 0x80;
+    if (lenbyte > inputlen - pos) { return 0; }
+    while (lenbyte > 0 && input[pos] == 0) {
+      pos++;
+      lenbyte--;
+    }
+    static_assert(sizeof(size_t) >= 4, "size_t too small");
+    if (lenbyte >= 4) { return 0; }
+    slen = 0;
+    while (lenbyte > 0) {
+      slen = (slen << 8) + input[pos];
+      pos++;
+      lenbyte--;
+    }
+  } else {
+    slen = lenbyte;
+  }
+  if (slen > inputlen - pos) { return 0; }
+  spos = pos;
+
+  /* Ignore leading zeroes in R */
+  while (rlen > 0 && input[rpos] == 0) {
+    rlen--;
+    rpos++;
+  }
+  /* Copy R value */
+  if (rlen > 32) {
+    overflow = 1;
+  } else {
+    memcpy(tmpsig + 32 - rlen, input + rpos, rlen);
+  }
+
+  /* Ignore leading zeroes in S */
+  while (slen > 0 && input[spos] == 0) {
+    slen--;
+    spos++;
+  }
+  /* Copy S value */
+  if (slen > 32) {
+    overflow = 1;
+  } else {
+    memcpy(tmpsig + 64 - slen, input + spos, slen);
+  }
+
+  if (!overflow) { overflow = !secp256k1_ecdsa_signature_parse_compact(ctx, sig, tmpsig); }
+  if (overflow) {
+    /* Overwrite the result again with a correctly-parsed but invalid
+       signature if parsing failed. */
+    memset(tmpsig, 0, 64);
+    secp256k1_ecdsa_signature_parse_compact(ctx, sig, tmpsig);
+  }
+  return 1;
+}
+
+
 
 /** These functions are taken from the libsecp256k1 distribution and are very ugly. */
 
@@ -80,7 +216,7 @@ static int ec_privkey_import_der(const secp256k1_context* ctx, uint8_t* out32, c
  */
 static int ec_privkey_export_der(const secp256k1_context* ctx, uint8_t* privkey, size_t* privkeylen,
                                  const uint8_t* key32, int compressed) {
-  assert(*privkeylen >= CKey::PRIVATE_KEY_SIZE);
+  assert(*privkeylen >= 279);
   secp256k1_pubkey pubkey;
   size_t pubkeylen = 0;
   if (!secp256k1_ec_pubkey_create(ctx, &pubkey, key32)) {
@@ -105,11 +241,11 @@ static int ec_privkey_export_der(const secp256k1_context* ctx, uint8_t* privkey,
     ptr += 32;
     memcpy(ptr, middle, sizeof(middle));
     ptr += sizeof(middle);
-    pubkeylen = CPubKey::COMPRESSED_PUBLIC_KEY_SIZE;
+    pubkeylen = 214;
     secp256k1_ec_pubkey_serialize(ctx, ptr, &pubkeylen, &pubkey, SECP256K1_EC_COMPRESSED);
     ptr += pubkeylen;
     *privkeylen = ptr - privkey;
-    assert(*privkeylen == CKey::COMPRESSED_PRIVATE_KEY_SIZE);
+    assert(*privkeylen == 214);
   } else {
     static const uint8_t begin[] = {0x30, 0x82, 0x01, 0x13, 0x02, 0x01, 0x01, 0x04, 0x20};
     static const uint8_t middle[] = {
@@ -130,190 +266,18 @@ static int ec_privkey_export_der(const secp256k1_context* ctx, uint8_t* privkey,
     ptr += 32;
     memcpy(ptr, middle, sizeof(middle));
     ptr += sizeof(middle);
-    pubkeylen = CPubKey::PUBLIC_KEY_SIZE;
+    pubkeylen = 65;
     secp256k1_ec_pubkey_serialize(ctx, ptr, &pubkeylen, &pubkey, SECP256K1_EC_UNCOMPRESSED);
     ptr += pubkeylen;
     *privkeylen = ptr - privkey;
-    assert(*privkeylen == CKey::PRIVATE_KEY_SIZE);
+    assert(*privkeylen == 279);
   }
   return 1;
 }
 
-bool CKey::Check(const uint8_t* vch) { return secp256k1_ec_seckey_verify(secp256k1_context_sign, vch); }
-
-void CKey::MakeNewKey(bool fCompressedIn) {
-  do { GetStrongRandBytes(keydata.data(), keydata.size()); } while (!Check(keydata.data()));
-  fValid = true;
-  fCompressed = fCompressedIn;
-}
-
-bool CKey::SetPrivKey(const CSecretKey& privkey, bool fCompressedIn) {
-  if (!ec_privkey_import_der(secp256k1_context_sign, (uint8_t*)begin(), &privkey[0], privkey.size())) return false;
-  fCompressed = fCompressedIn;
-  fValid = true;
-  return true;
-}
-
-uint256 CKey::GetPrivKey_256() {
-  void* key = keydata.data();
-  uint256* key_256 = (uint256*)key;
-
-  return *key_256;
-}
-
-CSecretKey CKey::GetPrivKey() const {
-  assert(fValid);
-  CSecretKey privkey;
-  size_t privkeylen;
-  privkey.resize(PRIVATE_KEY_SIZE);
-  privkeylen = PRIVATE_KEY_SIZE;
-  int ret = ec_privkey_export_der(secp256k1_context_sign, (uint8_t*)&privkey[0], &privkeylen, begin(),
-                                  fCompressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED);
-  assert(ret);
-  privkey.resize(privkeylen);
-  return privkey;
-}
-
-CPubKey CKey::GetPubKey() const {
-  assert(fValid);
-  secp256k1_pubkey pubkey;
-  CPubKey result;
-  size_t clen = 65;
-  int ret = secp256k1_ec_pubkey_create(secp256k1_context_sign, &pubkey, begin());
-  assert(ret);
-  secp256k1_ec_pubkey_serialize(secp256k1_context_sign, (uint8_t*)result.begin(), &clen, &pubkey,
-                                fCompressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED);
-  assert(result.size() == clen);
-  assert(result.IsValid());
-  return result;
-}
-
-bool CKey::Sign(const uint256& hash, std::vector<uint8_t>& vchSig, uint32_t test_case) const {
-  if (!fValid) return false;
-  vchSig.resize(CPubKey::SIGNATURE_SIZE);
-  size_t nSigLen = CPubKey::SIGNATURE_SIZE;
-  uint8_t extra_entropy[32] = {0};
-  WriteLE32(extra_entropy, test_case);
-  secp256k1_ecdsa_signature sig;
-  int ret = secp256k1_ecdsa_sign(secp256k1_context_sign, &sig, hash.begin(), begin(), secp256k1_nonce_function_rfc6979,
-                                 test_case ? extra_entropy : nullptr);
-  assert(ret);
-  secp256k1_ecdsa_signature_serialize_der(secp256k1_context_sign, (uint8_t*)vchSig.data(), &nSigLen, &sig);
-  vchSig.resize(nSigLen);
-  return true;
-}
-
-bool CKey::VerifyPubKey(const CPubKey& pubkey) const {
-  if (pubkey.IsCompressed() != fCompressed) { return false; }
-  uint8_t rnd[8];
-  std::string str = "Bitcoin key verification\n";
-  GetRandBytes(rnd, sizeof(rnd));
-  uint256 hash;
-  CHash256().Write((uint8_t*)str.data(), str.size()).Write(rnd, sizeof(rnd)).Finalize(hash.begin());
-  std::vector<uint8_t> vchSig;
-  Sign(hash, vchSig);
-  return pubkey.Verify(hash, vchSig);
-}
-
-bool CKey::SignCompact(const uint256& hash, std::vector<uint8_t>& vchSig) const {
-  if (!fValid) return false;
-  vchSig.resize(CPubKey::COMPACT_SIGNATURE_SIZE);
-  int rec = -1;
-  secp256k1_ecdsa_recoverable_signature sig;
-  int ret = secp256k1_ecdsa_sign_recoverable(secp256k1_context_sign, &sig, hash.begin(), begin(),
-                                             secp256k1_nonce_function_rfc6979, nullptr);
-  assert(ret);
-  secp256k1_ecdsa_recoverable_signature_serialize_compact(secp256k1_context_sign, (uint8_t*)&vchSig[1], &rec, &sig);
-  assert(ret);
-  assert(rec != -1);
-  vchSig[0] = 27 + rec + (fCompressed ? 4 : 0);
-  return true;
-}
-
-bool CKey::Load(const CSecretKey& privkey, const CPubKey& vchPubKey, bool fSkipCheck = false) {
-  if (!ec_privkey_import_der(secp256k1_context_sign, (uint8_t*)begin(), privkey.data(), privkey.size())) return false;
-  fCompressed = vchPubKey.IsCompressed();
-  fValid = true;
-
-  if (fSkipCheck) return true;
-
-  return VerifyPubKey(vchPubKey);
-}
-
-bool CKey::Derive(CKey& keyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const {
-  assert(IsValid());
-  assert(IsCompressed());
-  std::vector<uint8_t, secure_allocator<uint8_t> > vout(64);
-  if ((nChild >> 31) == 0) {
-    CPubKey pubkey = GetPubKey();
-    assert(pubkey.size() == CPubKey::COMPRESSED_PUBLIC_KEY_SIZE);
-    BIP32Hash(cc, nChild, *pubkey.begin(), pubkey.begin() + 1, vout.data());
-  } else {
-    assert(size() == 32);
-    BIP32Hash(cc, nChild, 0, begin(), vout.data());
-  }
-  memcpy(ccChild.begin(), vout.data() + 32, 32);
-  memcpy((uint8_t*)keyChild.begin(), begin(), 32);
-  bool ret = secp256k1_ec_privkey_tweak_add(secp256k1_context_sign, (uint8_t*)keyChild.begin(), vout.data());
-  keyChild.fCompressed = true;
-  keyChild.fValid = ret;
-  return ret;
-}
-
-bool CExtKey::Derive(CExtKey& out, unsigned int nChild) const {
-  out.nDepth = nDepth + 1;
-  CKeyID id = key.GetPubKey().GetID();
-  memcpy(&out.vchFingerprint[0], &id, 4);
-  out.nChild = nChild;
-  return key.Derive(out.key, out.chaincode, nChild, chaincode);
-}
-
-void CExtKey::SetMaster(const uint8_t* seed, unsigned int nSeedLen) {
-  static const uint8_t hashkey[] = {'B', 'i', 't', 'c', 'o', 'i', 'n', ' ', 's', 'e', 'e', 'd'};
-  std::vector<uint8_t, secure_allocator<uint8_t> > vout(64);
-  CHMAC_SHA512(hashkey, sizeof(hashkey)).Write(seed, nSeedLen).Finalize(vout.data());
-  key.Set(vout.data(), vout.data() + 32, true);
-  memcpy(chaincode.begin(), vout.data() + 32, 32);
-
-  nDepth = 0;
-  nChild = 0;
-  memset(vchFingerprint, 0, sizeof(vchFingerprint));
-}
-
-CExtPubKey CExtKey::Neuter() const {
-  CExtPubKey ret;
-  ret.nDepth = nDepth;
-  memcpy(&ret.vchFingerprint[0], &vchFingerprint[0], 4);
-  ret.nChild = nChild;
-  ret.pubkey = key.GetPubKey();
-  ret.chaincode = chaincode;
-  return ret;
-}
-
-void CExtKey::Encode(uint8_t code[74]) const {
-  code[0] = nDepth;
-  memcpy(code + 1, vchFingerprint, 4);
-  code[5] = (nChild >> 24) & 0xFF;
-  code[6] = (nChild >> 16) & 0xFF;
-  code[7] = (nChild >> 8) & 0xFF;
-  code[8] = (nChild >> 0) & 0xFF;
-  memcpy(code + 9, chaincode.begin(), 32);
-  code[41] = 0;
-  assert(key.size() == 32);
-  memcpy(code + 42, key.begin(), 32);
-}
-
-void CExtKey::Decode(const uint8_t code[74]) {
-  nDepth = code[0];
-  memcpy(vchFingerprint, code + 1, 4);
-  nChild = (code[5] << 24) | (code[6] << 16) | (code[7] << 8) | code[8];
-  memcpy(chaincode.begin(), code + 9, 32);
-  key.Set(code + 42, code + 74, true);
-}
-#ifdef NEED_ECC
 bool ECC_InitSanityCheck() {
   CKey key;
-  key.MakeNewKey(true);
+  key.MakeNewKey();
   CPubKey pubkey = key.GetPubKey();
   return key.VerifyPubKey(pubkey);
 }
@@ -341,4 +305,24 @@ void ECC_Stop() {
 
   if (ctx) { secp256k1_context_destroy(ctx); }
 }
-#endif
+
+
+/* static */ int ECCVerifyHandle::refcount = 0;
+
+ECCVerifyHandle::ECCVerifyHandle() {
+  if (refcount == 0) {
+    assert(secp256k1_context_verify == nullptr);
+    secp256k1_context_verify = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY);
+    assert(secp256k1_context_verify != nullptr);
+  }
+  refcount++;
+}
+
+ECCVerifyHandle::~ECCVerifyHandle() {
+  refcount--;
+  if (refcount == 0) {
+    assert(secp256k1_context_verify != nullptr);
+    secp256k1_context_destroy(secp256k1_context_verify);
+    secp256k1_context_verify = nullptr;
+  }
+}

@@ -35,7 +35,6 @@
 #include <univalue/univalue.h>
 
 using namespace std;
-using namespace ecdsa;
 
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
@@ -109,10 +108,10 @@ UniValue getnewaddress(const UniValue& params, bool fHelp) {
   if (!pwalletMain->IsLocked()) pwalletMain->TopUpKeyPool();
 
   // Generate a new key that is added to wallet
-  CPubKey newKey;
+  bls::CPubKey newKey;
   if (!pwalletMain->GetKeyFromPool(newKey))
     throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
-  CKeyID keyID = newKey.GetID();
+  bls::CKeyID keyID = newKey.GetID();
 
   pwalletMain->SetAddressBook(keyID, strAccount, "receive");
 
@@ -195,13 +194,13 @@ UniValue getrawchangeaddress(const UniValue& params, bool fHelp) {
   if (!pwalletMain->IsLocked()) pwalletMain->TopUpKeyPool();
 
   CReserveKey reservekey(pwalletMain);
-  CPubKey vchPubKey;
+  bls::CPubKey vchPubKey;
   if (!reservekey.GetReservedKey(vchPubKey))
     throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
 
   reservekey.KeepKey();
 
-  CKeyID keyID = vchPubKey.GetID();
+  bls::CKeyID keyID = vchPubKey.GetID();
 
   return EncodeDestination(CTxDestination(keyID));
 }
@@ -515,19 +514,23 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
 
   CTxDestination address = DecodeDestination(strAddress);
 
-  CKeyID* keyID = &std::get<CKeyID>(address);
+  // only bls supported for now
+  bls::CKeyID* keyID = &std::get<bls::CKeyID>(address);
   if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
-  CKey key;
-  if (!pwalletMain->GetKey(*keyID, key)) throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
+  bls::CKey blskey;
+  if (!pwalletMain->GetKey(*keyID, blskey)) throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
 
   CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
 
   vector<uint8_t> vchSig;
-  if (!key.SignCompact(ss.GetHash(), vchSig)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
 
+  std::vector<uint8_t> b = blskey.getBytes();
+  ecdsa::CKey key;
+  key.Set(b.begin(),b.end(),false);
+  if (!key.SignCompact(ss.GetHash(), vchSig)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
   return EncodeBase64(&vchSig[0], vchSig.size());
 #else
     return NullUniValue;
@@ -1971,7 +1974,7 @@ UniValue getwalletinfo(const UniValue& params, bool fHelp) {
   obj.push_back(std::make_pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
   obj.push_back(std::make_pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
   obj.push_back(std::make_pair("unlocked_until", nWalletUnlockTime));
-  CKeyID masterKeyID = pwalletMain->GetHDChain().masterKeyID;
+  bls::CKeyID masterKeyID = pwalletMain->GetHDChain().masterKeyID;
   obj.push_back(std::make_pair("hdmasterkeyid", masterKeyID.GetHex()));
   return obj;
 }
@@ -2323,7 +2326,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
   return printMultiSend();
 }
 
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 UniValue getzerocoinbalance(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(
@@ -3069,7 +3072,7 @@ UniValue setMasterHDseed(const UniValue& params, bool fHelp) {
   seed.SetHex(params[0].get_str());
 
   bool fSuccess = pwalletMain->SetHDMasterKeyFromSeed(seed);
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   if (fSuccess) {
     CZeroWallet* zwallet = pwalletMain->getZWallet();
     fSuccess |= zwallet->SetMasterSeed(seed, true);
@@ -3098,7 +3101,7 @@ UniValue getMasterHDseed(const UniValue& params, bool fHelp) {
 
   EnsureWalletIsUnlocked();
 
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   // Get from ZeroWallet as it's the same
   CZeroWallet* zwallet = pwalletMain->getZWallet();
   uint256 seed = zwallet->GetMasterSeed();

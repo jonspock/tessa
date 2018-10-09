@@ -81,7 +81,6 @@ void SignVerifyMessageDialog::on_pasteButton_SM_clicked() { setAddress_SM(QAppli
 
 void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
   if (!model) return;
-#ifdef HAVE_COMPACT
   /* Clear old signature to ensure users don't get confused on error with an old signature displayed */
   ui->signatureOut_SM->clear();
 
@@ -92,7 +91,7 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
                                 tr("Please check the address and try again."));
     return;
   }
-  ecdsa::CKeyID *keyID = &std::get<ecdsa::CKeyID>(addr);
+  bls::CKeyID *keyID = &std::get<bls::CKeyID>(addr);
   if (!keyID) {
     ui->addressIn_SM->setValid(false);
     ui->statusLabel_SM->setStyleSheet("QLabel { color: red; }");
@@ -108,8 +107,8 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
     return;
   }
 
-  ecdsa::CKey key;
-  if (!pwalletMain->GetKey(*keyID, key)) {
+  bls::CKey blskey;
+  if (!pwalletMain->GetKey(*keyID, blskey)) {
     ui->statusLabel_SM->setStyleSheet("QLabel { color: red; }");
     ui->statusLabel_SM->setText(tr("Private key for the entered address is not available."));
     return;
@@ -120,6 +119,10 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
   ss << ui->messageIn_SM->document()->toPlainText().toStdString();
 
   std::vector<unsigned char> vchSig;
+
+  std::vector<uint8_t> b = blskey.getBytes();
+  ecdsa::CKey key;
+  key.Set(b.begin(),b.end(),false);
   if (!key.SignCompact(Hash(ss.begin(), ss.end()), vchSig)) {
     ui->statusLabel_SM->setStyleSheet("QLabel { color: red; }");
     ui->statusLabel_SM->setText(QString("<nobr>") + tr("Message signing failed.") + QString("</nobr>"));
@@ -163,7 +166,7 @@ void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
                                 tr("Please check the address and try again."));
     return;
   }
-  ecdsa::CKeyID* keyID = &std::get<ecdsa::CKeyID>(addr);
+  bls::CKeyID* keyID = &std::get<bls::CKeyID>(addr);
   if (!keyID) {
     ui->addressIn_VM->setValid(false);
     ui->statusLabel_VM->setStyleSheet("QLabel { color: red; }");

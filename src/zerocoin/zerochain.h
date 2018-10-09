@@ -12,6 +12,7 @@
 class CBlock;
 class CBigNum;
 struct CMintMeta;
+class CBlockIndex;
 class CTransaction;
 class CTxIn;
 class CTxOut;
@@ -42,3 +43,12 @@ std::string ReindexZerocoinDB();
 libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin);
 bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CValidationState& state);
 std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block);
+
+
+bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationState& state, bool fCheckOnly);
+bool ContextualCheckZerocoinMint(const CTransaction& tx, const libzerocoin::PublicCoin& coin,
+                                 const CBlockIndex* pindex);
+bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::CoinSpend& spend, CBlockIndex* pindex,
+                                  const uint256& hashBlock);
+bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidationState& state);
+bool ValidatePublicCoin(const CBigNum& value);

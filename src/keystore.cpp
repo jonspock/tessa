@@ -6,13 +6,13 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "keystore.h"
-#include "ecdsa/key.h"
+#include "bls/key.h"
 #include "script/script.h"
 #include "script/standard.h"
 #include "util.h"
 #include "wallet/crypter.h"
 
-using namespace ecdsa;
+using namespace bls;
 
 bool CKeyStore::GetPubKey(const CKeyID& address, CPubKey& vchPubKeyOut) const {
   CKey key;
@@ -95,6 +95,6 @@ bool CBasicKeyStore::HaveMultiSig() const {
 // HACK -> MAYBE NEEDED FOR WATCH ONLY ADDRESSES!
 
 bool CBasicKeyStore::HaveKey(const CKeyID& address) const { return false; }
-bool CBasicKeyStore::GetKey(const ecdsa::CKeyID& address, ecdsa::CKey& keyOut) const { return false; }
+bool CBasicKeyStore::GetKey(const bls::CKeyID& address, bls::CKey& keyOut) const { return false; }
 void CBasicKeyStore::GetKeys(std::set<CKeyID>& setAddress) const {}
 bool CBasicKeyStore::AddKeyPubKey(const CKey& key, const CPubKey& pubkey) { return false; }

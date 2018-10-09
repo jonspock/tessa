@@ -15,8 +15,7 @@
 #include "addrman.h"
 #include "amount.h"
 #include "checkpoints.h"
-#include "compat/sanity.h"
-#include "ecdsa/key.h"
+#include "bls/key.h"
 #include "fs.h"
 #include "fs_utils.h"
 #include "httprpc.h"
@@ -44,7 +43,7 @@
 #include "zerocoin/zerochain.h"
 #include "zerocoin/zerocoindb.h"
 
-#include "ecdsa/ecdsa.h"
+#include "bls/ecdsa.h"
 #include "wallet/db.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
@@ -82,7 +81,7 @@ using fs::filesystem_error;
 #endif
 
 CWallet* pwalletMain = nullptr;
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 CZeroWallet* zwalletMain = nullptr;
 #endif
 
@@ -197,7 +196,7 @@ void Interrupt(CScheduler& scheduler) {
   /// HACK TBD!!!!
   // CVerifyDB().InterruptInit();
   pcoinsdbview->InterruptGetStats();
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   gpZerocoinDB->InterruptWipeCoins();
 #endif
   
@@ -293,7 +292,7 @@ void Shutdown(CScheduler& scheduler) {
 
   if (pwalletMain) delete pwalletMain;
   pwalletMain = nullptr;
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   if (zwalletMain) delete zwalletMain;
   zwalletMain = nullptr;
 #endif
@@ -755,8 +754,6 @@ bool InitSanityCheck() {
         "information, visit https://en.bitcoin.it/wiki/OpenSSL_and_EC_Libraries");
     return false;
   }
-  // if (!glibc_sanity_test() || !glibcxx_sanity_test()) return false;
-
   return true;
 }
 
@@ -1039,13 +1036,11 @@ bool AppInit2(CScheduler& scheduler) {
     script_check_threads.reserve(nScriptCheckThreads - 1);
     for (int i = 0; i < nScriptCheckThreads - 1; i++) script_check_threads.emplace_back(&ThreadScriptCheck);
   }
-#ifdef HAVE_SPORKS
   if (gArgs.IsArgSet("-sporkkey"))  // spork priv key
   {
     if (!gSporkManager.SetPrivKey(GetArg("-sporkkey", "")))
       return InitError(_("Unable to sign spork message, wrong key?"));
   }
-#endif
     
   // Start the lightweight task scheduler thread
   CScheduler::Function serviceLoop = [&] { scheduler.serviceQueue(); };
@@ -1302,7 +1297,7 @@ bool AppInit2(CScheduler& scheduler) {
   // ********************************************************* Step 7: load block chain
 
   // Tessa: Load Accumulator Checkpoints according to network (main/test/regtest)
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   AccumulatorCheckpoints::LoadCheckpoints(Params().NetworkIDString());
 #endif
   
@@ -1337,11 +1332,9 @@ bool AppInit2(CScheduler& scheduler) {
       UnloadBlockIndex();
 #ifdef HAVE_SPORKS
       gSporkDB.init((GetDataDir() / "sporks.json").string());
-#endif
         
       try {
         // Tessa specific: zerocoin and spork DB's
-#ifdef HAVE_ZERO
         gpZerocoinDB.reset(new CZerocoinDB(0, false, fReindex));
 #endif
       } catch (std::exception& e) {
@@ -1423,7 +1416,7 @@ bool AppInit2(CScheduler& scheduler) {
           break;
         }
 
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
         // Drop all information from the zerocoinDB and repopulate
         if (GetBoolArg("-reindexzerocoin", false)) {
           uiInterface.InitMessage.fire(_("Reindexing zerocoin database..."));
@@ -1509,7 +1502,7 @@ bool AppInit2(CScheduler& scheduler) {
 
   if (fDisableWallet) {
     pwalletMain = nullptr;
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
     zwalletMain = nullptr;
 #endif
     LogPrintf("Wallet disabled!\n");
@@ -1555,7 +1548,7 @@ bool AppInit2(CScheduler& scheduler) {
       } else
         strErrors << _("Error loading wallet.dat") << "\n";
     }
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
     zwalletMain = new CZeroWallet;
     pwalletMain->setZWallet(zwalletMain);
 #endif
@@ -1570,7 +1563,7 @@ bool AppInit2(CScheduler& scheduler) {
 
       // Create new keyUser and set as default key
       // Also setups pool of 200(?) keys -> calls TopUpKeyPool
-      ecdsa::CPubKey newDefaultKey;
+      bls::CPubKey newDefaultKey;
       if (pwalletMain->GetKeyFromPool(newDefaultKey)) {
         pwalletMain->SetDefaultKey(newDefaultKey);
         if (!pwalletMain->SetAddressBook(pwalletMain->vchDefaultKey.GetID(), "", "receive"))
@@ -1640,7 +1633,7 @@ bool AppInit2(CScheduler& scheduler) {
     pwalletMain->setZkpAutoBackups(fEnableZkpBackups);
 
     // Load zerocoin mint hashes to memory
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
     pwalletMain->zkpTracker->Init();
     zwalletMain->LoadMintPoolFromDB();
     zwalletMain->SyncWithChain();

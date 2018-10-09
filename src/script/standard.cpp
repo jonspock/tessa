@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "script/standard.h"
-#include "ecdsa/pubkey.h"
+#include "bls/pubkey.h"
 #include "hash.h"
 #include <variant>
 #include "script/script.h"
@@ -14,7 +14,7 @@
 #include "utilstrencodings.h"
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 typedef vector<uint8_t> valtype;
 

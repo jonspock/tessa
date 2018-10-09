@@ -233,7 +233,7 @@ static const CRPCCommand vRPCCommands[] = {
     {"network", "clearbanned", &clearbanned, true, false, false},
 
     /* Block chain and UTXO */
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
     {"blockchain", "findserial", &findserial, true, false, false},
 #endif
     {"blockchain", "getblockchaininfo", &getblockchaininfo, true, false, false},
@@ -334,7 +334,7 @@ static const CRPCCommand vRPCCommands[] = {
     {"wallet", "walletpassphrase", &walletpassphrase, true, false, true},
     {"wallet", "getmasterHDseed", &getMasterHDseed, false, false, true},
     {"wallet", "setmasterHDseed", &setMasterHDseed, false, false, true},
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
     {"zerocoin", "getzerocoinbalance", &getzerocoinbalance, false, false, true},
     {"zerocoin", "listmintedzerocoins", &listmintedzerocoins, false, false, true},
     {"zerocoin", "listspentzerocoins", &listspentzerocoins, false, false, true},

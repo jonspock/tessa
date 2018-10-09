@@ -37,7 +37,7 @@ class CPrivKey {
 
   ~CPrivKey();
 
-  ecdsa::CPubKey GetPublicKey() const;
+  bls::CPubKey GetPublicKey() const;
 
   // Compare to different private key
   friend bool operator==(const CPrivKey& a, const CPrivKey& b);

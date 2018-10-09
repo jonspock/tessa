@@ -25,7 +25,7 @@
 #include <fstream>
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 static uint64_t nAccountingEntryNumber = 0;
 
@@ -633,8 +633,7 @@ bool CWalletDB::EraseDestData(const std::string& address, const std::string& key
 
 bool CWalletDB::WriteHDChain(const CHDChain& chain) { return Write(std::string("hdchain"), chain); }
 
-#ifdef HAVE_ZERO
-
+#ifndef ZEROCOIN_DISABLED
 bool CWalletDB::WriteZerocoinSpendSerialEntry(const CZerocoinSpend& zerocoinSpend) {
   return Write(make_pair(string("zcserial"), zerocoinSpend.GetSerial()), zerocoinSpend, true);
 }
@@ -779,7 +778,7 @@ std::map<uint256, std::vector<pair<uint256, uint32_t> > > CWalletDB::MapMintPool
 
   return mapPool;
 }
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 std::list<CDeterministicMint> CWalletDB::ListDeterministicMints() {
   std::list<CDeterministicMint> listMints;
   auto pcursor = GetCursor();

@@ -28,7 +28,7 @@
 #include "publickey.hpp"
 #include "privatekey.hpp"
 #include "signature.hpp"
-#include "extendedprivatekey.hpp"
+////#include "extendedprivatekey.hpp"
 #include "aggregationinfo.hpp"
 
 namespace relic {

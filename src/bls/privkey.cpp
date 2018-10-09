@@ -15,8 +15,8 @@
 #include <string>
 
 #include "bls.hpp"
-#include "util.hpp"
 #include "privkey.h"
+#include "util.hpp"
 
 using namespace bls;
 using bls::BLS;
@@ -77,12 +77,12 @@ CPrivKey::~CPrivKey() {
   Util::SecFree(keydata);
 }
 
-ecdsa::CPubKey CPrivKey::GetPublicKey() const {
+bls::CPubKey CPrivKey::GetPublicKey() const {
   BLS::AssertInitialized();
   relic::g1_t* q = Util::SecAlloc<relic::g1_t>(1);
   g1_mul_gen(*q, *keydata);
 
-  const ecdsa::CPubKey ret = ecdsa::CPubKey::FromG1(q);
+  const bls::CPubKey ret = bls::CPubKey::FromG1(q);
   Util::SecFree(*q);
   return ret;
 }

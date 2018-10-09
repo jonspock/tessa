@@ -6,7 +6,7 @@
 #pragma once
 
 #include "script/interpreter.h"
-#include "ecdsa/key.h"
+#include "bls/key.h"
 
 #include <vector>
 
@@ -19,6 +19,6 @@ class CachingTransactionSignatureChecker : public TransactionSignatureChecker {
   CachingTransactionSignatureChecker(const CTransaction* txToIn, uint32_t nInIn, bool storeIn = true)
       : TransactionSignatureChecker(txToIn, nInIn), store(storeIn) {}
 
-  bool VerifySignature(const std::vector<uint8_t>& vchSig, const ecdsa::CPubKey& vchPubKey, const uint256& sighash) const;
+  bool VerifySignature(const std::vector<uint8_t>& vchSig, const bls::CPubKey& vchPubKey, const uint256& sighash) const;
 };
 

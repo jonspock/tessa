@@ -20,7 +20,6 @@
 #include "zerocoindb.h"
 
 using namespace std;
-using namespace ecdsa;
 
 #ifdef DEBUG
 const int ZMINTS_TO_ADD = 1;
@@ -43,7 +42,7 @@ CZeroWallet::CZeroWallet() {
   bool fFirstRun = !gWalletDB.ReadCurrentSeedHash(hashSeed);
   if (fFirstRun) {
     // Borrow random generator from the key class so that we don't have to worry about randomness
-    CKey key;
+    ecdsa::CKey key;
     key.MakeNewKey(true);
     seed = key.GetPrivKey_256();
     seedMaster = seed;

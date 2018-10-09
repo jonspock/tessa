@@ -8,7 +8,7 @@
 
 #include "amount.h"
 #include "db.h"
-#include "ecdsa/key.h"
+#include "bls/key.h"
 #include "fs_utils.h"
 #include "keystore.h"
 #include "libzerocoin/Accumulator.h"
@@ -45,7 +45,7 @@ class CHDChain {
   uint32_t nExternalChainCounter;
   uint32_t nInternalChainCounter;
   //!< master key hash160
-  ecdsa::CKeyID masterKeyID;
+  bls::CKeyID masterKeyID;
 
   static const int CURRENT_VERSION = 1;
   int nVersion;
@@ -75,7 +75,7 @@ class CKeyMetadata {
   // optional HD/bip32 keypath.
   std::string hdKeypath;
   // Id of the HD masterkey used to derive this key.
-  ecdsa::CKeyID hdMasterKeyID;
+  bls::CKeyID hdMasterKeyID;
 
   CKeyMetadata() { SetNull(); }
   CKeyMetadata(int64_t nCreateTime_) {
@@ -115,7 +115,7 @@ class CWalletDB : public CDB {
   bool WriteTx(uint256 hash, const CWalletTx& wtx);
   bool EraseTx(uint256 hash);
 
-  bool WriteCryptedKey(const ecdsa::CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret,
+  bool WriteCryptedKey(const bls::CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret,
                        const CKeyMetadata& keyMeta);
   bool WriteMasterKey(uint32_t nID, const CMasterKey& kMasterKey);
   bool ReadMasterKey(uint32_t nID, CMasterKey& kMasterKey);
@@ -141,7 +141,7 @@ class CWalletDB : public CDB {
   bool EraseMSDisabledAddresses(std::vector<std::string> vDisabledAddresses);
   bool WriteAutoCombineSettings(bool fEnable, CAmount nCombineThreshold);
 
-  bool WriteDefaultKey(const ecdsa::CPubKey& vchPubKey);
+  bool WriteDefaultKey(const bls::CPubKey& vchPubKey);
 
   bool ReadPool(int64_t nPool, CKeyPool& keypool);
   bool WritePool(int64_t nPool, const CKeyPool& keypool);

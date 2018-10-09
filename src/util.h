@@ -12,10 +12,6 @@
  */
 #pragma once
 
-#if defined(HAVE_CONFIG_H)
-#include "coin-config.h"
-#endif
-
 #include "compat.h"
 #include "logging.h"
 #include "sync.h"

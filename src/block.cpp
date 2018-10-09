@@ -11,7 +11,7 @@
 #include "addrman.h"
 #include "chainparams.h"
 #include "checkqueue.h"
-#include "ecdsa/blocksignature.h"
+#include "bls/blocksignature.h"
 #include "init.h"
 #include "kernel.h"
 #include "main.h"

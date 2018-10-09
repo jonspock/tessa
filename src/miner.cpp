@@ -9,7 +9,7 @@
 
 #include "miner.h"
 #include "amount.h"
-#include "ecdsa/key.h"
+#include "bls/key.h"
 #include "hash.h"
 #include "init.h"
 #include "kernel.h"  // mapHashedBlocks
@@ -26,7 +26,7 @@
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 
-#include "ecdsa/blocksignature.h"
+#include "bls/blocksignature.h"
 #include "validationinterface.h"
 #include "validationstate.h"
 #include "zerocoin/accumulators.h"
@@ -36,7 +36,7 @@
 #include <thread>
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 static std::condition_variable miner_interrupt_cond;
 static std::mutex cs_miner_interrupt;
@@ -121,8 +121,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
   // Check if zerocoin is enabled
   // XXXX warning "Check zerocoin start here too""
-#ifdef HAVE_ZERO
-   bool fZerocoinActive = GetAdjustedTime() >= Params().Zerocoin_StartTime();
+#ifndef ZEROCOIN_DISABLED
+   bool fZerocoinActive = (chainActive.Tip()->nHeight) >= Params().Zerocoin_StartHeight();
    fZerocoinActive = true;
 #endif
     
@@ -191,7 +191,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       for (const CTxIn& txin : tx.vin) {
         // zerocoinspend has special vin
         if (tx.IsZerocoinSpend()) {
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
           nTotalIn = tx.GetZerocoinSpent();
 
           // Give a high priority to zerocoinspends to get into the next block
@@ -314,7 +314,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
       // double check that there are no double spent ZKP spends in this block or tx
       if (tx.IsZerocoinSpend()) {
-#ifdef HAVE_ZERO        
+#ifndef ZEROCOIN_DISABLED        
         int nHeightTx = 0;
         if (IsTransactionInChain(tx.GetHash(), nHeightTx)) continue;
 
@@ -408,7 +408,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     LogPrint(TessaLog::MINER, "CreateNewBlock(): total size %u\n", nBlockSize);
 
     // Calculate the accumulator checkpoint only if the previous cached checkpoint need to be updated
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
     uint256 nCheckpoint;
     if (nHeight > ACC_BLOCK_INTERVAL) {
       uint256 hashBlockLastAccumulated =

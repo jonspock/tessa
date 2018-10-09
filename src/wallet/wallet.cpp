@@ -12,7 +12,7 @@
 #include "output.h"
 #include "wallet_externs.h"
 #include "wallettx.h"
-#include "ecdsa/extkey.h"
+#include "bls/extkey.h"
 #include "chain.h"
 #include "chainparams.h"
 #include "checkpoints.h"
@@ -46,7 +46,7 @@
 #define KEY_RES_SIZE 200
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 // Only used in this file
 enum ZerocoinSpendStatus {
@@ -532,7 +532,7 @@ bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
   CCryptoKeyStore::SetMaster(vTempMasterKey);
 
   // Generate a new master key.
-  ecdsa::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey();  // Also adds to DB
+  bls::CPubKey masterPubKey = pwalletMain->GenerateNewHDMasterKey();  // Also adds to DB
   if (!SetHDMasterKey(masterPubKey)) {
     throw std::runtime_error(std::string(__func__) + ": Storing master key failed");
   }
@@ -674,7 +674,7 @@ isminetype CWallet::IsMine(const CTxIn& txin) const {
   }
   return ISMINE_NO;
 }
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 bool CWallet::IsMyZerocoinSpend(const CBigNum& bnSerial) const { return zkpTracker->HasSerial(bnSerial); }
 #endif
 
@@ -717,7 +717,7 @@ bool CWallet::IsChange(const CTxOut& txout) const {
 int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
   int ret = 0;
   int64_t nNow = GetTime();
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   bool fCheckZKP = GetBoolArg("-zapwallettxes", false);
   if (fCheckZKP) zkpTracker->Init();
 #endif
@@ -751,7 +751,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
       }
 
       // If this is a zapwallettx, need to readd zkp
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
       if (fCheckZKP && pindex->nHeight >= Params().Zerocoin_StartHeight()) {
         list<CZerocoinMint> listMints;
         BlockToZerocoinMintList(block, listMints);
@@ -875,7 +875,7 @@ CAmount CWallet::GetBalance() const {
   return nTotal;
 }
 
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 std::map<libzerocoin::CoinDenomination, int> mapMintMaturity;
 int nLastMaturityCheck = 0;
 CAmount CWallet::GetZerocoinBalance(bool fMatureOnly) const {
@@ -1201,7 +1201,7 @@ bool CWallet::MintableCoins() {
   }
 
   // ZKP
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   if (GetZerocoinBalance(false) > 0) return true;
 #endif
   return false;
@@ -1692,7 +1692,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
     }
   } else {
     // Update the mint database with tx hash and height
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
     for (const CTxOut& out : txNew.vout) {
       if (!out.IsZerocoinMint()) continue;
 
@@ -2605,8 +2605,8 @@ CScript GetLargestContributor(set<pair<const CWalletTx*, uint32_t> >& setCoins) 
 
   return scriptLargest;
 }
-#ifdef HAVE_ZERO
-bool CWallet::GetZerocoinKey(const CBigNum& bnSerial, CKey& key) {
+#ifndef ZEROCOIN_DISABLED
+bool CWallet::GetZerocoinKey(const CBigNum& bnSerial, ecdsa::CKey& key) {
   CZerocoinMint mint;
   if (!GetMint(GetSerialHash(bnSerial), mint))
     return error("%s: could not find serial %s in walletdb!", __func__, bnSerial.GetHex());
@@ -2766,7 +2766,7 @@ bool CWallet::MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLev
   uint8_t nVersion = zerocoinSelected.GetVersion();
   privateCoin.setVersion(zerocoinSelected.GetVersion());
   LogPrintf("%s: privatecoin version=%d\n", __func__, privateCoin.getVersion());
-  CKey key;
+  ecdsa::CKey key;
   if (!zerocoinSelected.GetKeyPair(key))
     return error("%s: failed to set ZKP privkey mint version=%d", __func__, nVersion);
 
@@ -3340,7 +3340,7 @@ bool CWallet::SetMintUnspent(const CBigNum& bnSerial) {
 
 CPubKey CWallet::GenerateNewHDMasterKey() {
   CKey key;
-  key.MakeNewKey(true);
+  key.MakeNewKey();
 
   int64_t nCreationTime = GetTime();
   CKeyMetadata metadata(nCreationTime);

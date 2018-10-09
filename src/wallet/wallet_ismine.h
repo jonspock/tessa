@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "ecdsa/key.h"
+#include "bls/key.h"
 #include "script/standard.h"
 
 class CKeyStore;

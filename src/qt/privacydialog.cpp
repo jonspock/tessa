@@ -148,7 +148,7 @@ void PrivacyDialog::on_addressBookButton_clicked() {
 }
 
 void PrivacyDialog::on_pushButtonMintZKP_clicked() {
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   if (!walletModel || !walletModel->getOptionsModel()) return;
 
 #ifdef HAVE_SPORKS
@@ -231,7 +231,7 @@ void PrivacyDialog::on_pushButtonMintZKP_clicked() {
 }
 
 void PrivacyDialog::on_pushButtonMintReset_clicked() {
-#ifdef HAVE_ZERO  
+#ifndef ZEROCOIN_DISABLED  
   ui->TEMintStatus->setPlainText(
       tr("Starting ResetMintZerocoin: rescanning complete blockchain, this will need up to 30 minutes depending on "
          "your hardware. \nPlease be patient..."));
@@ -250,7 +250,7 @@ void PrivacyDialog::on_pushButtonMintReset_clicked() {
 }
 
 void PrivacyDialog::on_pushButtonSpentReset_clicked() {
-#ifdef HAVE_ZERO  
+#ifndef ZEROCOIN_DISABLED  
   ui->TEMintStatus->setPlainText(tr("Starting ResetSpentZerocoin: "));
   ui->TEMintStatus->repaint();
   int64_t nTime = GetTimeMillis();
@@ -308,7 +308,7 @@ void PrivacyDialog::setZPivControlLabels(int64_t nAmount, int nQuantity) {
 static inline int64_t roundint64(double d) { return (int64_t)(d > 0 ? d + 0.5 : d - 0.5); }
 
 void PrivacyDialog::sendZKP() {
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   QSettings settings;
 
   // Handle 'Pay To' address options
@@ -579,7 +579,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
                                const CAmount& unconfirmedZerocoinBalance, const CAmount& immatureZerocoinBalance,
                                const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance,
                                const CAmount& watchImmatureBalance) {
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   currentBalance = balance;
   currentUnconfirmedBalance = unconfirmedBalance;
   currentImmatureBalance = immatureBalance;

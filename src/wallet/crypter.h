@@ -7,7 +7,7 @@
 #ifndef BITCOIN_CRYPTER_H
 #define BITCOIN_CRYPTER_H
 
-#include "ecdsa/pubkey.h"
+#include "bls/pubkey.h"
 #include "keystore.h"
 #include "serialize.h"
 #include "support/allocators/secure.h"
@@ -136,15 +136,15 @@ class CCryptoKeyStore : public CBasicKeyStore {
 
   bool Lock();
 
-  virtual bool AddCryptedKey(const ecdsa::CPubKey &vchPubKey, const std::vector<uint8_t> &vchCryptedSecret);
-  bool AddKeyPubKey(const ecdsa::CKey &key, const ecdsa::CPubKey &pubkey) override;
-  bool HaveKey(const ecdsa::CKeyID &address) const override {
+  virtual bool AddCryptedKey(const bls::CPubKey &vchPubKey, const std::vector<uint8_t> &vchCryptedSecret);
+  bool AddKeyPubKey(const bls::CKey &key, const bls::CPubKey &pubkey) override;
+  bool HaveKey(const bls::CKeyID &address) const override {
     LOCK(cs_KeyStore);
     return mapCryptedKeys.count(address) > 0;
   }
-  bool GetKey(const ecdsa::CKeyID &address, ecdsa::CKey &keyOut) const override;
-  bool GetPubKey(const ecdsa::CKeyID &address, ecdsa::CPubKey &vchPubKeyOut) const override;
-  void GetKeys(std::set<ecdsa::CKeyID> &setAddress) const override {
+  bool GetKey(const bls::CKeyID &address, bls::CKey &keyOut) const override;
+  bool GetPubKey(const bls::CKeyID &address, bls::CPubKey &vchPubKeyOut) const override;
+  void GetKeys(std::set<bls::CKeyID> &setAddress) const override {
     setAddress.clear();
     for (auto& mi : mapCryptedKeys) {
       setAddress.insert(mi.first);

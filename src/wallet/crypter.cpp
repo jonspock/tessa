@@ -20,7 +20,7 @@
 #include "wallet_externs.h"
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 int CCrypter::BytesToKeySHA512AES(const std::vector<uint8_t> &chSalt, const SecureString &strKeyData, int count,
                                   uint8_t *key, uint8_t *iv) const {
@@ -135,7 +135,7 @@ bool CCryptoKeyStore::Lock() {
   {
     LOCK(cs_KeyStore);
     vMasterKey.clear();
-#ifdef HAVE_ZERO    
+#ifndef ZEROCOIN_DISABLED    
     pwalletMain->zwalletMain->Lock();
 #endif
   }
@@ -183,7 +183,7 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
       if (!GetDeterministicSeed(hashSeed, nSeed)) {
         return error("Failed to read ZKP seed from DB. Wallet is probably corrupt.");
       }
-#ifdef HAVE_ZERO      
+#ifndef ZEROCOIN_DISABLED      
       pwalletMain->zwalletMain->SetMasterSeed(nSeed, false);
 #endif
     } else {
@@ -191,7 +191,7 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
       uint256 seed = pwalletMain->GetHDMasterKeySeed();
       // LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n",
       // __func__,Hash(seed.begin(), seed.end()).GetHex());
-#ifdef HAVE_ZERO      
+#ifndef ZEROCOIN_DISABLED      
       pwalletMain->zwalletMain->SetMasterSeed(seed, true);
       pwalletMain->zwalletMain->GenerateZMintPool();
 #endif

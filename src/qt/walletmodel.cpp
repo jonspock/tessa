@@ -30,7 +30,7 @@
 #include <QTimer>
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 WalletModel::WalletModel(CWallet* wallet, OptionsModel* optionsModel, QObject* parent)
     : QObject(parent),
@@ -85,7 +85,7 @@ CAmount WalletModel::getImmatureBalance() const { return wallet->GetImmatureBala
 
 CAmount WalletModel::getLockedBalance() const { return wallet->GetLockedCoins(); }
 
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
 CAmount WalletModel::getZerocoinBalance() const { return wallet->GetZerocoinBalance(false); }
 CAmount WalletModel::getUnconfirmedZerocoinBalance() const { return wallet->GetUnconfirmedZerocoinBalance(); }
 CAmount WalletModel::getImmatureZerocoinBalance() const { return wallet->GetImmatureZerocoinBalance(); }
@@ -589,7 +589,7 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts) {
 void WalletModel::listZerocoinMints(std::set<CMintMeta>& setMints, bool fUnusedOnly, bool fMaturedOnly,
                                     bool fUpdateStatus) {
   setMints.clear();
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   setMints = pwalletMain->zkpTracker->ListMints(fUnusedOnly, fMaturedOnly, fUpdateStatus);
 #endif
 }

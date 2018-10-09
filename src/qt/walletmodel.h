@@ -14,7 +14,7 @@
 #include "support/allocators/secure.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
-#include "ecdsa/key.h"
+#include "bls/key.h"
 
 #include <map>
 #include <vector>
@@ -127,10 +127,10 @@ class WalletModel : public QObject {
   CAmount getWatchUnconfirmedBalance() const;
   CAmount getWatchImmatureBalance() const;
   EncryptionStatus getEncryptionStatus() const;
-  ecdsa::CKey generateNewKey() const;  // for temporary paper wallet key generation
+  bls::CKey generateNewKey() const;  // for temporary paper wallet key generation
   bool setAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose);
-  void encryptKey(const ecdsa::CKey key, const std::string& pwd, const std::string& slt, std::vector<unsigned char>& crypted);
-  void decryptKey(const std::vector<unsigned char>& crypted, const std::string& slt, const std::string& pwd, ecdsa::CKey& key);
+  void encryptKey(const bls::CKey key, const std::string& pwd, const std::string& slt, std::vector<unsigned char>& crypted);
+  void decryptKey(const std::vector<unsigned char>& crypted, const std::string& slt, const std::string& pwd, bls::CKey& key);
   void emitBalanceChanged();  // Force update of UI-elements even when no values have changed
 
   // Check address for validity
@@ -182,7 +182,7 @@ class WalletModel : public QObject {
 
   UnlockContext requestUnlock(AskPassphraseDialog::Context context, bool relock = false);
 
-  bool getPubKey(const ecdsa::CKeyID& address, ecdsa::CPubKey& vchPubKeyOut) const;
+  bool getPubKey(const bls::CKeyID& address, bls::CPubKey& vchPubKeyOut) const;
   bool isMine(CTxDestination address);
   void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
   bool isSpent(const COutPoint& outpoint) const;

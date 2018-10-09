@@ -16,6 +16,7 @@
 #include "addressbookdata.h"
 #include "chainparams.h"
 #include "ecdsa/key.h"
+#include "bls/key.h"
 #include "keypool.h"
 #include "keystore.h"
 #include "main_functions.h"
@@ -172,14 +173,14 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   CHDChain hdChain;
 
   /* HD derive new child key (on internal or external chain) */
-  void DeriveNewChildKey(CKeyMetadata& metadata, ecdsa::CKey& secret, bool internal = false);
+  void DeriveNewChildKey(CKeyMetadata& metadata, bls::CKey& secret, bool internal = false);
 
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   std::unique_ptr<CZeroTracker> zkpTracker;
 #endif
   
   std::set<int64_t> setKeyPool;
-  std::map<ecdsa::CKeyID, CKeyMetadata> mapKeyMetadata;
+  std::map<bls::CKeyID, CKeyMetadata> mapKeyMetadata;
 
   typedef std::map<uint32_t, CMasterKey> MasterKeyMap;
   MasterKeyMap mapMasterKeys;
@@ -245,7 +246,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   void setZWallet(CZeroWallet* zwallet) {
     zwalletMain = zwallet;
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
     zkpTracker = std::unique_ptr<CZeroTracker>(new CZeroTracker());
 #endif
   }
@@ -273,7 +274,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   std::map<CTxDestination, CAddressBookData> mapAddressBook;
 
-  ecdsa::CPubKey vchDefaultKey;
+  bls::CPubKey vchDefaultKey;
 
   std::set<COutPoint> setLockedCoins;
 
@@ -305,17 +306,17 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   //  keystore implementation
   // Generate a new key
-  ecdsa::CPubKey GenerateNewKey();
+  bls::CPubKey GenerateNewKey();
 
   //! Adds a key to the store, and saves it to disk.
-  bool AddKeyPubKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey);
-  bool AddKeyPubKeyWithDB(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey);
+  bool AddKeyPubKey(const bls::CKey& key, const bls::CPubKey& pubkey);
+  bool AddKeyPubKeyWithDB(const bls::CKey& key, const bls::CPubKey& pubkey);
   //! Adds a key to the store, without saving it to disk (used by LoadWallet)
-  bool LoadKey(const ecdsa::CKey& key, const ecdsa::CPubKey& pubkey) {
+  bool LoadKey(const bls::CKey& key, const bls::CPubKey& pubkey) {
     return CCryptoKeyStore::AddKeyPubKey(key, pubkey);
   }
   //! Load metadata (used by LoadWallet)
-  bool LoadKeyMetadata(const ecdsa::CPubKey& pubkey, const CKeyMetadata& metadata);
+  bool LoadKeyMetadata(const bls::CPubKey& pubkey, const CKeyMetadata& metadata);
 
   bool LoadMinVersion(int nVersion) {
     AssertLockHeld(cs_wallet);
@@ -325,9 +326,9 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   }
 
   //! Adds an encrypted key to the store, and saves it to disk.
-  bool AddCryptedKey(const ecdsa::CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret);
+  bool AddCryptedKey(const bls::CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret);
   //! Adds an encrypted key to the store, without saving it to disk (used by LoadWallet)
-  bool LoadCryptedKey(const ecdsa::CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret);
+  bool LoadCryptedKey(const bls::CPubKey& vchPubKey, const std::vector<uint8_t>& vchCryptedSecret);
   bool AddCScript(const CScript& redeemScript);
   bool LoadCScript(const CScript& redeemScript);
 
@@ -357,7 +358,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
   bool SetupCrypter(const SecureString& strWalletPassphrase);
 
-  void GetKeyBirthTimes(std::map<ecdsa::CKeyID, int64_t>& mapKeyBirth) const;
+  void GetKeyBirthTimes(std::map<bls::CKeyID, int64_t>& mapKeyBirth) const;
   uint32_t ComputeTimeSmart(const CWalletTx& wtx) const;
 
   /**
@@ -409,9 +410,9 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool);
   void KeepKey(int64_t nIndex);
   void ReturnKey(int64_t nIndex);
-  bool GetKeyFromPool(ecdsa::CPubKey& key);
+  bool GetKeyFromPool(bls::CPubKey& key);
   int64_t GetOldestKeyPoolTime();
-  void GetAllReserveKeys(std::set<ecdsa::CKeyID>& setAddress) const;
+  void GetAllReserveKeys(std::set<bls::CKeyID>& setAddress) const;
 
   std::set<std::set<CTxDestination> > GetAddressGroupings();
   std::map<CTxDestination, CAmount> GetAddressBalances();
@@ -421,7 +422,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   isminetype IsMine(const CTxIn& txin) const;
   CAmount GetDebit(const CTxIn& txin, const isminefilter& filter) const;
   isminetype IsMine(const CTxOut& txout) const { return ::IsMine(*this, txout.scriptPubKey); }
-#ifdef HAVE_ZERO
+#ifndef ZEROCOIN_DISABLED
   bool IsMyZerocoinSpend(const CBigNum& bnSerial) const;
   bool IsMyMint(const CBigNum& bnValue) const;
 #endif
@@ -490,7 +491,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
     return setKeyPool.size();
   }
 
-  bool SetDefaultKey(const ecdsa::CPubKey& vchPubKey);
+  bool SetDefaultKey(const bls::CPubKey& vchPubKey);
 
   /* Set the HD chain model (chain child index counters) */
   bool SetHDChain(const CHDChain& chain, bool memonly);
@@ -500,13 +501,13 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   bool IsHDEnabled();
 
   /* Generates a new HD master key (will not be activated) */
-  ecdsa::CPubKey GenerateNewHDMasterKey();
+  bls::CPubKey GenerateNewHDMasterKey();
   uint256 GetHDMasterKeySeed();  // returns HDMasterKey as uint256 for ZKP
   bool SetHDMasterKeyFromSeed(const uint256 seed);
 
   /* Set the current HD master key (will reset the chain child index counters)
    */
-  bool SetHDMasterKey(const ecdsa::CPubKey& key);
+  bool SetHDMasterKey(const bls::CPubKey& key);
 
   //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
   int GetVersion() {

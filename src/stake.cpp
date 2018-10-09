@@ -14,7 +14,7 @@
 #include "zerocoin/accumulators.h"
 
 using namespace std;
-using namespace ecdsa;
+using namespace bls;
 
 //! Tessa Stake
 bool CStake::SetInput(CTransaction txPrev, uint32_t n) {
