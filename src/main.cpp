@@ -34,9 +34,9 @@
 #include "reverse_iterate.h"
 #include "script/sigcache.h"
 #include "scriptcheck.h"
+
 #include "spork/spork.h"
 #include "spork/sporkdb.h"
-#endif
 #include "staker.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -3701,11 +3701,7 @@ bool static AlreadyHave(const CInv& inv) {
     case MSG_BLOCK:
       return mapBlockIndex.count(inv.hash);
     case MSG_SPORK:
-#ifdef HAVE_SPORKS
       return gSporkManager.count(inv.hash);
-#else
-          return true;
-#endif
   }
   // Don't know what it is, just say we already got one
   return true;
@@ -3805,7 +3801,6 @@ void static ProcessGetData(CNode* pfrom) {
             pushed = true;
           }
         }
-#ifdef HAVE_SPORKS
         if (!pushed && inv.type == MSG_SPORK) {
           if (gSporkManager.count(inv.hash)) {
             CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
@@ -3815,7 +3810,6 @@ void static ProcessGetData(CNode* pfrom) {
             pushed = true;
           }
         }
-#endif
 
         if (!pushed) { vNotFound.push_back(inv); }
       }
@@ -3866,7 +3860,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       pfrom->PushMessage("getsporks");
       fRequestedSporksIDB = true;
     }
-#endif
 
     int64_t nTime;
     CAddress addrMe;
@@ -4524,10 +4517,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       }
     }
   } else {
-#ifdef HAVE_SPORKS
     // probably one the extensions
     gSporkManager.ProcessSpork(pfrom, strCommand, vRecv);
-#endif
   }
 
   return true;
@@ -4538,9 +4529,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 //       Those old clients won't react to the changes of the other (new) SPORK because at the time of their
 //       implementation it was the one which was commented out
 int ActiveProtocol() {
-#ifdef HAVE_SPORKS
   if (gSporkManager.IsSporkActive(SporkID::SPORK_PROTOCOL_ENFORCEMENT)) return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
-#endif
   return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 

@@ -634,6 +634,7 @@ bool CWalletDB::EraseDestData(const std::string& address, const std::string& key
 bool CWalletDB::WriteHDChain(const CHDChain& chain) { return Write(std::string("hdchain"), chain); }
 
 #ifndef ZEROCOIN_DISABLED
+
 bool CWalletDB::WriteZerocoinSpendSerialEntry(const CZerocoinSpend& zerocoinSpend) {
   return Write(make_pair(string("zcserial"), zerocoinSpend.GetSerial()), zerocoinSpend, true);
 }

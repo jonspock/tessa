@@ -468,7 +468,7 @@ endif()
 
 add_subdirectory(src/secp256k1)
 add_subdirectory(src)
-#add_subdirectory(src/libzerocoin)
+add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 add_subdirectory(src/ecdsa)
 add_subdirectory(src/bls)

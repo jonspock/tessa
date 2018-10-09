@@ -27,10 +27,8 @@
 #include "rpc/server.h"
 #include "scheduler.h"
 #include "script/standard.h"
-#ifdef HAVE_SPORKS
 #include "spork/spork.h"
 #include "spork/sporkdb.h"
-#endif
 #include "txdb.h"
 #include "ui_interface.h"
 #include "util.h"
@@ -1330,13 +1328,11 @@ bool AppInit2(CScheduler& scheduler) {
     nStart = GetTimeMillis();
     do {
       UnloadBlockIndex();
-#ifdef HAVE_SPORKS
       gSporkDB.init((GetDataDir() / "sporks.json").string());
         
       try {
         // Tessa specific: zerocoin and spork DB's
         gpZerocoinDB.reset(new CZerocoinDB(0, false, fReindex));
-#endif
       } catch (std::exception& e) {
         if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
         strLoadError = _("Error opening Zerocoin DB");
@@ -1387,10 +1383,9 @@ bool AppInit2(CScheduler& scheduler) {
         if (fReindex) gpBlockTreeDB->WriteReindexing(true);
 
         // Tessa: load previous sessions sporks if we have them.
-#ifdef HAVE_SPORKS
         uiInterface.InitMessage.fire(_("Loading sporks..."));
         gSporkManager.LoadSporksFromDB();
-#endif
+
         uiInterface.InitMessage.fire(_("Loading block index..."));
         string strBlockIndexError = "";
         if (!LoadBlockIndex(strBlockIndexError)) {

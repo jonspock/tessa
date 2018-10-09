@@ -16,9 +16,7 @@
 #include "optionsmodel.h"
 #include "primitives/deterministicmint.h"
 #include "sendcoinsentry.h"
-#ifdef HAVE_SPORKS
 #include "spork/spork.h"
-#endif
 #include "timedata.h"
 #include "ui_privacydialog.h"
 #include "utilmoneystr.h"
@@ -151,13 +149,11 @@ void PrivacyDialog::on_pushButtonMintZKP_clicked() {
 #ifndef ZEROCOIN_DISABLED
   if (!walletModel || !walletModel->getOptionsModel()) return;
 
-#ifdef HAVE_SPORKS
   if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     QMessageBox::information(this, tr("Mint Zerocoin"), tr("ZKP is currently undergoing maintenance."), QMessageBox::Ok,
                              QMessageBox::Ok);
     return;
   }
-#endif
 
   // Reset message text
   ui->TEMintStatus->setPlainText(tr("Mint Status: Okay"));
@@ -268,13 +264,11 @@ void PrivacyDialog::on_pushButtonSpentReset_clicked() {
 void PrivacyDialog::on_pushButtonSpendZKP_clicked() {
   if (!walletModel || !walletModel->getOptionsModel() || !pwalletMain) return;
 
-#ifdef HAVE_SPORKS
   if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     QMessageBox::information(this, tr("Mint Zerocoin"), tr("ZKP is currently undergoing maintenance."), QMessageBox::Ok,
                              QMessageBox::Ok);
     return;
   }
-#endif
 
   // Request unlock if wallet was locked or unlocked for mixing:
   WalletModel::EncryptionStatus encStatus = walletModel->getEncryptionStatus();
@@ -742,7 +736,6 @@ void PrivacyDialog::keyPressEvent(QKeyEvent* event) {
 
 void PrivacyDialog::updateZeroSPORKStatus() {
   // Update/enable labels, buttons and tooltips depending on the current SPORK status
-#ifdef HAVE_SPORKS
   if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     // Mint ZKP
     ui->pushButtonMintZKP->setEnabled(false);
@@ -760,5 +753,4 @@ void PrivacyDialog::updateZeroSPORKStatus() {
     ui->pushButtonSpendZKP->setEnabled(true);
     ui->pushButtonSpendZKP->setToolTip(tr("Spend Zerocoin. Without 'Pay To:' address creates payments to yourself."));
   }
-#endif
 }

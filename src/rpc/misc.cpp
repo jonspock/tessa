@@ -190,7 +190,6 @@ class DescribeAddressVisitor : public std::variant<UniValue> {
 */
 
 UniValue spork(const UniValue& params, bool fHelp) {
-#ifdef HAVE_SPORKS
   if (params.size() == 1 && params[0].get_str() == "show") {
     UniValue ret(UniValue::VOBJ);
     for (const auto& s : sporkList) {
@@ -243,9 +242,6 @@ UniValue spork(const UniValue& params, bool fHelp) {
 
       "\nExamples:\n" +
       HelpExampleCli("spork", "show") + HelpExampleRpc("spork", "show"));
-#else
-    throw runtime_error("Unsupported feature");
-#endif
 }
 
 UniValue validateaddress(const UniValue& params, bool fHelp) {
@@ -390,7 +386,6 @@ UniValue createmultisig(const UniValue& params, bool fHelp) {
 }
 
 UniValue verifymessage(const UniValue& params, bool fHelp) {
-#ifdef HAVE_COMPACT
   if (fHelp || params.size() != 3)
     throw runtime_error(
         "verifymessage \"tessaaddress\" \"signature\" \"message\"\n"

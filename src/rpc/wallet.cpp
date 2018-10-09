@@ -480,7 +480,6 @@ UniValue listaddressgroupings(const UniValue& params, bool fHelp) {
 }
 
 UniValue signmessage(const UniValue& params, bool fHelp) {
-#ifdef HAVE_COMPACT
   if (fHelp || params.size() != 2)
     throw runtime_error(
         "signmessage \"tessaaddress\" \"message\"\n"
@@ -532,9 +531,6 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
   key.Set(b.begin(),b.end(),false);
   if (!key.SignCompact(ss.GetHash(), vchSig)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
   return EncodeBase64(&vchSig[0], vchSig.size());
-#else
-    return NullUniValue;
-#endif
 }
 
 UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
