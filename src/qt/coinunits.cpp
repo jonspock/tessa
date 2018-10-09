@@ -235,4 +235,4 @@ QVariant BitcoinUnits::data(const QModelIndex& index, int role) const {
   return QVariant();
 }
 
-CAmount BitcoinUnits::maxMoney() { return Params().MaxMoneyOut(); }
+CAmount BitcoinUnits::maxMoney() { return maxMoneyOut; }

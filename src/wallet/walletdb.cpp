@@ -153,7 +153,13 @@ bool CWalletDB::WritePool(int64_t nPool, const CKeyPool& keypool) {
   return Write(std::make_pair(std::string("pool"), nPool), keypool);
 }
 
-bool CWalletDB::ErasePool(int64_t nPool) { return Erase(std::make_pair(std::string("pool"), nPool)); }
+bool CWalletDB::ErasePool(int64_t nPool) {
+    if (Exists(std::make_pair(std::string("pool"), nPool))) {
+        return Erase(std::make_pair(std::string("pool"), nPool));
+    } else {
+        return false;
+    }
+}
 
 bool CWalletDB::WriteMinVersion(int nVersion) { return Write(std::string("minversion"), nVersion); }
 
@@ -467,7 +473,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
 static bool IsKeyType(string strType) { return (strType == "mkey" || strType == "ckey"); }
 
 DBErrors CWalletDB::LoadWallet(CWallet* pwallet) {
-  pwallet->vchDefaultKey = CPubKey();
+  //pwallet->vchDefaultKey = CPubKey();
   CWalletScanState wss;
   bool fNoncriticalErrors = false;
   DBErrors result = DB_LOAD_OK;
@@ -627,6 +633,8 @@ bool CWalletDB::EraseDestData(const std::string& address, const std::string& key
 
 bool CWalletDB::WriteHDChain(const CHDChain& chain) { return Write(std::string("hdchain"), chain); }
 
+#ifdef HAVE_ZERO
+
 bool CWalletDB::WriteZerocoinSpendSerialEntry(const CZerocoinSpend& zerocoinSpend) {
   return Write(make_pair(string("zcserial"), zerocoinSpend.GetSerial()), zerocoinSpend, true);
 }
@@ -686,9 +694,10 @@ bool CWalletDB::UnarchiveDeterministicMint(const uint256& hashPubcoin, CDetermin
   return true;
 }
 
-bool CWalletDB::WriteCurrentSeedHash(const uint256& hashSeed) { return Write(string("seedhash"), hashSeed); }
+bool CWalletDB::WriteZKPCount(const uint32_t& nCount) { return Write(string("dzc"), nCount); }
 
-bool CWalletDB::ReadCurrentSeedHash(uint256& hashSeed) { return Read(string("seedhash"), hashSeed); }
+bool CWalletDB::ReadZKPCount(uint32_t& nCount) { return Read(string("dzc"), nCount); }
+#endif
 
 bool CWalletDB::WriteZKPSeed(const uint256& hashSeed, const vector<uint8_t>& seed) {
   if (!WriteCurrentSeedHash(hashSeed)) return error("%s: failed to write current seed hash", __func__);
@@ -711,9 +720,9 @@ bool CWalletDB::ReadZKPSeed(const uint256& hashSeed, vector<uint8_t>& seed) {
   return Read(make_pair(string("dzs"), hashSeed), seed);
 }
 
-bool CWalletDB::WriteZKPCount(const uint32_t& nCount) { return Write(string("dzc"), nCount); }
+bool CWalletDB::WriteCurrentSeedHash(const uint256& hashSeed) { return Write(string("seedhash"), hashSeed); }
 
-bool CWalletDB::ReadZKPCount(uint32_t& nCount) { return Read(string("dzc"), nCount); }
+bool CWalletDB::ReadCurrentSeedHash(uint256& hashSeed) { return Read(string("seedhash"), hashSeed); }
 
 bool CWalletDB::WriteMintPoolPair(const uint256& hashMasterSeed, const uint256& hashPubcoin, const uint32_t& nCount) {
   return Write(make_pair(string("mintpool"), hashPubcoin), make_pair(hashMasterSeed, nCount));
@@ -770,7 +779,7 @@ std::map<uint256, std::vector<pair<uint256, uint32_t> > > CWalletDB::MapMintPool
 
   return mapPool;
 }
-
+#ifdef HAVE_ZERO
 std::list<CDeterministicMint> CWalletDB::ListDeterministicMints() {
   std::list<CDeterministicMint> listMints;
   auto pcursor = GetCursor();
@@ -890,3 +899,4 @@ std::list<CDeterministicMint> CWalletDB::ListArchivedDeterministicMints() {
   cursor_close(pcursor);
   return listMints;
 }
+#endif

@@ -175,7 +175,7 @@ SET(COMMON_A
   ./src/compressor.cpp
   ./src/coins.cpp
   ./src/chainparams.cpp
-  ./src/base58.cpp
+#  ./src/base58.cpp
   ./src/bch32/bch32.cpp
   ./src/bch32/bch_addr.cpp
   ./src/key_io.cpp
@@ -456,9 +456,8 @@ source_group("Spork" FILES ${SPORK})
 source_group("Zero" FILES ${ZERO})
 
 add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS}
-  ${ZERO_HEADERS} ${SPORK_HEADERS}
   ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
-  ${ZERO} ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${SPORK} ${CONSENSUS_CRYPTO})
+  ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${CONSENSUS_CRYPTO})
 
 
 if(CLANG_TIDY_EXE)
@@ -470,7 +469,7 @@ endif()
 
 add_subdirectory(src/secp256k1)
 add_subdirectory(src)
-add_subdirectory(src/libzerocoin)
+#add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 add_subdirectory(src/ecdsa)
 
@@ -520,13 +519,13 @@ add_subdirectory(src/relic)
 
 # For now
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_subdirectory(src/bls)
+#  add_subdirectory(src/bls)
 endif()
 
 #------------------- ------------------- ------------------- ------------------- -------------------
 message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin zerocoin ecdsa secp256k1 lmdb ${DB_LIBRARIES} ${UPNP_LIB}
+SET(LIBS_LIST coin ecdsa secp256k1 lmdb ${DB_LIBRARIES} ${UPNP_LIB}
   event event_pthreads pthread gmp sodium ${ZMQ_LIB} ${FS_LIBS}) # wsock32)
 
 target_link_libraries(tessad ${LIBS_LIST})

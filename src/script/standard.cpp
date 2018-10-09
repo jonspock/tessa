@@ -276,14 +276,15 @@ CScript GetScriptForDestination(const CTxDestination& dest) {
 }
 
 CScript GetScriptForRawPubKey(const CPubKey& pubKey) {
-  return CScript() << std::vector<uint8_t>(pubKey.begin(), pubKey.end()) << OP_CHECKSIG;
+  std::vector<uint8_t> r = pubKey.ToStdVector();
+  return CScript() << r << OP_CHECKSIG;
 }
 
 CScript GetScriptForMultisig(int nRequired, const std::vector<CPubKey>& keys) {
   CScript script;
 
   script << CScript::EncodeOP_N(nRequired);
-  for (const CPubKey& key : keys) script << ToByteVector(key);
+  for (const CPubKey& key : keys) script << key.ToStdVector();
   script << CScript::EncodeOP_N(keys.size()) << OP_CHECKMULTISIG;
   return script;
 }

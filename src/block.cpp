@@ -97,7 +97,7 @@ double ConvertBitsToDouble(uint32_t nBits) {
 }
 
 int64_t GetBlockValue(int nHeight) {
-  int64_t nSubsidy = 5000 * COIN;  // for now XXX HACK
+  int64_t nSubsidy = 5 * COIN;  // for now XXX HACK
   return nSubsidy;
 }
 

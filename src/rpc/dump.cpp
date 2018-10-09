@@ -8,6 +8,7 @@
 #include "chain.h"
 #include "init.h"
 #include "key_io.h"
+#include "ecdsa/extkey.h"
 #include "main.h"
 #include "rpc/server.h"
 #include "script/script.h"
@@ -368,7 +369,7 @@ UniValue dumpwallet(const UniValue& params, bool fHelp) {
     CKey key;
     if (pwalletMain->GetKey(masterKeyID, key)) {
       CExtKey masterKey;
-      masterKey.SetMaster(key.begin(), key.size());
+      masterKey.SetMaster(key);
 
 #ifdef SDFDF
 #warning "Fix this...."

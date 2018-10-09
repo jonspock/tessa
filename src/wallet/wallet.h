@@ -174,8 +174,10 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   /* HD derive new child key (on internal or external chain) */
   void DeriveNewChildKey(CKeyMetadata& metadata, ecdsa::CKey& secret, bool internal = false);
 
+#ifdef HAVE_ZERO
   std::unique_ptr<CZeroTracker> zkpTracker;
-
+#endif
+  
   std::set<int64_t> setKeyPool;
   std::map<ecdsa::CKeyID, CKeyMetadata> mapKeyMetadata;
 
@@ -243,7 +245,9 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   void setZWallet(CZeroWallet* zwallet) {
     zwalletMain = zwallet;
+#ifdef HAVE_ZERO
     zkpTracker = std::unique_ptr<CZeroTracker>(new CZeroTracker());
+#endif
   }
 
   CZeroWallet* getZWallet() { return zwalletMain; }
@@ -417,8 +421,11 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   isminetype IsMine(const CTxIn& txin) const;
   CAmount GetDebit(const CTxIn& txin, const isminefilter& filter) const;
   isminetype IsMine(const CTxOut& txout) const { return ::IsMine(*this, txout.scriptPubKey); }
+#ifdef HAVE_ZERO
   bool IsMyZerocoinSpend(const CBigNum& bnSerial) const;
   bool IsMyMint(const CBigNum& bnValue) const;
+#endif
+  
   CAmount GetCredit(const CTxOut& txout, const isminefilter& filter) const {
     if (!MoneyRange(txout.nValue)) throw std::runtime_error("CWallet::GetCredit() : value out of range");
     return ((IsMine(txout) & filter) ? txout.nValue : 0);

@@ -81,7 +81,7 @@ void SignVerifyMessageDialog::on_pasteButton_SM_clicked() { setAddress_SM(QAppli
 
 void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
   if (!model) return;
-
+#ifdef HAVE_COMPACT
   /* Clear old signature to ensure users don't get confused on error with an old signature displayed */
   ui->signatureOut_SM->clear();
 
@@ -130,6 +130,7 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
   ui->statusLabel_SM->setText(QString("<nobr>") + tr("Message signed.") + QString("</nobr>"));
 
   ui->signatureOut_SM->setText(QString::fromStdString(EncodeBase64(&vchSig[0], vchSig.size())));
+#endif
 }
 
 void SignVerifyMessageDialog::on_copySignatureButton_SM_clicked() {
@@ -154,6 +155,7 @@ void SignVerifyMessageDialog::on_addressBookButton_VM_clicked() {
 }
 
 void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
+#ifdef HAVE_COMPACT
   CTxDestination addr = DecodeDestination(ui->addressIn_VM->text().toStdString());
   if (!IsValidDestinationString(ui->addressIn_VM->text().toStdString())) {
     ui->statusLabel_VM->setStyleSheet("QLabel { color: red; }");
@@ -202,6 +204,7 @@ void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
 
   ui->statusLabel_VM->setStyleSheet("QLabel { color: green; }");
   ui->statusLabel_VM->setText(QString("<nobr>") + tr("Message verified.") + QString("</nobr>"));
+#endif
 }
 
 void SignVerifyMessageDialog::on_clearButton_VM_clicked() {

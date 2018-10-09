@@ -34,8 +34,10 @@
 #include "reverse_iterate.h"
 #include "script/sigcache.h"
 #include "scriptcheck.h"
+#ifdef HAVE_SPORKS
 #include "spork/spork.h"
 #include "spork/sporkdb.h"
+#endif
 #include "staker.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -711,21 +713,24 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
     if (txout.nValue < 0)
       return state.DoS(100, error("CheckTransaction() : txout.nValue negative"), REJECT_INVALID,
                        "bad-txns-vout-negative");
-    if (txout.nValue > Params().MaxMoneyOut())
+    if (txout.nValue > maxMoneyOut)
       return state.DoS(100, error("CheckTransaction() : txout.nValue too high"), REJECT_INVALID,
                        "bad-txns-vout-toolarge");
     nValueOut += txout.nValue;
     if (!MoneyRange(nValueOut))
       return state.DoS(100, error("CheckTransaction() : txout total out of range"), REJECT_INVALID,
                        "bad-txns-txouttotal-toolarge");
+#ifdef HAVE_ZERO    
     if (fZerocoinActive && txout.IsZerocoinMint()) {
       if (!CheckZerocoinMint(tx.GetHash(), txout, state, true)) {
         return state.DoS(100, error("CheckTransaction() : invalid zerocoin mint"));
       }
     }
     if (fZerocoinActive && txout.scriptPubKey.IsZerocoinSpend()) nZCSpendCount++;
+#endif    
   }
 
+#ifdef HAVE_ZERO    
   if (fZerocoinActive) {
     if (nZCSpendCount > Params().Zerocoin_MaxSpendsPerTransaction())
       return state.DoS(
@@ -745,7 +750,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
         return state.DoS(100, error("CheckTransaction() : invalid zerocoin spend"));
     }
   }
-
+#endif
   // Check for duplicate inputs
   set<COutPoint> vInOutPoints;
   set<CBigNum> vZerocoinSpendSerials;
@@ -762,10 +767,12 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
     if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 150)
       return state.DoS(100, error("CheckTransaction() : coinbase script size=%d", tx.vin[0].scriptSig.size()),
                        REJECT_INVALID, "bad-cb-length");
+#ifdef HAVE_ZERO    
   } else if (fZerocoinActive && tx.IsZerocoinSpend()) {
     if (tx.vin.size() < 1 || static_cast<int>(tx.vin.size()) > Params().Zerocoin_MaxSpendsPerTransaction())
       return state.DoS(10, error("CheckTransaction() : Zerocoin Spend has more than allowed txin's"), REJECT_INVALID,
                        "bad-zerocoinspend");
+#endif
   } else {
     for (const CTxIn& txin : tx.vin)
       if (txin.prevout.IsNull() && (fZerocoinActive && !txin.scriptSig.IsZerocoinSpend()))
@@ -816,8 +823,6 @@ CAmount GetMinRelayFee(const CTransaction& tx, uint32_t nBytes, bool fAllowFree)
   }
 
   CAmount nMinFee = ::minRelayTxFee;
-
-  if (!MoneyRange(nMinFee)) nMinFee = Params().MaxMoneyOut();
   return nMinFee;
 }
 
@@ -867,6 +872,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
     CAmount nValueIn = 0;
     if (tx.IsZerocoinSpend()) {
+#ifdef HAVE_ZERO    
       nValueIn = tx.GetZerocoinSpent();
 
       // Check that txid is not already in the chain
@@ -885,6 +891,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
               error("%s: ContextualCheckZerocoinSpend failed for tx %s", __func__, tx.GetHash().GetHex()),
               REJECT_INVALID, "bad-txns-invalid-zkp");
       }
+#endif      
     } else {
       LOCK(pool.cs);
       CCoinsViewMemPool viewMemPool(gpCoinsTip, pool);
@@ -905,6 +912,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
       // Check that ZKP mints are not already known
       if (tx.IsZerocoinMint()) {
+#ifdef HAVE_ZERO        
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
@@ -916,6 +924,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
           if (!ContextualCheckZerocoinMint(tx, coin, chainActive.Tip()))
             return state.Invalid(error("%s: zerocoin mint failed contextual check", __func__));
         }
+#endif
       }
 
       // are the actual inputs available?
@@ -1459,6 +1468,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
      * addresses should still be handled by the typical bitcoin based undo code
      * */
     if (tx.ContainsZerocoins()) {
+#ifdef HAVE_ZERO      
       if (tx.IsZerocoinSpend()) {
         // erase all zerocoinspends in this transaction
         for (const CTxIn& txin : tx.vin) {
@@ -1490,6 +1500,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
             return error("DisconnectBlock(): Failed to erase coin mint");
         }
       }
+#endif
     }
 
     uint256 hash = tx.GetHash();
@@ -1552,11 +1563,13 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 
   if (!fVerifyingBlocks) {
     // if block is an accumulator checkpoint block, remove checkpoint and checksums from db
+#ifdef HAVE_ZERO    
     uint256 nCheckpoint = pindex->nAccumulatorCheckpoint;
     if (nCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {
       if (!EraseAccumulatorValues(nCheckpoint, pindex->pprev->nAccumulatorCheckpoint))
         return error("DisconnectBlock(): failed to erase checkpoint");
     }
+#endif
   }
 
   if (pfClean) {
@@ -1598,6 +1611,7 @@ void ThreadScriptCheck() {
 
 void InterruptThreadScriptCheck() { scriptcheckqueue.Interrupt(); }
 
+#ifdef HAVE_ZERO
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError) {
   // Tessa: recalculate Accumulator Checkpoints that failed to database properly
   if (!listMissingCheckpoints.empty() && chainActive.Height() >= Params().Zerocoin_StartHeight()) {
@@ -1614,6 +1628,7 @@ bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError
 
       // find checkpoints by iterating through the blockchain beginning with the first zerocoin block
       if (pindex->nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {
+#ifdef HAVE_ZERO        
         if (find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint) !=
             listMissingCheckpoints.end()) {
           uint256 nCheckpointCalculated;
@@ -1637,6 +1652,7 @@ bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError
           auto it = find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint);
           listMissingCheckpoints.erase(it);
         }
+#endif
       }
       pindex = chainActive.Next(pindex);
     }
@@ -1703,6 +1719,7 @@ bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
 
   return true;
 }
+#endif
 
 static int64_t nTimeVerify = 0;
 static int64_t nTimeConnect = 0;
@@ -1786,6 +1803,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
       return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
     if (tx.IsZerocoinSpend()) {
+#ifdef HAVE_ZERO
       int nHeightTx = 0;
       uint256 txid = tx.GetHash();
       vSpendsInBlock.emplace_back(txid);
@@ -1830,6 +1848,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
           vMints.emplace_back(make_pair(coin, tx.GetHash()));
         }
       }
+#endif      
     } else if (!tx.IsCoinBase()) {
       if (!view.HaveInputs(tx))
         return state.DoS(100, error("ConnectBlock() : inputs missing/spent"), REJECT_INVALID,
@@ -1837,6 +1856,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
       // Check that ZKP mints are not already known
       if (tx.IsZerocoinMint()) {
+#ifdef HAVE_ZERO        
         for (auto& out : tx.vout) {
           if (!out.IsZerocoinMint()) continue;
 
@@ -1850,6 +1870,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
           vMints.emplace_back(make_pair(coin, tx.GetHash()));
         }
+#endif
       }
 
       // Add in sigops done by pay-to-script-hash inputs;
@@ -1879,11 +1900,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   }
 
   // Track ZKP money supply in the block index
+#ifdef HAVE_ZERO  
   if (!UpdateZKPSupply(block, pindex))
     return state.DoS(100,
                      error("%s: Failed to calculate new ZKP supply for block=%s height=%d", __func__,
                            block.GetHash().GetHex(), pindex->nHeight),
                      REJECT_INVALID);
+#endif
 
   // track money supply and mint amount info
   CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
@@ -1910,13 +1933,15 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   */
 
   // Ensure that accumulator checkpoints are valid and in the same state as this instance of the chain
+#ifdef HAVE_ZERO
   AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
   if (!ValidateAccumulatorCheckpoint(block, pindex, mapAccumulators))
     return state.DoS(100,
                      error("%s: Failed to validate accumulator checkpoint for block=%s height=%d", __func__,
                            block.GetHash().GetHex(), pindex->nHeight),
                      REJECT_INVALID, "bad-acc-checkpoint");
-
+#endif
+  
   if (!control.Wait()) return state.DoS(100, false);
   int64_t nTime2 = GetTimeMicros();
   nTimeVerify += nTime2 - nTimeStart;
@@ -1945,6 +1970,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   }
 
   // Record ZKP serials
+#ifdef HAVE_ZERO      
   set<uint256> setAddedTx;
   for (pair<CoinSpend, uint256> pSpend : vSpends) {
     // record spend to database
@@ -1975,14 +2001,17 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
       }
     }
   }
-
+#endif
+  
   // Flush spend/mint info to disk
   // if (!gpZerocoinDB->WriteCoinSpendBatch(vSpends)) return state.Abort(("Failed to record coin serials to database"));
+#ifdef HAVE_ZERO  
   if (!gpZerocoinDB->WriteCoinMintBatch(vMints)) return state.Abort(("Failed to record new mints to database"));
 
   // Record accumulator checksums
   DatabaseChecksums(mapAccumulators);
-
+#endif
+  
   if (fTxIndex)
     if (!gpBlockTreeDB->WriteTxIndex(vPos)) return state.Abort("Failed to write transaction index");
 
@@ -2828,15 +2857,20 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
   }
 
   // Check transactions
-  // bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
-  // #warning "Check zerocoin start here"
-  bool fZerocoinActive = true;  // FOR NOW XXXX
+#ifdef HAVE_ZERO
+#warning "Check zerocoin start here"
+  bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
+#else
+  bool fZerocoinActive = false;
+#endif
+    
   vector<CBigNum> vBlockSerials;
   for (const CTransaction& tx : block.vtx) {
     if (!CheckTransaction(tx, fZerocoinActive, state)) { return error("CheckBlock() : CheckTransaction failed"); }
 
     // double check that there are no double spent ZKP spends in this block
     if (tx.IsZerocoinSpend()) {
+#ifdef HAVE_ZERO
       for (const CTxIn& txIn : tx.vin) {
         if (txIn.scriptSig.IsZerocoinSpend()) {
           libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
@@ -2846,6 +2880,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
           vBlockSerials.emplace_back(spend.getCoinSerialNumber());
         }
       }
+#endif      
     }
   }
 
@@ -3289,7 +3324,7 @@ bool static LoadBlockIndexDB(string& strError) {
   }
 
   // Load block file info
-  gpBlockTreeDB->ReadLastBlockFile(nLastBlockFile);
+  nLastBlockFile = gpBlockTreeDB->ReadLastBlockFile();
   vinfoBlockFile.resize(nLastBlockFile + 1);
   LogPrintf("%s: last block file = %i\n", __func__, nLastBlockFile);
   for (int nFile = 0; nFile <= nLastBlockFile; nFile++) {
@@ -3318,17 +3353,15 @@ bool static LoadBlockIndexDB(string& strError) {
   }
 
   // Check if the shutdown procedure was followed on last client exit
-  bool fLastShutdownWasPrepared = true;
-  gpBlockTreeDB->ReadFlag("shutdown", fLastShutdownWasPrepared);
+  bool fLastShutdownWasPrepared = gpBlockTreeDB->ReadFlag("shutdown");
   LogPrintf("%s: Last shutdown was prepared: %s\n", __func__, fLastShutdownWasPrepared);
 
   // Check whether we need to continue reindexing
-  bool fReindexing = false;
-  gpBlockTreeDB->ReadReindexing(fReindexing);
+  bool fReindexing = gpBlockTreeDB->ReadReindexing();
   fReindex |= fReindexing;
 
   // Check whether we have a transaction index
-  gpBlockTreeDB->ReadFlag("txindex", fTxIndex);
+  fTxIndex = gpBlockTreeDB->ReadFlag("txindex");
   LogPrintf("LoadBlockIndexDB(): transaction index %s\n", fTxIndex ? "enabled" : "disabled");
 
   // If this is written true before the next client init, then we know the shutdown process failed
@@ -3669,7 +3702,11 @@ bool static AlreadyHave(const CInv& inv) {
     case MSG_BLOCK:
       return mapBlockIndex.count(inv.hash);
     case MSG_SPORK:
+#ifdef HAVE_SPORKS
       return gSporkManager.count(inv.hash);
+#else
+          return true;
+#endif
   }
   // Don't know what it is, just say we already got one
   return true;
@@ -3769,6 +3806,7 @@ void static ProcessGetData(CNode* pfrom) {
             pushed = true;
           }
         }
+#ifdef HAVE_SPORKS
         if (!pushed && inv.type == MSG_SPORK) {
           if (gSporkManager.count(inv.hash)) {
             CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
@@ -3778,6 +3816,7 @@ void static ProcessGetData(CNode* pfrom) {
             pushed = true;
           }
         }
+#endif
 
         if (!pushed) { vNotFound.push_back(inv); }
       }
@@ -3820,7 +3859,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       Misbehaving(pfrom->GetId(), 1);
       return false;
     }
-
+#ifdef HAVE_SPORKS
     // Tessa: We use certain sporks during IBD, so check to see if they are
     // available. If not, ask the first peer connected for them.
     bool fMissingSporks = !gSporkDB.SporkExists("SPORK_PROTOCOL_ENFORCEMENT");
@@ -3829,6 +3868,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       pfrom->PushMessage("getsporks");
       fRequestedSporksIDB = true;
     }
+#endif
 
     int64_t nTime;
     CAddress addrMe;
@@ -4486,8 +4526,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       }
     }
   } else {
+#ifdef HAVE_SPORKS
     // probably one the extensions
     gSporkManager.ProcessSpork(pfrom, strCommand, vRecv);
+#endif
   }
 
   return true;
@@ -4498,7 +4540,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 //       Those old clients won't react to the changes of the other (new) SPORK because at the time of their
 //       implementation it was the one which was commented out
 int ActiveProtocol() {
+#ifdef HAVE_SPORKS
   if (gSporkManager.IsSporkActive(SporkID::SPORK_PROTOCOL_ENFORCEMENT)) return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
+#endif
   return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 

@@ -9,7 +9,7 @@
 #include "chainparams.h"
 #include "utilstrencodings.h"
 
-bool MoneyRange(CAmount nValueOut) { return nValueOut >= 0 && nValueOut <= Params().MaxMoneyOut(); }
+bool MoneyRange(CAmount nValueOut) { return nValueOut >= 0 && nValueOut <= maxMoneyOut; }
 
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue) {
   if (!mapValue.count("n")) {

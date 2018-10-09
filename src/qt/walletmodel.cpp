@@ -85,11 +85,15 @@ CAmount WalletModel::getImmatureBalance() const { return wallet->GetImmatureBala
 
 CAmount WalletModel::getLockedBalance() const { return wallet->GetLockedCoins(); }
 
+#ifdef HAVE_ZERO
 CAmount WalletModel::getZerocoinBalance() const { return wallet->GetZerocoinBalance(false); }
-
 CAmount WalletModel::getUnconfirmedZerocoinBalance() const { return wallet->GetUnconfirmedZerocoinBalance(); }
-
 CAmount WalletModel::getImmatureZerocoinBalance() const { return wallet->GetImmatureZerocoinBalance(); }
+#else
+CAmount WalletModel::getZerocoinBalance() const { return 0; }
+CAmount WalletModel::getUnconfirmedZerocoinBalance() const { return 0;}
+CAmount WalletModel::getImmatureZerocoinBalance() const { return 0; }
+#endif
 
 bool WalletModel::haveWatchOnly() const { return fHaveWatchOnly; }
 
@@ -585,7 +589,9 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts) {
 void WalletModel::listZerocoinMints(std::set<CMintMeta>& setMints, bool fUnusedOnly, bool fMaturedOnly,
                                     bool fUpdateStatus) {
   setMints.clear();
+#ifdef HAVE_ZERO
   setMints = pwalletMain->zkpTracker->ListMints(fUnusedOnly, fMaturedOnly, fUpdateStatus);
+#endif
 }
 
 void WalletModel::loadReceiveRequests(std::vector<std::string>& vReceiveRequests) {

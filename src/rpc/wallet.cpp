@@ -41,6 +41,8 @@ int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 static std::atomic<bool> search_interrupted(false);
 
+void InterruptSearch() { search_interrupted = true; }
+
 std::string HelpRequiringPassphrase() {
   return pwalletMain ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
 }
@@ -479,6 +481,7 @@ UniValue listaddressgroupings(const UniValue& params, bool fHelp) {
 }
 
 UniValue signmessage(const UniValue& params, bool fHelp) {
+#ifdef HAVE_COMPACT
   if (fHelp || params.size() != 2)
     throw runtime_error(
         "signmessage \"tessaaddress\" \"message\"\n"
@@ -526,6 +529,9 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
   if (!key.SignCompact(ss.GetHash(), vchSig)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
 
   return EncodeBase64(&vchSig[0], vchSig.size());
+#else
+    return NullUniValue;
+#endif
 }
 
 UniValue getreceivedbyaddress(const UniValue& params, bool fHelp) {
@@ -2317,6 +2323,7 @@ UniValue multisend(const UniValue& params, bool fHelp) {
   return printMultiSend();
 }
 
+#ifdef HAVE_ZERO
 UniValue getzerocoinbalance(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 0)
     throw runtime_error(
@@ -2441,7 +2448,6 @@ UniValue listspentzerocoins(const UniValue& params, bool fHelp) {
 
   return jsonList;
 }
-
 UniValue mintzerocoin(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() < 1 || params.size() > 2)
     throw runtime_error(
@@ -2901,67 +2907,6 @@ UniValue exportzerocoins(const UniValue& params, bool fHelp) {
   return jsonList;
 }
 
-UniValue setMasterHDseed(const UniValue& params, bool fHelp) {
-  if (fHelp || params.size() != 1)
-    throw runtime_error(
-        "setMasterHDseed \"seed\"\n"
-        "\nSet the wallet's HD deterministic seed to a specific value.\n" +
-        HelpRequiringPassphrase() +
-        "\n"
-
-        "\nArguments:\n"
-        "1. \"seed\"        (string, required) The deterministic zkp seed.\n"
-
-        "\nResult\n"
-        "\"success\" : b,  (boolean) Whether the seed was successfully set.\n"
-
-        "\nExamples\n" +
-        HelpExampleCli("setmasterHDseed", "63f793e7895dd30d99187b35fbfb314a5f91af0add9e0a4e5877036d1e392dd5") +
-        HelpExampleRpc("setmasterHDseed", "63f793e7895dd30d99187b35fbfb314a5f91af0add9e0a4e5877036d1e392dd5"));
-
-  EnsureWalletIsUnlocked();
-
-  uint256 seed;
-  seed.SetHex(params[0].get_str());
-
-  bool fSuccess = pwalletMain->SetHDMasterKeyFromSeed(seed);
-  if (fSuccess) {
-    CZeroWallet* zwallet = pwalletMain->getZWallet();
-    fSuccess |= zwallet->SetMasterSeed(seed, true);
-    zwallet->SetMasterSeed(seed, true);
-    zwallet->GenerateZMintPool();
-    zwallet->SyncWithChain();
-  }
-
-  UniValue ret(UniValue::VOBJ);
-  ret.push_back(std::make_pair("success", fSuccess));
-
-  return ret;
-}
-
-UniValue getMasterHDseed(const UniValue& params, bool fHelp) {
-  if (fHelp || !params.empty())
-    throw runtime_error("getMasterHDseed\n" + HelpRequiringPassphrase() +
-                        "\n"
-
-                        "\nResult\n"
-                        "\"seed\" : s,  (string) The Hierarchical Deterministic Master seed.\n"
-
-                        "\nExamples\n" +
-                        HelpExampleCli("getMasterHDseed", "") + HelpExampleRpc("getMasterHDseed", ""));
-
-  EnsureWalletIsUnlocked();
-
-  // Get from ZeroWallet as it's the same
-  CZeroWallet* zwallet = pwalletMain->getZWallet();
-  uint256 seed = zwallet->GetMasterSeed();
-
-  UniValue ret(UniValue::VOBJ);
-  ret.push_back(std::make_pair("seed", seed.GetHex()));
-
-  return ret;
-}
-
 UniValue generatemintlist(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 2)
     throw runtime_error(
@@ -3054,7 +2999,6 @@ void static SearchThread(CZeroWallet* zwallet, int nCountStart, int nCountEnd) {
     LogPrintf("SearchThread() exception");
   }
 }
-void InterruptSearch() { search_interrupted = true; }
 
 UniValue searchdzkp(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 3)
@@ -3098,4 +3042,72 @@ UniValue searchdzkp(const UniValue& params, bool fHelp) {
 
   // todo: better response
   return "done";
+}
+#endif
+
+UniValue setMasterHDseed(const UniValue& params, bool fHelp) {
+  if (fHelp || params.size() != 1)
+    throw runtime_error(
+        "setMasterHDseed \"seed\"\n"
+        "\nSet the wallet's HD deterministic seed to a specific value.\n" +
+        HelpRequiringPassphrase() +
+        "\n"
+
+        "\nArguments:\n"
+        "1. \"seed\"        (string, required) The deterministic zkp seed.\n"
+
+        "\nResult\n"
+        "\"success\" : b,  (boolean) Whether the seed was successfully set.\n"
+
+        "\nExamples\n" +
+        HelpExampleCli("setmasterHDseed", "63f793e7895dd30d99187b35fbfb314a5f91af0add9e0a4e5877036d1e392dd5") +
+        HelpExampleRpc("setmasterHDseed", "63f793e7895dd30d99187b35fbfb314a5f91af0add9e0a4e5877036d1e392dd5"));
+
+  EnsureWalletIsUnlocked();
+
+  uint256 seed;
+  seed.SetHex(params[0].get_str());
+
+  bool fSuccess = pwalletMain->SetHDMasterKeyFromSeed(seed);
+#ifdef HAVE_ZERO
+  if (fSuccess) {
+    CZeroWallet* zwallet = pwalletMain->getZWallet();
+    fSuccess |= zwallet->SetMasterSeed(seed, true);
+    zwallet->SetMasterSeed(seed, true);
+    zwallet->GenerateZMintPool();
+    zwallet->SyncWithChain();
+  }
+#endif
+  
+  UniValue ret(UniValue::VOBJ);
+  ret.push_back(std::make_pair("success", fSuccess));
+
+  return ret;
+}
+
+UniValue getMasterHDseed(const UniValue& params, bool fHelp) {
+  if (fHelp || !params.empty())
+    throw runtime_error("getMasterHDseed\n" + HelpRequiringPassphrase() +
+                        "\n"
+
+                        "\nResult\n"
+                        "\"seed\" : s,  (string) The Hierarchical Deterministic Master seed.\n"
+
+                        "\nExamples\n" +
+                        HelpExampleCli("getMasterHDseed", "") + HelpExampleRpc("getMasterHDseed", ""));
+
+  EnsureWalletIsUnlocked();
+
+#ifdef HAVE_ZERO
+  // Get from ZeroWallet as it's the same
+  CZeroWallet* zwallet = pwalletMain->getZWallet();
+  uint256 seed = zwallet->GetMasterSeed();
+
+  UniValue ret(UniValue::VOBJ);
+  ret.push_back(std::make_pair("seed", seed.GetHex()));
+  return ret;
+#else
+  throw runtime_error("Need to setup this function ");
+  return NullUniValue;
+#endif
 }

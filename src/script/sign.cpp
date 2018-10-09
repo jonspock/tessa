@@ -80,7 +80,7 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
       } else {
         ecdsa::CPubKey vch;
         keystore.GetPubKey(keyID, vch);
-        scriptSigRet << ToByteVector(vch);
+        scriptSigRet << vch.ToStdVector();
       }
       return true;
     case TX_SCRIPTHASH:

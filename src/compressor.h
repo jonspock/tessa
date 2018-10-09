@@ -52,7 +52,6 @@ class CScriptCompressor {
    */
   bool IsToKeyID(ecdsa::CKeyID& hash) const;
   bool IsToScriptID(CScriptID& hash) const;
-  bool IsToPubKey(ecdsa::CPubKey& pubkey) const;
 
   bool Compress(std::vector<uint8_t>& out) const;
   uint32_t GetSpecialSize(uint32_t nSize) const;

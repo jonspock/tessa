@@ -127,7 +127,7 @@ static bool DecryptKey(const CKeyingMaterial &vInMasterKey, const std::vector<ui
 
   if (vchSecret.size() != 32) return false;
 
-  key.Set(vchSecret.begin(), vchSecret.end(), vchPubKey.IsCompressed());
+  key.Set(vchSecret.begin(), vchSecret.end());///, vchPubKey.IsCompressed());
   return key.VerifyPubKey(vchPubKey);
 }
 
@@ -135,7 +135,9 @@ bool CCryptoKeyStore::Lock() {
   {
     LOCK(cs_KeyStore);
     vMasterKey.clear();
+#ifdef HAVE_ZERO    
     pwalletMain->zwalletMain->Lock();
+#endif
   }
 
   NotifyStatusChanged.fire(this);
@@ -181,14 +183,18 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
       if (!GetDeterministicSeed(hashSeed, nSeed)) {
         return error("Failed to read ZKP seed from DB. Wallet is probably corrupt.");
       }
+#ifdef HAVE_ZERO      
       pwalletMain->zwalletMain->SetMasterSeed(nSeed, false);
+#endif
     } else {
       // First time this wallet has been unlocked with dZkp. Get HD MasterKey for ZKP
       uint256 seed = pwalletMain->GetHDMasterKeySeed();
       // LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n",
       // __func__,Hash(seed.begin(), seed.end()).GetHex());
+#ifdef HAVE_ZERO      
       pwalletMain->zwalletMain->SetMasterSeed(seed, true);
       pwalletMain->zwalletMain->GenerateZMintPool();
+#endif
     }
   }
   NotifyStatusChanged.fire(this);
@@ -201,7 +207,8 @@ bool CCryptoKeyStore::AddKeyPubKey(const CKey &key, const CPubKey &pubkey) {
     if (IsLocked()) return false;
 
     std::vector<uint8_t> vchCryptedSecret;
-    CKeyingMaterial vchSecret(key.begin(), key.end());
+    std::vector<uint8_t> vch = key.getBytes(); // since key doesn't have iterator
+    CKeyingMaterial vchSecret(vch.begin(), vch.end());
     if (!EncryptSecret(vMasterKey, vchSecret, pubkey.GetHash(), vchCryptedSecret)) return false;
     if (!AddCryptedKey(pubkey, vchCryptedSecret)) return false;
   }

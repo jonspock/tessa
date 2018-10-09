@@ -233,7 +233,9 @@ static const CRPCCommand vRPCCommands[] = {
     {"network", "clearbanned", &clearbanned, true, false, false},
 
     /* Block chain and UTXO */
+#ifdef HAVE_ZERO
     {"blockchain", "findserial", &findserial, true, false, false},
+#endif
     {"blockchain", "getblockchaininfo", &getblockchaininfo, true, false, false},
     {"blockchain", "getbestblockhash", &getbestblockhash, true, false, false},
     {"blockchain", "getblockcount", &getblockcount, true, false, false},
@@ -332,7 +334,7 @@ static const CRPCCommand vRPCCommands[] = {
     {"wallet", "walletpassphrase", &walletpassphrase, true, false, true},
     {"wallet", "getmasterHDseed", &getMasterHDseed, false, false, true},
     {"wallet", "setmasterHDseed", &setMasterHDseed, false, false, true},
-
+#ifdef HAVE_ZERO
     {"zerocoin", "getzerocoinbalance", &getzerocoinbalance, false, false, true},
     {"zerocoin", "listmintedzerocoins", &listmintedzerocoins, false, false, true},
     {"zerocoin", "listspentzerocoins", &listspentzerocoins, false, false, true},
@@ -347,7 +349,8 @@ static const CRPCCommand vRPCCommands[] = {
     {"zerocoin", "generatemintlist", &generatemintlist, false, false, true},
     {"zerocoin", "searchdzkp", &searchdzkp, false, false, true},
     {"zerocoin", "dzkpstate", &dzkpstate, false, false, true}
-
+#endif
+    
 };
 
 CRPCTable::CRPCTable() {

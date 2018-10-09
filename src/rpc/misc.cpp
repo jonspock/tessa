@@ -15,7 +15,9 @@
 #include "net.h"
 #include "netbase.h"
 #include "rpc/server.h"
+#ifdef HAVE_SPORKS
 #include "spork/spork.h"
+#endif
 #include "staker.h"
 #include "timedata.h"
 #include "util.h"
@@ -100,7 +102,9 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   if (pwalletMain) {
     obj.push_back(std::make_pair("walletversion", pwalletMain->GetVersion()));
     obj.push_back(std::make_pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
+#ifdef HAVE_ZERO    
     obj.push_back(std::make_pair("zerocoinbalance", ValueFromAmount(pwalletMain->GetZerocoinBalance(true))));
+#endif
   }
   obj.push_back(std::make_pair("blocks", (int)chainActive.Height()));
   obj.push_back(std::make_pair("timeoffset", GetTimeOffset()));
@@ -116,6 +120,7 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   }
 
   obj.push_back(std::make_pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply)));
+#ifdef HAVE_ZERO
   UniValue zkpObj(UniValue::VOBJ);
   for (auto denom : libzerocoin::zerocoinDenomList) {
     zkpObj.push_back(std::make_pair(to_string(denom),
@@ -123,7 +128,8 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   }
   zkpObj.push_back(std::make_pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
   obj.push_back(std::make_pair("Zkpsupply", zkpObj));
-
+#endif
+  
   if (pwalletMain) {
     obj.push_back(std::make_pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
     obj.push_back(std::make_pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
@@ -156,8 +162,7 @@ class DescribeAddressVisitor : public std::variant<UniValue> {
     obj.push_back(std::make_pair("isscript", false));
     if (mine == ISMINE_SPENDABLE) {
       pwalletMain->GetPubKey(keyID, vchPubKey);
-      obj.push_back(std::make_pair("pubkey", HexStr(vchPubKey)));
-      obj.push_back(std::make_pair("iscompressed", vchPubKey.IsCompressed()));
+      obj.push_back(std::make_pair("pubkey", vchPubKey.GetHex()));
     }
     return obj;
   }
@@ -188,6 +193,7 @@ class DescribeAddressVisitor : public std::variant<UniValue> {
 */
 
 UniValue spork(const UniValue& params, bool fHelp) {
+#ifdef HAVE_SPORKS
   if (params.size() == 1 && params[0].get_str() == "show") {
     UniValue ret(UniValue::VOBJ);
     for (const auto& s : sporkList) {
@@ -240,6 +246,9 @@ UniValue spork(const UniValue& params, bool fHelp) {
 
       "\nExamples:\n" +
       HelpExampleCli("spork", "show") + HelpExampleRpc("spork", "show"));
+#else
+    throw runtime_error("Unsupported feature");
+#endif
 }
 
 UniValue validateaddress(const UniValue& params, bool fHelp) {
@@ -384,6 +393,7 @@ UniValue createmultisig(const UniValue& params, bool fHelp) {
 }
 
 UniValue verifymessage(const UniValue& params, bool fHelp) {
+#ifdef HAVE_COMPACT
   if (fHelp || params.size() != 3)
     throw runtime_error(
         "verifymessage \"tessaaddress\" \"signature\" \"message\"\n"
@@ -433,6 +443,9 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return false;
 
   return (pubkey.GetID() == *keyID);
+#else
+    return false;
+#endif
 }
 
 UniValue setmocktime(const UniValue& params, bool fHelp) {

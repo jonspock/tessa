@@ -41,6 +41,7 @@ void ZPivControlDialog::setModel(WalletModel* model) {
 
 // Update the tree widget
 void ZPivControlDialog::updateList() {
+#ifdef HAVE_ZERO
   // need to prevent the slot from being called each time something is changed
   ui->treeWidget->blockSignals(true);
   ui->treeWidget->clear();
@@ -120,6 +121,7 @@ void ZPivControlDialog::updateList() {
 
   ui->treeWidget->blockSignals(false);
   updateLabels();
+#endif
 }
 
 // Update the list when a checkbox is clicked

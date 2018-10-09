@@ -28,8 +28,10 @@
 #include "rpc/server.h"
 #include "scheduler.h"
 #include "script/standard.h"
+#ifdef HAVE_SPORKS
 #include "spork/spork.h"
 #include "spork/sporkdb.h"
+#endif
 #include "txdb.h"
 #include "ui_interface.h"
 #include "util.h"
@@ -80,7 +82,10 @@ using fs::filesystem_error;
 #endif
 
 CWallet* pwalletMain = nullptr;
+#ifdef HAVE_ZERO
 CZeroWallet* zwalletMain = nullptr;
+#endif
+
 const int nWalletBackups = 10;
 // Specific to LMDB, may have to change some related code otherwise
 const std::string strWalletFile = "data.mdb";
@@ -192,8 +197,10 @@ void Interrupt(CScheduler& scheduler) {
   /// HACK TBD!!!!
   // CVerifyDB().InterruptInit();
   pcoinsdbview->InterruptGetStats();
+#ifdef HAVE_ZERO
   gpZerocoinDB->InterruptWipeCoins();
-
+#endif
+  
   InterruptThreadScriptCheck();
   InterruptNetBase();
   InterruptNode();
@@ -286,8 +293,10 @@ void Shutdown(CScheduler& scheduler) {
 
   if (pwalletMain) delete pwalletMain;
   pwalletMain = nullptr;
+#ifdef HAVE_ZERO
   if (zwalletMain) delete zwalletMain;
   zwalletMain = nullptr;
+#endif
   globalVerifyHandle.reset();
   ECC_Stop();
   LogPrintf("%s: done\n", __func__);
@@ -1030,13 +1039,14 @@ bool AppInit2(CScheduler& scheduler) {
     script_check_threads.reserve(nScriptCheckThreads - 1);
     for (int i = 0; i < nScriptCheckThreads - 1; i++) script_check_threads.emplace_back(&ThreadScriptCheck);
   }
-
+#ifdef HAVE_SPORKS
   if (gArgs.IsArgSet("-sporkkey"))  // spork priv key
   {
     if (!gSporkManager.SetPrivKey(GetArg("-sporkkey", "")))
       return InitError(_("Unable to sign spork message, wrong key?"));
   }
-
+#endif
+    
   // Start the lightweight task scheduler thread
   CScheduler::Function serviceLoop = [&] { scheduler.serviceQueue(); };
   scheduler_thread = std::thread(std::bind(&TraceThread<CScheduler::Function>, "scheduler", serviceLoop));
@@ -1292,8 +1302,10 @@ bool AppInit2(CScheduler& scheduler) {
   // ********************************************************* Step 7: load block chain
 
   // Tessa: Load Accumulator Checkpoints according to network (main/test/regtest)
+#ifdef HAVE_ZERO
   AccumulatorCheckpoints::LoadCheckpoints(Params().NetworkIDString());
-
+#endif
+  
   fReindex = GetBoolArg("-reindex", false);
 
   path blocksDir = GetDataDir() / "blocks";
@@ -1323,11 +1335,15 @@ bool AppInit2(CScheduler& scheduler) {
     nStart = GetTimeMillis();
     do {
       UnloadBlockIndex();
+#ifdef HAVE_SPORKS
       gSporkDB.init((GetDataDir() / "sporks.json").string());
-
+#endif
+        
       try {
         // Tessa specific: zerocoin and spork DB's
+#ifdef HAVE_ZERO
         gpZerocoinDB.reset(new CZerocoinDB(0, false, fReindex));
+#endif
       } catch (std::exception& e) {
         if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
         strLoadError = _("Error opening Zerocoin DB");
@@ -1378,9 +1394,10 @@ bool AppInit2(CScheduler& scheduler) {
         if (fReindex) gpBlockTreeDB->WriteReindexing(true);
 
         // Tessa: load previous sessions sporks if we have them.
+#ifdef HAVE_SPORKS
         uiInterface.InitMessage.fire(_("Loading sporks..."));
         gSporkManager.LoadSporksFromDB();
-
+#endif
         uiInterface.InitMessage.fire(_("Loading block index..."));
         string strBlockIndexError = "";
         if (!LoadBlockIndex(strBlockIndexError)) {
@@ -1406,6 +1423,7 @@ bool AppInit2(CScheduler& scheduler) {
           break;
         }
 
+#ifdef HAVE_ZERO
         // Drop all information from the zerocoinDB and repopulate
         if (GetBoolArg("-reindexzerocoin", false)) {
           uiInterface.InitMessage.fire(_("Reindexing zerocoin database..."));
@@ -1434,7 +1452,7 @@ bool AppInit2(CScheduler& scheduler) {
           string strError;
           if (!ReindexAccumulators(listAccCheckpointsNoDB, strError)) return InitError(strError);
         }
-
+#endif
         uiInterface.InitMessage.fire(_("Verifying blocks..."));
 
         // Flag sent to validation code to let it know it can skip certain checks
@@ -1491,7 +1509,9 @@ bool AppInit2(CScheduler& scheduler) {
 
   if (fDisableWallet) {
     pwalletMain = nullptr;
+#ifdef HAVE_ZERO    
     zwalletMain = nullptr;
+#endif
     LogPrintf("Wallet disabled!\n");
   } else {
     // needed to restore wallet transaction meta data after -zapwallettxes
@@ -1535,10 +1555,10 @@ bool AppInit2(CScheduler& scheduler) {
       } else
         strErrors << _("Error loading wallet.dat") << "\n";
     }
-
+#ifdef HAVE_ZERO
     zwalletMain = new CZeroWallet;
     pwalletMain->setZWallet(zwalletMain);
-
+#endif
     if (fFirstRun) {
       // Get/Set Password
       // Check if QT or Not
@@ -1620,10 +1640,11 @@ bool AppInit2(CScheduler& scheduler) {
     pwalletMain->setZkpAutoBackups(fEnableZkpBackups);
 
     // Load zerocoin mint hashes to memory
+#ifdef HAVE_ZERO
     pwalletMain->zkpTracker->Init();
     zwalletMain->LoadMintPoolFromDB();
     zwalletMain->SyncWithChain();
-
+#endif
     uiInterface.InitMessage.fire(_("ZKP wallet synced"));
 
   }  // (!fDisableWallet)

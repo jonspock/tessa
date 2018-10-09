@@ -33,17 +33,9 @@ struct CDNSSeedData {
 class CChainParams
 {
 public:
-    enum BaseType {
-        PUBKEY_ADDRESS,
-        SCRIPT_ADDRESS,
-        SECRET_KEY,     // BIP16
-        EXT_PUBLIC_KEY, // BIP32
-        EXT_SECRET_KEY, // BIP32
-        EXT_COIN_TYPE,  // BIP44
-        MAX_BASE58_TYPES
-    };
 
     const std::string& Bch32HRP() const { return bch32_hrp; }
+    const std::string& Bch32SEC() const { return bch32_sec; }
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     int GetDefaultPort() const { return nDefaultPort; }
@@ -74,7 +66,6 @@ public:
     int64_t TargetSpacing() const { return nTargetSpacing; }
     int64_t Interval() const { return nTargetTimespan / nTargetSpacing; }
     int COINBASE_MATURITY() const { return nMaturity; }
-    CAmount MaxMoneyOut() const { return nMaxMoneyOut; }
     /** Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated */
     bool MineBlocksOnDemand() const { return fMineBlocksOnDemand; }
     /** In the future use NetworkIDString() for RPC fields */
@@ -82,7 +73,6 @@ public:
     /** Return the BIP70 network string (main, test or regtest) */
     std::string NetworkIDString() const { return strNetworkID; }
     const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
-    const std::vector<uint8_t>& Prefix(BaseType type) const { return Prefixes[type]; }
     const std::vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
     virtual const Checkpoints::CCheckpointData& Checkpoints() const = 0;
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
@@ -120,11 +110,10 @@ protected:
     int64_t nTargetSpacing;
     int nLastPOWBlock;
     int nMaturity;
-    CAmount nMaxMoneyOut;
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;
     std::string bch32_hrp;
-    std::vector<uint8_t> Prefixes[MAX_BASE58_TYPES];
+    std::string bch32_sec;
     CBaseChainParams::Network networkID;
     std::string strNetworkID;
     CBlock genesis;

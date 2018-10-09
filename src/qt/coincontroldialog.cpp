@@ -559,9 +559,8 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog) {
       CPubKey pubkey;
       CKeyID* keyid = &std::get<CKeyID>(address);
       if (keyid && model->getPubKey(*keyid, pubkey)) {
-        nBytesInputs += (pubkey.IsCompressed() ? 148 : 180);
-        if (!pubkey.IsCompressed()) nQuantityUncompressed++;
-      } else
+        nBytesInputs += 180; // HACK NEED CORRECT SIZE HERE!!!!
+       } else
         nBytesInputs += 148;  // in all error cases, simply assume 148 here
     } else
       nBytesInputs += 148;
@@ -774,17 +773,10 @@ void CoinControlDialog::updateView() {
       QString sAddress = "";
       if (ExtractDestination(out.tx->vout[out.i].scriptPubKey, outputAddress)) {
         sAddress = QString::fromStdString(EncodeDestination(outputAddress));
-
         // if listMode or change => show Tessa address. In tree mode, address is not shown again for direct wallet
         // address outputs
         if (!treeMode || (!(sAddress == sWalletAddress))) itemOutput->setText(COLUMN_ADDRESS, sAddress);
-
         itemOutput->setToolTip(COLUMN_ADDRESS, sAddress);
-
-        CPubKey pubkey;
-        CKeyID* keyid = &std::get<CKeyID>(outputAddress);
-        if (keyid && model->getPubKey(*keyid, pubkey) && !pubkey.IsCompressed())
-          nInputSize = 29;  // 29 = 180 - 151 (public key is 180 bytes, priority free area is 151 bytes)
       }
 
       // label

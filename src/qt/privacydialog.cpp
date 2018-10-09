@@ -16,7 +16,9 @@
 #include "optionsmodel.h"
 #include "primitives/deterministicmint.h"
 #include "sendcoinsentry.h"
+#ifdef HAVE_SPORKS
 #include "spork/spork.h"
+#endif
 #include "timedata.h"
 #include "ui_privacydialog.h"
 #include "utilmoneystr.h"
@@ -146,13 +148,16 @@ void PrivacyDialog::on_addressBookButton_clicked() {
 }
 
 void PrivacyDialog::on_pushButtonMintZKP_clicked() {
+#ifdef HAVE_ZERO
   if (!walletModel || !walletModel->getOptionsModel()) return;
 
+#ifdef HAVE_SPORKS
   if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     QMessageBox::information(this, tr("Mint Zerocoin"), tr("ZKP is currently undergoing maintenance."), QMessageBox::Ok,
                              QMessageBox::Ok);
     return;
   }
+#endif
 
   // Reset message text
   ui->TEMintStatus->setPlainText(tr("Mint Status: Okay"));
@@ -220,11 +225,13 @@ void PrivacyDialog::on_pushButtonMintZKP_clicked() {
              walletModel->getImmatureZerocoinBalance(), walletModel->getWatchBalance(),
              walletModel->getWatchUnconfirmedBalance(), walletModel->getWatchImmatureBalance());
   coinControlUpdateLabels();
-
+#endif
+  
   return;
 }
 
 void PrivacyDialog::on_pushButtonMintReset_clicked() {
+#ifdef HAVE_ZERO  
   ui->TEMintStatus->setPlainText(
       tr("Starting ResetMintZerocoin: rescanning complete blockchain, this will need up to 30 minutes depending on "
          "your hardware. \nPlease be patient..."));
@@ -238,11 +245,12 @@ void PrivacyDialog::on_pushButtonMintReset_clicked() {
   ui->TEMintStatus->repaint();
   ui->TEMintStatus->verticalScrollBar()->setValue(
       ui->TEMintStatus->verticalScrollBar()->maximum());  // Automatically scroll to end of text
-
+#endif
   return;
 }
 
 void PrivacyDialog::on_pushButtonSpentReset_clicked() {
+#ifdef HAVE_ZERO  
   ui->TEMintStatus->setPlainText(tr("Starting ResetSpentZerocoin: "));
   ui->TEMintStatus->repaint();
   int64_t nTime = GetTimeMillis();
@@ -253,18 +261,20 @@ void PrivacyDialog::on_pushButtonSpentReset_clicked() {
   ui->TEMintStatus->repaint();
   ui->TEMintStatus->verticalScrollBar()->setValue(
       ui->TEMintStatus->verticalScrollBar()->maximum());  // Automatically scroll to end of text
-
+#endif
   return;
 }
 
 void PrivacyDialog::on_pushButtonSpendZKP_clicked() {
   if (!walletModel || !walletModel->getOptionsModel() || !pwalletMain) return;
 
+#ifdef HAVE_SPORKS
   if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     QMessageBox::information(this, tr("Mint Zerocoin"), tr("ZKP is currently undergoing maintenance."), QMessageBox::Ok,
                              QMessageBox::Ok);
     return;
   }
+#endif
 
   // Request unlock if wallet was locked or unlocked for mixing:
   WalletModel::EncryptionStatus encStatus = walletModel->getEncryptionStatus();
@@ -298,6 +308,7 @@ void PrivacyDialog::setZPivControlLabels(int64_t nAmount, int nQuantity) {
 static inline int64_t roundint64(double d) { return (int64_t)(d > 0 ? d + 0.5 : d - 0.5); }
 
 void PrivacyDialog::sendZKP() {
+#ifdef HAVE_ZERO
   QSettings settings;
 
   // Handle 'Pay To' address options
@@ -510,6 +521,7 @@ void PrivacyDialog::sendZKP() {
   ui->TEMintStatus->repaint();
   ui->TEMintStatus->verticalScrollBar()->setValue(
       ui->TEMintStatus->verticalScrollBar()->maximum());  // Automatically scroll to end of text
+#endif
 }
 
 void PrivacyDialog::on_payTo_textChanged(const QString& address) { updateLabel(address); }
@@ -567,6 +579,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
                                const CAmount& unconfirmedZerocoinBalance, const CAmount& immatureZerocoinBalance,
                                const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance,
                                const CAmount& watchImmatureBalance) {
+#ifdef HAVE_ZERO
   currentBalance = balance;
   currentUnconfirmedBalance = unconfirmedBalance;
   currentImmatureBalance = immatureBalance;
@@ -703,6 +716,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
         break;
     }
   }
+#endif
 }
 
 void PrivacyDialog::updateDisplayUnit() {
@@ -728,6 +742,7 @@ void PrivacyDialog::keyPressEvent(QKeyEvent* event) {
 
 void PrivacyDialog::updateZeroSPORKStatus() {
   // Update/enable labels, buttons and tooltips depending on the current SPORK status
+#ifdef HAVE_SPORKS
   if (GetAdjustedTime() > gSporkManager.GetSporkValue(SporkID::SPORK_ZEROCOIN_MAINTENANCE_MODE)) {
     // Mint ZKP
     ui->pushButtonMintZKP->setEnabled(false);
@@ -745,4 +760,5 @@ void PrivacyDialog::updateZeroSPORKStatus() {
     ui->pushButtonSpendZKP->setEnabled(true);
     ui->pushButtonSpendZKP->setToolTip(tr("Spend Zerocoin. Without 'Pay To:' address creates payments to yourself."));
   }
+#endif
 }

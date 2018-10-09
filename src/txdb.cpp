@@ -42,12 +42,13 @@ bool CBlockTreeDB::WriteReindexing(bool fReindexing) {
     return Erase('R');
 }
 
-bool CBlockTreeDB::ReadReindexing(bool& fReindexing) {
-  fReindexing = Exists('R');
-  return true;
-}
+bool CBlockTreeDB::ReadReindexing() { return Exists('R'); }
 
-bool CBlockTreeDB::ReadLastBlockFile(int& nFile) { return Read('l', nFile); }
+int CBlockTreeDB::ReadLastBlockFile() {
+  int nFile;
+  Read('l', nFile);
+  return nFile;
+}
 
 bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos) { return Read(make_pair('t', txid), pos); }
 
@@ -61,16 +62,14 @@ bool CBlockTreeDB::WriteFlag(const std::string& name, bool fValue) {
   return Write(std::make_pair('F', name), fValue ? '1' : '0');
 }
 
-bool CBlockTreeDB::ReadFlag(const std::string& name, bool& fValue) {
+bool CBlockTreeDB::ReadFlag(const std::string& name) {
   char ch;
   if (!Read(std::make_pair('F', name), ch)) return false;
-  fValue = ch == '1';
-  return true;
+  return ch == '1';
 }
 
-bool CBlockTreeDB::WriteInt(const std::string& name, int nValue) { return Write(std::make_pair('I', name), nValue); }
-
-bool CBlockTreeDB::ReadInt(const std::string& name, int& nValue) { return Read(std::make_pair('I', name), nValue); }
+// bool CBlockTreeDB::WriteInt(const std::string& name, int nValue) { return Write(std::make_pair('I', name), nValue); }
+// bool CBlockTreeDB::ReadInt(const std::string& name, int& nValue) { return Read(std::make_pair('I', name), nValue); }
 
 bool CBlockTreeDB::LoadBlockIndexGuts() {
   std::unique_ptr<datadb::Iterator> pcursor(NewIterator());
@@ -133,6 +132,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
         if (pindexNew->IsProofOfStake()) gStaker.setSeen(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
         // populate accumulator checksum map in memory
+#ifdef HAVE_ZERO
         if (!pindexNew->nAccumulatorCheckpoint.IsNull() && pindexNew->nAccumulatorCheckpoint != nPreviousCheckpoint) {
           // Don't load any checkpoints that exist before v2 zkp. The accumulator is invalid for v1 and not used.
           if (pindexNew->nHeight >= Params().Zerocoin_StartHeight())
@@ -140,6 +140,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
 
           nPreviousCheckpoint = pindexNew->nAccumulatorCheckpoint;
         }
+#endif
 
         pcursor->Next();
       } else {

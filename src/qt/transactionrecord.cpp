@@ -40,17 +40,20 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
   std::map<std::string, std::string> mapValue = wtx.mapValue;
   bool fZSpendFromMe = false;
 
+#ifdef HAVE_ZERO  
   if (wtx.IsZerocoinSpend()) {
     // a zerocoin spend that was created by this wallet
     libzerocoin::CoinSpend zcspend = TxInToZerocoinSpend(wtx.vin[0]);
     fZSpendFromMe = wallet->IsMyZerocoinSpend(zcspend.getCoinSerialNumber());
   }
+#endif
 
   if (wtx.IsCoinStake()) {
     TransactionRecord sub(hash, nTime);
     CTxDestination address;
     if (!wtx.IsZerocoinSpend() && !ExtractDestination(wtx.vout[1].scriptPubKey, address)) return parts;
 
+#ifdef HAVE_ZERO    
     if (wtx.IsZerocoinSpend() && (fZSpendFromMe || wallet->zkpTracker->HasMintTx(hash))) {
       // ZKP stake reward - not valid
     } else if (isminetype mine = wallet->IsMine(wtx.vout[1])) {
@@ -60,9 +63,20 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
       sub.address = EncodeDestination(address);
       sub.credit = nNet;
     }
+#else
+    if (isminetype mine = wallet->IsMine(wtx.vout[1])) {
+      // Tessa stake reward
+      sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
+      sub.type = TransactionRecord::StakeMint;
+      sub.address = EncodeDestination(address);
+      sub.credit = nNet;
+    }
+#endif
+    
 
     parts.append(sub);
   } else if (wtx.IsZerocoinSpend()) {
+#ifdef HAVE_ZERO
     // zerocoin spend outputs
     bool fFeeAssigned = false;
     for (const CTxOut& txout : wtx.vout) {
@@ -120,6 +134,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
       sub.idx = parts.size();
       parts.append(sub);
     }
+#endif
   } else if (nNet > 0 || wtx.IsCoinBase()) {
     //
     // Credit

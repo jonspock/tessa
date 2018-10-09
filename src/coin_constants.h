@@ -12,11 +12,12 @@
 
 const std::string strMessageMagic = "TessaChain Signed Message:\n";
 
-static const int64_t COIN_AMOUNT = 100000000;
-static const int64_t COINCENT_AMOUNT = 1000000;
+static const int64_t COIN_AMOUNT = 10000;
+static const int64_t COINCENT_AMOUNT = 100;
 static const int COIN_PLACES = 8;
 static const int64_t minRelayTxFee = COINCENT_AMOUNT;
 static const int64_t minTxFee = COINCENT_AMOUNT;
+static const int64_t maxMoneyOut = 21000000 * COIN_AMOUNT; // FOR NOW
 
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
 static const uint32_t LOCKTIME_THRESHOLD = 500000000;  // Tue Nov  5 00:53:20 1985 UTC

@@ -7,88 +7,66 @@
 
 #pragma once
 
-#include "support/allocators/secure.h"
-#include "pubkey.h"
 #include "privkey.h"
+#include "pubkey.h"
 #include "serialize.h"
+#include "support/allocators/secure.h"
 #include "uint256.h"
-
-#include <stdexcept>
+// from BLS
+#include "privatekey.hpp"
 #include <vector>
 
+inline void ShowBytes(const std::vector<uint8_t>& b) {
+  std::cout << "Bytes = " << std::hex;
+  for (size_t i=0;i<b.size();i++) {
+    std::cout << (int)b[i]; // << " ";
+    //    if ((i+1)%16 == 0) std::cout << "\n";
+  }
+  std::cout << std::dec << "\n";
+}
+      
+
 namespace ecdsa {
-  
+
 class CPubKey;
 
-struct CExtPubKey;
-
-// An encapsulated private key.
+// An encapsulated private key that wraps BLS 
 class CKey {
- public:
-  /**
-   * secp256k1:
-   */
-  static const unsigned int PRIVATE_KEY_SIZE = 279;
-  static const unsigned int COMPRESSED_PRIVATE_KEY_SIZE = 214;
-  /**
-   * see www.keylength.com
-   * script supports up to 75 for single byte push
-   */
-  static_assert(PRIVATE_KEY_SIZE >= COMPRESSED_PRIVATE_KEY_SIZE,
-                "COMPRESSED_PRIVATE_KEY_SIZE is larger than PRIVATE_KEY_SIZE");
 
  private:
-  //! Whether this private key is valid. We check for correctness when modifying the key
-  //! data, so fValid should always correspond to the actual state.
-  bool fValid;
-
-  //! Whether the public key corresponding to this private key is (to be) compressed.
-  bool fCompressed;
-
-  //! The actual byte data
-  std::vector<uint8_t, secure_allocator<uint8_t> > keydata;
-
+  bls::PrivateKey PK;
   //! Check whether the 32-byte array pointed to be vch is valid keydata.
   bool static Check(const uint8_t* vch);
 
  public:
   //! Construct an invalid private key.
-  CKey() : fValid(false), fCompressed(false) {
-    // Important: vch must be 32 bytes in length to not break serialization
-    keydata.resize(32);
-  }
+  CKey() {}
 
   friend bool operator==(const CKey& a, const CKey& b) {
-    return a.fCompressed == b.fCompressed && a.size() == b.size() &&
-           memcmp(a.keydata.data(), b.keydata.data(), a.size()) == 0;
+    return a.PK == b.PK;
   }
 
   //! Initialize using begin and end iterators to byte data.
-  template <typename T> void Set(const T pbegin, const T pend, bool fCompressedIn) {
-    if (size_t(pend - pbegin) != keydata.size()) {
-      fValid = false;
-    } else if (Check(&pbegin[0])) {
-      memcpy(keydata.data(), (uint8_t*)&pbegin[0], keydata.size());
-      fValid = true;
-      fCompressed = fCompressedIn;
-    } else {
-      fValid = false;
+  template <typename T> void Set(const T pbegin, const T pend) {
+    if ((size_t(pend - pbegin) == bls::PrivateKey::PRIVATE_KEY_SIZE) && (Check(&pbegin[0]))) {
+        PK = bls::PrivateKey::FromBytes((uint8_t*)&pbegin[0], bls::PrivateKey::PRIVATE_KEY_SIZE);
     }
   }
 
   //! Simple read-only vector-like interface.
-  unsigned int size() const { return (fValid ? keydata.size() : 0); }
-  const uint8_t* begin() const { return keydata.data(); }
-  const uint8_t* end() const { return keydata.data() + size(); }
+  unsigned int size() const { return (PK.valid() ? bls::PrivateKey::PRIVATE_KEY_SIZE : 0); }
 
+  std::vector<uint8_t> getBytes() const { return PK.Serialize();  }
+
+  void PrintString() const {
+    ::ShowBytes(getBytes());
+  }
+  
   //! Check whether this private key is valid.
-  bool IsValid() const { return fValid; }
-
-  //! Check whether the public key corresponding to this private key is (to be) compressed.
-  bool IsCompressed() const { return fCompressed; }
+  bool IsValid() const { return PK.valid(); }
 
   //! Initialize from a CPrivKey
-  bool SetPrivKey(const CPrivKey& vchPrivKey, bool fCompressed);
+  bool SetPrivKey(const CPrivKey& vchPrivKey);
 
   //! Generate a new private key using a cryptographic PRNG.
   void MakeNewKey(bool fCompressed);
@@ -96,7 +74,7 @@ class CKey {
   uint256 GetPrivKey_256();
 
   /**
-   * Convert the private key to a CPrivKey 
+   * Convert the private key to a CPrivKey
    * This is expensive.
    */
   CPrivKey GetPrivKey() const;
@@ -107,19 +85,7 @@ class CKey {
    */
   CPubKey GetPubKey() const;
 
-  /**
-   * Create a DER-serialized signature.
-   */
   bool Sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
-
-  /**
-   * Create a compact signature (65 bytes), which allows reconstructing the used public key.
-   * The format is one header byte, followed by two times 32 bytes for the serialized r and s values.
-   * The header byte: 0x1B = first key with even y, 0x1C = first key with odd y,
-   *                  0x1D = second key with even y, 0x1E = second key with odd y,
-   *                  add 0x04 for compressed keys.
-   */
-  bool SignCompact(const uint256& hash, std::vector<uint8_t>& vchSig) const;
 
   //! Derive BIP32 child key.
   bool Derive(CKey& keyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const;
@@ -129,27 +95,6 @@ class CKey {
    * This is done using a different mechanism than just regenerating it.
    */
   bool VerifyPubKey(const CPubKey& vchPubKey) const;
-
+    
 };
-
-struct CExtKey {
-  uint8_t nDepth;
-  uint8_t vchFingerprint[4];
-  unsigned int nChild;
-  ChainCode chaincode;
-  CKey key;
-
-  friend bool operator==(const CExtKey& a, const CExtKey& b) {
-    return a.nDepth == b.nDepth && memcmp(&a.vchFingerprint[0], &b.vchFingerprint[0], sizeof(vchFingerprint)) == 0 &&
-           a.nChild == b.nChild && a.chaincode == b.chaincode && a.key == b.key;
-  }
-
-  void Encode(uint8_t code[BIP32_EXTKEY_SIZE]) const;
-  void Decode(const uint8_t code[BIP32_EXTKEY_SIZE]);
-  bool Derive(CExtKey& out, unsigned int nChild) const;
-  CExtPubKey Neuter() const;
-  void SetMaster(const uint8_t* seed, unsigned int nSeedLen);
-};
-
-} // end namespace ecdsa
-
+}  // namespace bls

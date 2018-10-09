@@ -1,212 +1,100 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2016-2017 The PIVX developers
-// Copyright (c) 2018 The TessaChain developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright 2018 Chia Network Inc
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+
+//    http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #pragma once
 
+#include "util.hpp"
 #include "hash.h"
-#include "serialize.h"
 #include "uint256.h"
-
-#include <stdexcept>
 #include <vector>
 
 namespace ecdsa {
 
-const unsigned int BIP32_EXTKEY_SIZE = 74;
+static const size_t BIP32_EXTKEY_SIZE = 74;  // TBD
 
-/** A reference to a CKey: the Hash160 of its serialized public key */
+// A reference to a CKey: the Hash160 of its serialized public key
 class CKeyID : public uint160 {
  public:
   CKeyID() : uint160() {}
-  explicit CKeyID(const uint160& in) : uint160(in) {}
+  explicit CKeyID(const uint160 &in) : uint160(in) {}
 };
-
-typedef uint256 ChainCode;
 
 /** An encapsulated public key. */
 class CPubKey {
  public:
-  /**
-   * secp256k1:
-   */
-  static const unsigned int PUBLIC_KEY_SIZE = 65;
-  static const unsigned int COMPRESSED_PUBLIC_KEY_SIZE = 33;
-  static const unsigned int SIGNATURE_SIZE = 72;
-  static const unsigned int COMPACT_SIGNATURE_SIZE = 65;
-  /**
-   * see www.keylength.com
-   * script supports up to 75 for single byte push
-   */
-  static_assert(PUBLIC_KEY_SIZE >= COMPRESSED_PUBLIC_KEY_SIZE,
-                "COMPRESSED_PUBLIC_KEY_SIZE is larger than PUBLIC_KEY_SIZE");
+  static const size_t PUBLIC_KEY_SIZE = 48;
+  static const size_t SIGNATURE_SIZE = 96;
 
- private:
-  /**
-   * Just store the serialized data.
-   * Its length can very cheaply be computed from the first byte.
-   */
-  uint8_t vch[PUBLIC_KEY_SIZE];
+  // Construct a public key from a byte vector.
+  static CPubKey FromBytes(const uint8_t *key);
 
-  //! Compute the length of a pubkey with a given first byte.
-  unsigned int static GetLen(uint8_t chHeader) {
-    if (chHeader == 2 || chHeader == 3) return COMPRESSED_PUBLIC_KEY_SIZE;
-    if (chHeader == 4 || chHeader == 6 || chHeader == 7) return PUBLIC_KEY_SIZE;
-    return 0;
+  // Construct a public key from another public key.
+  CPubKey(const CPubKey &pubKey);
+  CPubKey(const std::vector<uint8_t> &vchPubKey);
+  CPubKey& operator=(const CPubKey &a);
+  CPubKey() = default; //  std::cout << "Init of CPubKey\n";
+
+  void PrintString() const {
+    if (data == nullptr) {
+      std::cout << "nullptr";
+    } else {
+      for (size_t i=0;i<PUBLIC_KEY_SIZE;i++) std::cout << std::hex << (int)data[i];
+      std::cout << "\n";
+    }
   }
-
-  //! Set this key data to be invalid
-  void Invalidate() { vch[0] = 0xFF; }
-
- public:
-  //! Construct an invalid public key.
-  CPubKey() { Invalidate(); }
-
+  
+  size_t size() const;
   //! Initialize a public key using begin/end iterators to byte data.
-  template <typename T> void Set(const T pbegin, const T pend) {
-    int len = pend == pbegin ? 0 : GetLen(pbegin[0]);
-    if (len && len == (pend - pbegin))
-      memcpy(vch, (uint8_t*)&pbegin[0], len);
-    else
-      Invalidate();
-  }
+  void Set(const uint8_t* pbegin, const uint8_t* pend);
 
-  //! Construct a public key using begin/end iterators to byte data.
-  template <typename T> CPubKey(const T pbegin, const T pend) { Set(pbegin, pend); }
+  // Comparator implementation.
+  friend bool operator==(CPubKey const &a, CPubKey const &b);
+  friend bool operator!=(CPubKey const &a, CPubKey const &b);
+  friend bool operator<(CPubKey const &a, CPubKey const &b);
+  friend std::ostream &operator<<(std::ostream &os, CPubKey const &s);
 
-  //! Construct a public key from a byte vector.
-  explicit CPubKey(const std::vector<uint8_t>& _vch) { Set(_vch.begin(), _vch.end()); }
+  std::vector<uint8_t> ToStdVector() const;
+  std::string GetHex() const;
 
-  //! Simple read-only vector-like interface to the pubkey data.
-  unsigned int size() const { return GetLen(vch[0]); }
-  const uint8_t* begin() const { return vch; }
-  const uint8_t* end() const { return vch + size(); }
-  const uint8_t& operator[](unsigned int pos) const { return vch[pos]; }
-
-  //! Comparator implementation.
-  friend bool operator==(const CPubKey& a, const CPubKey& b) {
-    return a.vch[0] == b.vch[0] && memcmp(a.vch, b.vch, a.size()) == 0;
-  }
-  friend bool operator!=(const CPubKey& a, const CPubKey& b) { return !(a == b); }
-  friend bool operator<(const CPubKey& a, const CPubKey& b) {
-    return a.vch[0] < b.vch[0] || (a.vch[0] == b.vch[0] && memcmp(a.vch, b.vch, a.size()) < 0);
-  }
-
+  // Verify a signature
+  bool Verify(const uint256 &hash, const std::vector<uint8_t> &vchSig) const;
+  bool IsValid() const { return (data != nullptr); }
+  bool IsFullyValid() const { return IsValid(); } // not sure why different HACK
+  
+  uint256 GetHash() const;
+  CKeyID GetID() const;
+  static CPubKey FromG1(const relic::g1_t *key);
+ 
   //! Implement serialization, as if this was a byte vector.
-  unsigned int GetSerializeSize() const { return size() + 1; }
-  template <typename Stream> void Serialize(Stream& s) const {
-    unsigned int len = size();
-    ::WriteCompactSize(s, len);
-    s.write((char*)vch, len);
+  unsigned int GetSerializeSize() const { return size(); }
+  template <typename Stream> void Serialize(Stream &s) const {
+    ::WriteCompactSize(s, size());
+    s.write((const char*)data.get(),PUBLIC_KEY_SIZE);
   }
-  template <typename Stream> void Unserialize(Stream& s) {
+  template <typename Stream> void Unserialize(Stream &s) {
+    if (data == nullptr) data.reset(new uint8_t[PUBLIC_KEY_SIZE]);
     unsigned int len = ::ReadCompactSize(s);
     if (len <= PUBLIC_KEY_SIZE) {
-      s.read((char*)vch, len);
-    } else {
-      // invalid pubkey, skip available data
-      char dummy;
-      while (len--) s.read(&dummy, 1);
-      Invalidate();
+      s.read((char*)data.get(),PUBLIC_KEY_SIZE);
     }
   }
 
-  //! Get the KeyID of this public key (hash of its serialization)
-  CKeyID GetID() const { return CKeyID(Hash160(vch, vch + size())); }
+  // private:
 
-  //! Get the 256-bit hash of this public key.
-  uint256 GetHash() const { return Hash(vch, vch + size()); }
+  static void CompressPoint(uint8_t *result, const relic::g1_t *point);
 
-  /*
-   * Check syntactic correctness.
-   *
-   * Note that this is consensus critical as CheckSig() calls it!
-   */
-  bool IsValid() const { return size() > 0; }
-
-  //! fully validate whether this is a valid public key (more expensive than IsValid())
-  bool IsFullyValid() const;
-
-  //! Check whether this is a compressed public key.
-  bool IsCompressed() const { return size() == COMPRESSED_PUBLIC_KEY_SIZE; }
-
-  /**
-   * Verify a DER signature (~72 bytes).
-   * If this public key is not fully valid, the return value will be false.
-   */
-  bool Verify(const uint256& hash, const std::vector<uint8_t>& vchSig) const;
-
-  /**
-   * Check whether a signature is normalized (lower-S).
-   */
-  static bool CheckLowS(const std::vector<uint8_t>& vchSig);
-
-  //! Recover a public key from a compact signature.
-  bool RecoverCompact(const uint256& hash, const std::vector<uint8_t>& vchSig);
-
-  //! Turn this public key into an uncompressed public key.
-  bool Decompress();
-
-  //! Derive BIP32 child pubkey.
-  bool Derive(CPubKey& pubkeyChild, ChainCode& ccChild, unsigned int nChild, const ChainCode& cc) const;
-
-  std::vector<uint8_t> Raw() const { return std::vector<uint8_t>(vch, vch + size()); }
-
-  std::string GetHex() {
-    std::string my_std_string(reinterpret_cast<const char*>(vch), 65);
-    return my_std_string;
-  }
+  std::unique_ptr<uint8_t []> data;
 };
-
-struct CExtPubKey {
-  uint8_t nDepth;
-  uint8_t vchFingerprint[4];
-  unsigned int nChild;
-  ChainCode chaincode;
-  CPubKey pubkey;
-
-  friend bool operator==(const CExtPubKey& a, const CExtPubKey& b) {
-    return a.nDepth == b.nDepth && memcmp(&a.vchFingerprint[0], &b.vchFingerprint[0], sizeof(vchFingerprint)) == 0 &&
-           a.nChild == b.nChild && a.chaincode == b.chaincode && a.pubkey == b.pubkey;
-  }
-
-  void Encode(uint8_t code[BIP32_EXTKEY_SIZE]) const;
-  void Decode(const uint8_t code[BIP32_EXTKEY_SIZE]);
-  bool Derive(CExtPubKey& out, unsigned int nChild) const;
-
-  void Serialize(CSizeComputer& s) const {
-    // Optimized implementation for ::GetSerializeSize that avoids copying.
-    s.seek(BIP32_EXTKEY_SIZE + 1);  // add one byte for the size (compact int)
-  }
-  template <typename Stream> void Serialize(Stream& s) const {
-    unsigned int len = BIP32_EXTKEY_SIZE;
-    ::WriteCompactSize(s, len);
-    uint8_t code[BIP32_EXTKEY_SIZE];
-    Encode(code);
-    s.write((const char*)&code[0], len);
-  }
-  template <typename Stream> void Unserialize(Stream& s) {
-    unsigned int len = ::ReadCompactSize(s);
-    uint8_t code[BIP32_EXTKEY_SIZE];
-    if (len != BIP32_EXTKEY_SIZE) throw std::runtime_error("Invalid extended key size\n");
-    s.read((char*)&code[0], len);
-    Decode(code);
-  }
-};
-
-} // end namespace ecdsa
-
-  
-/** Users of this module must hold an ECCVerifyHandle. The constructor and
- *  destructor of these are not allowed to run in parallel, though. */
-class ECCVerifyHandle {
-  static int refcount;
-
- public:
-  ECCVerifyHandle();
-  ~ECCVerifyHandle();
-};
-
+    
+}  // namespace 

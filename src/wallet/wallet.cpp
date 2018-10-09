@@ -12,7 +12,7 @@
 #include "output.h"
 #include "wallet_externs.h"
 #include "wallettx.h"
-
+#include "ecdsa/extkey.h"
 #include "chain.h"
 #include "chainparams.h"
 #include "checkpoints.h"
@@ -159,7 +159,7 @@ void CWallet::DeriveNewChildKey(CKeyMetadata& metadata, CKey& secret, bool inter
   // try to get the master key
   if (!GetKey(hdChain.masterKeyID, key)) { throw std::runtime_error(std::string(__func__) + ": Master key not found"); }
 
-  masterKey.SetMaster(key.begin(), key.size());
+  masterKey.SetMaster(key); //.begin(), key.size());
 
   // derive m/0'
   // use hardened derivation (child keys >= 0x80000000 are hardened after
@@ -329,8 +329,11 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool anonymizeOnly
   // Weird duplication here for now
   if (mapMasterKeys.empty()) {
     CMasterKey kMasterKey;
-    gWalletDB.ReadMasterKey(1, kMasterKey);
-    mapMasterKeys[1] = kMasterKey;
+    if (gWalletDB.ReadMasterKey(1, kMasterKey)) {
+        mapMasterKeys[1] = kMasterKey;
+    } else {
+        throw runtime_error("Problem reading MasterKey from Wallet dB");
+    }
   }
 
   {
@@ -671,8 +674,9 @@ isminetype CWallet::IsMine(const CTxIn& txin) const {
   }
   return ISMINE_NO;
 }
-
+#ifdef HAVE_ZERO
 bool CWallet::IsMyZerocoinSpend(const CBigNum& bnSerial) const { return zkpTracker->HasSerial(bnSerial); }
+#endif
 
 CAmount CWallet::GetDebit(const CTxIn& txin, const isminefilter& filter) const {
   {
@@ -713,9 +717,11 @@ bool CWallet::IsChange(const CTxOut& txout) const {
 int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
   int ret = 0;
   int64_t nNow = GetTime();
+#ifdef HAVE_ZERO
   bool fCheckZKP = GetBoolArg("-zapwallettxes", false);
   if (fCheckZKP) zkpTracker->Init();
-
+#endif
+  
   CBlockIndex* pindex = pindexStart;
   {
     LOCK2(cs_main, cs_wallet);
@@ -745,6 +751,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
       }
 
       // If this is a zapwallettx, need to readd zkp
+#ifdef HAVE_ZERO
       if (fCheckZKP && pindex->nHeight >= Params().Zerocoin_StartHeight()) {
         list<CZerocoinMint> listMints;
         BlockToZerocoinMintList(block, listMints);
@@ -786,7 +793,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
           }
         }
       }
-
+#endif
       pindex = chainActive.Next(pindex);
       if (GetTime() >= nNow + 60) {
         nNow = GetTime();
@@ -868,6 +875,7 @@ CAmount CWallet::GetBalance() const {
   return nTotal;
 }
 
+#ifdef HAVE_ZERO
 std::map<libzerocoin::CoinDenomination, int> mapMintMaturity;
 int nLastMaturityCheck = 0;
 CAmount CWallet::GetZerocoinBalance(bool fMatureOnly) const {
@@ -893,6 +901,22 @@ CAmount CWallet::GetImmatureZerocoinBalance() const {
 }
 
 CAmount CWallet::GetUnconfirmedZerocoinBalance() const { return zkpTracker->GetUnconfirmedBalance(); }
+
+
+// Get a Map pairing the Denominations with the amount of Zerocoin for each Denomination
+std::map<libzerocoin::CoinDenomination, CAmount> CWallet::GetMyZerocoinDistribution() const {
+  std::map<libzerocoin::CoinDenomination, CAmount> spread;
+  for (const auto& denom : libzerocoin::zerocoinDenomList)
+    spread.insert(std::pair<libzerocoin::CoinDenomination, CAmount>(denom, 0));
+  {
+    LOCK(cs_wallet);
+    set<CMintMeta> setMints = zkpTracker->ListMints(true, true, true);
+    for (auto& mint : setMints) spread.at(mint.denom)++;
+  }
+  return spread;
+}
+
+#endif
 
 CAmount CWallet::GetUnlockedCoins() const {
   //    if (fLiteMode) return 0;
@@ -923,19 +947,6 @@ CAmount CWallet::GetLockedCoins() const {
   }
 
   return nTotal;
-}
-
-// Get a Map pairing the Denominations with the amount of Zerocoin for each Denomination
-std::map<libzerocoin::CoinDenomination, CAmount> CWallet::GetMyZerocoinDistribution() const {
-  std::map<libzerocoin::CoinDenomination, CAmount> spread;
-  for (const auto& denom : libzerocoin::zerocoinDenomList)
-    spread.insert(std::pair<libzerocoin::CoinDenomination, CAmount>(denom, 0));
-  {
-    LOCK(cs_wallet);
-    set<CMintMeta> setMints = zkpTracker->ListMints(true, true, true);
-    for (auto& mint : setMints) spread.at(mint.denom)++;
-  }
-  return spread;
 }
 
 CAmount CWallet::GetUnconfirmedBalance() const {
@@ -1166,7 +1177,6 @@ bool CWallet::SelectStakeCoins(std::list<std::unique_ptr<CStake> >& listInputs, 
 bool CWallet::MintableCoins() {
   LOCK(cs_main);
   CAmount nBalance = GetBalance();
-  CAmount nZkpBalance = GetZerocoinBalance(false);
 
   // Regular Tessa
   if (nBalance > 0) {
@@ -1191,7 +1201,9 @@ bool CWallet::MintableCoins() {
   }
 
   // ZKP
-  if (nZkpBalance > 0) return true;
+#ifdef HAVE_ZERO
+  if (GetZerocoinBalance(false) > 0) return true;
+#endif
   return false;
 }
 
@@ -1680,6 +1692,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
     }
   } else {
     // Update the mint database with tx hash and height
+#ifdef HAVE_ZERO    
     for (const CTxOut& out : txNew.vout) {
       if (!out.IsZerocoinMint()) continue;
 
@@ -1696,6 +1709,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
       meta.nHeight = chainActive.Height() + 1;
       if (!zkpTracker->UpdateState(meta)) return error("%s: failed to update metadata in tracker", __func__);
     }
+#endif
   }
 
   // Successfully generated coinstake
@@ -2591,7 +2605,7 @@ CScript GetLargestContributor(set<pair<const CWalletTx*, uint32_t> >& setCoins) 
 
   return scriptLargest;
 }
-
+#ifdef HAVE_ZERO
 bool CWallet::GetZerocoinKey(const CBigNum& bnSerial, CKey& key) {
   CZerocoinMint mint;
   if (!GetMint(GetSerialHash(bnSerial), mint))
@@ -3285,6 +3299,7 @@ bool CWallet::GetMint(const uint256& hashSerial, CZerocoinMint& mint) {
   return true;
 }
 
+
 bool CWallet::IsMyMint(const CBigNum& bnValue) const {
   if (zkpTracker->HasPubcoin(bnValue)) return true;
 
@@ -3319,6 +3334,7 @@ bool CWallet::SetMintUnspent(const CBigNum& bnSerial) {
   zkpTracker->SetPubcoinNotUsed(meta.hashPubcoin);
   return true;
 }
+#endif
 
 //----- HD Stuff ------------
 

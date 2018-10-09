@@ -148,14 +148,20 @@ template <typename Stream> inline void Unserialize(Stream& s, bool& a) {
 // Serializatin for libzerocoin::CoinDenomination
 inline uint32_t GetSerializeSize(libzerocoin::CoinDenomination a) { return sizeof(libzerocoin::CoinDenomination); }
 template <typename Stream> inline void Serialize(Stream& s, libzerocoin::CoinDenomination a) {
+#ifdef HAVE_ZERO
   int f = libzerocoin::ZerocoinDenominationToInt(a);
+#else
+  int f = 0;
+#endif
   WRITEDATA(s, f);
 }
 
 template <typename Stream> inline void Unserialize(Stream& s, libzerocoin::CoinDenomination& a) {
   int f = 0;
   READDATA(s, f);
+#ifdef HAVE_ZERO
   a = libzerocoin::IntToZerocoinDenomination(f);
+#endif
 }
 
 // Serialization for libzerocoin::SpendType

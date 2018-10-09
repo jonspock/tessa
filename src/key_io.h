@@ -8,18 +8,12 @@
 
 #include <chainparams.h>
 #include <ecdsa/key.h>
-#include <ecdsa/pubkey.h>
 #include <script/standard.h>
 
 #include <string>
 
 ecdsa::CKey DecodeSecret(const std::string& str);
 std::string EncodeSecret(const ecdsa::CKey& key);
-
-ecdsa::CExtKey DecodeExtKey(const std::string& str);
-std::string EncodeExtKey(const ecdsa::CExtKey& extkey);
-ecdsa::CExtPubKey DecodeExtPubKey(const std::string& str);
-std::string EncodeExtPubKey(const ecdsa::CExtPubKey& extpubkey);
 
 std::string EncodeDestination(const CTxDestination& dest);
 CTxDestination DecodeDestination(const std::string& str);

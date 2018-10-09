@@ -768,6 +768,7 @@ UniValue sendrawtransaction(const UniValue& params, bool fHelp) {
   return hashTx.GetHex();
 }
 
+#ifdef HAVE_ZERO
 UniValue getspentzerocoinamount(const UniValue& params, bool fHelp) {
   if (fHelp || params.size() != 2)
     throw runtime_error(
@@ -805,3 +806,4 @@ UniValue getspentzerocoinamount(const UniValue& params, bool fHelp) {
   CAmount nValue = libzerocoin::ZerocoinDenominationToAmount(spend.getDenomination());
   return FormatMoney(nValue);
 }
+#endif

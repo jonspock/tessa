@@ -55,7 +55,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nHeaderVersion,
                                  const CAmount& genesisReward) {
-  const char* pszTimestamp = "February 5, 2014: The Black Hills are not for sale - 1868 Is The LAW!";
+  const char* pszTimestamp = "The Big Hack: How China Used a Tiny Chip to Infiltrate U.S. Companies, Oct 4, 2018";
   const CScript genesisOutputScript = CScript()
                                       << ParseHex(
                                              "04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3"
@@ -114,7 +114,6 @@ class CMainParams : public CChainParams {
     nTargetTimespan = 1 * 60;  // Tessa: 1 day
     nTargetSpacing = 1 * 60;   // Tessa: 1 minute
     nMaturity = 100;
-    nMaxMoneyOut = 21000000 * COIN;
 
     /** Height or Time Based Activations **/
     nLastPOWBlock = 259200;
@@ -134,25 +133,18 @@ class CMainParams : public CChainParams {
     txNew.vin.resize(1);
     txNew.vout.resize(1);
 
-    genesis = CreateGenesisBlock(1390747675, 2091390249, 0x1e0ffff0, 1, 5000 * COIN);
+    genesis = CreateGenesisBlock(1538753921, 1026102636, 0x1e0ffff0, 1, 5 * COIN);
     hashGenesisBlock = genesis.GetHash();
     std::cout << "main Genesis block = " << hashGenesisBlock.ToString() << "\n";
     std::cout << "Genesis MerkleRoot = " << genesis.hashMerkleRoot.ToString() << "\n";
-    // assert(hashGenesisBlock == uint256("0x00000c7c73d8ce604178dae13f0fc6ec0be3275614366d44b1b4b5c6e238c60c"));
-    assert(genesis.hashMerkleRoot == uint256S("0x62d496378e5834989dd9594cfc168dbb76f84a39bbda18286cddc7d1d1589f4f"));
+    assert(hashGenesisBlock == uint256S("4ae60fe937feeb705bcb3d631f16d1fcc103744335336ca3d2ee19e4ffc935fd"));
+    assert(genesis.hashMerkleRoot == uint256S("73f27d6a3e0291af32c45da791d04edefa6b7b3dff9943146eedc9e4150e4650"));
 
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "tessa.seed.fuzzbawls.pw"));     // Primary DNS Seeder from
     // Fuzzbawls
 
-    Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 28);  // Start with "C"
-    Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 7);
-    Prefixes[SECRET_KEY] = std::vector<uint8_t>(1, 212);
-    Prefixes[EXT_PUBLIC_KEY] = {0x02, 0x2D, 0x25, 0x33};
-    Prefixes[EXT_SECRET_KEY] = {0x02, 0x21, 0x31, 0x2B};
-    // 	BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-    Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x77};
-
     bch32_hrp = "ct";
+    bch32_sec = "st";
 
     fMiningRequiresPeers = true;
     fAllowMinDifficultyBlocks = false;
@@ -201,10 +193,9 @@ class CTestNetParams : public CMainParams {
     nLastPOWBlock = 200;
     nMaturity = 15;
     nModifierUpdateBlock = 51197;  // approx Mon, 17 Apr 2017 04:00:00 GMT
-    nMaxMoneyOut = 43199500 * COIN;
     nZerocoinStartHeight = 200;
     //! Modify the testnet genesis block so the timestamp is valid for a later start.
-    genesis = CreateGenesisBlock(1411587941, 2091634749, 0x1e0ffff0, 1, 5000 * COIN);
+    genesis = CreateGenesisBlock(1538753921, 1026102636, 0x1e0ffff0, 1, 5 * COIN);
     hashGenesisBlock = genesis.GetHash();
     // std::cout << hashGenesisBlock.ToString() << "\n";
     // std::cout << genesis.hashMerkleRoot.ToString();
@@ -215,18 +206,8 @@ class CTestNetParams : public CMainParams {
     vSeeds.clear();
     // vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "tessa-testnet.seed.fuzzbawls.pw"));
 
-    Prefixes[PUBKEY_ADDRESS] = std::vector<uint8_t>(1, 87);  // Testnet tessa addresses start with 'c'
-    Prefixes[SCRIPT_ADDRESS] = std::vector<uint8_t>(1, 9);   // Testnet tessa script addresses start with '4' or '5'
-    Prefixes[SECRET_KEY] =
-        std::vector<uint8_t>(1, 239);  // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
-    // Testnet tessa BIP32 pubkeys start with 'DRKV'
-    Prefixes[EXT_PUBLIC_KEY] = {0x3a, 0x80, 0x61, 0xa0};
-    // Testnet tessa BIP32 prvkeys start with 'DRKP'
-    Prefixes[EXT_SECRET_KEY] = {0x3a, 0x80, 0x58, 0x37};
-    // Testnet tessa BIP44 coin type is '1' (All coin's testnet default)
-    Prefixes[EXT_COIN_TYPE] = {0x80, 0x00, 0x00, 0x01};
-
     bch32_hrp = "tt";
+    bch32_sec = "ts";
 
     fAllowMinDifficultyBlocks = true;
     fDefaultConsistencyChecks = false;
@@ -270,13 +251,14 @@ class CRegTestParams : public CTestNetParams {
     nTargetSpacing = 1 * 60;         // Tessa: 1 minutes
     bnProofOfWorkLimit = ~arith_uint256(0) >> 1;
 
-    genesis = CreateGenesisBlock(1390748221, 4, 0x207fffff, 1, 5000 * COIN);
+    genesis = CreateGenesisBlock(1538753921, 1026102636, 0x1e0ffff0, 1, 5 * COIN);
     hashGenesisBlock = genesis.GetHash();
     nDefaultPort = 44448;
     std::cout << hashGenesisBlock.ToString() << "\n";
     // assert(hashGenesisBlock == uint256("0x57939ce0a96bf42965fee5956528a456d0edfb879b8bd699bcbb4786d27b979d"));
 
     bch32_hrp = "xx";  //??
+    bch32_sec = "ss";  //??
 
     vFixedSeeds.clear();  //! Testnet mode doesn't have any fixed seeds.
     vSeeds.clear();       //! Testnet mode doesn't have any DNS seeds.
