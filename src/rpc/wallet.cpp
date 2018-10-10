@@ -524,12 +524,9 @@ UniValue signmessage(const UniValue& params, bool fHelp) {
   ss << strMessageMagic;
   ss << strMessage;
 
-  vector<uint8_t> vchSig;
-
-  std::vector<uint8_t> b = blskey.getBytes();
-  ecdsa::CKey key;
-  key.Set(b.begin(),b.end(),false);
-  if (!key.SignCompact(ss.GetHash(), vchSig)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
+  std::vector<uint8_t> vchSig;
+    
+  if (!blskey.Sign(ss.GetHash(), vchSig)) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
   return EncodeBase64(&vchSig[0], vchSig.size());
 }
 

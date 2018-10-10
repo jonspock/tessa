@@ -415,13 +415,6 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   string strSign = params[1].get_str();
   string strMessage = params[2].get_str();
 
-  if (!IsValidDestinationString(strAddress)) throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
-
-  CTxDestination address = DecodeDestination(strAddress);
-  // Only BLS Supported for now -> Change to add ECDSA???
-  bls::CKeyID* keyID = &std::get<bls::CKeyID>(address);
-
-  if (!keyID) throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
   bool fInvalid = false;
   vector<uint8_t> vchSig = DecodeBase64(strSign.c_str(), &fInvalid);
@@ -432,9 +425,9 @@ UniValue verifymessage(const UniValue& params, bool fHelp) {
   ss << strMessageMagic;
   ss << strMessage;
 
-  ecdsa::CPubKey pubkey;
-  if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return false;
-  return ((uint160)pubkey.GetID() == (uint160)*keyID);
+  std::vector<uint8_t> bytes(strAddress.begin(),strAddress.end());
+  bls::CPubKey pubkey(bytes);
+  return pubkey.Verify(ss.GetHash(), vchSig);
 }
 
 UniValue setmocktime(const UniValue& params, bool fHelp) {

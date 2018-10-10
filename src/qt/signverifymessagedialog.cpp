@@ -120,10 +120,7 @@ void SignVerifyMessageDialog::on_signMessageButton_SM_clicked() {
 
   std::vector<unsigned char> vchSig;
 
-  std::vector<uint8_t> b = blskey.getBytes();
-  ecdsa::CKey key;
-  key.Set(b.begin(),b.end(),false);
-  if (!key.SignCompact(Hash(ss.begin(), ss.end()), vchSig)) {
+  if (!blskey.Sign(Hash(ss.begin(), ss.end()), vchSig)) {
     ui->statusLabel_SM->setStyleSheet("QLabel { color: red; }");
     ui->statusLabel_SM->setText(QString("<nobr>") + tr("Message signing failed.") + QString("</nobr>"));
     return;
