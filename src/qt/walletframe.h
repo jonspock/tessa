@@ -58,8 +58,6 @@ class WalletFrame : public QFrame {
   void gotoHistoryPage();
   /** Switch to receive coins page */
   void gotoReceiveCoinsPage();
-  /** Switch to privacy page */
-  void gotoPrivacyPage();
   /** Switch to send coins page */
   void gotoSendCoinsPage(QString addr = "");
   /** Show Sign/Verify Message dialog and switch to sign message tab */

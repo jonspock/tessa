@@ -14,7 +14,6 @@
 #include "multisigdialog.h"
 #include "optionsmodel.h"
 #include "overviewpage.h"
-#include "privacydialog.h"
 #include "receivecoinsdialog.h"
 #include "sendcoinsdialog.h"
 #include "signverifymessagedialog.h"
@@ -109,13 +108,11 @@ WalletView::WalletView(QWidget* parent) : QStackedWidget(parent), clientModel(0)
   vbox->addLayout(hbox_buttons);
   transactionsPage->setLayout(vbox);
 
-  privacyPage = new PrivacyDialog();
   receiveCoinsPage = new ReceiveCoinsDialog();
   sendCoinsPage = new SendCoinsDialog();
 
   addWidget(overviewPage);
   addWidget(transactionsPage);
-  addWidget(privacyPage);
   addWidget(receiveCoinsPage);
   addWidget(sendCoinsPage);
  
@@ -175,7 +172,6 @@ void WalletView::setWalletModel(WalletModel* walletModel) {
   transactionView->setModel(walletModel);
   overviewPage->setWalletModel(walletModel);
   QSettings settings;
-  privacyPage->setModel(walletModel);
   receiveCoinsPage->setModel(walletModel);
   sendCoinsPage->setModel(walletModel);
 
@@ -226,12 +222,6 @@ void WalletView::gotoHistoryPage() { setCurrentWidget(transactionsPage); }
 
 void WalletView::gotoReceiveCoinsPage() { setCurrentWidget(receiveCoinsPage); }
 
-void WalletView::gotoPrivacyPage() {
-  setCurrentWidget(privacyPage);
-  // Refresh UI-elements in case coins were locked/unlocked in CoinControl
-  walletModel->emitBalanceChanged();
-}
-
 void WalletView::gotoSendCoinsPage(QString addr) {
   setCurrentWidget(sendCoinsPage);
 
@@ -276,7 +266,6 @@ bool WalletView::handlePaymentRequest(const SendCoinsRecipient& recipient) {
 
 void WalletView::showOutOfSyncWarning(bool fShow) {
   overviewPage->showOutOfSyncWarning(fShow);
-  privacyPage->showOutOfSyncWarning(fShow);
 }
 
 void WalletView::updateEncryptionStatus() { emit encryptionStatusChanged(walletModel->getEncryptionStatus()); }

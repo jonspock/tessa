@@ -102,7 +102,7 @@ set(GUI_FORMS
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/intro.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/multisenddialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/multisigdialog.ui
-  ${CMAKE_CURRENT_SOURCE_DIR}/forms/privacydialog.ui
+##  ${CMAKE_CURRENT_SOURCE_DIR}/forms/privacydialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/openuridialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/optionsdialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/overviewpage.ui
@@ -149,9 +149,9 @@ SET(QT_FILES
 	addresstablemodel.cpp
 	askpassphrasedialog.cpp
 	coincontroldialog.cpp
-	zerocontroldialog.cpp
+##	zerocontroldialog.cpp
 	coincontroltreewidget.cpp
-  privacydialog.cpp
+##  privacydialog.cpp
 	editaddressdialog.cpp
 	openuridialog.cpp
 	overviewpage.cpp

@@ -102,7 +102,6 @@ class BitcoinGUI : public QMainWindow {
   QAction* multisigSignAction;
   QAction* aboutAction;
   QAction* receiveCoinsAction;
-  QAction* privacyAction;
   QAction* optionsAction;
   QAction* toggleHideAction;
   QAction* encryptWalletAction;
@@ -194,8 +193,6 @@ class BitcoinGUI : public QMainWindow {
   void gotoHistoryPage();
   /** Switch to receive coins page */
   void gotoReceiveCoinsPage();
-  /** Switch to receive coins page */
-  void gotoPrivacyPage();
   /** Switch to send coins page */
   void gotoSendCoinsPage(QString addr = "");
 
