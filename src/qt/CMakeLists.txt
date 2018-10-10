@@ -82,7 +82,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 
-file(GLOB LOCAL_QT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
+file(GLOB LOCAL_QT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 source_group("QtHeaders" FILES ${LOCAL_QT_HEADERS})
 
 include_directories(${include_directories} 
@@ -183,7 +183,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 
-add_library(qt_stuff ${QT_FILES} ${UI_HEADERS} $<$<BOOL:${DARWIN}>:../rpc/client.cpp> )
+add_library(qt_stuff ${QT_FILES} ${LOCAL_QT_HEADERS} ${UI_HEADERS} $<$<BOOL:${DARWIN}>:../rpc/client.cpp> )
 # needed for linux compile integrity
 target_link_libraries(qt_stuff ${FS_LIBS})
 

@@ -5,7 +5,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spork.h"
-#include "ecdsa/key.h"
+#include "bls/key.h"
 #include "key_io.h"
 #include "main.h"
 #include "protocol.h"
@@ -117,25 +117,23 @@ bool CSporkManager::IsSporkActive(SporkID nSporkID) {
   return r < GetTime();
 }
 
-bool CSporkManager::VerifyMessage(ecdsa::CPubKey pubkey, vector<uint8_t>& vchSig, const std::string& strMessage) {
+bool CSporkManager::VerifyMessage(const bls::CPubKey& pubkey, const vector<uint8_t>& vchSig, const std::string& strMessage) {
   CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
 
-  ecdsa::CPubKey pubkey2;
-  if (!pubkey2.RecoverCompact(ss.GetHash(), vchSig)) return false;
+  if (pubkey.Verify(ss.GetHash(), vchSig)) return true;
 
-  if (gArgs.IsArgSet("-debug") && pubkey2.GetID() != pubkey.GetID())
-    LogPrint(TessaLog::SPORK, "VerifyMessage -- keys don't match: %s %s\n", pubkey2.GetID().ToString(),
-             pubkey.GetID().ToString());
+  if (gArgs.IsArgSet("-debug"))
+    LogPrint(TessaLog::SPORK, "Unable to Verify Signature: %s\n", pubkey.GetID().ToString());
 
-  return (pubkey2.GetID() == pubkey.GetID());
+  return false;
 }
 
 bool CSporkManager::CheckSignature(CSporkMessage& spork, bool fCheckSigner) {
   std::string strMessage =
       std::to_string(spork.nSporkID) + std::to_string(spork.nValue) + std::to_string(spork.nTimeSigned);
-  ecdsa::CPubKey pubkeynew(ParseHex(strSporkKey));
+  bls::CPubKey pubkeynew(ParseHex(strSporkKey));
   std::string errorMessage = "";
 
   bool fValidWithNewKey = VerifyMessage(pubkeynew, spork.vchSig, strMessage);
@@ -143,23 +141,19 @@ bool CSporkManager::CheckSignature(CSporkMessage& spork, bool fCheckSigner) {
   return fValidWithNewKey;
 }
 
-bool CSporkManager::SetKey(const std::string& strSecret, ecdsa::CKey& key, ecdsa::CPubKey& pubkey) {
-  // Convert from BLS Private to ECDSA Private (same size)
-  bls::CKey blskey = DecodeSecret(strSecret);
-  std::vector<uint8_t> b = blskey.getBytes();
-  
-  key.Set(b.begin(),b.end(),false);
+bool CSporkManager::SetKey(const std::string& strSecret, bls::CKey& key, bls::CPubKey& pubkey) {
+  key = DecodeSecret(strSecret);
   if (!key.IsValid()) return false;
   pubkey = key.GetPubKey();
   return true;
 }
 
-bool CSporkManager::SignMessage(const std::string& strMessage, vector<uint8_t>& vchSig, const ecdsa::CKey& key) {
+bool CSporkManager::SignMessage(const std::string& strMessage, vector<uint8_t>& vchSig, const bls::CKey& key) {
   CHashWriter ss;
   ss << strMessageMagic;
   ss << strMessage;
 
-  if (!key.SignCompact(ss.GetHash(), vchSig)) { return false; }
+  if (!key.Sign(ss.GetHash(), vchSig)) { return false; }
 
   return true;
 }
@@ -168,8 +162,8 @@ bool CSporkManager::Sign(CSporkMessage& spork) {
   std::string strMessage =
       std::to_string(spork.nSporkID) + std::to_string(spork.nValue) + std::to_string(spork.nTimeSigned);
 
-  ecdsa::CKey key;
-  ecdsa::CPubKey pubkey;
+  bls::CKey key;
+  bls::CPubKey pubkey;
 
   if (!SetKey(strMasterPrivKey, key, pubkey)) {
     LogPrint(TessaLog::SPORK, "Sign - ERROR: Invalid Spork Key\n");

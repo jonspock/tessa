@@ -10,10 +10,10 @@
 #include "protocol.h"
 #include "sync.h"
 
-namespace ecdsa {
+namespace bls {
 class CPubKey;
 class CKey;
-}  // namespace ecdsa
+}  // namespace bls
 
 //
 // Spork Class
@@ -65,9 +65,9 @@ class CSporkManager {
 
   bool UpdateSpork(SporkID nSporkID, int64_t nValue);
   bool SetPrivKey(const std::string& strPrivKey);
-  bool SetKey(const std::string& strSecret, ecdsa::CKey& key, ecdsa::CPubKey& pubkey);
-  bool SignMessage(const std::string& strMessage, std::vector<uint8_t>& vchSig, const ecdsa::CKey& key);
-  bool VerifyMessage(ecdsa::CPubKey pubkey, std::vector<uint8_t>& vchSig, const std::string& strMessage);
+  bool SetKey(const std::string& strSecret, bls::CKey& key, bls::CPubKey& pubkey);
+  bool SignMessage(const std::string& strMessage, std::vector<uint8_t>& vchSig, const bls::CKey& key);
+  bool VerifyMessage(const bls::CPubKey& pubkey, const std::vector<uint8_t>& vchSig, const std::string& strMessage);
   bool CheckSignature(CSporkMessage& spork, bool fCheckSigner = false);
   bool Sign(CSporkMessage& spork);
   void Relay(CSporkMessage& msg);

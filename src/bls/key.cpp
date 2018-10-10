@@ -11,10 +11,9 @@
 #include "random.h"
 #include "uint256.h"
 
-#include <secp256k1.h>
-#include <secp256k1_recovery.h>
-
-static secp256k1_context* secp256k1_context_sign = nullptr;
+//#include <secp256k1.h>
+//#include <secp256k1_recovery.h>
+//static secp256k1_context* secp256k1_context_sign = nullptr;
 
 namespace bls {
 
@@ -77,10 +76,13 @@ bool CKey::Derive(CKey& keyChild, ChainCode& ccChild, unsigned int nChild, const
   assert(size() == 32);
   BIP32Hash(cc, nChild, 0, &b[0], vout.data());
   memcpy(ccChild.begin(), vout.data() + 32, 32);
+  // Convert to uint256 and add (only lower 32-bytes matter)
+  arith_uint256 sum = UintToArith256(uint256(b)) + UintToArith256(uint256(ccChild));
   // For now
-  bool ret = secp256k1_ec_privkey_tweak_add(secp256k1_context_sign, &b[0], vout.data());
-  keyChild.Set(&b[0], &b[32]);
-  return ret;
+  //bool ret = secp256k1_ec_privkey_tweak_add(secp256k1_context_sign, &b[0], vout.data());
+  //keyChild.Set(&b[0], &b[32]);
+  keyChild.Set(sum.begin(),sum.end());
+  return true;
 }
 
 }  // namespace bls
