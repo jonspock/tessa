@@ -49,7 +49,7 @@ class CPrivKey {
   uint8_t* begin() const;
   uint8_t* end() const;
 
-  relic::bn_t* GetValue() const { return keydata; }
+  bn_t* GetValue() const { return keydata; }
 
   // Serialize the key into bytes
   // void Serialize(uint8_t* buffer) const;
@@ -92,7 +92,7 @@ class CPrivKey {
   // private:
 
   // The actual byte data
-  relic::bn_t* keydata;
+  bn_t* keydata;
 
   // Allocate memory for private key
   void AllocateKeyData();

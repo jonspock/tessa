@@ -74,7 +74,7 @@ class CPubKey {
 
   uint256 GetHash() const;
   CKeyID GetID() const;
-  static CPubKey FromG1(const relic::g1_t *key);
+  static CPubKey FromG1(const g1_t *key);
 
   //! Implement serialization, as if this was a byte vector.
   unsigned int GetSerializeSize() const { return size(); }
@@ -90,7 +90,7 @@ class CPubKey {
 
   // private:
 
-  static void CompressPoint(uint8_t *result, const relic::g1_t *point);
+  static void CompressPoint(uint8_t *result, const g1_t *point);
 
   std::unique_ptr<uint8_t[]> data;
 };

@@ -31,14 +31,14 @@ CPrivKey CPrivKey::FromSeed(const uint8_t* seed, size_t seedLen) {
   uint8_t* hash = Util::SecAlloc<uint8_t>(CPrivKey::PRIVATE_KEY_SIZE);
 
   // Hash the seed into sk
-  relic::md_hmac(hash, seed, seedLen, hmacKey, sizeof(hmacKey));
+  md_hmac(hash, seed, seedLen, hmacKey, sizeof(hmacKey));
 
-  relic::bn_t order;
+  bn_t order;
   bn_new(order);
   g1_get_ord(order);
 
   // Make sure private key is less than the curve order
-  relic::bn_t* skBn = Util::SecAlloc<relic::bn_t>(1);
+  bn_t* skBn = Util::SecAlloc<bn_t>(1);
   bn_new(*skBn);
   bn_read_bin(*skBn, hash, CPrivKey::PRIVATE_KEY_SIZE);
   bn_mod_basic(*skBn, *skBn, order);
@@ -58,7 +58,7 @@ CPrivKey CPrivKey::FromBytes(const uint8_t* bytes) {
   CPrivKey k = CPrivKey();
   k.AllocateKeyData();
   bn_read_bin(*k.keydata, bytes, CPrivKey::PRIVATE_KEY_SIZE);
-  relic::bn_t ord;
+  bn_t ord;
   bn_new(ord);
   g1_get_ord(ord);
   if (bn_cmp(*k.keydata, ord) > 0) { throw std::string("Key data too large, must be smaller than group order"); }
@@ -79,7 +79,7 @@ CPrivKey::~CPrivKey() {
 
 bls::CPubKey CPrivKey::GetPublicKey() const {
   BLS::AssertInitialized();
-  relic::g1_t* q = Util::SecAlloc<relic::g1_t>(1);
+  g1_t* q = Util::SecAlloc<g1_t>(1);
   g1_mul_gen(*q, *keydata);
 
   const bls::CPubKey ret = bls::CPubKey::FromG1(q);
@@ -134,7 +134,7 @@ Signature CPrivKey::Sign(uint8_t* msg, size_t len) const {
 
 Signature CPrivKey::SignPrehashed(uint8_t* messageHash) const {
   BLS::AssertInitialized();
-  relic::g2_t sig, point;
+  g2_t sig, point;
 
   g2_map(point, messageHash, BLS::MESSAGE_HASH_LEN, 0);
   g2_mul(sig, point, *keydata);
@@ -148,6 +148,6 @@ Signature CPrivKey::SignPrehashed(uint8_t* messageHash) const {
 
 void CPrivKey::AllocateKeyData() {
   BLS::AssertInitialized();
-  keydata = Util::SecAlloc<relic::bn_t>(1);
+  keydata = Util::SecAlloc<bn_t>(1);
   bn_new(*keydata);  // Freed in destructor
 }

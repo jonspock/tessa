@@ -102,7 +102,7 @@ return os << bls::Util::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
 
 bool CPubKey::Verify(const uint256 &hash, const std::vector<uint8_t> &vchSig) const { return true; }
 
-CPubKey CPubKey::FromG1(const relic::g1_t *point) {
+CPubKey CPubKey::FromG1(const g1_t *point) {
   CPubKey pk = CPubKey();
   uint8_t buffer[CPubKey::PUBLIC_KEY_SIZE + 1];
   g1_write_bin(buffer, CPubKey::PUBLIC_KEY_SIZE + 1, *point, 1);

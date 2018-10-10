@@ -25,11 +25,9 @@
 
 #include "publickey.hpp"
 #include "chaincode.hpp"
+#include "relic.h"
+#include "relic_test.h"
 
-namespace relic {
-    #include "relic.h"
-    #include "relic_test.h"
-}
 namespace bls {
 
 /*
