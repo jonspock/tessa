@@ -5,10 +5,6 @@
 #include "support/lockedpool.h"
 #include "support/cleanse.h"
 
-#if defined(HAVE_CONFIG_H)
-#include "coin-config.h"
-#endif
-
 #ifdef WIN32
 #ifdef _WIN32_WINNT
 #undef _WIN32_WINNT
