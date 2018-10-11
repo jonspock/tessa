@@ -8,7 +8,6 @@
 
 #include "addressbookpage.h"
 #include "coingui.h"
-#include "blockexplorer.h"
 #include "clientmodel.h"
 #include "guiutil.h"
 #include "multisenddialog.h"
@@ -38,7 +37,6 @@
 WalletView::WalletView(QWidget* parent) : QStackedWidget(parent), clientModel(0), walletModel(0) {
   // Create tabs
   overviewPage = new OverviewPage();
-  explorerWindow = new BlockExplorer(this);
   transactionsPage = new QWidget(this);
 
   // Create Header with the same names as the other forms to be CSS-Id compatible
@@ -120,8 +118,7 @@ WalletView::WalletView(QWidget* parent) : QStackedWidget(parent), clientModel(0)
   addWidget(privacyPage);
   addWidget(receiveCoinsPage);
   addWidget(sendCoinsPage);
-  addWidget(explorerWindow);
-
+ 
   QSettings settings;
 
   // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
@@ -226,8 +223,6 @@ void WalletView::gotoOverviewPage() {
 }
 
 void WalletView::gotoHistoryPage() { setCurrentWidget(transactionsPage); }
-
-void WalletView::gotoBlockExplorerPage() { setCurrentWidget(explorerWindow); }
 
 void WalletView::gotoReceiveCoinsPage() { setCurrentWidget(receiveCoinsPage); }
 

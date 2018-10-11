@@ -95,8 +95,8 @@ set(GUI_FORMS
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/addressbookpage.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/askpassphrasedialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/coincontroldialog.ui
-  ${CMAKE_CURRENT_SOURCE_DIR}/forms/zerocontroldialog.ui
-  ${CMAKE_CURRENT_SOURCE_DIR}/forms/blockexplorer.ui
+##  ${CMAKE_CURRENT_SOURCE_DIR}/forms/zerocontroldialog.ui
+##  ${CMAKE_CURRENT_SOURCE_DIR}/forms/blockexplorer.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/editaddressdialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/helpmessagedialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/intro.ui
@@ -123,7 +123,7 @@ SET(QT_FILES
 	multisenddialog.cpp
 	multisigdialog.cpp
 	bantablemodel.cpp
-	blockexplorer.cpp
+##	blockexplorer.cpp
 	coinaddressvalidator.cpp
 	coinamountfield.cpp
 	coingui.cpp

@@ -25,7 +25,6 @@ class ClientModel;
 class NetworkStyle;
 class Notificator;
 class OptionsModel;
-class BlockExplorer;
 class RPCConsole;
 class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
@@ -120,7 +119,6 @@ class BitcoinGUI : public QMainWindow {
   QAction* openConfEditorAction;
   QAction* showBackupsAction;
   QAction* openAction;
-  QAction* openBlockExplorerAction;
   QAction* showHelpMessageAction;
   QAction* multiSendAction;
 
@@ -128,7 +126,6 @@ class BitcoinGUI : public QMainWindow {
   QMenu* trayIconMenu;
   Notificator* notificator;
   RPCConsole* rpcConsole;
-  BlockExplorer* explorerWindow;
 
   /** Keep track of previous number of blocks, to detect progress */
   int prevBlocks;
@@ -195,9 +192,7 @@ class BitcoinGUI : public QMainWindow {
   void gotoOverviewPage();
   /** Switch to history (transactions) page */
   void gotoHistoryPage();
-  /** Switch to Explorer Page */
-  void gotoBlockExplorerPage();
-  /** Switch to privacy page */
+  /** Switch to receive coins page */
   void gotoReceiveCoinsPage();
   /** Switch to receive coins page */
   void gotoPrivacyPage();

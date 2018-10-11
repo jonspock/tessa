@@ -22,7 +22,6 @@ class SendCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
-class BlockExplorer;
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -67,7 +66,6 @@ class WalletView : public QStackedWidget {
   ReceiveCoinsDialog* receiveCoinsPage;
   PrivacyDialog* privacyPage;
   SendCoinsDialog* sendCoinsPage;
-  BlockExplorer* explorerWindow;
 
   TransactionView* transactionView;
 
@@ -79,8 +77,6 @@ class WalletView : public QStackedWidget {
   void gotoOverviewPage();
   /** Switch to history (transactions) page */
   void gotoHistoryPage();
-  /** Switch to explorer page */
-  void gotoBlockExplorerPage();
   /** Switch to privacy page */
   void gotoPrivacyPage();
   /** Switch to receive coins page */

@@ -21,7 +21,6 @@
 #include "staker.h"
 #include "utilitydialog.h"
 
-#include "blockexplorer.h"
 #include "walletframe.h"
 #include "walletmodel.h"
 
@@ -104,7 +103,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent)
       trayIconMenu(0),
       notificator(0),
       rpcConsole(0),
-      explorerWindow(0),
       prevBlocks(0),
       spinnerFrame(0) {
   /* Open CSS when configured */
@@ -136,7 +134,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent)
   if (enableWallet) {
     /** Create wallet frame*/
     walletFrame = new WalletFrame(this);
-    explorerWindow = new BlockExplorer(this);
   } else {
     /* When compiled without wallet or -disablewallet is provided,
      * the central widget is the rpc console.
@@ -237,11 +234,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent)
 
   // prevents an open debug window from becoming stuck/unusable on client shutdown
   connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
-
-  connect(openBlockExplorerAction, SIGNAL(triggered()), explorerWindow, SLOT(show()));
-
-  // prevents an open debug window from becoming stuck/unusable on client shutdown
-  connect(quitAction, SIGNAL(triggered()), explorerWindow, SLOT(hide()));
 
   // Install event filter to be able to catch status tip events (QEvent::StatusTip)
   this->installEventFilter(this);
@@ -409,9 +401,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle) {
 
   openAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_FileIcon), tr("Open &URI..."), this);
   openAction->setStatusTip(tr("Open a Tessa: URI or payment request"));
-  openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain explorer"), this);
-  openBlockExplorerAction->setStatusTip(tr("Block explorer window"));
-
+ 
   showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation),
                                       tr("&Command-line options"), this);
   showHelpMessageAction->setMenuRole(QAction::NoRole);
@@ -491,8 +481,7 @@ void BitcoinGUI::createMenuBar() {
     tools->addSeparator();
     tools->addAction(openConfEditorAction);
     tools->addAction(showBackupsAction);
-    tools->addAction(openBlockExplorerAction);
-  }
+   }
 
   QMenu* help = appMenuBar->addMenu(tr("&Help"));
   help->addAction(showHelpMessageAction);
@@ -661,7 +650,6 @@ void BitcoinGUI::createTrayIconMenu() {
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(openConfEditorAction);
   trayIconMenu->addAction(showBackupsAction);
-  trayIconMenu->addAction(openBlockExplorerAction);
 #ifndef Q_OS_MAC  // This is built-in on Mac
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(quitAction);
@@ -751,9 +739,6 @@ void BitcoinGUI::gotoMultisigSign() {
 void BitcoinGUI::gotoMultiSendDialog() {
   multiSendAction->setChecked(true);
   if (walletFrame) walletFrame->gotoMultiSendDialog();
-}
-void BitcoinGUI::gotoBlockExplorerPage() {
-  if (walletFrame) walletFrame->gotoBlockExplorerPage();
 }
 
 void BitcoinGUI::setNumConnections(int count) {

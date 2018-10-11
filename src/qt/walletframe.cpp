@@ -98,11 +98,6 @@ void WalletFrame::gotoHistoryPage() {
   for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i) i.value()->gotoHistoryPage();
 }
 
-void WalletFrame::gotoBlockExplorerPage() {
-  QMap<QString, WalletView*>::const_iterator i;
-  for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i) i.value()->gotoBlockExplorerPage();
-}
-
 void WalletFrame::gotoReceiveCoinsPage() {
   QMap<QString, WalletView*>::const_iterator i;
   for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i) i.value()->gotoReceiveCoinsPage();
