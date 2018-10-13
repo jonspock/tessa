@@ -17,12 +17,10 @@
 #include "ZerocoinParams.h"
 #include "amount.h"
 #include "bignum.h"
-#include "ecdsa/key.h"
+#include "ed25519/key.h"
 #include "util.h"
 
 namespace libzerocoin {
-
-bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, ecdsa::CKey& key, CBigNum& bnSerial);
 
 /**
  * A private coin. As the name implies, the content
@@ -49,14 +47,14 @@ class PrivateCoin {
   const CBigNum& getRandomness() const { return this->randomness; }
   const uint8_t& getVersion() const { return this->version; }
   const CSecretKey& getPrivKey() const { return this->privkey; }
-  ecdsa::CPubKey getPubKey() const;
+  ed25519::CPubKey getPubKey() const;
 
   void setPublicCoin(const PublicCoin& p) { publicCoin = p; }
   void setRandomness(const Bignum& n) { randomness = n; }
   void setSerialNumber(const Bignum& n) { serialNumber = n; }
   void setVersion(uint8_t nVersion) { this->version = nVersion; }
   void setPrivKey(const CSecretKey& privkey) { this->privkey = privkey; }
-  bool sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
+  void sign(const uint256& hash, std::vector<uint8_t>& vchSig) const;
   bool IsValid();
 
   ADD_SERIALIZE_METHODS

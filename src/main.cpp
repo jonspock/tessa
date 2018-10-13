@@ -24,8 +24,10 @@
 #include "checkpoints.h"
 #include "checkqueue.h"
 #include "bls/blocksignature.h"
+#ifdef USE_SECP256K1
 #include "ecdsa/key.h"
 #include "ecdsa/pubkey.h"
+#endif
 #include "init.h"
 #include "kernel.h"
 #include "merkleblock.h"

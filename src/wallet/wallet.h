@@ -15,7 +15,7 @@
 #include "account.h"
 #include "addressbookdata.h"
 #include "chainparams.h"
-#include "ecdsa/key.h"
+#include "ed25519/key.h"
 #include "bls/key.h"
 #include "keypool.h"
 #include "keystore.h"
@@ -140,7 +140,7 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
                      CTxDestination* addressTo=nullptr);
   std::string ResetMintZerocoin();
   std::string ResetSpentZerocoin();
-  bool GetZerocoinKey(const CBigNum& bnSerial, ecdsa::CKey& key);
+  bool GetZerocoinKey(const CBigNum& bnSerial, ed25519::CKey& key);
   bool CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint);
   bool GetMint(const uint256& hashSerial, CZerocoinMint& mint);
   bool SetMintUnspent(const CBigNum& bnSerial);

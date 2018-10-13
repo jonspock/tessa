@@ -40,8 +40,9 @@
 #include "zerocoin/accumulatorcheckpoints.h"
 #include "zerocoin/zerochain.h"
 #include "zerocoin/zerocoindb.h"
-
+#ifdef USE_SECP256K1
 #include "ecdsa/key.h"
+#endif
 #include "wallet/db.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
@@ -173,7 +174,9 @@ class CCoinsViewErrorCatcher : public CCoinsViewBacked {
 
 static CCoinsViewDB* pcoinsdbview = nullptr;
 static CCoinsViewErrorCatcher* pcoinscatcher = nullptr;
+#ifdef USE_SECP256K1
 static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
+#endif
 
 static std::thread scheduler_thread;
 static std::vector<std::thread> script_check_threads;
@@ -294,8 +297,10 @@ void Shutdown(CScheduler& scheduler) {
   if (zwalletMain) delete zwalletMain;
   zwalletMain = nullptr;
 #endif
+#ifdef USE_SECP256K1
   globalVerifyHandle.reset();
   ECC_Stop();
+#endif
   LogPrintf("%s: done\n", __func__);
 }
 
@@ -746,12 +751,14 @@ void ThreadImport(std::vector<fs::path> vImportFiles) {
  *  necessary library support.
  */
 bool InitSanityCheck() {
+#ifdef USE_SECP256K1
   if (!ECC_InitSanityCheck()) {
     InitError(
         "OpenSSL appears to lack support for elliptic curve cryptography. For more "
         "information, visit https://en.bitcoin.it/wiki/OpenSSL_and_EC_Libraries");
     return false;
   }
+#endif
   return true;
 }
 
@@ -971,9 +978,11 @@ bool AppInit2(CScheduler& scheduler) {
 
   // Initialize elliptic curve code
   if (sodium_init() < 0) { throw string("Libsodium initialization failed."); }
+#ifdef USE_SECP256K1
   ECC_Start();
   globalVerifyHandle.reset(new ECCVerifyHandle());
-
+#endif
+    
   // Sanity check
   if (!InitSanityCheck()) return InitError(_("Initialization sanity check failed. Tessa Core is shutting down."));
 

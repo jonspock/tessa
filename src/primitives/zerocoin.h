@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "ecdsa/key.h"
+#include "ed25519/key.h"
 #include "libzerocoin/Denominations.h"
 #include "bignum.h"
 #include "serialize.h"
@@ -91,7 +91,7 @@ class CZerocoinMint {
   void SetVersion(const uint8_t ver) { this->nMintVersion = ver; }
   CSecretKey GetPrivKey() const { return this->privkey; }
   void SetPrivKey(const CSecretKey& privkey) { this->privkey = privkey; }
-  bool GetKeyPair(ecdsa::CKey& key) const;
+  ed25519::CKey GetKey() const;
 
   inline bool operator<(const CZerocoinMint& a) const { return GetHeight() < a.GetHeight(); }
 

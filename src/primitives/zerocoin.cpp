@@ -22,10 +22,10 @@ uint256 GetPubCoinHash(const CBigNum& bnValue) {
   ss << bnValue;
   return Hash(ss.begin(), ss.end());
 }
-
-bool CZerocoinMint::GetKeyPair(ecdsa::CKey& key) const {
-  if (privkey.size() == 0) return error("%s: empty privkey ", __func__);
-  return key.SetPrivKey(privkey, true);
+ed25519::CKey CZerocoinMint::GetKey() const {
+  if (privkey.size() == 0) throw std::runtime_error(" empty privkey ");
+  ed25519::CKey key(privkey);
+  return key;
 }
 
 std::string CZerocoinMint::ToString() const {

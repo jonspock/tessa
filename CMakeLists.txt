@@ -471,6 +471,7 @@ add_subdirectory(src)
 add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 add_subdirectory(src/ecdsa)
+add_subdirectory(src/ed25519)
 add_subdirectory(src/bls)
 
 link_directories(${LMDB_ROOT_DIR}/lib)
@@ -525,7 +526,7 @@ endif()
 #------------------- ------------------- ------------------- ------------------- -------------------
 message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin ecdsa zerocoin bls secp256k1 lmdb ${DB_LIBRARIES} ${UPNP_LIB}
+SET(LIBS_LIST coin ecdsa ed25519 zerocoin bls secp256k1 lmdb ${DB_LIBRARIES} ${UPNP_LIB}
   event event_pthreads pthread gmp sodium ${ZMQ_LIB} ${FS_LIBS}) # wsock32)
 
 target_link_libraries(tessad ${LIBS_LIST})

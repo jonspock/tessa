@@ -20,7 +20,7 @@
 #include "SerialNumberSignatureOfKnowledge.h"
 #include "ZerocoinParams.h"
 #include "bignum.h"
-#include "ecdsa/pubkey.h"
+#include "ed25519/pubkey.h"
 #include "serialize.h"
 
 namespace libzerocoin {
@@ -118,7 +118,7 @@ class CoinSpend {
   CBigNum accCommitmentToCoinValue;
   CBigNum serialCommitmentToCoinValue;
   CBigNum coinSerialNumber;
-  ecdsa::CPubKey pubkey;
+  ed25519::CPubKey pubkey;
   std::vector<uint8_t> vchSig;
   AccumulatorProofOfKnowledge accumulatorPoK;
   SerialNumberSignatureOfKnowledge serialNumberSoK;

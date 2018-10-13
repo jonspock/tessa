@@ -17,7 +17,7 @@ CBigNum randBignum(const CBigNum &range) {
   size_t size = (mpz_sizeinbase(range.bn, 2) + CHAR_BIT - 1) / CHAR_BIT;
   std::vector<unsigned char> buf(size);
 
-  randombytes_buf(&buf, size);
+  randombytes_buf(&buf[0], size);
   CBigNum ret(buf);
   if (ret < 0) mpz_neg(ret.bn, ret.bn);
   return ret;
@@ -30,7 +30,7 @@ CBigNum randBignum(const CBigNum &range) {
 CBigNum RandKBitBigum(const uint32_t k) {
   std::vector<unsigned char> buf((k + 7) / 8);
 
-  randombytes_buf(&buf, (k + 7) / 8);
+  randombytes_buf(&buf[0], (k + 7) / 8);
   CBigNum ret(buf);
   if (ret < 0) mpz_neg(ret.bn, ret.bn);
   return ret;

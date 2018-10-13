@@ -42,12 +42,9 @@ CZeroWallet::CZeroWallet() {
   bool fFirstRun = !gWalletDB.ReadCurrentSeedHash(hashSeed);
   if (fFirstRun) {
     // Borrow random generator from the key class so that we don't have to worry about randomness
-    ecdsa::CKey key;
-    key.MakeNewKey(true);
-    seed = key.GetPrivKey_256();
-    seedMaster = seed;
     LogPrint(TessaLog::ZKP, "%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n", __func__,
              Hash(seed.begin(), seed.end()).GetHex());
+    throw runtime_error("Need seed set before proceeding");
   } else if (!pwalletMain->GetDeterministicSeed(hashSeed, seed)) {
     LogPrintf("%s: failed to get deterministic seed for hashseed %s\n", __func__, hashSeed.GetHex());
     return;

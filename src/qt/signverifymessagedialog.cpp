@@ -8,6 +8,10 @@
 #include "signverifymessagedialog.h"
 #include "ui_signverifymessagedialog.h"
 
+#ifdef SIGNEDMESSAGE_OK
+#include "ecdsa/key.h"
+#endif
+
 #include "addressbookpage.h"
 #include "guiutil.h"
 #include "walletmodel.h"
@@ -154,6 +158,7 @@ void SignVerifyMessageDialog::on_addressBookButton_VM_clicked() {
 }
 
 void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
+#ifdef USE_SECP256K1
   CTxDestination addr = DecodeDestination(ui->addressIn_VM->text().toStdString());
   if (!IsValidDestinationString(ui->addressIn_VM->text().toStdString())) {
     ui->statusLabel_VM->setStyleSheet("QLabel { color: red; }");
@@ -202,6 +207,8 @@ void SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked() {
 
   ui->statusLabel_VM->setStyleSheet("QLabel { color: green; }");
   ui->statusLabel_VM->setText(QString("<nobr>") + tr("Message verified.") + QString("</nobr>"));
+#endif
+    
 }
 
 void SignVerifyMessageDialog::on_clearButton_VM_clicked() {

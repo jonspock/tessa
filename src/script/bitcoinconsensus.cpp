@@ -4,7 +4,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "bitcoinconsensus.h"
-#include "ecdsa/key.h"
 
 #include "primitives/transaction.h"
 #include "script/interpreter.h"
@@ -45,13 +44,14 @@ inline int set_error(bitcoinconsensus_error* ret, bitcoinconsensus_error serror)
   if (ret) *ret = serror;
   return 0;
 }
-
+  /*
 struct ECCryptoClosure {
   ECCVerifyHandle handle;
 };
 
 ECCryptoClosure instance_of_eccryptoclosure;
-
+  */
+  
 }  // namespace
 
 int bitcoinconsensus_verify_script(const uint8_t* scriptPubKey, uint32_t scriptPubKeyLen, const uint8_t* txTo,

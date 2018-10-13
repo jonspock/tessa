@@ -12,6 +12,7 @@
 #include "output.h"
 #include "wallet_externs.h"
 #include "wallettx.h"
+#include "ed25519/key.h"
 #include "bls/extkey.h"
 #include "chain.h"
 #include "chainparams.h"
@@ -2606,12 +2607,13 @@ CScript GetLargestContributor(set<pair<const CWalletTx*, uint32_t> >& setCoins) 
   return scriptLargest;
 }
 #ifndef ZEROCOIN_DISABLED
-bool CWallet::GetZerocoinKey(const CBigNum& bnSerial, ecdsa::CKey& key) {
+bool CWallet::GetZerocoinKey(const CBigNum& bnSerial, ed25519::CKey& key) {
   CZerocoinMint mint;
   if (!GetMint(GetSerialHash(bnSerial), mint))
     return error("%s: could not find serial %s in walletdb!", __func__, bnSerial.GetHex());
-
-  return mint.GetKeyPair(key);
+  ed25519::CKey k = mint.GetKey();
+  key = k;
+  return true;
 }
 
 bool CWallet::CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint) {
@@ -2766,10 +2768,8 @@ bool CWallet::MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLev
   uint8_t nVersion = zerocoinSelected.GetVersion();
   privateCoin.setVersion(zerocoinSelected.GetVersion());
   LogPrintf("%s: privatecoin version=%d\n", __func__, privateCoin.getVersion());
-  ecdsa::CKey key;
-  if (!zerocoinSelected.GetKeyPair(key))
-    return error("%s: failed to set ZKP privkey mint version=%d", __func__, nVersion);
-
+  ed25519::CKey key = zerocoinSelected.GetKey();
+  //return error("%s: failed to set ZKP privkey mint version=%d", __func__, nVersion);
   privateCoin.setPrivKey(key.GetPrivKey());
 
   uint32_t nChecksum = GetChecksum(accumulator.getValue());

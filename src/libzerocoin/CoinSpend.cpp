@@ -11,7 +11,6 @@
  **/
 // Copyright (c) 2018 The PIVX developer
 // Copyright (c) 2018 The Tessacoin developers
-// Copyright (c) 2018 The Tessacoin developers
 
 #include "CoinSpend.h"
 #include "Commit.h"
@@ -27,7 +26,8 @@ bool CoinSpend::HasValidSerial(ZerocoinParams* params) const {
 // Additional verification layer that requires the spend be signed by the private key associated with the serial
 bool CoinSpend::HasValidSignature() const {
   // requires that the signature hash be signed by the public key associated with the serial
-  uint256 hashedPubkey = Hash(pubkey.begin(), pubkey.end());
+  std::vector<uint8_t> b = pubkey.ToStdVector();
+  uint256 hashedPubkey = Hash(b.begin(), b.end());
   if (hashedPubkey != coinSerialNumber.getuint256()) {
     // cout << "CoinSpend::HasValidSignature() hashedpubkey is not equal to the serial!\n";
     return false;
@@ -88,7 +88,7 @@ CoinSpend::CoinSpend(const ZerocoinParams* p, const PrivateCoin& coin, Accumulat
 
   // 5. Sign the transaction using the private key associated with the serial number
   this->pubkey = coin.getPubKey();
-  if (!coin.sign(hashSig, this->vchSig)) throw std::runtime_error("Coinspend failed to sign signature hash");
+  coin.sign(hashSig, this->vchSig);
 }
 
 bool CoinSpend::Verify(const Accumulator& a) const {

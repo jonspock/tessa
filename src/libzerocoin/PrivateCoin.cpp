@@ -18,13 +18,13 @@
 #include "Denominations.h"
 #include "IntegerMod.h"
 #include "ModulusType.h"
-#include "ecdsa/pubkey.h"
+#include "ed25519/pubkey.h"
 #include "hash.h"
 #include "uint512.h"
 #include <stdexcept>
 
 using namespace std;
-using namespace ecdsa;
+using namespace ed25519;
 
 namespace libzerocoin {
 
@@ -33,21 +33,18 @@ bool IsValidCoinValue(const ZerocoinParams* params, const IntegerMod<COIN_COMMIT
          C.isPrime(ZEROCOIN_MINT_PRIME_PARAM);
 }
 
-bool GenerateKeyPair(const CBigNum& bnGroupOrder, const uint256& nPrivkey, CKey& key, CBigNum& bnSerial) {
+CKey GenerateKeyAndSerial(const uint256& nSeed, CBigNum& bnSerial) {
   // Generate a new key pair, which also has a 256-bit pubkey hash that qualifies as a serial #
   // This builds off of Tim Ruffing's work on libzerocoin, but has a different implementation
-  CKey keyPair;
-  if (nPrivkey.IsNull()) throw runtime_error("Private Key was Null - Determinism not possible");
+  if (nSeed.IsNull()) throw runtime_error("Seed was Null - Determinism not possible");
 
-  keyPair.Set(nPrivkey.begin(), nPrivkey.end(), true);
-
+  CKey keyPair(nSeed.begin());
   CPubKey pubKey = keyPair.GetPubKey();
-  uint256 hashPubKey = Hash(pubKey.begin(), pubKey.end());
-
+  std::vector<uint8_t> b = pubKey.ToStdVector();
+  uint256 hashPubKey = Hash(b.begin(), b.end());
   CBigNum s(hashPubKey);
-  key = keyPair;
   bnSerial = s;
-  return true;
+  return keyPair;
 }
 
 PrivateCoin::PrivateCoin(const ZerocoinParams* p) : params(p) { assert(p); }
@@ -92,14 +89,11 @@ CBigNum PrivateCoin::CoinFromSeed(const uint512& seedZerocoin) {
   uint256 nSeedPrivKey = seedZerocoin.trim256();
   const IntegerMod<COIN_COMMITMENT_MODULUS> g(this->params->coinCommitmentGroup.g);
   const IntegerMod<COIN_COMMITMENT_MODULUS> h(this->params->coinCommitmentGroup.h);
-
-  bool isValidKey = false;
-  CKey key = CKey();
-  while (!isValidKey) {
-    nSeedPrivKey = Hash(nSeedPrivKey.begin(), nSeedPrivKey.end());
-    isValidKey = GenerateKeyPair(params->coinCommitmentGroup.groupOrder, nSeedPrivKey, key, bnSerial);
-    setPrivKey(key.GetPrivKey());
-  }
+  
+  nSeedPrivKey = Hash(nSeedPrivKey.begin(), nSeedPrivKey.end());
+  CKey key = GenerateKeyAndSerial(nSeedPrivKey, bnSerial);
+  setPrivKey(key.GetPrivKey());
+  
 
   // hash randomness seed with Bottom 256 bits of seedZerocoin & attempts256 which is initially 0
   arith_uint512 seed = UintToArith512(seedZerocoin) >> 256;
@@ -142,15 +136,13 @@ CBigNum PrivateCoin::CoinFromSeed(const uint512& seedZerocoin) {
 }
 
 CPubKey PrivateCoin::getPubKey() const {
-  CKey key;
-  key.SetPrivKey(privkey, true);
+  CKey key(privkey);
   return key.GetPubKey();
 }
 
-bool PrivateCoin::sign(const uint256& hash, vector<uint8_t>& vchSig) const {
-  CKey key;
-  key.SetPrivKey(privkey, true);
-  return key.Sign(hash, vchSig);
+void PrivateCoin::sign(const uint256& hash, vector<uint8_t>& vchSig) const {
+  CKey key(privkey);
+  key.Sign(hash, vchSig);
 }
 
 } /* namespace libzerocoin */
