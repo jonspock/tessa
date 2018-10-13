@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/Denominations.h"
 #include <list>
 #include <string>
@@ -44,7 +45,6 @@ libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin);
 bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CValidationState& state);
 std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block);
 
-
 bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationState& state, bool fCheckOnly);
 bool ContextualCheckZerocoinMint(const CTransaction& tx, const libzerocoin::PublicCoin& coin,
                                  const CBlockIndex* pindex);
@@ -52,3 +52,14 @@ bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::Coi
                                   const uint256& hashBlock);
 bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidationState& state);
 bool ValidatePublicCoin(const CBigNum& value);
+
+bool EraseZerocoinSpendsInTx(const std::vector<CTxIn>& vin);
+bool EraseZerocoinMintsInTx(const std::vector<CTxOut>& vout, CValidationState& state);
+bool ReindexAccumulators(std::list<uint256>& listMissingCheckpoints, std::string& strError);
+bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex);
+bool RecordZKPSerials(const std::vector<std::pair<libzerocoin::CoinSpend, uint256> >& vSpends, const CBlock& block,
+                      const CBlockIndex* pindex, CValidationState& state);
+bool UpdateZerocoinVectors(const CTransaction& tx, const uint256& hashBlock, std::vector<uint256>& vSpendsInBlock,
+                           std::vector<std::pair<libzerocoin::CoinSpend, uint256> >& vSpends,
+                           std::vector<std::pair<libzerocoin::PublicCoin, uint256> >& vMints, CBlockIndex* pindex,
+                           CAmount& nValueIn, CValidationState& state);

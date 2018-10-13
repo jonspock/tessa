@@ -586,13 +586,14 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts) {
   wallet->ListLockedCoins(vOutpts);
 }
 
+#ifndef ZEROCOIN_DISABLED
 void WalletModel::listZerocoinMints(std::set<CMintMeta>& setMints, bool fUnusedOnly, bool fMaturedOnly,
                                     bool fUpdateStatus) {
   setMints.clear();
-#ifndef ZEROCOIN_DISABLED
   setMints = pwalletMain->zkpTracker->ListMints(fUnusedOnly, fMaturedOnly, fUpdateStatus);
-#endif
 }
+#endif
+
 
 void WalletModel::loadReceiveRequests(std::vector<std::string>& vReceiveRequests) {
   LOCK(wallet->cs_wallet);

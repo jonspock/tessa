@@ -12,7 +12,7 @@
 #include "output.h"
 #include "wallet_externs.h"
 #include "wallettx.h"
-#include "ed25519/key.h"
+#include "libzerocoin/key.h"
 #include "bls/extkey.h"
 #include "chain.h"
 #include "chainparams.h"
@@ -2611,8 +2611,7 @@ bool CWallet::GetZerocoinKey(const CBigNum& bnSerial, ed25519::CKey& key) {
   CZerocoinMint mint;
   if (!GetMint(GetSerialHash(bnSerial), mint))
     return error("%s: could not find serial %s in walletdb!", __func__, bnSerial.GetHex());
-  ed25519::CKey k = mint.GetKey();
-  key = k;
+  key = mint.GetKey();
   return true;
 }
 
@@ -2765,7 +2764,6 @@ bool CWallet::MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLev
   privateCoin.setSerialNumber(zerocoinSelected.GetSerialNumber());
 
   // zerocoins have a privkey associated with them
-  uint8_t nVersion = zerocoinSelected.GetVersion();
   privateCoin.setVersion(zerocoinSelected.GetVersion());
   LogPrintf("%s: privatecoin version=%d\n", __func__, privateCoin.getVersion());
   ed25519::CKey key = zerocoinSelected.GetKey();

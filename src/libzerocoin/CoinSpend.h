@@ -20,7 +20,7 @@
 #include "SerialNumberSignatureOfKnowledge.h"
 #include "ZerocoinParams.h"
 #include "bignum.h"
-#include "ed25519/pubkey.h"
+#include "pubkey.h"
 #include "serialize.h"
 
 namespace libzerocoin {

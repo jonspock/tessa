@@ -15,7 +15,7 @@
 #include "account.h"
 #include "addressbookdata.h"
 #include "chainparams.h"
-#include "ed25519/key.h"
+#include "libzerocoin/key.h"
 #include "bls/key.h"
 #include "keypool.h"
 #include "keystore.h"

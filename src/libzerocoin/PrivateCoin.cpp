@@ -18,7 +18,7 @@
 #include "Denominations.h"
 #include "IntegerMod.h"
 #include "ModulusType.h"
-#include "ed25519/pubkey.h"
+#include "pubkey.h"
 #include "hash.h"
 #include "uint512.h"
 #include <stdexcept>

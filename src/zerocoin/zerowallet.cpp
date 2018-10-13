@@ -28,17 +28,15 @@ const int ZMINTS_TO_ADD = 20;
 #endif
 
 CZeroWallet::CZeroWallet() {
-  // Don't try to do anything if the wallet is locked.
-  if (pwalletMain->IsLocked()) {
-    seedMaster.SetNull();
-    nCountLastUsed = 0;
-    this->mintPool = CMintPool();
-    return;
-  }
+  // Don't try to do anything on creation
+  seedMaster.SetNull();
+  nCountLastUsed = 0;
+  this->mintPool = CMintPool(nCountLastUsed);
+}
 
+#ifdef LEGACY_SEED  
   // First time running, generate master seed
   uint256 hashSeed;
-  uint256 seed;
   bool fFirstRun = !gWalletDB.ReadCurrentSeedHash(hashSeed);
   if (fFirstRun) {
     // Borrow random generator from the key class so that we don't have to worry about randomness
@@ -54,8 +52,7 @@ CZeroWallet::CZeroWallet() {
     LogPrintf("%s: failed to save deterministic seed for hashseed %s\n", __func__, hashSeed.GetHex());
     return;
   }
-  this->mintPool = CMintPool(nCountLastUsed);
-}
+#endif
 
 bool CZeroWallet::SetMasterSeed(const uint256& seedMaster, bool fResetCount) {
   if (pwalletMain->IsLocked()) return false;

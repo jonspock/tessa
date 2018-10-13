@@ -39,6 +39,7 @@ list(APPEND zerocoin_sources
   SerialNumberSignatureOfKnowledge.cpp
   AccumulatorProofOfKnowledge.cpp
   IntegerMod.cpp
+  key.cpp
 )
 
 add_library(zerocoin ${ZEROCOIN_HEADERS} ${zerocoin_sources})

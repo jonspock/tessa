@@ -4,6 +4,14 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "zerochain.h"
+
+// For EraseMints/Spends
+#include "wallet/wallet.h"
+#include "wallet/wallettx.h"
+#include "wallet_externs.h"
+
+#include "init.h"  // for ShutdownReq
+
 #include "chainparams.h"
 #include "libzerocoin/CoinSpend.h"
 #include "libzerocoin/PublicCoin.h"
@@ -29,8 +37,7 @@ using namespace libzerocoin;
 // For Script size (BIGNUM/Uint256 size)
 #define BIGNUM_SIZE 4
 
-bool BlockToMintValueVector(const CBlock& block, const CoinDenomination denom,
-                            std::vector<CBigNum>& vValues) {
+bool BlockToMintValueVector(const CBlock& block, const CoinDenomination denom, std::vector<CBigNum>& vValues) {
   for (const CTransaction& tx : block.vtx) {
     if (!tx.IsZerocoinMint()) continue;
 
@@ -278,8 +285,7 @@ bool TxOutToPublicCoin(const CTxOut& txout, PublicCoin& pubCoin, CValidationStat
 
   CoinDenomination denomination = AmountToZerocoinDenomination(txout.nValue);
   LogPrint(TessaLog::ZKP, "%s ZCPRINT denomination %d pubcoin %s\n", __func__, denomination, publicZerocoin.GetHex());
-  if (denomination == ZQ_ERROR)
-    return state.DoS(100, error("TxOutToPublicCoin : txout.nValue is not correct"));
+  if (denomination == ZQ_ERROR) return state.DoS(100, error("TxOutToPublicCoin : txout.nValue is not correct"));
 
   PublicCoin checkPubCoin(publicZerocoin, denomination);
   pubCoin = checkPubCoin;
@@ -302,7 +308,6 @@ std::list<CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block) {
   }
   return vSpends;
 }
-
 
 bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationState& state, bool fCheckOnly) {
   PublicCoin pubCoin;
@@ -480,4 +485,228 @@ bool ValidatePublicCoin(const CBigNum& value) {
   ZerocoinParams* p = gpZerocoinParams;
   return (p->accumulatorParams.minCoinValue < value) && (value <= p->accumulatorParams.maxCoinValue) &&
          value.isPrime(p->zkp_iterations);
+}
+
+bool EraseZerocoinSpendsInTx(const std::vector<CTxIn>& vin) {
+  // erase all zerocoinspends in this transaction
+  for (const CTxIn& txin : vin) {
+    if (txin.scriptSig.IsZerocoinSpend()) {
+      CoinSpend spend = TxInToZerocoinSpend(txin);
+      if (!gpZerocoinDB->EraseCoinSpend(spend.getCoinSerialNumber()))
+        return error("failed to erase spent zerocoin in block");
+
+      // if this was our spend, then mark it unspent now
+      if (pwalletMain) {
+        if (pwalletMain->IsMyZerocoinSpend(spend.getCoinSerialNumber())) {
+          if (!pwalletMain->SetMintUnspent(spend.getCoinSerialNumber()))
+            LogPrintf("%s: failed to automatically reset mint", __func__);
+        }
+      }
+    }
+  }
+  return true;
+}
+bool EraseZerocoinMintsInTx(const std::vector<CTxOut>& vout, CValidationState& state) {
+  // erase all zerocoinmints in this transaction
+  for (const CTxOut& txout : vout) {
+    if (txout.scriptPubKey.empty() || !txout.scriptPubKey.IsZerocoinMint()) continue;
+
+    PublicCoin pubCoin;
+    if (!TxOutToPublicCoin(txout, pubCoin, state)) return error("DisconnectBlock(): TxOutToPublicCoin() failed");
+
+    if (!gpZerocoinDB->EraseCoinMint(pubCoin.getValue())) return error("DisconnectBlock(): Failed to erase coin mint");
+  }
+  return true;
+}
+
+bool ReindexAccumulators(std::list<uint256>& listMissingCheckpoints, std::string& strError) {
+  // Tessa: recalculate Accumulator Checkpoints that failed to database properly
+  if (!listMissingCheckpoints.empty() && chainActive.Height() >= Params().Zerocoin_StartHeight()) {
+    LogPrintf("%s : finding missing checkpoints\n", __func__);
+
+    // search the chain to see when zerocoin started
+    int nZerocoinStart = Params().Zerocoin_StartHeight();
+
+    // find each checkpoint that is missing
+    CBlockIndex* pindex = chainActive[nZerocoinStart];
+    while (pindex) {
+      interruption_point(ShutdownRequested());
+      // if (ShutdownRequested()) return false;
+
+      // find checkpoints by iterating through the blockchain beginning with the first zerocoin block
+      if (pindex->nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {
+        if (find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint) !=
+            listMissingCheckpoints.end()) {
+          uint256 nCheckpointCalculated;
+          AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
+          if (!CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators)) {
+            // GetCheckpoint could have terminated due to a shutdown request. Check this here.
+            if (ShutdownRequested()) break;
+            strError = _("Failed to calculate accumulator checkpoint");
+            return error("%s: %s", __func__, strError);
+          }
+
+          // check that the calculated checkpoint is what is in the index.
+          if (nCheckpointCalculated != pindex->nAccumulatorCheckpoint) {
+            LogPrintf("%s : height=%d calculated_checkpoint=%s actual=%s\n", __func__, pindex->nHeight,
+                      nCheckpointCalculated.GetHex(), pindex->nAccumulatorCheckpoint.GetHex());
+            strError = _("Calculated accumulator checkpoint is not what is recorded by block index");
+            return error("%s: %s", __func__, strError);
+          }
+
+          DatabaseChecksums(mapAccumulators);
+          auto it = find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint);
+          listMissingCheckpoints.erase(it);
+        }
+      }
+      pindex = chainActive.Next(pindex);
+    }
+  }
+  return true;
+}
+
+bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
+  std::list<CZerocoinMint> listMints;
+  BlockToZerocoinMintList(block, listMints);
+  std::list<libzerocoin::CoinDenomination> listSpends = ZerocoinSpendListFromBlock(block);
+
+  // Initialize zerocoin supply to the supply from previous block
+  if (pindex->pprev && pindex->pprev->GetBlockHeader().nHeaderVersion > (int32_t)BlockVersion::GENESIS_BLOCK_VERSION) {
+    for (auto& denom : zerocoinDenomList) {
+      pindex->mapZerocoinSupply.at(denom) = pindex->pprev->mapZerocoinSupply.at(denom);
+    }
+  }
+
+  // Track zerocoin money supply
+  CAmount nAmountZerocoinSpent = 0;
+  pindex->vMintDenominationsInBlock.clear();
+  if (pindex->pprev) {
+    std::set<uint256> setAddedToWallet;
+    for (auto& m : listMints) {
+      libzerocoin::CoinDenomination denom = m.GetDenomination();
+      pindex->vMintDenominationsInBlock.push_back(m.GetDenomination());
+      pindex->mapZerocoinSupply.at(denom)++;
+
+      // Remove any of our own mints from the mintpool
+      if (pwalletMain) {
+        if (pwalletMain->IsMyMint(m.GetValue())) {
+          pwalletMain->UpdateMint(m.GetValue(), pindex->nHeight, m.GetTxHash(), m.GetDenomination());
+
+          // Add the transaction to the wallet
+          for (auto& tx : block.vtx) {
+            uint256 txid = tx.GetHash();
+            if (setAddedToWallet.count(txid)) continue;
+            if (txid == m.GetTxHash()) {
+              CWalletTx wtx(pwalletMain, tx);
+              wtx.nTimeReceived = block.GetBlockTime();
+              wtx.SetMerkleBranch(block);
+              pwalletMain->AddToWallet(wtx);
+              setAddedToWallet.insert(txid);
+            }
+          }
+        }
+      }
+    }
+
+    for (auto& denom : listSpends) {
+      pindex->mapZerocoinSupply.at(denom)--;
+      nAmountZerocoinSpent += libzerocoin::ZerocoinDenominationToAmount(denom);
+
+      // zerocoin failsafe
+      if (pindex->mapZerocoinSupply.at(denom) < 0)
+        return error("Block contains zerocoins that spend more than are in the available supply to spend");
+    }
+  }
+
+  // for (auto& denom : zerocoinDenomList)
+  //   LogPrint(TessaLog::ZKP, "%s coins for denomination %d pubcoin %s\n", __func__, denom,
+  //   pindex->mapZerocoinSupply.at(denom));
+
+  return true;
+}
+// Record ZKP serials
+bool RecordZKPSerials(const std::vector<std::pair<CoinSpend, uint256> >& vSpends, const CBlock& block,
+                      const CBlockIndex* pindex, CValidationState& state) {
+  std::set<uint256> setAddedTx;
+  for (auto& pSpend : vSpends) {
+    // record spend to database
+    if (!gpZerocoinDB->WriteCoinSpend(pSpend.first.getCoinSerialNumber(), pSpend.second))
+      return state.Abort(("Failed to record coin serial to database"));
+
+    // Send signal to wallet if this is ours
+    if (pwalletMain) {
+      if (pwalletMain->IsMyZerocoinSpend(pSpend.first.getCoinSerialNumber())) {
+        LogPrintf("%s: %s detected zerocoinspend in transaction %s \n", __func__,
+                  pSpend.first.getCoinSerialNumber().GetHex(), pSpend.second.GetHex());
+        pwalletMain->NotifyZerocoinChanged.fire(pwalletMain, pSpend.first.getCoinSerialNumber().GetHex(), "Used",
+                                                CT_UPDATED);
+
+        // Don't add the same tx multiple times
+        if (setAddedTx.count(pSpend.second)) continue;
+
+        // Search block for matching tx, turn into wtx, set merkle branch, add to wallet
+        for (const CTransaction& tx : block.vtx) {
+          if (tx.GetHash() == pSpend.second) {
+            CWalletTx wtx(pwalletMain, tx);
+            wtx.nTimeReceived = pindex->GetBlockTime();
+            wtx.SetMerkleBranch(block);
+            pwalletMain->AddToWallet(wtx);
+            setAddedTx.insert(pSpend.second);
+          }
+        }
+      }
+    }
+  }
+  return true;
+}
+bool UpdateZerocoinVectors(const CTransaction& tx, const uint256& hashBlock, std::vector<uint256>& vSpendsInBlock,
+                           std::vector<std::pair<CoinSpend, uint256> >& vSpends,
+                           std::vector<std::pair<PublicCoin, uint256> >& vMints, CBlockIndex* pindex, CAmount& nValueIn,
+                           CValidationState& state) {
+  if (tx.IsZerocoinSpend()) {
+    int nHeightTx = 0;
+    uint256 txid = tx.GetHash();
+    vSpendsInBlock.emplace_back(txid);
+    if (IsTransactionInChain(txid, nHeightTx)) {
+      // when verifying blocks on init, the blocks are scanned without being disconnected - prevent that from causing
+      // an error
+      if (!fVerifyingBlocks || (fVerifyingBlocks && pindex->nHeight > nHeightTx))
+        return state.DoS(100,
+                         error("%s : txid %s already exists in block %d , trying to include it again in block %d",
+                               __func__, tx.GetHash().GetHex(), nHeightTx, pindex->nHeight),
+                         REJECT_INVALID, "bad-txns-inputs-missingorspent");
+    }
+
+    // Check for double spending of serial #'s
+    std::set<CBigNum> setSerials;
+    for (const CTxIn& txIn : tx.vin) {
+      if (!txIn.scriptSig.IsZerocoinSpend()) continue;
+      CoinSpend spend = TxInToZerocoinSpend(txIn);
+      nValueIn += spend.getDenomination() * COIN;
+      // queue for db write after the 'justcheck' section has concluded
+      vSpends.emplace_back(std::make_pair(spend, tx.GetHash()));
+      if (!ContextualCheckZerocoinSpend(tx, spend, pindex, hashBlock))
+        return state.DoS(
+            100, error("%s: failed to add block %s with invalid zerocoinspend", __func__, tx.GetHash().GetHex()),
+            REJECT_INVALID);
+    }
+
+    // Check that ZKP mints are not already known
+    if (tx.IsZerocoinMint()) {
+      for (auto& out : tx.vout) {
+        if (!out.IsZerocoinMint()) continue;
+
+        PublicCoin coin;
+        if (!TxOutToPublicCoin(out, coin, state))
+          return state.DoS(100,
+                           error("%s: failed final check of zerocoinmint for tx %s", __func__, tx.GetHash().GetHex()));
+
+        if (!ContextualCheckZerocoinMint(tx, coin, pindex))
+          return state.DoS(100, error("%s: zerocoin mint failed contextual check", __func__));
+
+        vMints.emplace_back(std::make_pair(coin, tx.GetHash()));
+      }
+    }
+  }
+  return true;
 }

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "ed25519/key.h"
+#include "libzerocoin/key.h"
 #include "libzerocoin/Denominations.h"
 #include "bignum.h"
 #include "serialize.h"

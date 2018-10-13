@@ -1471,34 +1471,14 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
     if (tx.ContainsZerocoins()) {
 #ifndef ZEROCOIN_DISABLED      
       if (tx.IsZerocoinSpend()) {
-        // erase all zerocoinspends in this transaction
-        for (const CTxIn& txin : tx.vin) {
-          if (txin.scriptSig.IsZerocoinSpend()) {
-            CoinSpend spend = TxInToZerocoinSpend(txin);
-            if (!gpZerocoinDB->EraseCoinSpend(spend.getCoinSerialNumber()))
+          if (!EraseZerocoinSpendsInTx(tx.vin)) {
               return error("failed to erase spent zerocoin in block");
-
-            // if this was our spend, then mark it unspent now
-            if (pwalletMain) {
-              if (pwalletMain->IsMyZerocoinSpend(spend.getCoinSerialNumber())) {
-                if (!pwalletMain->SetMintUnspent(spend.getCoinSerialNumber()))
-                  LogPrintf("%s: failed to automatically reset mint", __func__);
-              }
-            }
           }
-        }
       }
-
       if (tx.IsZerocoinMint()) {
         // erase all zerocoinmints in this transaction
-        for (const CTxOut& txout : tx.vout) {
-          if (txout.scriptPubKey.empty() || !txout.scriptPubKey.IsZerocoinMint()) continue;
-
-          PublicCoin pubCoin;
-          if (!TxOutToPublicCoin(txout, pubCoin, state)) return error("DisconnectBlock(): TxOutToPublicCoin() failed");
-
-          if (!gpZerocoinDB->EraseCoinMint(pubCoin.getValue()))
-            return error("DisconnectBlock(): Failed to erase coin mint");
+        if (!EraseZerocoinMintsInTx(tx.vout, state)) {
+            return error("failed to erase zerocoin mint in block");
         }
       }
 #endif
@@ -1612,115 +1592,6 @@ void ThreadScriptCheck() {
 
 void InterruptThreadScriptCheck() { scriptcheckqueue.Interrupt(); }
 
-#ifndef ZEROCOIN_DISABLED
-bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError) {
-  // Tessa: recalculate Accumulator Checkpoints that failed to database properly
-  if (!listMissingCheckpoints.empty() && chainActive.Height() >= Params().Zerocoin_StartHeight()) {
-    LogPrintf("%s : finding missing checkpoints\n", __func__);
-
-    // search the chain to see when zerocoin started
-    int nZerocoinStart = Params().Zerocoin_StartHeight();
-
-    // find each checkpoint that is missing
-    CBlockIndex* pindex = chainActive[nZerocoinStart];
-    while (pindex) {
-      interruption_point(ShutdownRequested());
-      // if (ShutdownRequested()) return false;
-
-      // find checkpoints by iterating through the blockchain beginning with the first zerocoin block
-      if (pindex->nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint) {
-#ifndef ZEROCOIN_DISABLED        
-        if (find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint) !=
-            listMissingCheckpoints.end()) {
-          uint256 nCheckpointCalculated;
-          AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
-          if (!CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators)) {
-            // GetCheckpoint could have terminated due to a shutdown request. Check this here.
-            if (ShutdownRequested()) break;
-            strError = _("Failed to calculate accumulator checkpoint");
-            return error("%s: %s", __func__, strError);
-          }
-
-          // check that the calculated checkpoint is what is in the index.
-          if (nCheckpointCalculated != pindex->nAccumulatorCheckpoint) {
-            LogPrintf("%s : height=%d calculated_checkpoint=%s actual=%s\n", __func__, pindex->nHeight,
-                      nCheckpointCalculated.GetHex(), pindex->nAccumulatorCheckpoint.GetHex());
-            strError = _("Calculated accumulator checkpoint is not what is recorded by block index");
-            return error("%s: %s", __func__, strError);
-          }
-
-          DatabaseChecksums(mapAccumulators);
-          auto it = find(listMissingCheckpoints.begin(), listMissingCheckpoints.end(), pindex->nAccumulatorCheckpoint);
-          listMissingCheckpoints.erase(it);
-        }
-#endif
-      }
-      pindex = chainActive.Next(pindex);
-    }
-  }
-  return true;
-}
-
-bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
-  std::list<CZerocoinMint> listMints;
-  BlockToZerocoinMintList(block, listMints);
-  std::list<libzerocoin::CoinDenomination> listSpends = ZerocoinSpendListFromBlock(block);
-
-  // Initialize zerocoin supply to the supply from previous block
-  if (pindex->pprev && pindex->pprev->GetBlockHeader().nHeaderVersion > (int32_t)BlockVersion::GENESIS_BLOCK_VERSION) {
-    for (auto& denom : zerocoinDenomList) {
-      pindex->mapZerocoinSupply.at(denom) = pindex->pprev->mapZerocoinSupply.at(denom);
-    }
-  }
-
-  // Track zerocoin money supply
-  CAmount nAmountZerocoinSpent = 0;
-  pindex->vMintDenominationsInBlock.clear();
-  if (pindex->pprev) {
-    std::set<uint256> setAddedToWallet;
-    for (auto& m : listMints) {
-      libzerocoin::CoinDenomination denom = m.GetDenomination();
-      pindex->vMintDenominationsInBlock.push_back(m.GetDenomination());
-      pindex->mapZerocoinSupply.at(denom)++;
-
-      // Remove any of our own mints from the mintpool
-      if (pwalletMain) {
-        if (pwalletMain->IsMyMint(m.GetValue())) {
-          pwalletMain->UpdateMint(m.GetValue(), pindex->nHeight, m.GetTxHash(), m.GetDenomination());
-
-          // Add the transaction to the wallet
-          for (auto& tx : block.vtx) {
-            uint256 txid = tx.GetHash();
-            if (setAddedToWallet.count(txid)) continue;
-            if (txid == m.GetTxHash()) {
-              CWalletTx wtx(pwalletMain, tx);
-              wtx.nTimeReceived = block.GetBlockTime();
-              wtx.SetMerkleBranch(block);
-              pwalletMain->AddToWallet(wtx);
-              setAddedToWallet.insert(txid);
-            }
-          }
-        }
-      }
-    }
-
-    for (auto& denom : listSpends) {
-      pindex->mapZerocoinSupply.at(denom)--;
-      nAmountZerocoinSpent += libzerocoin::ZerocoinDenominationToAmount(denom);
-
-      // zerocoin failsafe
-      if (pindex->mapZerocoinSupply.at(denom) < 0)
-        return error("Block contains zerocoins that spend more than are in the available supply to spend");
-    }
-  }
-
-  // for (auto& denom : zerocoinDenomList)
-  //   LogPrint(TessaLog::ZKP, "%s coins for denomination %d pubcoin %s\n", __func__, denom,
-  //   pindex->mapZerocoinSupply.at(denom));
-
-  return true;
-}
-#endif
 
 static int64_t nTimeVerify = 0;
 static int64_t nTimeConnect = 0;
@@ -1805,50 +1676,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     if (tx.IsZerocoinSpend()) {
 #ifndef ZEROCOIN_DISABLED
-      int nHeightTx = 0;
-      uint256 txid = tx.GetHash();
-      vSpendsInBlock.emplace_back(txid);
-      if (IsTransactionInChain(txid, nHeightTx)) {
-        // when verifying blocks on init, the blocks are scanned without being disconnected - prevent that from causing
-        // an error
-        if (!fVerifyingBlocks || (fVerifyingBlocks && pindex->nHeight > nHeightTx))
-          return state.DoS(100,
-                           error("%s : txid %s already exists in block %d , trying to include it again in block %d",
-                                 __func__, tx.GetHash().GetHex(), nHeightTx, pindex->nHeight),
-                           REJECT_INVALID, "bad-txns-inputs-missingorspent");
-      }
-
-      // Check for double spending of serial #'s
-      set<CBigNum> setSerials;
-      for (const CTxIn& txIn : tx.vin) {
-        if (!txIn.scriptSig.IsZerocoinSpend()) continue;
-        CoinSpend spend = TxInToZerocoinSpend(txIn);
-        nValueIn += spend.getDenomination() * COIN;
-
-        // queue for db write after the 'justcheck' section has concluded
-        vSpends.emplace_back(make_pair(spend, tx.GetHash()));
-        if (!ContextualCheckZerocoinSpend(tx, spend, pindex, hashBlock))
-          return state.DoS(
-              100, error("%s: failed to add block %s with invalid zerocoinspend", __func__, tx.GetHash().GetHex()),
-              REJECT_INVALID);
-      }
-
-      // Check that ZKP mints are not already known
-      if (tx.IsZerocoinMint()) {
-        for (auto& out : tx.vout) {
-          if (!out.IsZerocoinMint()) continue;
-
-          PublicCoin coin;
-          if (!TxOutToPublicCoin(out, coin, state))
-            return state.DoS(
-                100, error("%s: failed final check of zerocoinmint for tx %s", __func__, tx.GetHash().GetHex()));
-
-          if (!ContextualCheckZerocoinMint(tx, coin, pindex))
-            return state.DoS(100, error("%s: zerocoin mint failed contextual check", __func__));
-
-          vMints.emplace_back(make_pair(coin, tx.GetHash()));
-        }
-      }
+       if (!UpdateZerocoinVectors(tx, hashBlock,vSpendsInBlock, vSpends, vMints,
+                                  pindex, nValueIn, state)) {
+           return error("Problem with Updating zerocoin vectors function\n");
+       }
 #endif      
     } else if (!tx.IsCoinBase()) {
       if (!view.HaveInputs(tx))
@@ -1971,37 +1802,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   }
 
   // Record ZKP serials
-#ifndef ZEROCOIN_DISABLED      
-  set<uint256> setAddedTx;
-  for (pair<CoinSpend, uint256> pSpend : vSpends) {
-    // record spend to database
-    if (!gpZerocoinDB->WriteCoinSpend(pSpend.first.getCoinSerialNumber(), pSpend.second))
-      return state.Abort(("Failed to record coin serial to database"));
-
-    // Send signal to wallet if this is ours
-    if (pwalletMain) {
-      if (pwalletMain->IsMyZerocoinSpend(pSpend.first.getCoinSerialNumber())) {
-        LogPrintf("%s: %s detected zerocoinspend in transaction %s \n", __func__,
-                  pSpend.first.getCoinSerialNumber().GetHex(), pSpend.second.GetHex());
-        pwalletMain->NotifyZerocoinChanged.fire(pwalletMain, pSpend.first.getCoinSerialNumber().GetHex(), "Used",
-                                                CT_UPDATED);
-
-        // Don't add the same tx multiple times
-        if (setAddedTx.count(pSpend.second)) continue;
-
-        // Search block for matching tx, turn into wtx, set merkle branch, add to wallet
-        for (const CTransaction& tx : block.vtx) {
-          if (tx.GetHash() == pSpend.second) {
-            CWalletTx wtx(pwalletMain, tx);
-            wtx.nTimeReceived = pindex->GetBlockTime();
-            wtx.SetMerkleBranch(block);
-            pwalletMain->AddToWallet(wtx);
-            setAddedTx.insert(pSpend.second);
-          }
-        }
-      }
-    }
-  }
+#ifndef ZEROCOIN_DISABLED
+   if (!RecordZKPSerials(vSpends, block, pindex, state)) {
+        return error("Failed to record coin serial to database");
+   }
 #endif
   
   // Flush spend/mint info to disk

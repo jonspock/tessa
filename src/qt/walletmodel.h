@@ -193,8 +193,10 @@ class WalletModel : public QObject {
   void unlockCoin(COutPoint& output);
   void listLockedCoins(std::vector<COutPoint>& vOutpts);
 
-  void listZerocoinMints(std::set<CMintMeta>& setMints, bool fUnusedOnly = false, bool fMaturedOnly = false,
+#ifndef ZEROCOIN_DISABLED
+ void listZerocoinMints(std::set<CMintMeta>& setMints, bool fUnusedOnly = false, bool fMaturedOnly = false,
                          bool fUpdateStatus = false);
+#endif
 
   std::string GetUniqueWalletBackupName();
   void loadReceiveRequests(std::vector<std::string>& vReceiveRequests);
