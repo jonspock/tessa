@@ -24,6 +24,8 @@ it's unlikely to have much resemblance to that code branch.
 
 - Remove requirement for openssl
 
+- Remove of secp256k1/ECDSA keys
+
 - Uses libsodium for randomization/crypto libraries
 
 - Uses relic library for cryptographic primitives

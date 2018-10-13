@@ -24,7 +24,9 @@
 
 #include <cstdint>
 #include <fstream>
+#ifdef USE_SECP256K1
 #include <secp256k1.h>
+#endif
 
 #include <chrono>
 #include <univalue/univalue.h>
