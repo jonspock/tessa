@@ -83,8 +83,12 @@ const uint32_t BIP32_HARDENED_KEY_LIMIT = 0x80000000;
 
 static int64_t nReserveBalance = 0;
 
-int64_t getReserveBalance() { return nReserveBalance; }
-void setReserveBalance(int64_t b) { nReserveBalance = b; }
+int64_t getReserveBalance() {
+    return nReserveBalance;
+}
+void setReserveBalance(int64_t b) {
+    nReserveBalance = b;
+}
 
 /** @defgroup mapWallet
  *
@@ -1592,7 +1596,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nBits, int64_t
   // Choose coins to use
   CAmount nBalance = GetBalance();
 
-  int64_t bal;
+  int64_t bal=0;
   if (gArgs.IsArgSet("-reservebalance") && !ParseMoney(gArgs.GetArg("-reservebalance", ""), bal))
     return error("CreateCoinStake : invalid reserve balance amount");
   setReserveBalance(bal);
