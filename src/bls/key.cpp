@@ -10,6 +10,7 @@
 #include "crypto/common.h"
 #include "random.h"
 #include "uint256.h"
+#include "utilstrencodings.h"
 
 //#include <secp256k1.h>
 //#include <secp256k1_recovery.h>
@@ -53,7 +54,7 @@ CPubKey CKey::GetPubKey() const {
 
 bool CKey::Sign(const uint256& hash, std::vector<uint8_t>& vchSig) const {
   /// First Sign,
-  bls::Signature sig = PK.Sign(hash.begin(), 32);
+  bls::Signature sig = PK.SignPrehashed(hash.begin());
   uint8_t sigBytes[bls::Signature::SIGNATURE_SIZE];  // 96 byte array
   sig.Serialize(sigBytes);
   vchSig.resize(bls::Signature::SIGNATURE_SIZE);

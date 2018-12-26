@@ -16,8 +16,10 @@
 #include <iostream>
 
 #include "bls.hpp"
+#include "signature.hpp"
 #include "pubkey.h"
 #include "util.hpp"
+#include "utilstrencodings.h"
 
 namespace bls {
 
@@ -100,8 +102,24 @@ return os << bls::Util::HexStr(pk.data, CPubKey::PUBLIC_KEY_SIZE);
 }
 */
 
-bool CPubKey::Verify(const uint256 &hash, const std::vector<uint8_t> &vchSig) const { return true; }
+  /// FIX
+bool CPubKey::Verify(const uint256 &hash, const std::vector<uint8_t> &vchSig) const {
+    // Some jumping through formats can be optimized...HACK
+    // Takes array of 96 bytes
+    // Construct as BLS Signature type
+    auto sig = Signature::FromBytes(&vchSig[0]);
+    std::vector<uint8_t> s(hash.begin(),hash.end());
+    std::vector<uint8_t> key = ToStdVector();
+    PublicKey PK = PublicKey::FromBytes(&key[0]);
+    // Add information required for verification, to sig object
+    AggregationInfo AI = AggregationInfo::FromMsgHash(PK, &s[0]);
+    sig.SetAggregationInfo(AI);
+    bool ok = sig.Verify();
+    return ok;
+}
 
+
+  
 CPubKey CPubKey::FromG1(const g1_t *point) {
   CPubKey pk = CPubKey();
   uint8_t buffer[CPubKey::PUBLIC_KEY_SIZE + 1];
