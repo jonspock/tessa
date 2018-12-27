@@ -27,6 +27,6 @@ TODO
 7) Hybrid PoS/PoW
 8) Zerocoin Enable
 9) Bulletproofs
-10) CLTV
+10) CLTV - Added -needs testing
 11) Unit Tests
 12) Wallet Init/Password Entry - QT - Mnemonic Seed?
