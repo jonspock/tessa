@@ -565,7 +565,7 @@ bool ReindexAccumulators(std::list<uint256>& listMissingCheckpoints, std::string
   return true;
 }
 
-bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
+bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex, bool fJustCheck) {
   std::list<CZerocoinMint> listMints;
   BlockToZerocoinMintList(block, listMints);
   std::list<libzerocoin::CoinDenomination> listSpends = ZerocoinSpendListFromBlock(block);
@@ -587,8 +587,8 @@ bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
       pindex->vMintDenominationsInBlock.push_back(m.GetDenomination());
       pindex->mapZerocoinSupply.at(denom)++;
 
-      // Remove any of our own mints from the mintpool
-      if (pwalletMain) {
+      // Remove any of our own mints from the mintpool (unless just checking)
+      if (!fJustCheck && pwalletMain) {
         if (pwalletMain->IsMyMint(m.GetValue())) {
           pwalletMain->UpdateMint(m.GetValue(), pindex->nHeight, m.GetTxHash(), m.GetDenomination());
 
@@ -627,14 +627,14 @@ bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex) {
 // Record ZKP serials
 bool RecordZKPSerials(const std::vector<std::pair<CoinSpend, uint256> >& vSpends, const CBlock& block,
                       const CBlockIndex* pindex, CValidationState& state) {
-  std::set<uint256> setAddedTx;
-  for (auto& pSpend : vSpends) {
-    // record spend to database
-    if (!gpZerocoinDB->WriteCoinSpend(pSpend.first.getCoinSerialNumber(), pSpend.second))
-      return state.Abort(("Failed to record coin serial to database"));
+  if (pwalletMain) {
+    std::set<uint256> setAddedTx;
+    for (auto& pSpend : vSpends) {
+      // record spend to database
+      if (!gpZerocoinDB->WriteCoinSpend(pSpend.first.getCoinSerialNumber(), pSpend.second))
+        return state.Abort(("Failed to record coin serial to database"));
 
-    // Send signal to wallet if this is ours
-    if (pwalletMain) {
+      // Send signal to wallet if this is ours
       if (pwalletMain->IsMyZerocoinSpend(pSpend.first.getCoinSerialNumber())) {
         LogPrintf("%s: %s detected zerocoinspend in transaction %s \n", __func__,
                   pSpend.first.getCoinSerialNumber().GetHex(), pSpend.second.GetHex());
@@ -643,7 +643,7 @@ bool RecordZKPSerials(const std::vector<std::pair<CoinSpend, uint256> >& vSpends
 
         // Don't add the same tx multiple times
         if (setAddedTx.count(pSpend.second)) continue;
-
+        
         // Search block for matching tx, turn into wtx, set merkle branch, add to wallet
         for (const CTransaction& tx : block.vtx) {
           if (tx.GetHash() == pSpend.second) {

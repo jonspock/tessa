@@ -1733,7 +1733,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   // Track ZKP money supply in the block index
 #ifndef ZEROCOIN_DISABLED  
-  if (!UpdateZKPSupply(block, pindex))
+  if (!UpdateZKPSupply(block, pindex, fJustCheck))
     return state.DoS(100,
                      error("%s: Failed to calculate new ZKP supply for block=%s height=%d", __func__,
                            block.GetHash().GetHex(), pindex->nHeight),

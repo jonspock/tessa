@@ -56,7 +56,7 @@ bool ValidatePublicCoin(const CBigNum& value);
 bool EraseZerocoinSpendsInTx(const std::vector<CTxIn>& vin);
 bool EraseZerocoinMintsInTx(const std::vector<CTxOut>& vout, CValidationState& state);
 bool ReindexAccumulators(std::list<uint256>& listMissingCheckpoints, std::string& strError);
-bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex);
+bool UpdateZKPSupply(const CBlock& block, CBlockIndex* pindex, bool fJustCheck);
 bool RecordZKPSerials(const std::vector<std::pair<libzerocoin::CoinSpend, uint256> >& vSpends, const CBlock& block,
                       const CBlockIndex* pindex, CValidationState& state);
 bool UpdateZerocoinVectors(const CTransaction& tx, const uint256& hashBlock, std::vector<uint256>& vSpendsInBlock,

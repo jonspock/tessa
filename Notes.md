@@ -15,6 +15,18 @@ Zerocoin Start 2848 main.cpp
 rpc/dump 38 Locale/boost
 Line 373 rpc/dump Master Key/private
 
-Secret Addresses Still using Base58 -> Wait til using BLS before changing
-
 Address Validator in QT bitcoinaddressvalidator is Loose
+
+TODO
+1) Aggregate BLS Signature in block so only 1 combined sig is needed
+2) Review/Rethink FEES (decimal points for currency)
+3) $ coins
+4) Denominated Free Coins
+5) Sort out Rewards - Slow start, ramp up then down
+6) When -> PoS only?
+7) Hybrid PoS/PoW
+8) Zerocoin Enable
+9) Bulletproofs
+10) CLTV
+11) Unit Tests
+12) Wallet Init/Password Entry - QT - Mnemonic Seed?
