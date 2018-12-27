@@ -14,7 +14,7 @@ const std::string strMessageMagic = "TessaChain Signed Message:\n";
 
 static const int64_t COIN_AMOUNT = 10000;
 static const int64_t COINCENT_AMOUNT = 100;
-static const int COIN_PLACES = 8;
+static const int COIN_PLACES = 4;
 static const int64_t minRelayTxFee = COINCENT_AMOUNT;
 static const int64_t minTxFee = COINCENT_AMOUNT;
 static const int64_t maxMoneyOut = 21000000 * COIN_AMOUNT; // FOR NOW
