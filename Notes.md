@@ -30,3 +30,4 @@ TODO
 10) CLTV - Added -needs testing
 11) Unit Tests
 12) Wallet Init/Password Entry - QT - Mnemonic Seed?
+13) bch32_hrp/sec Prefixes - minor
