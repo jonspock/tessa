@@ -90,7 +90,7 @@ class CTxMemPool {
   uint32_t nTransactionsUpdated;
   CMinerPolicyEstimator* minerPolicyEstimator;
 
-  CAmount minRelayFee;  //! Passed to constructor to avoid dependency on main
+  CAmount minRelayFee;   //! Passed to constructor to avoid dependency on main
   uint64_t totalTxSize;  //! sum of all mempool tx' byte sizes
 
  public:

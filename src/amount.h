@@ -9,12 +9,11 @@
 
 #include "serialize.h"
 
+#include "coin_constants.h"
 #include <cstdlib>
 #include <string>
-#include "coin_constants.h"
 
 using CAmount = int64_t;
 
 static const CAmount COIN = COIN_AMOUNT;
 static const CAmount COINCENT = COINCENT_AMOUNT;
-

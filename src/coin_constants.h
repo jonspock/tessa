@@ -7,8 +7,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-#include <string>
 #include "consensus/consensus.h"  // Mostly other defs
+#include <string>
 
 const std::string strMessageMagic = "TessaChain Signed Message:\n";
 
@@ -17,7 +17,7 @@ static const int64_t COINCENT_AMOUNT = 100;
 static const int COIN_PLACES = 4;
 static const int64_t minRelayTxFee = COINCENT_AMOUNT;
 static const int64_t minTxFee = COINCENT_AMOUNT;
-static const int64_t maxMoneyOut = 21000000 * COIN_AMOUNT; // FOR NOW
+static const int64_t maxMoneyOut = 21000000 * COIN_AMOUNT;  // FOR NOW
 
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
 static const uint32_t LOCKTIME_THRESHOLD = 500000000;  // Tue Nov  5 00:53:20 1985 UTC

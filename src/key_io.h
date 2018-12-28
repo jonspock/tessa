@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <chainparams.h>
 #include <bls/key.h>
+#include <chainparams.h>
 #include <script/standard.h>
 
 #include <string>
@@ -19,4 +19,3 @@ std::string EncodeDestination(const CTxDestination& dest);
 CTxDestination DecodeDestination(const std::string& str);
 bool IsValidDestinationString(const std::string& str);
 bool IsValidDestinationString(const std::string& str, const CChainParams& params);
-

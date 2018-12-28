@@ -129,9 +129,7 @@ void RenameThread(const char* name);
 class thread_interrupted {};
 
 inline void interruption_point(bool interrupt) {
-    if (interrupt) {
-        throw thread_interrupted();
-    }
+  if (interrupt) { throw thread_interrupted(); }
 }
 
 /**
@@ -144,15 +142,10 @@ template <typename Callable> void TraceThread(const char* name, Callable func) {
     LogPrintf("%s thread start\n", name);
     func();
     LogPrintf("%s thread exit\n", name);
-  }
-  catch (thread_interrupted&) {
-    LogPrintf("%s thread interrupt\n", name);
-  }
-  catch (std::exception& e) {
+  } catch (thread_interrupted&) { LogPrintf("%s thread interrupt\n", name); } catch (std::exception& e) {
     PrintExceptionContinue(&e, name);
     throw;
-  }
-  catch (...) {
+  } catch (...) {
     PrintExceptionContinue(nullptr, name);
     throw;
   }
