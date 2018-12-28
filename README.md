@@ -71,13 +71,6 @@ it's unlikely to have much resemblance to that code branch.
 </table>
 
 
-### Reward Distribution
-
-<table>
-<th colspan=4>Genesis Block</th>
-<tr><th>Block Height</th><th>Reward Amount</th><th>Notes</th></tr>
-</table>
-
 ### PoW Rewards Breakdown
 
 <table>
