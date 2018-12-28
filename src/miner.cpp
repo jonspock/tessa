@@ -119,13 +119,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
   // -blockversion=N to test forking scenarios
   if (Params().MineBlocksOnDemand()) pblock->nHeaderVersion = GetArg("-blockversion", pblock->nHeaderVersion);
 
-  // Check if zerocoin is enabled
-  // XXXX warning "Check zerocoin start here too""
+    // Check if zerocoin is enabled
+    // XXXX warning "Check zerocoin start here too""
 #ifndef ZEROCOIN_DISABLED
-   bool fZerocoinActive = (chainActive.Tip()->nHeight) >= Params().Zerocoin_StartHeight();
-   fZerocoinActive = true;
+  bool fZerocoinActive = (chainActive.Tip()->nHeight) >= Params().Zerocoin_StartHeight();
+  fZerocoinActive = true;
 #endif
-    
+
   // Create coinbase tx
   CMutableTransaction txNew;
   txNew.vin.resize(1);
@@ -314,7 +314,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
       // double check that there are no double spent ZKP spends in this block or tx
       if (tx.IsZerocoinSpend()) {
-#ifndef ZEROCOIN_DISABLED        
+#ifndef ZEROCOIN_DISABLED
         int nHeightTx = 0;
         if (IsTransactionInChain(tx.GetHash(), nHeightTx)) continue;
 

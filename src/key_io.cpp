@@ -6,8 +6,8 @@
 #include "key_io.h"
 #include "bch32/bch32.h"
 #include "script/script.h"
-#include "utilstrencodings.h"
 #include "support/allocators/secure.h"
+#include "utilstrencodings.h"
 
 #include <algorithm>
 #include <cassert>
@@ -79,14 +79,14 @@ CKey DecodeSecret(const std::string& str) {
   std::vector<uint8_t> data;
   auto bch = bch32::decode(str);  // pair of string/byte vector
   if (bch.second.size() > 0 && bch.first == Params().Bch32SEC()) {
-      // Bch32 decoding
-      int version = bch.second[0];  // The first 5 bit symbol is the version (0-16)
-      // The rest of the symbols are converted
-      data.reserve(((bch.second.size() - 1) * 5) / 8);
-      if (ConvertBits<5, 8, false>([&](unsigned char c) { data.push_back(c); }, bch.second.begin() + 1,
-                                   bch.second.end())) {
-          key.Set(data.begin(), data.begin() + 32);
-      }
+    // Bch32 decoding
+    int version = bch.second[0];  // The first 5 bit symbol is the version (0-16)
+    // The rest of the symbols are converted
+    data.reserve(((bch.second.size() - 1) * 5) / 8);
+    if (ConvertBits<5, 8, false>([&](unsigned char c) { data.push_back(c); }, bch.second.begin() + 1,
+                                 bch.second.end())) {
+      key.Set(data.begin(), data.begin() + 32);
+    }
   }
   memory_cleanse(data.data(), data.size());
   return key;
@@ -94,7 +94,7 @@ CKey DecodeSecret(const std::string& str) {
 
 std::string EncodeSecret(const CKey& key) {
   assert(key.IsValid());
-  std::vector<uint8_t> vch = key.getBytes(); // since key doesn't have iterator
+  std::vector<uint8_t> vch = key.getBytes();  // since key doesn't have iterator
   std::vector<uint8_t> data = {0};
   ConvertBits<8, 5, true>([&](unsigned char c) { data.push_back(c); }, vch.begin(), vch.end());
   std::string ret = bch32::encode(Params().Bch32SEC(), data);

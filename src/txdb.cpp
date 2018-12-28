@@ -131,7 +131,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
         // ppcoin: build setStakeSeen
         if (pindexNew->IsProofOfStake()) gStaker.setSeen(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
-        // populate accumulator checksum map in memory
+          // populate accumulator checksum map in memory
 #ifndef ZEROCOIN_DISABLED
         if (!pindexNew->nAccumulatorCheckpoint.IsNull() && pindexNew->nAccumulatorCheckpoint != nPreviousCheckpoint) {
           // Don't load any checkpoints that exist before v2 zkp. The accumulator is invalid for v1 and not used.

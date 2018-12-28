@@ -9,9 +9,9 @@
 #include "blockdisk.h"
 
 #include "addrman.h"
+#include "bls/blocksignature.h"
 #include "chainparams.h"
 #include "checkqueue.h"
-#include "bls/blocksignature.h"
 #include "init.h"
 #include "kernel.h"
 #include "main.h"

@@ -14,8 +14,8 @@
 
 #include "addrman.h"
 #include "amount.h"
-#include "checkpoints.h"
 #include "bls/key.h"
+#include "checkpoints.h"
 #include "fs.h"
 #include "fs_utils.h"
 #include "httprpc.h"
@@ -200,7 +200,7 @@ void Interrupt(CScheduler& scheduler) {
 #ifndef ZEROCOIN_DISABLED
   gpZerocoinDB->InterruptWipeCoins();
 #endif
-  
+
   InterruptThreadScriptCheck();
   InterruptNetBase();
   InterruptNode();
@@ -982,7 +982,7 @@ bool AppInit2(CScheduler& scheduler) {
   ECC_Start();
   globalVerifyHandle.reset(new ECCVerifyHandle());
 #endif
-    
+
   // Sanity check
   if (!InitSanityCheck()) return InitError(_("Initialization sanity check failed. Tessa Core is shutting down."));
 
@@ -1048,7 +1048,7 @@ bool AppInit2(CScheduler& scheduler) {
     if (!gSporkManager.SetPrivKey(GetArg("-sporkkey", "")))
       return InitError(_("Unable to sign spork message, wrong key?"));
   }
-    
+
   // Start the lightweight task scheduler thread
   CScheduler::Function serviceLoop = [&] { scheduler.serviceQueue(); };
   scheduler_thread = std::thread(std::bind(&TraceThread<CScheduler::Function>, "scheduler", serviceLoop));
@@ -1307,7 +1307,7 @@ bool AppInit2(CScheduler& scheduler) {
 #ifndef ZEROCOIN_DISABLED
   AccumulatorCheckpoints::LoadCheckpoints(Params().NetworkIDString());
 #endif
-  
+
   fReindex = GetBoolArg("-reindex", false);
 
   path blocksDir = GetDataDir() / "blocks";
@@ -1338,7 +1338,7 @@ bool AppInit2(CScheduler& scheduler) {
     do {
       UnloadBlockIndex();
       gSporkDB.init((GetDataDir() / "sporks.json").string());
-        
+
       try {
         // Tessa specific: zerocoin and spork DB's
         gpZerocoinDB.reset(new CZerocoinDB(0, false, fReindex));
@@ -1506,7 +1506,7 @@ bool AppInit2(CScheduler& scheduler) {
 
   if (fDisableWallet) {
     pwalletMain = nullptr;
-#ifndef ZEROCOIN_DISABLED    
+#ifndef ZEROCOIN_DISABLED
     zwalletMain = nullptr;
 #endif
     LogPrintf("Wallet disabled!\n");

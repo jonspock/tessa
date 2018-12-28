@@ -82,7 +82,7 @@ bool CScriptCompressor::Decompress(uint32_t nSize, const std::vector<uint8_t>& i
       return true;
     case 0x04:
     case 0x05:
-      return false; // Was decompressing keys
+      return false;  // Was decompressing keys
   }
   return false;
 }
