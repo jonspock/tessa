@@ -31,3 +31,6 @@ TODO
 11) Unit Tests
 12) Wallet Init/Password Entry - QT - Mnemonic Seed?
 13) bch32_hrp/sec Prefixes - minor
+14) wallet/wallet - GenerateNewKey internal hack
+15) Interrupt (check) HACK
+16) Sig stuff in script/interpreter
