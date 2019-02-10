@@ -292,6 +292,7 @@ SET(WALLET
   ./src/wallet/wallet_functions.cpp
   ./src/wallet/db.cpp
   ./src/wallet/crypter.cpp
+  ./src/mnemonic/dictionary.cpp
   )
   
 SET(PRIM
