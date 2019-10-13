@@ -95,14 +95,11 @@ set(GUI_FORMS
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/addressbookpage.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/askpassphrasedialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/coincontroldialog.ui
-##  ${CMAKE_CURRENT_SOURCE_DIR}/forms/zerocontroldialog.ui
-##  ${CMAKE_CURRENT_SOURCE_DIR}/forms/blockexplorer.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/editaddressdialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/helpmessagedialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/intro.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/multisenddialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/multisigdialog.ui
-##  ${CMAKE_CURRENT_SOURCE_DIR}/forms/privacydialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/openuridialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/optionsdialog.ui
   ${CMAKE_CURRENT_SOURCE_DIR}/forms/overviewpage.ui
@@ -149,9 +146,7 @@ SET(QT_FILES
 	addresstablemodel.cpp
 	askpassphrasedialog.cpp
 	coincontroldialog.cpp
-##	zerocontroldialog.cpp
 	coincontroltreewidget.cpp
-##  privacydialog.cpp
 	editaddressdialog.cpp
 	openuridialog.cpp
 	overviewpage.cpp
@@ -180,6 +175,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	  macnotificationhandler.mm
 	  )
   set(MAC_LIBS mac_stuff)
+  target_compile_definitions(mac_stuff PUBLIC OBJC_OLD_DISPATCH_PROTOTYPES)
 endif()
 
 

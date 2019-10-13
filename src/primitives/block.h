@@ -122,8 +122,6 @@ class CBlock : public CBlockHeader {
 
   bool IsProofOfWork() const { return !IsProofOfStake(); }
 
-  bool IsZerocoinStake() const;
-
   std::pair<COutPoint, uint32_t> GetProofOfStake() const {
     return IsProofOfStake() ? std::make_pair(vtx[1].vin[0].prevout, nTime)
                             : std::make_pair(COutPoint(), (uint32_t)0);

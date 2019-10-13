@@ -241,7 +241,7 @@ class CCoins {
 
   //! check whether a particular output is still available
   bool IsAvailable(uint32_t nPos) const {
-    return (nPos < vout.size() && !vout[nPos].IsNull() && !vout[nPos].scriptPubKey.IsZerocoinMint());
+    return (nPos < vout.size() && !vout[nPos].IsNull());
   }
 
   //! check whether the entire CCoins is spent

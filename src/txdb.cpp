@@ -15,7 +15,6 @@
 #include "pow.h"
 #include "staker.h"
 #include "uint256.h"
-#include "zerocoin/accumulators.h"
 #include <cstdint>
 
 using namespace std;
@@ -110,11 +109,6 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
         pindexNew->nStatus = diskindex.nStatus;
         pindexNew->nTx = diskindex.nTx;
 
-        // zerocoin
-        pindexNew->nAccumulatorCheckpoint = diskindex.nAccumulatorCheckpoint;
-        pindexNew->mapZerocoinSupply = diskindex.mapZerocoinSupply;
-        pindexNew->vMintDenominationsInBlock = diskindex.vMintDenominationsInBlock;
-
         // Proof Of Stake
         pindexNew->nMint = diskindex.nMint;
         pindexNew->nMoneySupply = diskindex.nMoneySupply;
@@ -130,17 +124,6 @@ bool CBlockTreeDB::LoadBlockIndexGuts() {
         }
         // ppcoin: build setStakeSeen
         if (pindexNew->IsProofOfStake()) gStaker.setSeen(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
-
-        // populate accumulator checksum map in memory
-#ifndef ZEROCOIN_DISABLED
-        if (!pindexNew->nAccumulatorCheckpoint.IsNull() && pindexNew->nAccumulatorCheckpoint != nPreviousCheckpoint) {
-          // Don't load any checkpoints that exist before v2 zkp. The accumulator is invalid for v1 and not used.
-          if (pindexNew->nHeight >= Params().Zerocoin_StartHeight())
-            LoadAccumulatorValuesFromDB(pindexNew->nAccumulatorCheckpoint);
-
-          nPreviousCheckpoint = pindexNew->nAccumulatorCheckpoint;
-        }
-#endif
 
         pcursor->Next();
       } else {

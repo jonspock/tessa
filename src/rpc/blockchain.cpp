@@ -15,8 +15,6 @@
 #include "txdb.h"
 #include "txmempool.h"
 #include "verifydb.h"
-#include "zerocoin/accumulatormap.h"
-#include "zerocoin/zerocoindb.h"
 
 #include "util.h"
 #include "utilmoneystr.h"
@@ -72,7 +70,6 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex) {
   result.push_back(std::make_pair("bits", strprintf("%08x", blockindex->nBits)));
   result.push_back(std::make_pair("difficulty", GetDifficulty(blockindex)));
   result.push_back(std::make_pair("chainwork", blockindex->nChainWork.GetHex()));
-  result.push_back(std::make_pair("acc_checkpoint", blockindex->nAccumulatorCheckpoint.GetHex()));
 
   if (blockindex->pprev)
     result.push_back(std::make_pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
@@ -92,7 +89,6 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
   result.push_back(std::make_pair("height", blockindex->nHeight));
   result.push_back(std::make_pair("version", block.nHeaderVersion));
   result.push_back(std::make_pair("merkleroot", block.hashMerkleRoot.GetHex()));
-  result.push_back(std::make_pair("acc_checkpoint", block.nAccumulatorCheckpoint.GetHex()));
   UniValue txs(UniValue::VARR);
   for (const CTransaction& tx : block.vtx) {
     if (txDetails) {
@@ -117,15 +113,6 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
   result.push_back(std::make_pair("moneysupply", ValueFromAmount(blockindex->nMoneySupply)));
 
   UniValue zkpObj(UniValue::VOBJ);
-#ifndef ZEROCOIN_DISABLED
-  for (auto denom : libzerocoin::zerocoinDenomList) {
-    zkpObj.push_back(
-        std::make_pair(to_string(denom), ValueFromAmount(blockindex->mapZerocoinSupply.at(denom) * (denom * COIN))));
-  }
-  zkpObj.push_back(std::make_pair("total", ValueFromAmount(blockindex->GetZerocoinSupply())));
-  result.push_back(std::make_pair("Zkpsupply", zkpObj));
-#endif
-  
   return result;
 }
 
@@ -723,11 +710,6 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp) {
       if (tx.IsCoinBase() || tx.IsCoinStake()) continue;
 
       for (uint32_t j = 0; j < tx.vin.size(); j++) {
-        if (tx.vin[j].scriptSig.IsZerocoinSpend()) {
-          nValueIn += tx.vin[j].nSequence * COIN;
-          continue;
-        }
-
         COutPoint prevout = tx.vin[j].prevout;
         CTransaction txPrev;
         uint256 hashBlock;
@@ -844,37 +826,3 @@ UniValue reconsiderblock(const UniValue& params, bool fHelp) {
 
   return NullUniValue;
 }
-#ifndef ZEROCOIN_DISABLED
-UniValue findserial(const UniValue& params, bool fHelp) {
-  if (fHelp || params.size() != 1)
-    throw runtime_error(
-        "findserial \"serial\"\n"
-        "\nSearches the zerocoin database for a zerocoin spend transaction that contains the specified serial\n"
-
-        "\nArguments:\n"
-        "1. serial   (string, required) the serial of a zerocoin spend to search for.\n"
-
-        "\nResult:\n"
-        "{\n"
-        "  \"success\": true|false        (boolean) Whether the serial was found\n"
-        "  \"txid\": \"xxx\"              (string) The transaction that contains the spent serial\n"
-        "}\n"
-
-        "\nExamples:\n" +
-        HelpExampleCli("findserial", "\"serial\"") + HelpExampleRpc("findserial", "\"serial\""));
-
-  std::string strSerial = params[0].get_str();
-  CBigNum bnSerial = 0;
-  bnSerial.SetHex(strSerial);
-  if (!bnSerial) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid serial");
-
-  uint256 txid;
-  bool fSuccess = gpZerocoinDB->ReadCoinSpend(bnSerial, txid);
-
-  UniValue ret(UniValue::VOBJ);
-  ret.push_back(std::make_pair("success", fSuccess));
-  ret.push_back(std::make_pair("txid", txid.GetHex()));
-
-  return ret;
-}
-#endif

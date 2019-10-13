@@ -117,7 +117,6 @@ class CMainParams : public CChainParams {
 
     /** Height or Time Based Activations **/
     nLastPOWBlock = 259200;
-    nZerocoinStartHeight = 200;
     /**
      * Build the genesis block. Note that the output of the genesis coinbase cannot
      * be spent as it did not originally exist in the database.
@@ -157,14 +156,6 @@ class CMainParams : public CChainParams {
 
     nPoolMaxTransactions = 3;
     nStakeMinAge = 60 * 60;  // 60 minutes
-
-    /** Zerocoin */
-    nMaxZerocoinSpendsPerTransaction = 7;  // Assume about 20kb each
-    nMinZerocoinMintFee = 1 * COINCENT;    // high fee required for zerocoin mints
-    nMintRequiredConfirmations = 20;       // the maximum amount of confirmations until accumulated in 19
-    nRequiredAccumulation = 1;
-    nDefaultSecurityLevel = 100;  // full security level for accumulators
-    nZerocoinHeaderVersion = 1;   // Block headers must be this version once zerocoin is active
   }
 
   const Checkpoints::CCheckpointData& Checkpoints() const { return dataMain; }
@@ -193,7 +184,6 @@ class CTestNetParams : public CMainParams {
     nLastPOWBlock = 200;
     nMaturity = 15;
     nModifierUpdateBlock = 51197;  // approx Mon, 17 Apr 2017 04:00:00 GMT
-    nZerocoinStartHeight = 200;
     //! Modify the testnet genesis block so the timestamp is valid for a later start.
     genesis = CreateGenesisBlock(1538753921, 1026102636, 0x1e0ffff0, 1, 5 * COIN);
     hashGenesisBlock = genesis.GetHash();

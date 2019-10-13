@@ -42,9 +42,6 @@ WalletModel::WalletModel(CWallet* wallet, OptionsModel* optionsModel, QObject* p
       cachedBalance(0),
       cachedUnconfirmedBalance(0),
       cachedImmatureBalance(0),
-      cachedZerocoinBalance(0),
-      cachedUnconfirmedZerocoinBalance(0),
-      cachedImmatureZerocoinBalance(0),
       cachedEncryptionStatus(Unencrypted),
       cachedNumBlocks(0) {
   fHaveWatchOnly = wallet->HaveWatchOnly();
@@ -85,16 +82,6 @@ CAmount WalletModel::getImmatureBalance() const { return wallet->GetImmatureBala
 
 CAmount WalletModel::getLockedBalance() const { return wallet->GetLockedCoins(); }
 
-#ifndef ZEROCOIN_DISABLED
-CAmount WalletModel::getZerocoinBalance() const { return wallet->GetZerocoinBalance(false); }
-CAmount WalletModel::getUnconfirmedZerocoinBalance() const { return wallet->GetUnconfirmedZerocoinBalance(); }
-CAmount WalletModel::getImmatureZerocoinBalance() const { return wallet->GetImmatureZerocoinBalance(); }
-#else
-CAmount WalletModel::getZerocoinBalance() const { return 0; }
-CAmount WalletModel::getUnconfirmedZerocoinBalance() const { return 0;}
-CAmount WalletModel::getImmatureZerocoinBalance() const { return 0; }
-#endif
-
 bool WalletModel::haveWatchOnly() const { return fHaveWatchOnly; }
 
 CAmount WalletModel::getWatchBalance() const { return wallet->GetWatchOnlyBalance(); }
@@ -131,8 +118,8 @@ void WalletModel::pollBalanceChanged() {
 
 void WalletModel::emitBalanceChanged() {
   // Force update of UI elements even when no values have changed
-  emit balanceChanged(cachedBalance, cachedUnconfirmedBalance, cachedImmatureBalance, cachedZerocoinBalance,
-                      cachedUnconfirmedZerocoinBalance, cachedImmatureZerocoinBalance, cachedWatchOnlyBalance,
+  emit balanceChanged(cachedBalance, cachedUnconfirmedBalance, cachedImmatureBalance, 
+                      cachedWatchOnlyBalance,
                       cachedWatchUnconfBalance, cachedWatchImmatureBalance);
 }
 
@@ -143,9 +130,6 @@ void WalletModel::checkBalanceChanged() {
   CAmount newBalance = getBalance();
   CAmount newUnconfirmedBalance = getUnconfirmedBalance();
   CAmount newImmatureBalance = getImmatureBalance();
-  CAmount newZerocoinBalance = getZerocoinBalance();
-  CAmount newUnconfirmedZerocoinBalance = getUnconfirmedZerocoinBalance();
-  CAmount newImmatureZerocoinBalance = getImmatureZerocoinBalance();
   CAmount newWatchOnlyBalance = 0;
   CAmount newWatchUnconfBalance = 0;
   CAmount newWatchImmatureBalance = 0;
@@ -156,21 +140,17 @@ void WalletModel::checkBalanceChanged() {
   }
 
   if (cachedBalance != newBalance || cachedUnconfirmedBalance != newUnconfirmedBalance ||
-      cachedImmatureBalance != newImmatureBalance || cachedZerocoinBalance != newZerocoinBalance ||
-      cachedUnconfirmedZerocoinBalance != newUnconfirmedZerocoinBalance ||
-      cachedImmatureZerocoinBalance != newImmatureZerocoinBalance || cachedWatchOnlyBalance != newWatchOnlyBalance ||
+      cachedImmatureBalance != newImmatureBalance || 
+      cachedWatchOnlyBalance != newWatchOnlyBalance ||
       cachedWatchUnconfBalance != newWatchUnconfBalance || cachedWatchImmatureBalance != newWatchImmatureBalance) {
     cachedBalance = newBalance;
     cachedUnconfirmedBalance = newUnconfirmedBalance;
     cachedImmatureBalance = newImmatureBalance;
-    cachedZerocoinBalance = newZerocoinBalance;
-    cachedUnconfirmedZerocoinBalance = newUnconfirmedZerocoinBalance;
-    cachedImmatureZerocoinBalance = newImmatureZerocoinBalance;
     cachedWatchOnlyBalance = newWatchOnlyBalance;
     cachedWatchUnconfBalance = newWatchUnconfBalance;
     cachedWatchImmatureBalance = newWatchImmatureBalance;
-    emit balanceChanged(newBalance, newUnconfirmedBalance, newImmatureBalance, newZerocoinBalance,
-                        newUnconfirmedZerocoinBalance, newImmatureZerocoinBalance, newWatchOnlyBalance,
+    emit balanceChanged(newBalance, newUnconfirmedBalance, newImmatureBalance, 
+                        newWatchOnlyBalance,
                         newWatchUnconfBalance, newWatchImmatureBalance);
   }
 }
@@ -425,20 +405,6 @@ static void NotifyMultiSigChanged(WalletModel* walletmodel, bool fHaveMultiSig) 
   QMetaObject::invokeMethod(walletmodel, "updateMultiSigFlag", Qt::QueuedConnection, Q_ARG(bool, fHaveMultiSig));
 }
 
-static void NotifyZerocoinChanged(WalletModel* walletmodel, CWallet* wallet, const std::string& hexString,
-                                  const std::string& isUsed, ChangeType status) {
-  QString HexStr = QString::fromStdString(hexString);
-  QString isUsedStr = QString::fromStdString(isUsed);
-  qDebug() << "NotifyZerocoinChanged : " + HexStr + " " + isUsedStr + " status= " + QString::number(status);
-  QMetaObject::invokeMethod(walletmodel, "updateAddressBook", Qt::QueuedConnection, Q_ARG(QString, HexStr),
-                            Q_ARG(QString, isUsedStr), Q_ARG(int, status));
-}
-
-static void NotifyZkpReset(WalletModel* walletmodel) {
-  qDebug() << "NotifyZkpReset";
-  QMetaObject::invokeMethod(walletmodel, "checkBalanceChanged", Qt::QueuedConnection);
-}
-
 static void NotifyWalletBacked(WalletModel* model, const bool& fSuccess, const string& filename) {
   string message;
   string title = "Backup ";
@@ -468,8 +434,6 @@ void WalletModel::subscribeToCoreSignals() {
   wallet->ShowProgress.connect(std::bind(ShowProgress, this, std::placeholders::_1, std::placeholders::_2));
   wallet->NotifyWatchonlyChanged.connect(std::bind(NotifyWatchonlyChanged, this, std::placeholders::_1));
   wallet->NotifyMultiSigChanged.connect(std::bind(NotifyMultiSigChanged, this, std::placeholders::_1));
-  wallet->NotifyZerocoinChanged.connect(std::bind(NotifyZerocoinChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-  wallet->NotifyZkpReset.connect(std::bind(NotifyZkpReset, this));
   wallet->NotifyWalletBacked.connect(std::bind(NotifyWalletBacked, this, std::placeholders::_1, std::placeholders::_2));
 }
 
@@ -585,15 +549,6 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts) {
   LOCK2(cs_main, wallet->cs_wallet);
   wallet->ListLockedCoins(vOutpts);
 }
-
-#ifndef ZEROCOIN_DISABLED
-void WalletModel::listZerocoinMints(std::set<CMintMeta>& setMints, bool fUnusedOnly, bool fMaturedOnly,
-                                    bool fUpdateStatus) {
-  setMints.clear();
-  setMints = pwalletMain->zkpTracker->ListMints(fUnusedOnly, fMaturedOnly, fUpdateStatus);
-}
-#endif
-
 
 void WalletModel::loadReceiveRequests(std::vector<std::string>& vReceiveRequests) {
   LOCK(wallet->cs_wallet);

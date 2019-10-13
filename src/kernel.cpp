@@ -330,9 +330,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake, unique_ptr
   const CTxIn& txin = tx.vin[0];
 
   // Construct the stakeinput object
-  if (tx.IsZerocoinSpend()) {
-    return true;
-  } else {
+  {
     // First try finding the previous transaction in database
     uint256 hashBlock;
     CTransaction txPrev;

@@ -37,7 +37,6 @@ static const uint32_t DEFAULT_BLOCK_MIN_SIZE = 0;
 static const uint32_t DEFAULT_BLOCK_PRIORITY_SIZE = 50000;
 /** The maximum size for transactions we're willing to relay/mine */
 static const uint32_t MAX_STANDARD_TX_SIZE = 100000;
-static const uint32_t MAX_ZEROCOIN_TX_SIZE = 150000;
 /** The maximum allowed number of signature check operations in a block (network rule) */
 static const uint32_t MAX_BLOCK_SIGOPS_CURRENT = MAX_BLOCK_SIZE_CURRENT / 50;
 static const uint32_t MAX_BLOCK_SIGOPS_LEGACY = MAX_BLOCK_SIZE_LEGACY / 50;

@@ -79,17 +79,8 @@ public:
 
     CBaseChainParams::Network NetworkID() const { return networkID; }
 
-    /** Zerocoin **/
-    int Zerocoin_MaxSpendsPerTransaction() const { return nMaxZerocoinSpendsPerTransaction; }
-    CAmount Zerocoin_MintFee() const { return nMinZerocoinMintFee; }
-    int Zerocoin_MintRequiredConfirmations() const { return nMintRequiredConfirmations; }
-    int Zerocoin_RequiredAccumulation() const { return nRequiredAccumulation; }
-    int Zerocoin_DefaultSpendSecurity() const { return nDefaultSecurityLevel; }
-    int Zerocoin_HeaderVersion() const { return nZerocoinHeaderVersion; }
-
     /** Height or Time Based Activations **/
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
-    int Zerocoin_StartHeight() const { return nZerocoinStartHeight; }
     int StakeMinAge() const { return nStakeMinAge; }
     int ModifierInterval() const { return nModifierInterval; }
     int StakeTargetSpacing() const { return nStakeTargetSpacing; }
@@ -127,14 +118,7 @@ protected:
     bool fTestnetToBeDeprecatedFieldRPC;
     bool fHeadersFirstSyncingActive;
     int nPoolMaxTransactions;
-    std::string zerocoinModulus;
-    int nMaxZerocoinSpendsPerTransaction;
-    CAmount nMinZerocoinMintFee;
-    int nMintRequiredConfirmations;
     int nRequiredAccumulation;
-    int nDefaultSecurityLevel;
-    int nZerocoinHeaderVersion;
-    int nZerocoinStartHeight;
     int nStakeMinAge;
     int nStakeTargetSpacing;
     int nModifierUpdateBlock;

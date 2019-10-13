@@ -28,12 +28,6 @@ int64_t CWalletTx::GetTxTime() const {
 }
 
 int64_t CWalletTx::GetComputedTxTime() const {
-  if (IsZerocoinSpend() || IsZerocoinMint()) {
-    if (IsInMainChain())
-      return mapBlockIndex.at(hashBlock)->GetBlockTime();
-    else
-      return nTimeReceived;
-  }
   return GetTxTime();
 }
 
@@ -281,14 +275,12 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived, list<COutputEntry>&
     if (nDebit > 0) {
       // Don't report 'change' txouts
       if (pwallet->IsChange(txout)) continue;
-    } else if (!(fIsMine & filter) && !IsZerocoinSpend())
+    } else if (!(fIsMine & filter))
       continue;
 
     // In either case, we need to get the destination address
     CTxDestination address;
-    if (txout.scriptPubKey.IsZerocoinMint()) {
-      address = CNoDestination();
-    } else if (!ExtractDestination(txout.scriptPubKey, address)) {
+    if (!ExtractDestination(txout.scriptPubKey, address)) {
       if (!IsCoinStake() && !IsCoinBase()) {
         LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n", this->GetHash().ToString());
       }

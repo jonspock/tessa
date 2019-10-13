@@ -22,7 +22,6 @@
 #include "main_functions.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
-#include "primitives/zerocoin.h"
 #include "reservekey.h"
 #include "stake.h"
 #include "txmempool.h"
@@ -32,8 +31,6 @@
 #include "wallet_functions.h"
 #include "wallet_ismine.h"
 #include "walletdb.h"
-#include "zerocoin/zerotracker.h"
-#include "zerocoin/zerowallet.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -120,40 +117,9 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   int CountInputsWithAmount(CAmount nInputAmount);
 
   // Zerocoin additions
-  bool CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransaction& txNew,
-                                     std::vector<CDeterministicMint>& vDMints, CReserveKey* reservekey,
-                                     int64_t& nFeeRet, std::string& strFailReason,
-                                     const CCoinControl* coinControl = nullptr, const bool isZCSpendChange = false);
-  bool CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel, CWalletTx& wtxNew, CReserveKey& reserveKey,
-                                      CZerocoinSpendReceipt& receipt, std::vector<CZerocoinMint>& vSelectedMints,
-                                      std::vector<CDeterministicMint>& vNewMints, bool fMintChange,
-                                      bool fMinimizeChange, CTxDestination* address=nullptr);
-  bool MintToTxIn(const CZerocoinMint& zerocoinSelected, int nSecurityLevel, const uint256& hashTxOut, CTxIn& newTxIn,
-                  CZerocoinSpendReceipt& receipt, libzerocoin::SpendType spendType,
-                  CBlockIndex* pindexCheckpoint = nullptr);
-  std::string MintZerocoinFromOutPoint(CAmount nValue, CWalletTx& wtxNew, std::vector<CDeterministicMint>& vDMints,
-                                       const std::vector<COutPoint> vOutpts);
-  std::string MintZerocoin(CAmount nValue, CWalletTx& wtxNew, std::vector<CDeterministicMint>& vDMints,
-                           const CCoinControl* coinControl = nullptr);
-  bool SpendZerocoin(CAmount nValue, int nSecurityLevel, CWalletTx& wtxNew, CZerocoinSpendReceipt& receipt,
-                     std::vector<CZerocoinMint>& vMintsSelected, bool fMintChange, bool fMinimizeChange,
-                     CTxDestination* addressTo=nullptr);
-  std::string ResetMintZerocoin();
-  std::string ResetSpentZerocoin();
-  bool GetZerocoinKey(const CBigNum& bnSerial, ed25519::CKey& key);
-  bool CreateZKPOutPut(libzerocoin::CoinDenomination denomination, CTxOut& outMint, CDeterministicMint& dMint);
-  bool GetMint(const uint256& hashSerial, CZerocoinMint& mint);
-  bool SetMintUnspent(const CBigNum& bnSerial);
-  bool UpdateMint(const CBigNum& bnValue, const int& nHeight, const uint256& txid,
-                  const libzerocoin::CoinDenomination& denom);
+
   std::string GetUniqueWalletBackupName(bool fzkpAuto) const;
 
-  /** Zerocin entry changed.
-   * @note called with lock cs_wallet held.
-   */
-  sigs::signal<void(CWallet* wallet, const std::string& pubCoin, const std::string& isUsed,
-                               ChangeType status)>
-      NotifyZerocoinChanged;
   /*
    * Main wallet lock.
    * This lock protects all the fields added by CWallet
@@ -162,8 +128,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
    *      strWalletFile (immutable after instantiation)
    */
   mutable CCriticalSection cs_wallet;
-
-  CZeroWallet* zwalletMain;
 
   bool fFileBacked;
   bool fWalletUnlockAnonymizeOnly;
@@ -174,10 +138,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
 
   /* HD derive new child key (on internal or external chain) */
   void DeriveNewChildKey(CKeyMetadata& metadata, bls::CKey& secret, bool internal = false);
-
-#ifndef ZEROCOIN_DISABLED
-  std::unique_ptr<CZeroTracker> zkpTracker;
-#endif
   
   std::set<int64_t> setKeyPool;
   std::map<bls::CKeyID, CKeyMetadata> mapKeyMetadata;
@@ -243,17 +203,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
     fCombineDust = false;
     nAutoCombineThreshold = 0;
   }
-
-  void setZWallet(CZeroWallet* zwallet) {
-    zwalletMain = zwallet;
-#ifndef ZEROCOIN_DISABLED
-    zkpTracker = std::unique_ptr<CZeroTracker>(new CZeroTracker());
-#endif
-  }
-
-  CZeroWallet* getZWallet() { return zwalletMain; }
-
-  void setZkpAutoBackups(bool fEnabled) { fBackupMints = fEnabled; }
 
   bool isMultiSendEnabled() { return fMultiSendMasternodeReward || fMultiSendStake; }
 
@@ -376,12 +325,8 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   void ReacceptWalletTransactions();
   void ResendWalletTransactions();
   CAmount GetBalance() const;
-  CAmount GetZerocoinBalance(bool fMatureOnly) const;
-  CAmount GetUnconfirmedZerocoinBalance() const;
-  CAmount GetImmatureZerocoinBalance() const;
   CAmount GetLockedCoins() const;
   CAmount GetUnlockedCoins() const;
-  std::map<libzerocoin::CoinDenomination, CAmount> GetMyZerocoinDistribution() const;
   CAmount GetUnconfirmedBalance() const;
   CAmount GetImmatureBalance() const;
   CAmount GetWatchOnlyBalance() const;
@@ -422,10 +367,6 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
   isminetype IsMine(const CTxIn& txin) const;
   CAmount GetDebit(const CTxIn& txin, const isminefilter& filter) const;
   isminetype IsMine(const CTxOut& txout) const { return ::IsMine(*this, txout.scriptPubKey); }
-#ifndef ZEROCOIN_DISABLED
-  bool IsMyZerocoinSpend(const CBigNum& bnSerial) const;
-  bool IsMyMint(const CBigNum& bnValue) const;
-#endif
   
   CAmount GetCredit(const CTxOut& txout, const isminefilter& filter) const {
     if (!MoneyRange(txout.nValue)) throw std::runtime_error("CWallet::GetCredit() : value out of range");

@@ -8,8 +8,6 @@
 #ifndef BITCOIN_SERIALIZE_H
 #define BITCOIN_SERIALIZE_H
 
-#include "libzerocoin/Denominations.h"
-#include "libzerocoin/SpendType.h"
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
@@ -145,37 +143,7 @@ template <typename Stream> inline void Unserialize(Stream& s, bool& a) {
   READDATA(s, f);
   a = f;
 }
-// Serializatin for libzerocoin::CoinDenomination
-inline uint32_t GetSerializeSize(libzerocoin::CoinDenomination a) { return sizeof(libzerocoin::CoinDenomination); }
-template <typename Stream> inline void Serialize(Stream& s, libzerocoin::CoinDenomination a) {
-#ifndef ZEROCOIN_DISABLED
-  int f = libzerocoin::ZerocoinDenominationToInt(a);
-#else
-  int f = 0;
-#endif
-  WRITEDATA(s, f);
-}
 
-template <typename Stream> inline void Unserialize(Stream& s, libzerocoin::CoinDenomination& a) {
-  int f = 0;
-  READDATA(s, f);
-#ifndef ZEROCOIN_DISABLED
-  a = libzerocoin::IntToZerocoinDenomination(f);
-#endif
-}
-
-// Serialization for libzerocoin::SpendType
-inline uint32_t GetSerializedSize(libzerocoin::SpendType a) { return sizeof(libzerocoin::SpendType); }
-template <typename Stream> inline void Serialize(Stream& s, libzerocoin::SpendType a) {
-  auto f = static_cast<uint8_t>(a);
-  WRITEDATA(s, f);
-}
-
-template <typename Stream> inline void Unserialize(Stream& s, libzerocoin::SpendType& a) {
-  uint8_t f = 0;
-  READDATA(s, f);
-  a = static_cast<libzerocoin::SpendType>(f);
-}
 
 /**
  * Compact Size

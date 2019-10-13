@@ -29,16 +29,6 @@ FILE(GLOB ZEROCOIN_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 # List of source files to compile
 #
 list(APPEND zerocoin_sources
-  Accumulator.cpp
-  AccumulatorWitness.cpp
-  PrivateCoin.cpp
-  Denominations.cpp
-  CoinSpend.cpp
-  CommitmentProofOfKnowledge.cpp
-  ZerocoinParams.cpp
-  SerialNumberSignatureOfKnowledge.cpp
-  AccumulatorProofOfKnowledge.cpp
-  IntegerMod.cpp
   key.cpp
 )
 

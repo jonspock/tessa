@@ -16,6 +16,7 @@
 #include "coin_externs.h"
 #include "nodeid.h"
 #include "primitives/block.h"
+#include "bignum.h"
 
 class uint256;
 class CScriptCheck;
@@ -25,14 +26,8 @@ class CTxUndo;
 
 class CValidationInterface;
 class CValidationState;
-namespace libzerocoin {
-class CoinSpend;
-class PublicCoin;
-}  // namespace libzerocoin
 
 class CNode;
-class CZerocoinMint;
-class CBigNum;
 
 struct CMintMeta;
 struct CBlockTemplate;
@@ -190,32 +185,12 @@ void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCach
                  int nHeight);
 
 /** Context-independent validity checks */
-bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationState& state);
-bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationState& state, bool fCheckOnly = false);
-bool CheckZerocoinSpend(const CTransaction& tx, bool fVerifySignature, CValidationState& state);
-bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::CoinSpend& spend, CBlockIndex* pindex);
-libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin);
-bool BlockToPubcoinList(const CBlock& block, std::list<libzerocoin::PublicCoin>& listPubcoins);
-bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints);
-bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom,
-                            std::vector<CBigNum>& vValues);
-std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block);
-void FindMints(std::vector<CMintMeta> vMintsToFind, std::vector<CMintMeta>& vMintsToUpdate,
-               std::vector<CMintMeta>& vMissingMints);
-bool GetZerocoinMint(const CBigNum& bnPubcoin, uint256& txHash);
-bool IsSerialKnown(const CBigNum& bnSerial);
-bool IsPubcoinInBlockchain(const uint256& hashPubcoin, uint256& txid);
-bool RemoveSerialFromDB(const CBigNum& bnSerial);
-int GetZerocoinStartHeight();
+bool CheckTransaction(const CTransaction& tx, CValidationState& state);
+
 bool IsTransactionInChain(const uint256& txId, int& nHeightTx, CTransaction& tx);
 bool IsTransactionInChain(const uint256& txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
-void RecalculateZKPSpent();
-void RecalculateZKPMinted();
 bool RecalculateTessaSupply(int nHeightStart);
-bool ReindexAccumulators(std::list<uint256>& listMissingCheckpoints, std::string& strError);
-
-void updateMapZerocoinSpends(const uint256& txid, int64_t& nTimeSeen);
 
 /**
  * Check if transaction will be final in the next block to be created.

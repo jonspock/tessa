@@ -135,9 +135,6 @@ bool CCryptoKeyStore::Lock() {
   {
     LOCK(cs_KeyStore);
     vMasterKey.clear();
-#ifndef ZEROCOIN_DISABLED    
-    pwalletMain->zwalletMain->Lock();
-#endif
   }
 
   NotifyStatusChanged.fire(this);
@@ -183,18 +180,11 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
       if (!GetDeterministicSeed(hashSeed, nSeed)) {
         return error("Failed to read ZKP seed from DB. Wallet is probably corrupt.");
       }
-#ifndef ZEROCOIN_DISABLED      
-      pwalletMain->zwalletMain->SetMasterSeed(nSeed, false);
-#endif
     } else {
       // First time this wallet has been unlocked with dZkp. Get HD MasterKey for ZKP
       uint256 seed = pwalletMain->GetHDMasterKeySeed();
       // LogPrintf("%s: first run of zkp wallet detected, new seed generated. Seedhash=%s\n",
       // __func__,Hash(seed.begin(), seed.end()).GetHex());
-#ifndef ZEROCOIN_DISABLED      
-      pwalletMain->zwalletMain->SetMasterSeed(seed, true);
-      pwalletMain->zwalletMain->GenerateZMintPool();
-#endif
     }
   }
   NotifyStatusChanged.fire(this);
@@ -259,7 +249,8 @@ bool CCryptoKeyStore::AddDeterministicSeed(const uint256 &seed) {
     // attempt encrypt
     if (EncryptSecret(vMasterKey, kmSeed, hashSeed, vchSeedSecret)) {
       // write to wallet with hashSeed as unique key
-      if (gWalletDB.WriteZKPSeed(hashSeed, vchSeedSecret)) { return true; }
+#pragma warning "zkpseed"
+        //      if (gWalletDB.WriteZKPSeed(hashSeed, vchSeedSecret)) { return true; }
     }
     strErr = "encrypt seed";
   }
@@ -269,32 +260,5 @@ bool CCryptoKeyStore::AddDeterministicSeed(const uint256 &seed) {
 }
 
 bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &seedOut) {
-  string strErr;
-  if (!IsLocked()) {  // if we have password
-    vector<uint8_t> vchCryptedSeed;
-    // read encrypted seed
-    if (gWalletDB.ReadZKPSeed(hashSeed, vchCryptedSeed)) {
-      uint256 seedRetrieved = uint256S(ReverseEndianString(HexStr(vchCryptedSeed)));
-      // this checks if the hash of the seed we just read matches the hash given, meaning it is not encrypted
-      // the use case for this is when not crypted, seed is set, then password set, the seed not yet crypted in memory
-      if (hashSeed == Hash(seedRetrieved.begin(), seedRetrieved.end())) {
-        seedOut = seedRetrieved;
-        return true;
-      }
-
-      CKeyingMaterial kmSeed;
-      // attempt decrypt
-      if (DecryptSecret(vMasterKey, vchCryptedSeed, hashSeed, kmSeed)) {
-        seedOut = uint256S(ReverseEndianString(HexStr(kmSeed)));
-        return true;
-      }
-      strErr = "decrypt seed";
-    } else {
-      strErr = "read seed from wallet";
-    }
-  } else {
-    strErr = "read seed; wallet is locked";
-  }
-  return error("%s: Failed to %s\n", __func__, strErr);
-  //    return error("Failed to decrypt deterministic seed %s", IsLocked() ? "Wallet is locked!" : "");
+    return false;
 }

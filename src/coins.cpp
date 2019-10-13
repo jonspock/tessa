@@ -196,9 +196,6 @@ const CTxOut& CCoinsViewCache::GetOutputFor(const CTxIn& input) const {
 CAmount CCoinsViewCache::GetValueIn(const CTransaction& tx) const {
   if (tx.IsCoinBase()) return 0;
 
-  // todo are there any security precautions to take here?
-  if (tx.IsZerocoinSpend()) return tx.GetZerocoinSpent();
-
   CAmount nResult = 0;
   for (auto& v : tx.vin) nResult += GetOutputFor(v).nValue;
 
@@ -206,7 +203,7 @@ CAmount CCoinsViewCache::GetValueIn(const CTransaction& tx) const {
 }
 
 bool CCoinsViewCache::HaveInputs(const CTransaction& tx) const {
-  if (!tx.IsCoinBase() && !tx.IsZerocoinSpend()) {
+  if (!tx.IsCoinBase()) {
     for (auto& v : tx.vin) {
       const COutPoint& prevout = v.prevout;
       const CCoins* coins = AccessCoins(prevout.hash);

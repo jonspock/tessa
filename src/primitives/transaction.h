@@ -144,8 +144,6 @@ class CTxOut {
     return (nValue < 3 * minRelayTxFee);
   }
 
-  bool IsZerocoinMint() const { return !scriptPubKey.empty() && scriptPubKey.IsZerocoinMint(); }
-
   friend bool operator==(const CTxOut& a, const CTxOut& b) {
     return (a.nValue == b.nValue && a.scriptPubKey == b.scriptPubKey && a.nRounds == b.nRounds);
   }
@@ -215,30 +213,11 @@ class CTransaction {
   // Compute modified tx size for priority calculation (optionally given tx size)
   uint32_t CalculateModifiedSize(unsigned int nTxSize = 0) const;
 
-  bool IsZerocoinSpend() const {
-    return (vin.size() > 0 && (vin[0].prevout.hash).IsNull() && vin[0].scriptSig[0] == OP_ZEROCOINSPEND);
-  }
-
-  bool IsZerocoinMint() const {
-    for (const CTxOut& txout : vout) {
-      if (txout.scriptPubKey.IsZerocoinMint()) return true;
-    }
-    return false;
-  }
-
-  bool ContainsZerocoins() const {
-    bool yeah = IsZerocoinSpend() || IsZerocoinMint();
-    return yeah;
-  }
-
-  CAmount GetZerocoinMinted() const;
-  CAmount GetZerocoinSpent() const;
-  int GetZerocoinMintCount() const;
 
   bool UsesUTXO(const COutPoint out);
   std::list<COutPoint> GetOutPoints() const;
 
-  bool IsCoinBase() const { return (vin.size() == 1 && vin[0].prevout.IsNull() && !ContainsZerocoins()); }
+  bool IsCoinBase() const { return (vin.size() == 1 && vin[0].prevout.IsNull()); }
 
   bool IsCoinStake() const;
 

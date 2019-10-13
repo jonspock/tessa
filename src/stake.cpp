@@ -8,10 +8,8 @@
 #include "chain.h"
 #include "kernel.h"
 #include "main.h"  // GetTransaction
-#include "primitives/deterministicmint.h"
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
-#include "zerocoin/accumulators.h"
 
 using namespace std;
 using namespace bls;

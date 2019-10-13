@@ -35,5 +35,4 @@ class CStake {
   CDataStream GetUniqueness();
   bool CreateTxIn(CWallet* pwallet, CTxIn& txIn, uint256 hashTxOut);
   bool CreateTxOuts(CWallet* pwallet, std::vector<CTxOut>& vout, CAmount nTotal);
-  bool IsZKP() { return false; }
 };

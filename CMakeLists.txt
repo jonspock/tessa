@@ -167,7 +167,6 @@ SET(COMMON_A
   ./src/support/cleanse.cpp
   ./src/support/lockedpool.cpp
   ./src/stake.cpp
-  ./src/mintpool.cpp
   ./src/protocol.cpp
   ./src/netbase.cpp
   ./src/keystore.cpp
@@ -232,17 +231,6 @@ SET(SERVER_A
   ./src/rest.cpp
   )
 
-SET(ZERO
-  ./src/zerocoin/accumulators.cpp
-  ./src/zerocoin/accumulatormap.cpp
-  ./src/zerocoin/accumulatorcheckpoints.cpp
-  ./src/zerocoin/zerochain.cpp
-  ./src/zerocoin/zerocoindb.cpp
-  ./src/zerocoin/zerowallet.cpp
-  ./src/zerocoin/zerotracker.cpp
-  ./src/zerocoin/zerochain.cpp
-  )
-
 SET(RPC
   ./src/rpc/protocol.cpp
   ./src/rpc/blockchain.cpp
@@ -297,8 +285,6 @@ SET(WALLET
 SET(PRIM
   ./src/primitives/block.cpp
   ./src/primitives/transaction.cpp
-  ./src/primitives/zerocoin.cpp
-  ./src/primitives/deterministicmint.cpp
   )
 
 SET(SOURCES
@@ -316,7 +302,6 @@ SET(SOURCES
   ./src/txdb.cpp
   ./src/coinsviewdb.cpp
   ./src/txmempool.cpp
-  ./src/denomination_functions.cpp
   ./src/httprpc.cpp
   ./src/httpserver.cpp
   ./src/validationinterface.cpp
@@ -433,9 +418,6 @@ source_group("WalletHeaders" FILES ${WALLET_HEADERS})
 file(GLOB RPC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/rpc/*.h )
 source_group("RpcHeaders" FILES ${RPC_HEADERS})
 
-file(GLOB ZERO_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/zerocoin/*.h )
-source_group("ZeroHeaders" FILES ${ZERO_HEADERS})
-
 file(GLOB SPORK_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/spork/*.h )
 source_group("SporkHeaders" FILES ${SPORK_HEADERS})
 
@@ -451,11 +433,9 @@ source_group("Zmq" FILES ${ZMQ_SOURCES})
 source_group("Primitives" FILES ${PRIM})
 source_group("CommonA" FILES ${COMMON_A})
 source_group("Spork" FILES ${SPORK})
-source_group("Zero" FILES ${ZERO})
 
 add_library(coin ${HEADERS} ${CRYPTO_HEADERS} ${PRIMITIVE_HEADERS} ${WALLET_HEADERS} ${RPC_HEADERS} ${SPORK_HEADERS}
-  ${ZERO_HEADERS} ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
-  ${ZERO}
+  ${LIB_RAND} ${SOURCES} ${PRIM} ${WALLET} ${ZMQ_SOURCES} ${SCH_SOURCES} ${UNI_SOURCES} ${COMMON_A}
   ${UTIL_A} ${SERVER_A} ${RPC} ${CONSENSUS} ${SPORK} ${CONSENSUS_CRYPTO})
 
 
@@ -467,7 +447,6 @@ endif()
 #add_dependencies(coin buildHeader)
 
 add_subdirectory(src)
-add_subdirectory(src/libzerocoin)
 add_subdirectory(src/liblmdb)
 add_subdirectory(src/bls)
 
@@ -523,7 +502,7 @@ endif()
 #------------------- ------------------- ------------------- ------------------- -------------------
 message(STATUS "Boost libaries are ${Boost_LIBRARIES}")
 
-SET(LIBS_LIST coin zerocoin bls lmdb ${DB_LIBRARIES} ${UPNP_LIB}
+SET(LIBS_LIST coin bls lmdb ${DB_LIBRARIES} ${UPNP_LIB}
   event event_pthreads pthread gmp sodium ${ZMQ_LIB} ${FS_LIBS}) # wsock32)
 
 target_link_libraries(tessad ${LIBS_LIST})

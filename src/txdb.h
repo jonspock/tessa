@@ -12,7 +12,6 @@
 #include "coins.h"
 #include "datadbwrapper.h"
 #include "disktxpos.h"
-#include "primitives/zerocoin.h"
 
 #include <map>
 #include <string>
@@ -21,9 +20,6 @@
 
 class CCoins;
 class uint256;
-namespace libzerocoin {
-class PublicCoin;
-}
 
 //! -dbcache default (MiB)
 static const int64_t nDefaultDbCache = 100;

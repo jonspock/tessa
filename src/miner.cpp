@@ -13,7 +13,8 @@
 #include "hash.h"
 #include "init.h"
 #include "kernel.h"  // mapHashedBlocks
-#include "main.h"    // for CBlockTemplate, updateMapZerocoinSpends
+#include "main.h"    // for CBlockTemplate
+#include "bignum.h"
 #include "net.h"
 #include "pow.h"
 #include "primitives/block.h"
@@ -29,9 +30,6 @@
 #include "bls/blocksignature.h"
 #include "validationinterface.h"
 #include "validationstate.h"
-#include "zerocoin/accumulators.h"
-
-#include "libzerocoin/CoinSpend.h"
 #include <cmath>  // for std::pow
 #include <thread>
 
@@ -118,13 +116,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
   // -regtest only: allow overriding block.nVersion with
   // -blockversion=N to test forking scenarios
   if (Params().MineBlocksOnDemand()) pblock->nHeaderVersion = GetArg("-blockversion", pblock->nHeaderVersion);
-
-  // Check if zerocoin is enabled
-  // XXXX warning "Check zerocoin start here too""
-#ifndef ZEROCOIN_DISABLED
-   bool fZerocoinActive = (chainActive.Tip()->nHeight) >= Params().Zerocoin_StartHeight();
-   fZerocoinActive = true;
-#endif
     
   // Create coinbase tx
   CMutableTransaction txNew;
@@ -189,29 +180,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       bool fMissingInputs = false;
       uint256 txid = tx.GetHash();
       for (const CTxIn& txin : tx.vin) {
-        // zerocoinspend has special vin
-        if (tx.IsZerocoinSpend()) {
-#ifndef ZEROCOIN_DISABLED
-          nTotalIn = tx.GetZerocoinSpent();
-
-          // Give a high priority to zerocoinspends to get into the next block
-          // Priority = (age^6+100000)*amount - gives higher priority to zkps that have been in mempool long
-          // and higher priority to zkps that are large in value
-          int64_t nTimeSeen = GetAdjustedTime();
-          double nConfs = 100000;
-
-          // update MapZerocoinSpends if not seen, otherwise return nTimeSeen
-          updateMapZerocoinSpends(txid, nTimeSeen);
-
-          double nTimePriority = std::pow(GetAdjustedTime() - nTimeSeen, 6);
-
-          // ZKP spends can have very large priority, use non-overflowing safe functions
-          dPriority = double_safe_addition(dPriority, (nTimePriority * nConfs));
-          dPriority = double_safe_multiplication(dPriority, nTotalIn);
-#endif
-          continue;
-        }
-
         // Read prev transaction
         if (!view.HaveCoins(txin.prevout.hash)) {
           // This should never happen; all transactions in the memory
@@ -298,7 +266,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       double dPriorityDelta = 0;
       CAmount nFeeDelta = 0;
       mempool.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
-      if (!tx.IsZerocoinSpend() && fSortedByFee && (dPriorityDelta <= 0) && (nFeeDelta <= 0) &&
+      if (fSortedByFee && (dPriorityDelta <= 0) && (nFeeDelta <= 0) &&
           (feeRate < minRelayTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
         continue;
 
@@ -311,28 +279,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       }
 
       if (!view.HaveInputs(tx)) continue;
-
-      // double check that there are no double spent ZKP spends in this block or tx
-      if (tx.IsZerocoinSpend()) {
-#ifndef ZEROCOIN_DISABLED        
-        int nHeightTx = 0;
-        if (IsTransactionInChain(tx.GetHash(), nHeightTx)) continue;
-
-        bool fDoubleSerial = false;
-        for (const CTxIn& txIn : tx.vin) {
-          if (txIn.scriptSig.IsZerocoinSpend()) {
-            libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
-            if (!spend.HasValidSerial(libzerocoin::gpZerocoinParams)) fDoubleSerial = true;
-            if (count(vBlockSerials.begin(), vBlockSerials.end(), spend.getCoinSerialNumber())) fDoubleSerial = true;
-            if (count(vTxSerials.begin(), vTxSerials.end(), spend.getCoinSerialNumber())) fDoubleSerial = true;
-            if (fDoubleSerial) break;
-            vTxSerials.emplace_back(spend.getCoinSerialNumber());
-          }
-        }
-        // This ZKP serial has already been included in the block, do not add this tx.
-        if (fDoubleSerial) continue;
-#endif
-      }
 
       CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
 
@@ -407,36 +353,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     nLastBlockSize = nBlockSize;
     LogPrint(TessaLog::MINER, "CreateNewBlock(): total size %u\n", nBlockSize);
 
-    // Calculate the accumulator checkpoint only if the previous cached checkpoint need to be updated
-#ifndef ZEROCOIN_DISABLED
-    uint256 nCheckpoint;
-    if (nHeight > ACC_BLOCK_INTERVAL) {
-      uint256 hashBlockLastAccumulated =
-          chainActive[nHeight - (nHeight % ACC_BLOCK_INTERVAL) - ACC_BLOCK_INTERVAL]->GetBlockHash();
-      if (nHeight >= pCheckpointCache.first || pCheckpointCache.second.first != hashBlockLastAccumulated) {
-        // For the period before v2 activation, ZKP will be disabled and previous block's checkpoint is all that will
-        // be needed
-        pCheckpointCache.second.second = pindexPrev->nAccumulatorCheckpoint;
-        if (pindexPrev->nHeight + 1 >= Params().Zerocoin_StartHeight()) {
-          AccumulatorMap mapAccumulators(libzerocoin::gpZerocoinParams);
-          if (fZerocoinActive && !CalculateAccumulatorCheckpoint(nHeight, nCheckpoint, mapAccumulators)) {
-            LogPrintf("MINER %s: failed to get accumulator checkpoint\n", __func__);
-          } else {
-            // the next time the accumulator checkpoint should be recalculated ( the next height that is multiple of
-            // ACC_BLOCK_INTERVAL)
-            pCheckpointCache.first = nHeight + (ACC_BLOCK_INTERVAL - (nHeight % ACC_BLOCK_INTERVAL));
-
-            // the block hash of the last block used in the accumulator checkpoint calc. This will handle reorg
-            // situations.
-            pCheckpointCache.second.first = hashBlockLastAccumulated;
-            pCheckpointCache.second.second = nCheckpoint;
-          }
-        }
-      }
-
-      pblock->nAccumulatorCheckpoint = pCheckpointCache.second.second;
-    }
-#endif
     pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
     CValidationState state;
@@ -446,10 +362,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       return nullptr;
     }
 
-    //        if (pblock->IsZerocoinStake()) {
-    //            CWalletTx wtx(pwalletMain, pblock->vtx[1]);
-    //            pwalletMain->AddToWallet(wtx);
-    //        }
   }
 
   return pblocktemplate.release();
@@ -513,7 +425,6 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
   // Process this block the same as if we had received it from another node
   CValidationState state;
   if (!ProcessNewBlock(state, nullptr, pblock)) {
-    // if (pblock->IsZerocoinStake()) pwalletMain->zkpTracker->RemovePending(pblock->vtx[1].GetHash());
     return error("TessaMiner : ProcessNewBlock, block not accepted");
   }
 

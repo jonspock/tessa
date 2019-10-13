@@ -119,9 +119,6 @@ class WalletModel : public QObject {
   CAmount getUnconfirmedBalance() const;
   CAmount getImmatureBalance() const;
   CAmount getLockedBalance() const;
-  CAmount getZerocoinBalance() const;
-  CAmount getUnconfirmedZerocoinBalance() const;
-  CAmount getImmatureZerocoinBalance() const;
   bool haveWatchOnly() const;
   CAmount getWatchBalance() const;
   CAmount getWatchUnconfirmedBalance() const;
@@ -193,11 +190,6 @@ class WalletModel : public QObject {
   void unlockCoin(COutPoint& output);
   void listLockedCoins(std::vector<COutPoint>& vOutpts);
 
-#ifndef ZEROCOIN_DISABLED
- void listZerocoinMints(std::set<CMintMeta>& setMints, bool fUnusedOnly = false, bool fMaturedOnly = false,
-                         bool fUpdateStatus = false);
-#endif
-
   std::string GetUniqueWalletBackupName();
   void loadReceiveRequests(std::vector<std::string>& vReceiveRequests);
   bool saveReceiveRequest(const std::string& sAddress, const int64_t nId, const std::string& sRequest);
@@ -240,8 +232,7 @@ class WalletModel : public QObject {
  signals:
   // Signal that balance in wallet changed
   void balanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
-                      const CAmount& zerocoinBalance, const CAmount& unconfirmedZerocoinBalance,
-                      const CAmount& immatureZerocoinBalance, const CAmount& watchOnlyBalance,
+                      const CAmount& watchOnlyBalance,
                       const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
 
   // Encryption status of wallet changed

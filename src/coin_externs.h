@@ -11,7 +11,6 @@
 class CBlockIndex;
 class CBlockTreeDB;
 class CChain;
-class CZerocoinDB;
 class CTxMemPool;
 class CCoinsViewCache;
 class CScript;
@@ -46,5 +45,3 @@ extern CCoinsViewCache* gpCoinsTip;
 /** Global variable that points to the active block tree (protected by cs_main) */
 extern std::unique_ptr<CBlockTreeDB> gpBlockTreeDB;  // init.cpp/main.cpp
 
-/** Global variable that points to the zerocoin database (protected by cs_main) */
-extern std::unique_ptr<CZerocoinDB> gpZerocoinDB;

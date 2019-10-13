@@ -99,9 +99,6 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   if (pwalletMain) {
     obj.push_back(std::make_pair("walletversion", pwalletMain->GetVersion()));
     obj.push_back(std::make_pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
-#ifndef ZEROCOIN_DISABLED    
-    obj.push_back(std::make_pair("zerocoinbalance", ValueFromAmount(pwalletMain->GetZerocoinBalance(true))));
-#endif
   }
   obj.push_back(std::make_pair("blocks", (int)chainActive.Height()));
   obj.push_back(std::make_pair("timeoffset", GetTimeOffset()));
@@ -117,15 +114,6 @@ UniValue getinfo(const UniValue& params, bool fHelp) {
   }
 
   obj.push_back(std::make_pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply)));
-#ifndef ZEROCOIN_DISABLED
-  UniValue zkpObj(UniValue::VOBJ);
-  for (auto denom : libzerocoin::zerocoinDenomList) {
-    zkpObj.push_back(std::make_pair(to_string(denom),
-                                    ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * (denom * COIN))));
-  }
-  zkpObj.push_back(std::make_pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
-  obj.push_back(std::make_pair("Zkpsupply", zkpObj));
-#endif
   
   if (pwalletMain) {
     obj.push_back(std::make_pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));

@@ -174,15 +174,11 @@ void OverviewPage::getPercentage(CAmount nUnlockedBalance, CAmount nZerocoinBala
 }
 
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
-                              const CAmount& zerocoinBalance, const CAmount& unconfirmedZerocoinBalance,
-                              const CAmount& immatureZerocoinBalance, const CAmount& watchOnlyBalance,
+                              const CAmount& watchOnlyBalance,
                               const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance) {
   currentBalance = balance;
   currentUnconfirmedBalance = unconfirmedBalance;
   currentImmatureBalance = immatureBalance;
-  currentZerocoinBalance = zerocoinBalance;
-  currentUnconfirmedZerocoinBalance = unconfirmedZerocoinBalance;
-  currentimmatureZerocoinBalance = immatureZerocoinBalance;
   currentWatchOnlyBalance = watchOnlyBalance;
   currentWatchUnconfBalance = watchUnconfBalance;
   currentWatchImmatureBalance = watchImmatureBalance;
@@ -198,15 +194,12 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   CAmount pivAvailableBalance = balance - immatureBalance - nLockedBalance;
   CAmount nTotalWatchBalance = watchOnlyBalance + watchUnconfBalance + watchImmatureBalance;
   CAmount nUnlockedBalance = nTotalBalance - nLockedBalance;
-  // ZKP Balance
-  CAmount matureZerocoinBalance = zerocoinBalance - unconfirmedZerocoinBalance - immatureZerocoinBalance;
   // Percentages
   QString szPercentage = "";
   QString sPercentage = "";
-  getPercentage(nUnlockedBalance, zerocoinBalance, sPercentage, szPercentage);
   // Combined balances
-  CAmount availableTotalBalance = pivAvailableBalance + matureZerocoinBalance;
-  CAmount sumTotalBalance = nTotalBalance + zerocoinBalance;
+  CAmount availableTotalBalance = pivAvailableBalance;
+  CAmount sumTotalBalance = nTotalBalance;
   CAmount nAvailableWatchBalance = watchOnlyBalance - watchImmatureBalance - nWatchOnlyLockedBalance;
 
   // Tessa labels
@@ -232,16 +225,6 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, nWatchOnlyLockedBalance, false, BitcoinUnits::separatorAlways));
   ui->labelWatchTotal->setText(
       BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, nTotalWatchBalance, false, BitcoinUnits::separatorAlways));
-
-  // ZKP labels
-  ui->labelzBalance->setText(
-      BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, zerocoinBalance, false, BitcoinUnits::separatorAlways));
-  ui->labelzBalanceUnconfirmed->setText(
-      BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, unconfirmedZerocoinBalance, false, BitcoinUnits::separatorAlways));
-  ui->labelzBalanceMature->setText(
-      BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, matureZerocoinBalance, false, BitcoinUnits::separatorAlways));
-  ui->labelzBalanceImmature->setText(
-      BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, immatureZerocoinBalance, false, BitcoinUnits::separatorAlways));
 
   // Combined labels
   ui->labelBalancez->setText(
@@ -282,18 +265,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
       showWatchOnlyImmature);  // for symmetry reasons also show immature label when the watch-only one is shown
   ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
   ui->labelWatchImmature->setVisible(showImmature && showWatchOnly);  // show watch-only immature balance
-  bool showZKPAvailable = settingShowAllBalances || zerocoinBalance != matureZerocoinBalance;
-  bool showZKPUnconfirmed = settingShowAllBalances || unconfirmedZerocoinBalance != 0;
-  bool showZKPImmature = settingShowAllBalances || immatureZerocoinBalance != 0;
-  ui->labelzBalanceMature->setVisible(showZKPAvailable);
-  ui->labelzBalanceMatureText->setVisible(showZKPAvailable);
-  ui->labelzBalanceUnconfirmed->setVisible(showZKPUnconfirmed);
-  ui->labelzBalanceUnconfirmedText->setVisible(showZKPUnconfirmed);
-  ui->labelzBalanceImmature->setVisible(showZKPImmature);
-  ui->labelzBalanceImmatureText->setVisible(showZKPImmature);
-  bool showPercentages = !(zerocoinBalance == 0 && nTotalBalance == 0);
-  ui->labelTessaPercent->setVisible(showPercentages);
-  ui->labelZKPPercent->setVisible(showPercentages);
+  ui->labelTessaPercent->setVisible(false);
 }
 
 // show/hide watch-only labels
@@ -335,11 +307,10 @@ void OverviewPage::setWalletModel(WalletModel* model) {
 
     // Keep up to date with wallet
     setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
-               model->getZerocoinBalance(), model->getUnconfirmedZerocoinBalance(), model->getImmatureZerocoinBalance(),
                model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
     connect(model,
-            SIGNAL(balanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)),
-            this, SLOT(setBalance(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)));
+            SIGNAL(balanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)),
+            this, SLOT(setBalance(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)));
 
     connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
     connect(model->getOptionsModel(), SIGNAL(hideZeroBalancesChanged(bool)), this, SLOT(updateDisplayUnit()));
@@ -356,8 +327,7 @@ void OverviewPage::updateDisplayUnit() {
   if (walletModel && walletModel->getOptionsModel()) {
     nDisplayUnit = walletModel->getOptionsModel()->getDisplayUnit();
     if (currentBalance != -1)
-      setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance, currentZerocoinBalance,
-                 currentUnconfirmedZerocoinBalance, currentimmatureZerocoinBalance, currentWatchOnlyBalance,
+      setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance, currentWatchOnlyBalance,
                  currentWatchUnconfBalance, currentWatchImmatureBalance);
 
     // Update txdelegate->unit with the current unit

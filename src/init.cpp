@@ -37,9 +37,6 @@
 #include "validationinterface.h"
 #include "validationstate.h"
 #include "verifydb.h"
-#include "zerocoin/accumulatorcheckpoints.h"
-#include "zerocoin/zerochain.h"
-#include "zerocoin/zerocoindb.h"
 #ifdef USE_SECP256K1
 #include "ecdsa/key.h"
 #endif
@@ -47,7 +44,6 @@
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "wallet/wallettx.h"
-#include "zerocoin/accumulators.h"
 
 #include <cstdint>
 #include <fstream>
@@ -80,9 +76,6 @@ using fs::filesystem_error;
 #endif
 
 CWallet* pwalletMain = nullptr;
-#ifndef ZEROCOIN_DISABLED
-CZeroWallet* zwalletMain = nullptr;
-#endif
 
 const int nWalletBackups = 10;
 // Specific to LMDB, may have to change some related code otherwise
@@ -197,9 +190,6 @@ void Interrupt(CScheduler& scheduler) {
   /// HACK TBD!!!!
   // CVerifyDB().InterruptInit();
   pcoinsdbview->InterruptGetStats();
-#ifndef ZEROCOIN_DISABLED
-  gpZerocoinDB->InterruptWipeCoins();
-#endif
   
   InterruptThreadScriptCheck();
   InterruptNetBase();
@@ -254,7 +244,6 @@ void PrepareShutdown(CScheduler& scheduler) {
     if (pcoinscatcher) delete pcoinscatcher;
     if (pcoinsdbview) delete pcoinsdbview;
     gpBlockTreeDB.reset(nullptr);
-    gpZerocoinDB.reset(nullptr);
   }
 
 #if ENABLE_ZMQ
@@ -293,10 +282,6 @@ void Shutdown(CScheduler& scheduler) {
 
   if (pwalletMain) delete pwalletMain;
   pwalletMain = nullptr;
-#ifndef ZEROCOIN_DISABLED
-  if (zwalletMain) delete zwalletMain;
-  zwalletMain = nullptr;
-#endif
 #ifdef USE_SECP256K1
   globalVerifyHandle.reset();
   ECC_Stop();
@@ -599,12 +584,6 @@ std::string HelpMessage(HelpMessageMode mode) {
       strUsage += HelpMessageOpt("-printcoinstake", _("Display verbose coin stake messages in the debug.log file."));
     }
   }
-
-  strUsage += HelpMessageGroup(_("Zerocoin options:"));
-  strUsage += HelpMessageOpt("-reindexzerocoin=<n>",
-                             strprintf(_("Delete all zerocoin spends and mints that have been recorded to the "
-                                         "blockchain database and reindex them (0-1, default: %u)"),
-                                       0));
 
   strUsage += HelpMessageGroup(_("Node relay options:"));
   strUsage += HelpMessageOpt("-datacarrier", strprintf(_("Relay and mine data carrier transactions (default: %u)"), 1));
@@ -928,7 +907,6 @@ bool AppInit2(CScheduler& scheduler) {
     }
   }
 
-  // Check level must be 4 for zerocoin checks
   if (gArgs.IsArgSet("-checklevel"))
     return InitError(_("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
 
@@ -1132,9 +1110,8 @@ bool AppInit2(CScheduler& scheduler) {
       path blocksDir = GetDataDir() / "blocks";
       path chainstateDir = GetDataDir() / "chainstate";
       path sporksDir = GetDataDir() / "sporks";
-      path zerocoinDir = GetDataDir() / "zerocoin";
 
-      LogPrintf("Deleting blockchain folders blocks, chainstate, sporks and zerocoin\n");
+      LogPrintf("Deleting blockchain folders blocks, chainstate, sporks\n");
       // We delete in 4 individual steps in case one of the folder is missing already
       try {
         if (exists(blocksDir)) {
@@ -1152,10 +1129,6 @@ bool AppInit2(CScheduler& scheduler) {
           LogPrintf("-resync: folder deleted: %s\n", sporksDir.string().c_str());
         }
 
-        if (exists(zerocoinDir)) {
-          fs::remove_all(zerocoinDir);
-          LogPrintf("-resync: folder deleted: %s\n", zerocoinDir.string().c_str());
-        }
       } catch (fs::filesystem_error& error) { LogPrintf("Failed to delete blockchain folders %s\n", error.what()); }
     }
 #endif
@@ -1303,11 +1276,6 @@ bool AppInit2(CScheduler& scheduler) {
 
   // ********************************************************* Step 7: load block chain
 
-  // Tessa: Load Accumulator Checkpoints according to network (main/test/regtest)
-#ifndef ZEROCOIN_DISABLED
-  AccumulatorCheckpoints::LoadCheckpoints(Params().NetworkIDString());
-#endif
-  
   fReindex = GetBoolArg("-reindex", false);
 
   path blocksDir = GetDataDir() / "blocks";
@@ -1339,16 +1307,6 @@ bool AppInit2(CScheduler& scheduler) {
       UnloadBlockIndex();
       gSporkDB.init((GetDataDir() / "sporks.json").string());
         
-      try {
-        // Tessa specific: zerocoin and spork DB's
-        gpZerocoinDB.reset(new CZerocoinDB(0, false, fReindex));
-      } catch (std::exception& e) {
-        if (gArgs.IsArgSet("-debug")) LogPrintf("%s\n", e.what());
-        strLoadError = _("Error opening Zerocoin DB");
-        fVerifyingBlocks = false;
-        break;
-      }
-
       try {
         gpBlockTreeDB.reset(new CBlockTreeDB(nBlockTreeDBCache, false, fReindex));
       } catch (std::exception& e) {
@@ -1420,36 +1378,6 @@ bool AppInit2(CScheduler& scheduler) {
           break;
         }
 
-#ifndef ZEROCOIN_DISABLED
-        // Drop all information from the zerocoinDB and repopulate
-        if (GetBoolArg("-reindexzerocoin", false)) {
-          uiInterface.InitMessage.fire(_("Reindexing zerocoin database..."));
-          std::string strError = ReindexZerocoinDB();
-          if (strError != "") {
-            strLoadError = strError;
-            break;
-          }
-        }
-
-        // Force recalculation of accumulators.
-        if (GetBoolArg("-reindexaccumulators", false)) {
-          CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
-          while (pindex->nHeight < chainActive.Height()) {
-            if (!count(listAccCheckpointsNoDB.begin(), listAccCheckpointsNoDB.end(), pindex->nAccumulatorCheckpoint))
-              listAccCheckpointsNoDB.emplace_back(pindex->nAccumulatorCheckpoint);
-            pindex = chainActive.Next(pindex);
-          }
-        }
-
-        // Tessa: recalculate Accumulator Checkpoints that failed to database properly
-        if (!listAccCheckpointsNoDB.empty()) {
-          uiInterface.InitMessage.fire(_("Calculating missing accumulators..."));
-          LogPrintf("%s : finding missing checkpoints\n", __func__);
-
-          string strError;
-          if (!ReindexAccumulators(listAccCheckpointsNoDB, strError)) return InitError(strError);
-        }
-#endif
         uiInterface.InitMessage.fire(_("Verifying blocks..."));
 
         // Flag sent to validation code to let it know it can skip certain checks
@@ -1506,9 +1434,6 @@ bool AppInit2(CScheduler& scheduler) {
 
   if (fDisableWallet) {
     pwalletMain = nullptr;
-#ifndef ZEROCOIN_DISABLED    
-    zwalletMain = nullptr;
-#endif
     LogPrintf("Wallet disabled!\n");
   } else {
     // needed to restore wallet transaction meta data after -zapwallettxes
@@ -1552,10 +1477,7 @@ bool AppInit2(CScheduler& scheduler) {
       } else
         strErrors << _("Error loading wallet.dat") << "\n";
     }
-#ifndef ZEROCOIN_DISABLED
-    zwalletMain = new CZeroWallet;
-    pwalletMain->setZWallet(zwalletMain);
-#endif
+
     if (fFirstRun) {
       // Get/Set Password
       // Check if QT or Not
@@ -1629,20 +1551,6 @@ bool AppInit2(CScheduler& scheduler) {
       }
     }
     fVerifyingBlocks = false;
-
-    // Inititalize ZkpWallet
-    uiInterface.InitMessage.fire(_("Syncing ZKP wallet..."));
-
-    bool fEnableZkpBackups = GetBoolArg("-backupzkp", true);
-    pwalletMain->setZkpAutoBackups(fEnableZkpBackups);
-
-    // Load zerocoin mint hashes to memory
-#ifndef ZEROCOIN_DISABLED
-    pwalletMain->zkpTracker->Init();
-    zwalletMain->LoadMintPoolFromDB();
-    zwalletMain->SyncWithChain();
-#endif
-    uiInterface.InitMessage.fire(_("ZKP wallet synced"));
 
   }  // (!fDisableWallet)
   // ********************************************************* Step 9: import blocks

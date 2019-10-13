@@ -9,7 +9,6 @@
 #pragma once
 
 #include "arith_uint256.h"
-#include "libzerocoin/Denominations.h"
 #include "pow.h"
 #include "primitives/block.h"
 #include "tinyformat.h"
@@ -159,14 +158,9 @@ class CBlockIndex {
   uint32_t nTime;
   uint32_t nBits;
   uint32_t nNonce;
-  uint256 nAccumulatorCheckpoint;
 
   //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
   uint32_t nSequenceId;
-
-  //! zerocoin specific fields
-  std::map<libzerocoin::CoinDenomination, int64_t> mapZerocoinSupply;
-  std::vector<libzerocoin::CoinDenomination> vMintDenominationsInBlock;
 
   void SetNull() {
     phashBlock = nullptr;
@@ -195,10 +189,7 @@ class CBlockIndex {
     nTime = 0;
     nBits = 0;
     nNonce = 0;
-    nAccumulatorCheckpoint.SetNull();
-    // Start supply of each denomination with 0s
-    for (auto& denom : libzerocoin::zerocoinDenomList) { mapZerocoinSupply.insert(std::make_pair(denom, 0)); }
-    vMintDenominationsInBlock.clear();
+    
   }
 
   CBlockIndex() { SetNull(); }
@@ -211,7 +202,6 @@ class CBlockIndex {
     nTime = block.nTime;
     nBits = block.nBits;
     nNonce = block.nNonce;
-    nAccumulatorCheckpoint = block.nAccumulatorCheckpoint;
 
     // Proof of Stake
     bnChainTrust = 0;
@@ -258,22 +248,9 @@ class CBlockIndex {
     block.nTime = nTime;
     block.nBits = nBits;
     block.nNonce = nNonce;
-    block.nAccumulatorCheckpoint = nAccumulatorCheckpoint;
-    return block;
+     return block;
   }
 
-  int64_t GetZerocoinSupply() const {
-    int64_t nTotal = 0;
-    for (auto& denom : libzerocoin::zerocoinDenomList) {
-      nTotal += libzerocoin::ZerocoinDenominationToAmount(denom) * mapZerocoinSupply.at(denom);
-    }
-    return nTotal;
-  }
-
-  bool MintedDenomination(libzerocoin::CoinDenomination denom) const {
-    return std::find(vMintDenominationsInBlock.begin(), vMintDenominationsInBlock.end(), denom) !=
-           vMintDenominationsInBlock.end();
-  }
 
   uint256 GetBlockHash() const { return *phashBlock; }
 
@@ -410,9 +387,6 @@ class CDiskBlockIndex : public CBlockIndex {
     READWRITE(nTime);
     READWRITE(nBits);
     READWRITE(nNonce);
-    READWRITE(nAccumulatorCheckpoint);
-    READWRITE(mapZerocoinSupply);
-    READWRITE(vMintDenominationsInBlock);
   }
 
   uint256 GetBlockHash() const {
@@ -423,7 +397,6 @@ class CDiskBlockIndex : public CBlockIndex {
     block.nTime = nTime;
     block.nBits = nBits;
     block.nNonce = nNonce;
-    block.nAccumulatorCheckpoint = nAccumulatorCheckpoint;
     return block.GetHash();
   }
 

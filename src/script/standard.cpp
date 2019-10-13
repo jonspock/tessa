@@ -36,8 +36,6 @@ const char* GetTxnOutputType(txnouttype t) {
       return "multisig";
     case TX_NULL_DATA:
       return "nulldata";
-    case TX_ZEROCOINMINT:
-      return "zerocoinmint";
   }
   return nullptr;
 }
@@ -70,14 +68,6 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<uint
     return true;
   }
 
-  // Zerocoin
-  if (scriptPubKey.IsZerocoinMint()) {
-    typeRet = TX_ZEROCOINMINT;
-    if (scriptPubKey.size() > 150) return false;
-    vector<uint8_t> hashBytes(scriptPubKey.begin() + 2, scriptPubKey.end());
-    vSolutionsRet.push_back(hashBytes);
-    return true;
-  }
 
   // Provably prunable, data-carrying output
   //
@@ -155,7 +145,6 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<uint8_t> >
   switch (t) {
     case TX_NONSTANDARD:
     case TX_NULL_DATA:
-    case TX_ZEROCOINMINT:
       return -1;
     case TX_PUBKEY:
       return 1;
