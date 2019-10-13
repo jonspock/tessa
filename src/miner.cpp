@@ -487,7 +487,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
     }
 
     // If Mining PoW and reach the End of the Period Automatically Switch to Proof-of-Stake
-    //if (chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK()) fProofOfStake = true;
+    if (chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK()) fProofOfStake = true;
 
     //
     // Create new block
