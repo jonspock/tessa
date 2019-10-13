@@ -2524,7 +2524,6 @@ bool CWallet::IsHDEnabled() { return !hdChain.masterKeyID.IsNull(); }
 
 struct CWalletSignalSigs {
   boost::signals2::signal<CWallet::NotifyZkpResetSig> NotifyZkpReset;
-  boost::signals2::signal<CWallet::NotifyZerocoinChangedSig> NotifyZerocoinChanged;
   boost::signals2::signal<CWallet::NotifyAddressBookChangedSig> NotifyAddressBookChanged;
   boost::signals2::signal<CWallet::NotifyTransactionChangedSig> NotifyTransactionChanged;
   boost::signals2::signal<CWallet::NotifyWatchonlyChangedSig> NotifyWatchonlyChanged;
@@ -2550,19 +2549,12 @@ struct CWalletSignalSigs {
   }
 
 ADD_SIGNALS_IMPL_WRAPPER(NotifyZkpReset)
-ADD_SIGNALS_IMPL_WRAPPER(NotifyZerocoinChanged)
 ADD_SIGNALS_IMPL_WRAPPER(NotifyAddressBookChanged)
 ADD_SIGNALS_IMPL_WRAPPER(NotifyTransactionChanged)
 ADD_SIGNALS_IMPL_WRAPPER(NotifyWatchonlyChanged)
 ADD_SIGNALS_IMPL_WRAPPER(NotifyMultiSigChanged)
 ADD_SIGNALS_IMPL_WRAPPER(ShowProgress)
 ADD_SIGNALS_IMPL_CONST_WRAPPER(NotifyWalletBacked)
-
-void CWallet::NotifyZkpReset() { g_wallet_signals.NotifyZkpReset(); }
-void CWallet::NotifyZerocoinChanged(CWallet* wallet, const std::string& pubCoin, const std::string& isUsed,
-                                    ChangeType status) {
-  g_wallet_signals.NotifyZerocoinChanged(wallet, pubCoin, isUsed, status);
-}
 
 void CWallet::NotifyAddressBookChanged(CWallet* wallet, const CTxDestination& address, const std::string& label,
                                        bool isMine, const std::string& purpose, ChangeType status) {

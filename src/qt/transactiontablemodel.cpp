@@ -314,16 +314,6 @@ QString TransactionTableModel::formatTxType(const TransactionRecord* wtx) const 
       return tr("Tessa Stake");
     case TransactionRecord::Generated:
       return tr("Mined");
-    case TransactionRecord::ZerocoinMint:
-      return tr("Converted Tessa to ZKP");
-    case TransactionRecord::ZerocoinSpend:
-      return tr("Spent ZKP");
-    case TransactionRecord::RecvFromZerocoinSpend:
-      return tr("Received Tessa from ZKP");
-    case TransactionRecord::ZerocoinSpend_Change_zPiv:
-      return tr("Minted Change as ZKP from ZKP Spend");
-    case TransactionRecord::ZerocoinSpend_FromMe:
-      return tr("Converted ZKP to Tessa");
 
     default:
       return QString();
@@ -337,11 +327,9 @@ QVariant TransactionTableModel::txAddressDecoration(const TransactionRecord* wtx
       return QIcon(":/icons/tx_mined");
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
-    case TransactionRecord::RecvFromZerocoinSpend:
       return QIcon(":/icons/tx_input");
     case TransactionRecord::SendToAddress:
     case TransactionRecord::SendToOther:
-    case TransactionRecord::ZerocoinSpend:
       return QIcon(":/icons/tx_output");
     default:
       return QIcon(":/icons/tx_inout");
@@ -362,15 +350,9 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord* wtx, b
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
     case TransactionRecord::StakeMint:
-    case TransactionRecord::ZerocoinSpend:
-    case TransactionRecord::ZerocoinSpend_FromMe:
-    case TransactionRecord::RecvFromZerocoinSpend:
       return lookupAddress(wtx->address, tooltip);
     case TransactionRecord::SendToOther:
       return QString::fromStdString(wtx->address) + watchAddress;
-    case TransactionRecord::ZerocoinMint:
-    case TransactionRecord::ZerocoinSpend_Change_zPiv:
-      return tr("Anonymous (ZKP Transaction)");
     case TransactionRecord::SendToSelf:
     default:
       return tr("(n/a)") + watchAddress;

@@ -441,8 +441,6 @@ void WalletModel::subscribeToCoreSignals() {
   wallet->ShowProgress_connect(boost::bind(ShowProgress, this, _1, _2));
   wallet->NotifyWatchonlyChanged_connect(boost::bind(NotifyWatchonlyChanged, this, _1));
   wallet->NotifyMultiSigChanged_connect(boost::bind(NotifyMultiSigChanged, this, _1));
-  wallet->NotifyZerocoinChanged_connect(boost::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
-  wallet->NotifyZkpReset_connect(boost::bind(NotifyZkpReset, this));
   wallet->NotifyWalletBacked_connect(boost::bind(NotifyWalletBacked, this, _1, _2));
 }
 
@@ -454,8 +452,6 @@ void WalletModel::unsubscribeFromCoreSignals() {
   wallet->ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
   wallet->NotifyWatchonlyChanged_disconnect(boost::bind(NotifyWatchonlyChanged, this, _1));
   wallet->NotifyMultiSigChanged_disconnect(boost::bind(NotifyMultiSigChanged, this, _1));
-  wallet->NotifyZerocoinChanged_disconnect(boost::bind(NotifyZerocoinChanged, this, _1, _2, _3, _4));
-  wallet->NotifyZkpReset_disconnect(boost::bind(NotifyZkpReset, this));
   wallet->NotifyWalletBacked_disconnect(boost::bind(NotifyWalletBacked, this, _1, _2));
 }
 

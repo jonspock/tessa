@@ -428,7 +428,7 @@ void TableViewLastColumnResizingFixer::adjustTableColumnsWidth() {
 
 // Make column use all the space available, useful during window resizing.
 void TableViewLastColumnResizingFixer::stretchColumnWidth(int column) {
-  disconnectViewHeadersSignals();
+  //disconnectViewHeadersSignals();
   resizeColumn(column, getAvailableWidthForColumn(column));
   connectViewHeadersSignals();
 }

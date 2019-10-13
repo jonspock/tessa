@@ -92,16 +92,6 @@ TransactionView::TransactionView(QWidget* parent)
 
   typeWidget->addItem(tr("To yourself"), TransactionFilterProxy::TYPE(TransactionRecord::SendToSelf));
   typeWidget->addItem(tr("Mined"), TransactionFilterProxy::TYPE(TransactionRecord::Generated));
-  typeWidget->addItem(tr("Minted"), TransactionFilterProxy::TYPE(TransactionRecord::StakeMint) |
-                                        TransactionFilterProxy::TYPE(TransactionRecord::StakeZKP));
-  typeWidget->addItem(tr("Received Tessa from ZKP"),
-                      TransactionFilterProxy::TYPE(TransactionRecord::RecvFromZerocoinSpend));
-  typeWidget->addItem(tr("Zerocoin Mint"), TransactionFilterProxy::TYPE(TransactionRecord::ZerocoinMint));
-  typeWidget->addItem(tr("Zerocoin Spend"), TransactionFilterProxy::TYPE(TransactionRecord::ZerocoinSpend));
-  typeWidget->addItem(tr("Zerocoin Spend, Change in ZKP"),
-                      TransactionFilterProxy::TYPE(TransactionRecord::ZerocoinSpend_Change_zPiv));
-  typeWidget->addItem(tr("Zerocoin Spend to Self"),
-                      TransactionFilterProxy::TYPE(TransactionRecord::ZerocoinSpend_FromMe));
   typeWidget->addItem(tr("Other"), TransactionFilterProxy::TYPE(TransactionRecord::Other));
   typeWidget->setCurrentIndex(settings.value("transactionType").toInt());
 
