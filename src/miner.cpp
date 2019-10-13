@@ -14,7 +14,6 @@
 #include "init.h"
 #include "kernel.h"  // mapHashedBlocks
 #include "main.h"    // for CBlockTemplate
-#include "bignum.h"
 #include "net.h"
 #include "pow.h"
 #include "primitives/block.h"
@@ -240,9 +239,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     TxPriorityCompare comparer(fSortedByFee);
     std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
-    vector<CBigNum> vBlockSerials;
-    vector<CBigNum> vTxSerials;
-    while (!vecPriority.empty()) {
+     while (!vecPriority.empty()) {
       // Take highest priority transaction off the priority queue:
       double dPriority = get<0>(vecPriority.front());
       CAmount feeRate = get<1>(vecPriority.front());
@@ -301,9 +298,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       ++nBlockTx;
       nBlockSigOps += nTxSigOps;
       nFees += nTxFees;
-
-      for (const CBigNum& bnSerial : vTxSerials) vBlockSerials.emplace_back(bnSerial);
-
       if (fPrintPriority) {
         LogPrint(TessaLog::MINER, "priority %.1f fee %d txid %s\n", dPriority, feeRate, tx.GetHash().ToString());
       }

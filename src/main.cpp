@@ -2450,7 +2450,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
   }
 
     
-  vector<CBigNum> vBlockSerials;
   for (const CTransaction& tx : block.vtx) {
     if (!CheckTransaction(tx, state)) { return error("CheckBlock() : CheckTransaction failed"); }
   }

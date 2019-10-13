@@ -192,7 +192,6 @@ add_custom_target(buildHeader
   )
 
 SET(LIB_RAND
-  ./src/rand_bignum.cpp
   ./src/random.cpp)
 
 

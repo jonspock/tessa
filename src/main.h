@@ -16,7 +16,6 @@
 #include "coin_externs.h"
 #include "nodeid.h"
 #include "primitives/block.h"
-#include "bignum.h"
 
 class uint256;
 class CScriptCheck;
