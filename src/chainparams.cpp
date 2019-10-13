@@ -181,7 +181,7 @@ class CTestNetParams : public CMainParams {
     nMinerThreads = 0;
     nTargetTimespan = 1 * 60;  // Tessa: 1 day
     nTargetSpacing = 20;
-    nLastPOWBlock = 200;
+    nLastPOWBlock = 2000;
     nMaturity = 15;
     nModifierUpdateBlock = 51197;  // approx Mon, 17 Apr 2017 04:00:00 GMT
     //! Modify the testnet genesis block so the timestamp is valid for a later start.
