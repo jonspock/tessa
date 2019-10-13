@@ -1523,7 +1523,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
   CAmount nValueOut = 0;
   CAmount nValueIn = 0;
   uint32_t nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
-  uint256 hashBlock = block.GetHash();
   for (uint32_t i = 0; i < block.vtx.size(); i++) {
     const CTransaction& tx = block.vtx[i];
 

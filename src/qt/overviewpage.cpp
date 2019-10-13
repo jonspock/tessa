@@ -193,7 +193,6 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
   CAmount nTotalBalance = balance + unconfirmedBalance;
   CAmount pivAvailableBalance = balance - immatureBalance - nLockedBalance;
   CAmount nTotalWatchBalance = watchOnlyBalance + watchUnconfBalance + watchImmatureBalance;
-  CAmount nUnlockedBalance = nTotalBalance - nLockedBalance;
   // Percentages
   QString szPercentage = "";
   QString sPercentage = "";

@@ -178,7 +178,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
       double dPriority = 0;
       CAmount nTotalIn = 0;
       bool fMissingInputs = false;
-      uint256 txid = tx.GetHash();
       for (const CTxIn& txin : tx.vin) {
         // Read prev transaction
         if (!view.HaveCoins(txin.prevout.hash)) {
