@@ -238,7 +238,7 @@ class CRegTestParams : public CTestNetParams {
     nToCheckBlockUpgradeMajority = 1000;
     nMinerThreads = 1;
     nTargetTimespan = 24 * 60 * 60;  // Tessa: 1 day
-    nTargetSpacing = 1 * 60;         // Tessa: 1 minutes
+    nTargetSpacing = 10;         // Tessa: 10 seconds
     bnProofOfWorkLimit = ~arith_uint256(0) >> 1;
 
     genesis = CreateGenesisBlock(1538753921, 1026102636, 0x1e0ffff0, 1, 5 * COIN);
