@@ -41,7 +41,11 @@
 #include <utility>
 #include <vector>
 
-#include "signals-cpp/signals.hpp"
+namespace boost {
+namespace signals2 {
+class connection;
+}
+}  // namespace boost
 
 /**
  * Settings
@@ -463,28 +467,37 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface {
    * Address book entry changed.
    * @note called with lock cs_wallet held.
    */
-  sigs::signal<void(CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine,
-                               const std::string& purpose, ChangeType status)>
-      NotifyAddressBookChanged;
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyAddressBookChanged, void, CWallet* wallet, const CTxDestination& address,
+                                  const std::string& label, bool isMine, const std::string& purpose, ChangeType status)
+
+  // boost::signals2::signal<void(CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine,
+  // const std::string& purpose, ChangeType status)>      NotifyAddressBookChanged;
 
   /**
    * Wallet transaction added, removed or updated.
    * @note called with lock cs_wallet held.
    */
-  sigs::signal<void(CWallet* wallet, const uint256& hashTx, ChangeType status)> NotifyTransactionChanged;
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyTransactionChanged, void, CWallet* wallet, const uint256& hashTx,
+                                  ChangeType status)
+  // boost::signals2::signal<void(CWallet* wallet, const uint256& hashTx, ChangeType status)> NotifyTransactionChanged;
 
   /** Show progress e.g. for rescan */
-  sigs::signal<void(const std::string& title, int nProgress)> ShowProgress;
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(ShowProgress, void, const std::string& title, int nProgress)
+  //  boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
 
   /** Watch-only address added */
-  sigs::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyWatchonlyChanged, void, bool f)
+  // boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
 
   /** MultiSig address added */
-  sigs::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyMultiSigChanged, void, bool f)
+  //  boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
 
   /** ZKP reset */
-  sigs::signal<void()> NotifyZkpReset;
+  ADD_WALLET_SIGNALS_DECL_WRAPPER(NotifyZkpReset, void, void)
+  // boost::signals2::signal<void()> NotifyZkpReset;
 
   /** notify wallet file backed up */
-  sigs::signal<void(const bool& fSuccess, const std::string& filename)> NotifyWalletBacked;
+  ADD_WALLET_SIGNALS_DECL_CONST_WRAPPER(NotifyWalletBacked, void, bool b, const std::string& f)
+  // boost::signals2::signal<void(const bool& fSuccess, const std::string& filename)> NotifyWalletBacked;
 };

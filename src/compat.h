@@ -50,7 +50,7 @@
 #ifdef WIN32
 #define MSG_DONTWAIT 0
 #else
-using SOCKET = u_int;
+typedef u_int SOCKET;
 #include <cerrno>
 #define WSAGetLastError() errno
 #define WSAEINVAL EINVAL

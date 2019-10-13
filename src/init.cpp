@@ -67,6 +67,9 @@
 
 #include <sodium/core.h>
 
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 using namespace std;
 using fs::create_directories;
 using fs::exists;
@@ -106,7 +109,7 @@ enum BindFlags {
   BF_WHITELIST = (1U << 2),
 };
 
-CClientUIInterface uiInterface;
+// CClientUIInterface uiInterface;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -151,9 +154,8 @@ class CCoinsViewErrorCatcher : public CCoinsViewBacked {
     try {
       return CCoinsViewBacked::GetCoins(txid, coins);
     } catch (const std::runtime_error& e) {
-      bool fRet;
-      uiInterface.ThreadSafeMessageBox.fire(_("Error reading from database, shutting down."), "",
-                                            CClientUIInterface::MSG_ERROR, &fRet);
+      uiInterface.ThreadSafeMessageBox(_("Error reading from database, shutting down."), "",
+                                       CClientUIInterface::MSG_ERROR);
       LogPrintf("Error reading from database: %s\n", e.what());
       // Starting the shutdown sequence and returning false to the caller would be
       // interpreted as 'entry not found' (as opposed to unable to read data), and
@@ -297,14 +299,12 @@ void HandleSIGTERM(int) { fRequestShutdown = true; }
 void HandleSIGHUP(int) { GetLogger().fReopenDebugLog = true; }
 
 bool static InitError(const std::string& str) {
-  bool fRet;
-  uiInterface.ThreadSafeMessageBox.fire(str, "", CClientUIInterface::MSG_ERROR, &fRet);
+  uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
   return false;
 }
 
 bool static InitWarning(const std::string& str) {
-  bool fRet;
-  uiInterface.ThreadSafeMessageBox.fire(str, "", CClientUIInterface::MSG_WARNING, &fRet);
+  uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
   return true;
 }
 
@@ -1037,7 +1037,7 @@ bool AppInit2(CScheduler& scheduler) {
    * be disabled when initialisation is finished.
    */
   if (fServer) {
-    uiInterface.InitMessage.connect(SetRPCWarmupStatus);
+    uiInterface.InitMessage_connect(SetRPCWarmupStatus);
     if (!AppInitServers()) return InitError(_("Unable to start HTTP server. See debug log for details."));
   }
 
@@ -1105,7 +1105,7 @@ bool AppInit2(CScheduler& scheduler) {
     //#endif
 
     if (GetBoolArg("-resync", false)) {
-      uiInterface.InitMessage.fire(_("Preparing for resync..."));
+      uiInterface.InitMessage(_("Preparing for resync..."));
       // Delete the local blockchain folders to force a resync from scratch to get a consitent blockchain-state
       path blocksDir = GetDataDir() / "blocks";
       path chainstateDir = GetDataDir() / "chainstate";
@@ -1134,7 +1134,7 @@ bool AppInit2(CScheduler& scheduler) {
 #endif
 
     LogPrintf("Using wallet %s\n", strWalletDir);
-    uiInterface.InitMessage.fire(_("Verifying wallet..."));
+    uiInterface.InitMessage(_("Verifying wallet..."));
 
     if (gWalletDB.init(strWalletPath)) {
       // try moving env out of the way
@@ -1300,7 +1300,7 @@ bool AppInit2(CScheduler& scheduler) {
     bool fReset = fReindex;
     std::string strLoadError;
 
-    uiInterface.InitMessage.fire(_("Loading block index..."));
+    uiInterface.InitMessage(_("Loading block index..."));
 
     nStart = GetTimeMillis();
     do {
@@ -1350,10 +1350,10 @@ bool AppInit2(CScheduler& scheduler) {
         if (fReindex) gpBlockTreeDB->WriteReindexing(true);
 
         // Tessa: load previous sessions sporks if we have them.
-        uiInterface.InitMessage.fire(_("Loading sporks..."));
+        uiInterface.InitMessage(_("Loading sporks..."));
         gSporkManager.LoadSporksFromDB();
 
-        uiInterface.InitMessage.fire(_("Loading block index..."));
+        uiInterface.InitMessage(_("Loading block index..."));
         string strBlockIndexError = "";
         if (!LoadBlockIndex(strBlockIndexError)) {
           strLoadError = _("Error loading block database");
@@ -1378,7 +1378,7 @@ bool AppInit2(CScheduler& scheduler) {
           break;
         }
 
-        uiInterface.InitMessage.fire(_("Verifying blocks..."));
+        uiInterface.InitMessage(_("Verifying blocks..."));
 
         // Flag sent to validation code to let it know it can skip certain checks
         fVerifyingBlocks = true;
@@ -1404,10 +1404,9 @@ bool AppInit2(CScheduler& scheduler) {
     if (!fLoaded) {
       // first suggest a reindex
       if (!fReset) {
-        bool fRet;
-        uiInterface.ThreadSafeMessageBox.fire(
+        bool fRet = uiInterface.ThreadSafeMessageBox(
             strLoadError + ".\n\n" + _("Do you want to rebuild the block database now?"), "",
-            CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT, &fRet);
+            CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT);
         if (fRet) {
           fReindex = true;
           fRequestShutdown = false;
@@ -1440,12 +1439,12 @@ bool AppInit2(CScheduler& scheduler) {
     std::vector<CWalletTx> vWtx;
 
     if (GetBoolArg("-zapwallettxes", false)) {
-      uiInterface.InitMessage.fire(_("Zapping all transactions from wallet..."));
+      uiInterface.InitMessage(_("Zapping all transactions from wallet..."));
 
       pwalletMain = new CWallet;
       DBErrors nZapWalletRet = pwalletMain->ZapWalletTx(vWtx);
       if (nZapWalletRet != DB_LOAD_OK) {
-        uiInterface.InitMessage.fire(_("Error loading wallet.dat: Wallet corrupted"));
+        uiInterface.InitMessage(_("Error loading wallet.dat: Wallet corrupted"));
         return false;
       }
 
@@ -1453,7 +1452,7 @@ bool AppInit2(CScheduler& scheduler) {
       pwalletMain = nullptr;
     }
 
-    uiInterface.InitMessage.fire(_("Loading wallet..."));
+    uiInterface.InitMessage(_("Loading wallet..."));
     fVerifyingBlocks = true;
 
     nStart = GetTimeMillis();
@@ -1522,7 +1521,7 @@ bool AppInit2(CScheduler& scheduler) {
         pindexRescan = chainActive.Genesis();
     }
     if (chainActive.Tip() && chainActive.Tip() != pindexRescan) {
-      uiInterface.InitMessage.fire(_("Rescanning..."));
+      uiInterface.InitMessage(_("Rescanning..."));
       LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight,
                 pindexRescan->nHeight);
       nStart = GetTimeMillis();
@@ -1555,9 +1554,9 @@ bool AppInit2(CScheduler& scheduler) {
   }  // (!fDisableWallet)
   // ********************************************************* Step 9: import blocks
 
-  if (gArgs.IsArgSet("-blocknotify")) uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
+  if (gArgs.IsArgSet("-blocknotify")) uiInterface.NotifyBlockTip_connect(BlockNotifyCallback);
 
-  if (gArgs.IsArgSet("-blocksizenotify")) uiInterface.NotifyBlockSize.connect(BlockSizeNotifyCallback);
+  if (gArgs.IsArgSet("-blocksizenotify")) uiInterface.NotifyBlockSize_connect(BlockSizeNotifyCallback);
 
   // scan for better chains in the block chain database, that are not yet connected in the active best chain
   CValidationState state;
@@ -1601,7 +1600,7 @@ bool AppInit2(CScheduler& scheduler) {
   // ********************************************************* Step 12: finished
 
   SetRPCWarmupFinished();
-  uiInterface.InitMessage.fire(_("Done loading"));
+  uiInterface.InitMessage(_("Done loading"));
 
   if (pwalletMain) {
     // Add wallet transactions that aren't already in a block to mapTransactions

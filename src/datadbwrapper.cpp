@@ -87,7 +87,6 @@ CDataDBWrapper::~CDataDBWrapper() {
   delete pdb;
   pdb = nullptr;
 #ifndef USE_LEVELDB
-  // check for Something like this : CancelAllBackgroundWork(true);
   // Didn't help  DestroyDB(dbpath, options);
   ///// delete options.env;
   // delete options.filter_policy;

@@ -137,6 +137,9 @@ class CDataDBWrapper {
 
   bool WriteBatch(CDataDBBatch& batch, bool fSync = false);
 
+  // not available for Datadb; provide for compatibility with BDB
+  bool Flush() { return true; }
+
   bool Sync() {
     CDataDBBatch batch;
     return WriteBatch(batch, true);

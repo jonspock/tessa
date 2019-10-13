@@ -19,6 +19,8 @@
 #include "wallet/wallettx.h"
 #include "wallet_externs.h"
 
+#include <boost/signals2/signal.hpp>
+
 using namespace std;
 using namespace bls;
 
@@ -137,7 +139,7 @@ bool CCryptoKeyStore::Lock() {
     vMasterKey.clear();
   }
 
-  NotifyStatusChanged.fire(this);
+  NotifyStatusChanged(this);
   return true;
 }
 void CCryptoKeyStore::SetMaster(const CKeyingMaterial &vInMasterKey) {
@@ -187,7 +189,7 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial &vInMasterKey) {
       // __func__,Hash(seed.begin(), seed.end()).GetHex());
     }
   }
-  NotifyStatusChanged.fire(this);
+  NotifyStatusChanged(this);
   return true;
 }
 
@@ -262,3 +264,19 @@ bool CCryptoKeyStore::AddDeterministicSeed(const uint256 &seed) {
 bool CCryptoKeyStore::GetDeterministicSeed(const uint256 &hashSeed, uint256 &seedOut) {
     return false;
 }
+
+struct CCryptoKeyStoreSignalSigs {
+  boost::signals2::signal<CCryptoKeyStore::NotifyStatusChangedSig> NotifyStatusChanged;
+} g_crypter_signals;
+
+#define ADD_SIGNALS_IMPL_WRAPPER(signal_name)                                                              \
+  boost::signals2::connection CCryptoKeyStore::signal_name##_connect(std::function<signal_name##Sig> fn) { \
+    return g_crypter_signals.signal_name.connect(fn);                                                      \
+  }                                                                                                        \
+  void CCryptoKeyStore::signal_name##_disconnect(std::function<signal_name##Sig> fn) {                     \
+    return g_crypter_signals.signal_name.disconnect(&fn);                                                  \
+  }
+
+ADD_SIGNALS_IMPL_WRAPPER(NotifyStatusChanged)
+
+void CCryptoKeyStore::NotifyStatusChanged(CCryptoKeyStore *wallet) { g_crypter_signals.NotifyStatusChanged(wallet); }

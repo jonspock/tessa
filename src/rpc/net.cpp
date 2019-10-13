@@ -492,7 +492,7 @@ UniValue setban(const UniValue& params, bool fHelp) {
   }
 
   DumpBanlist();  // store banlist to disk
-  uiInterface.BannedListChanged.fire();
+  uiInterface.BannedListChanged();
 
   return NullUniValue;
 }
@@ -546,7 +546,7 @@ UniValue clearbanned(const UniValue& params, bool fHelp) {
 
   CNode::ClearBanned();
   DumpBanlist();  // store banlist to disk
-  uiInterface.BannedListChanged.fire();
+  uiInterface.BannedListChanged();
 
   return NullUniValue;
 }

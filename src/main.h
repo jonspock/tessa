@@ -76,8 +76,6 @@ bool LoadBlockIndex(std::string& strError);
 void UnloadBlockIndex();
 /** Process protocol messages received from a given node */
 bool ProcessMessages(CNode* pfrom);
-void ProcessMessagesSignal(CNode* pfrom, bool* b);
-
 /**
  * Send queued protocol messages to be sent to a give node.
  *

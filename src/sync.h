@@ -230,9 +230,9 @@ class CSemaphoreGrant {
     fHaveGrant = false;
   }
 
-  CSemaphoreGrant() = default;
+  CSemaphoreGrant() : sem(nullptr), fHaveGrant(false) {}
 
-  CSemaphoreGrant(CSemaphore &sema, bool fTry = false) : sem(&sema) {
+  CSemaphoreGrant(CSemaphore &sema, bool fTry = false) : sem(&sema), fHaveGrant(false) {
     if (fTry)
       TryAcquire();
     else

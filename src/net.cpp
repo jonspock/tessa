@@ -49,6 +49,9 @@
 #include <mutex>
 #include <thread>
 
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
 
@@ -465,8 +468,7 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, const string& strLastCom
 }
 
 void CNode::PushVersion() {
-  int nBestHeight = 0;
-  g_signals.GetHeight.fire(&nBestHeight);  // HACK ???.get_value_or(0);
+  int nBestHeight = g_signals.GetHeight();  //???.get_value_or(0);
 
   /// when NTP implemented, change to just nTime = GetAdjustedTime()
   int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
@@ -494,7 +496,7 @@ void CNode::ClearBanned() {
     setBannedIsDirty = true;
   }
   DumpBanlist();  // store banlist to Disk
-  uiInterface.BannedListChanged.fire();
+  uiInterface.BannedListChanged();
 }
 
 bool CNode::IsBanned(CNetAddr ip) {
@@ -546,7 +548,7 @@ void CNode::Ban(const CSubNet& subNet, const BanReason& banReason, int64_t banti
     } else
       return;
   }
-  uiInterface.BannedListChanged.fire();
+  uiInterface.BannedListChanged();
   {
     LOCK(cs_vNodes);
     for (CNode* pnode : vNodes) {
@@ -567,7 +569,7 @@ bool CNode::Unban(const CSubNet& subNet) {
     if (!setBanned.erase(subNet)) return false;
     setBannedIsDirty = true;
   }
-  uiInterface.BannedListChanged.fire();
+  uiInterface.BannedListChanged();
   DumpBanlist();  // store banlist to disk immediately
   return true;
 }
@@ -604,7 +606,7 @@ void CNode::SweepBanned() {
     }
   }
   // update UI
-  if (notifyUI) { uiInterface.BannedListChanged.fire(); }
+  if (notifyUI) { uiInterface.BannedListChanged(); }
 }
 
 bool CNode::BannedSetIsDirty() {
@@ -848,7 +850,7 @@ void ThreadSocketHandler() {
     }
     if (vNodesSize != nPrevNodeCount) {
       nPrevNodeCount = vNodesSize;
-      uiInterface.NotifyNumConnectionsChanged.fire(nPrevNodeCount);
+      uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);
     }
 
     //
@@ -1458,9 +1460,7 @@ void ThreadMessageHandler() {
       {
         TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
         if (lockRecv) {
-          bool ok;
-          g_signals.ProcessMessagesSignal.fire(pnode, &ok);
-          if (!ok) pnode->CloseSocketDisconnect();
+          if (!g_signals.ProcessMessages(pnode)) pnode->CloseSocketDisconnect();
 
           if (pnode->nSendSize < SendBufferSize()) {
             if (!pnode->vRecvGetData.empty() || (!pnode->vRecvMsg.empty() && pnode->vRecvMsg[0].complete())) {
@@ -1474,7 +1474,7 @@ void ThreadMessageHandler() {
       // Send messages
       {
         TRY_LOCK(pnode->cs_vSend, lockSend);
-        if (lockSend) g_signals.SendMessages.fire(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
+        if (lockSend) g_signals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
       }
       if (net_interrupted) break;
     }
@@ -1634,7 +1634,7 @@ void static Discover() {
 
 void StartNode(CScheduler& scheduler) {
   net_interrupted = false;
-  uiInterface.InitMessage.fire(_("Loading addresses..."));
+  uiInterface.InitMessage(_("Loading addresses..."));
   // Load addresses for peers.dat
   int64_t nStart = GetTimeMillis();
   {
@@ -2008,7 +2008,7 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, const std::string& addrNameIn, b
   // Be shy and don't send version until we hear
   if (hSocket != INVALID_SOCKET && !fInbound) PushVersion();
 
-  GetNodeSignals().InitializeNode.fire(GetId(), this);
+  GetNodeSignals().InitializeNode(GetId(), this);
 }
 
 CNode::~CNode() {
@@ -2219,3 +2219,32 @@ void DumpBanlist() {
   LogPrint(TessaLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n", banmap.size(),
            GetTimeMillis() - nStart);
 }
+
+struct CNodeSignalSigs {
+  boost::signals2::signal<CNodeSignals::GetHeightSig, boost::signals2::last_value<bool> > GetHeight;
+  boost::signals2::signal<CNodeSignals::ProcessMessagesSig, boost::signals2::last_value<bool> > ProcessMessages;
+  boost::signals2::signal<CNodeSignals::SendMessagesSig, boost::signals2::last_value<bool> > SendMessages;
+  boost::signals2::signal<CNodeSignals::InitializeNodeSig> InitializeNode;
+  boost::signals2::signal<CNodeSignals::FinalizeNodeSig> FinalizeNode;
+} g_node_signals;
+
+#define ADD_SIGNALS_IMPL_WRAPPER(signal_name)                                                           \
+  boost::signals2::connection CNodeSignals::signal_name##_connect(std::function<signal_name##Sig> fn) { \
+    return g_node_signals.signal_name.connect(fn);                                                      \
+  }                                                                                                     \
+  void CNodeSignals::signal_name##_disconnect(std::function<signal_name##Sig> fn) {                     \
+    return g_node_signals.signal_name.disconnect(&fn);                                                  \
+  }
+
+ADD_SIGNALS_IMPL_WRAPPER(GetHeight)
+ADD_SIGNALS_IMPL_WRAPPER(ProcessMessages)
+ADD_SIGNALS_IMPL_WRAPPER(SendMessages)
+ADD_SIGNALS_IMPL_WRAPPER(InitializeNode)
+ADD_SIGNALS_IMPL_WRAPPER(FinalizeNode)
+
+int CNodeSignals::GetHeight() { return g_node_signals.GetHeight(); }
+
+bool CNodeSignals::ProcessMessages(CNode* n) { return g_node_signals.ProcessMessages(n); }
+bool CNodeSignals::SendMessages(CNode* n, bool b) { return g_node_signals.SendMessages(n, b); }
+void CNodeSignals::InitializeNode(NodeId id, const CNode* n) { g_node_signals.InitializeNode(id, n); }
+void CNodeSignals::FinalizeNode(NodeId id) { g_node_signals.FinalizeNode(id); }

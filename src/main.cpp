@@ -47,6 +47,9 @@
 #include "utiltime.h"
 #include "validationinterface.h"
 
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 #include <cmath>
 #include <sstream>
 #include <thread>
@@ -179,14 +182,14 @@ CNodeState* State(NodeId pnode) {
   return &it->second;
 }
 
-void GetHeight(int* h) {
+int GetHeight() {
   while (true) {
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain) {
       MilliSleep(50);
       continue;
     }
-    *h = chainActive.Height();
+    return chainActive.Height();
   }
 }
 
@@ -395,14 +398,20 @@ bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats) {
 }
 
 void RegisterNodeSignals(CNodeSignals& nodeSignals) {
-  nodeSignals.GetHeight.connect(&GetHeight);
-  nodeSignals.ProcessMessagesSignal.connect(&ProcessMessagesSignal);
-  nodeSignals.SendMessages.connect(&SendMessages);
-  nodeSignals.InitializeNode.connect(&InitializeNode);
-  nodeSignals.FinalizeNode.connect(&FinalizeNode);
+  nodeSignals.GetHeight_connect(&GetHeight);
+  nodeSignals.ProcessMessages_connect(&ProcessMessages);
+  nodeSignals.SendMessages_connect(&SendMessages);
+  nodeSignals.InitializeNode_connect(&InitializeNode);
+  nodeSignals.FinalizeNode_connect(&FinalizeNode);
 }
 
-void UnregisterNodeSignals(CNodeSignals& nodeSignals) {}
+void UnregisterNodeSignals(CNodeSignals& nodeSignals) {
+  nodeSignals.GetHeight_disconnect(&GetHeight);
+  nodeSignals.ProcessMessages_disconnect(&ProcessMessages);
+  nodeSignals.SendMessages_disconnect(&SendMessages);
+  nodeSignals.InitializeNode_disconnect(&InitializeNode);
+  nodeSignals.FinalizeNode_disconnect(&FinalizeNode);
+}
 
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator) {
   // Find the first block the caller has in the main chain
@@ -1626,7 +1635,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
   // Watch for changes to the previous coinbase transaction.
   static uint256 hashPrevBestCoinBase;
-  GetMainSignals().UpdatedTransaction.fire(hashPrevBestCoinBase);
+  GetMainSignals().UpdatedTransaction(hashPrevBestCoinBase);
   hashPrevBestCoinBase = block.vtx[0].GetHash();
 
   int64_t nTime4 = GetTimeMicros();
@@ -1681,7 +1690,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode) {
       // Finally flush the chainstate (which may refer to block index entries).
       if (!gpCoinsTip->Flush()) return state.Abort("Failed to write to coin database");
       // Update best block in wallet (so we can detect restored wallets).
-      if (mode != FLUSH_STATE_IF_NEEDED) { GetMainSignals().SetBestChain.fire(chainActive.GetLocator()); }
+      if (mode != FLUSH_STATE_IF_NEEDED) { GetMainSignals().SetBestChain(chainActive.GetLocator()); }
       nLastWrite = GetTimeMicros();
     }
   } catch (const std::runtime_error& e) { return state.Abort(std::string("System error while flushing: ") + e.what()); }
@@ -1793,7 +1802,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
   {
     CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
     bool rv = ConnectBlock(*pblock, state, pindexNew, view, false, fAlreadyChecked);
-    GetMainSignals().BlockChecked.fire(*pblock, state);
+    GetMainSignals().BlockChecked(*pblock, state);
     if (!rv) {
       if (state.IsInvalid()) InvalidBlockFound(pindexNew, state);
       return error("ConnectTip() : ConnectBlock %s failed", pindexNew->GetBlockHash().ToString());
@@ -2103,14 +2112,14 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
       }
       // Notify external listeners about the new tip.
       // Note: uiInterface, should switch main signals.
-      uiInterface.NotifyBlockTip.fire(hashNewTip);
-      GetMainSignals().UpdatedBlockTip.fire(pindexNewTip);
+      uiInterface.NotifyBlockTip(hashNewTip);
+      GetMainSignals().UpdatedBlockTip(pindexNewTip);
 
       unsigned size = 0;
       if (pblock) size = GetSerializeSize(*pblock);
       // If the size is over 1 MB notify external listeners, and it is within the last 5 minutes
       if (size > MAX_BLOCK_SIZE_LEGACY && pblock->GetBlockTime() > GetAdjustedTime() - 300) {
-        uiInterface.NotifyBlockSize.fire(static_cast<int>(size), hashNewTip);
+        uiInterface.NotifyBlockSize(static_cast<int>(size), hashNewTip);
       }
     }
   } while (pindexMostWork != chainActive.Tip());
@@ -3376,7 +3385,7 @@ void static ProcessGetData(CNode* pfrom) {
       }
 
       // Track requests for our stuff.
-      GetMainSignals().Inventory.fire(inv.hash);
+      GetMainSignals().Inventory(inv.hash);
 
       if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK) break;
     }
@@ -3605,7 +3614,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
       }
 
       // Track requests for our stuff
-      GetMainSignals().Inventory.fire(inv.hash);
+      GetMainSignals().Inventory(inv.hash);
 
       if (pfrom->nSendSize > (SendBufferSize() * 2)) {
         Misbehaving(pfrom->GetId(), 50);
@@ -4297,7 +4306,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle) {
     // Resend wallet transactions that haven't gotten in a block yet
     // Except during reindex, importing and IBD, when old wallet
     // transactions become unconfirmed and spams other nodes.
-    if (!fReindex /*&& !fImporting && !IsInitialBlockDownload()*/) { GetMainSignals().Broadcast.fire(); }
+    if (!fReindex /*&& !fImporting && !IsInitialBlockDownload()*/) { GetMainSignals().Broadcast(); }
 
     //
     // Message: inventory

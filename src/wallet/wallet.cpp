@@ -35,6 +35,8 @@
 #include <random>
 #include <thread>
 
+#include <boost/signals2/signal.hpp>
+
 #define KEY_RES_SIZE 200
 
 using namespace std;
@@ -247,7 +249,7 @@ bool CWallet::LoadCScript(const CScript& redeemScript) {
 bool CWallet::AddWatchOnly(const CScript& dest) {
   if (!CCryptoKeyStore::AddWatchOnly(dest)) return false;
   nTimeFirstKey = 1;  // No birthday information for watch-only keys.
-  NotifyWatchonlyChanged.fire(true);
+  NotifyWatchonlyChanged(true);
   if (!fFileBacked) return true;
   return gWalletDB.WriteWatchOnly(dest);
 }
@@ -255,7 +257,7 @@ bool CWallet::AddWatchOnly(const CScript& dest) {
 bool CWallet::RemoveWatchOnly(const CScript& dest) {
   AssertLockHeld(cs_wallet);
   if (!CCryptoKeyStore::RemoveWatchOnly(dest)) return false;
-  if (!HaveWatchOnly()) NotifyWatchonlyChanged.fire(false);
+  if (!HaveWatchOnly()) NotifyWatchonlyChanged(false);
   if (fFileBacked)
     if (!gWalletDB.EraseWatchOnly(dest)) return false;
 
@@ -267,7 +269,7 @@ bool CWallet::LoadWatchOnly(const CScript& dest) { return CCryptoKeyStore::AddWa
 bool CWallet::AddMultiSig(const CScript& dest) {
   if (!CCryptoKeyStore::AddMultiSig(dest)) return false;
   nTimeFirstKey = 1;  // No birthday information
-  NotifyMultiSigChanged.fire(true);
+  NotifyMultiSigChanged(true);
   if (!fFileBacked) return true;
   return gWalletDB.WriteMultiSig(dest);
 }
@@ -275,7 +277,7 @@ bool CWallet::AddMultiSig(const CScript& dest) {
 bool CWallet::RemoveMultiSig(const CScript& dest) {
   AssertLockHeld(cs_wallet);
   if (!CCryptoKeyStore::RemoveMultiSig(dest)) return false;
-  if (!HaveMultiSig()) NotifyMultiSigChanged.fire(false);
+  if (!HaveMultiSig()) NotifyMultiSigChanged(false);
   if (fFileBacked)
     if (!gWalletDB.EraseMultiSig(dest)) return false;
 
@@ -498,6 +500,7 @@ bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
 
     CMasterKey kkMasterKey;
     if (!gWalletDB.ReadMasterKey(nMasterKeyMaxID, kkMasterKey)) { LogPrintf("Problem reading back kMasterKey"); }
+    std::cout << "Check if reading back Key worked!!\n";
     // std::cout << "Set mapMasterKeys[" << nMasterKeyMaxID << "]\n";
   }
 
@@ -510,6 +513,8 @@ bool CWallet::SetupCrypter(const SecureString& strWalletPassphrase) {
   }
 
   NewKeyPool();
+  //???? Lock();
+
   return true;
 }
 
@@ -581,7 +586,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet) {
     wtx.MarkDirty();
 
     // Notify UI of new or updated transaction
-    NotifyTransactionChanged.fire(this, hash, fInsertedNew ? CT_NEW : CT_UPDATED);
+    NotifyTransactionChanged(this, hash, fInsertedNew ? CT_NEW : CT_UPDATED);
 
     // notify an external script when a wallet transaction comes in or is updated
     std::string strCmd = GetArg("-walletnotify", "");
@@ -696,14 +701,14 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
     while (pindex && nTimeFirstKey && (pindex->GetBlockTime() < (nTimeFirstKey - 7200)))
       pindex = chainActive.Next(pindex);
 
-    ShowProgress.fire(_("Rescanning..."),
-                      0);  // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
+    ShowProgress(_("Rescanning..."),
+                 0);  // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
     double dProgressStart = Checkpoints::GuessVerificationProgress(pindex, false);
     double dProgressTip = Checkpoints::GuessVerificationProgress(chainActive.Tip(), false);
     set<uint256> setAddedToWallet;
     while (pindex) {
       if (pindex->nHeight % 100 == 0 && dProgressTip - dProgressStart > 0.0)
-        ShowProgress.fire(
+        ShowProgress(
             _("Rescanning..."),
             std::max(1, std::min(99, (int)((Checkpoints::GuessVerificationProgress(pindex, false) - dProgressStart) /
                                            (dProgressTip - dProgressStart) * 100))));
@@ -722,7 +727,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate) {
                   Checkpoints::GuessVerificationProgress(pindex));
       }
     }
-    ShowProgress.fire(_("Rescanning..."), 100);  // hide progress dialog in GUI
+    ShowProgress(_("Rescanning..."), 100);  // hide progress dialog in GUI
   }
   return ret;
 }
@@ -1578,7 +1583,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
 
           CWalletTx& coin = mapWallet[txin.prevout.hash];
           coin.BindWallet(this);
-          NotifyTransactionChanged.fire(this, txin.prevout.hash, CT_UPDATED);
+          NotifyTransactionChanged(this, txin.prevout.hash, CT_UPDATED);
           updated_hahes.insert(txin.prevout.hash);
         }
       }
@@ -1628,7 +1633,7 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet) {
   DBErrors nLoadWalletRet = gWalletDB.LoadWallet(this);
   if (nLoadWalletRet != DB_LOAD_OK) return nLoadWalletRet;
   fFirstRunRet = !vchDefaultKey.IsValid();
-  uiInterface.LoadWallet.fire(this);
+  uiInterface.LoadWallet(this);
   return DB_LOAD_OK;
 }
 
@@ -1649,8 +1654,8 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const string& strNam
     if (!strPurpose.empty()) /* update purpose only if requested */
       mapAddressBook[address].purpose = strPurpose;
   }
-  NotifyAddressBookChanged.fire(this, address, strName, ::IsMine(*this, address) != ISMINE_NO, strPurpose,
-                                (fUpdated ? CT_UPDATED : CT_NEW));
+  NotifyAddressBookChanged(this, address, strName, ::IsMine(*this, address) != ISMINE_NO, strPurpose,
+                           (fUpdated ? CT_UPDATED : CT_NEW));
   if (!fFileBacked) return false;
   if (!strPurpose.empty() && !gWalletDB.WritePurpose(EncodeDestination(address), strPurpose)) return false;
   return gWalletDB.WriteName(EncodeDestination(address), strName);
@@ -1668,7 +1673,7 @@ bool CWallet::DelAddressBook(const CTxDestination& address) {
     mapAddressBook.erase(address);
   }
 
-  NotifyAddressBookChanged.fire(this, address, "", ::IsMine(*this, address) != ISMINE_NO, "", CT_DELETED);
+  NotifyAddressBookChanged(this, address, "", ::IsMine(*this, address) != ISMINE_NO, "", CT_DELETED);
 
   if (!fFileBacked) return false;
   gWalletDB.ErasePurpose(EncodeDestination(address));
@@ -1729,7 +1734,7 @@ bool CWallet::TopUpKeyPool(uint32_t kpSize) {
       LogPrintf("keypool added key %d, size=%u\n", nEnd, setKeyPool.size());
       double dProgress = 100.f * nEnd / (nTargetSize + 1);
       std::string strMsg = strprintf(_("Loading wallet... (%3.2f %%)"), dProgress);
-      uiInterface.InitMessage.fire(strMsg);
+      uiInterface.InitMessage(strMsg);
     }
     // gWalletDB.TxnCommit();
   }
@@ -1752,14 +1757,14 @@ void CWallet::ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool) {
     if (!gWalletDB.ReadPool(nIndex, keypool)) throw runtime_error("ReserveKeyFromKeyPool() : read failed");
     if (!HaveKey(keypool.vchPubKey.GetID())) throw runtime_error("ReserveKeyFromKeyPool() : unknown key in key pool");
     assert(keypool.vchPubKey.IsValid());
-    // LogPrintf("keypool reserve %d\n", nIndex);
+    LogPrintf("keypool reserve %d\n", nIndex);
   }
 }
 
 void CWallet::KeepKey(int64_t nIndex) {
   // Remove from key pool
   if (fFileBacked) { gWalletDB.ErasePool(nIndex); }
-  // LogPrintf("keypool keep %d\n", nIndex);
+  LogPrintf("keypool keep %d\n", nIndex);
 }
 
 void CWallet::ReturnKey(int64_t nIndex) {
@@ -1768,7 +1773,7 @@ void CWallet::ReturnKey(int64_t nIndex) {
     LOCK(cs_wallet);
     setKeyPool.insert(nIndex);
   }
-  // LogPrintf("keypool return %d\n", nIndex);
+  LogPrintf("keypool return %d\n", nIndex);
 }
 
 bool CWallet::GetKeyFromPool(CPubKey& result) {
@@ -1963,7 +1968,7 @@ bool CWallet::UpdatedTransaction(const uint256& hashTx) {
     // Only notify UI if this transaction is in this wallet
     const auto mi = mapWallet.find(hashTx);
     if (mi != mapWallet.end()) {
-      NotifyTransactionChanged.fire(this, hashTx, CT_UPDATED);
+      NotifyTransactionChanged(this, hashTx, CT_UPDATED);
       return true;
     }
   }
@@ -2516,3 +2521,62 @@ bool CWallet::SetHDChain(const CHDChain& chain, bool memonly) {
 }
 
 bool CWallet::IsHDEnabled() { return !hdChain.masterKeyID.IsNull(); }
+
+struct CWalletSignalSigs {
+  boost::signals2::signal<CWallet::NotifyZkpResetSig> NotifyZkpReset;
+  boost::signals2::signal<CWallet::NotifyZerocoinChangedSig> NotifyZerocoinChanged;
+  boost::signals2::signal<CWallet::NotifyAddressBookChangedSig> NotifyAddressBookChanged;
+  boost::signals2::signal<CWallet::NotifyTransactionChangedSig> NotifyTransactionChanged;
+  boost::signals2::signal<CWallet::NotifyWatchonlyChangedSig> NotifyWatchonlyChanged;
+  boost::signals2::signal<CWallet::NotifyMultiSigChangedSig> NotifyMultiSigChanged;
+  boost::signals2::signal<CWallet::NotifyWalletBackedSig> NotifyWalletBacked;
+  boost::signals2::signal<CWallet::ShowProgressSig> ShowProgress;
+} g_wallet_signals;
+
+#define ADD_SIGNALS_IMPL_WRAPPER(signal_name)                                                      \
+  boost::signals2::connection CWallet::signal_name##_connect(std::function<signal_name##Sig> fn) { \
+    return g_wallet_signals.signal_name.connect(fn);                                               \
+  }                                                                                                \
+  void CWallet::signal_name##_disconnect(std::function<signal_name##Sig> fn) {                     \
+    return g_wallet_signals.signal_name.disconnect(&fn);                                           \
+  }
+
+#define ADD_SIGNALS_IMPL_CONST_WRAPPER(signal_name)                                                      \
+  boost::signals2::connection CWallet::signal_name##_connect(std::function<signal_name##Sig> fn) const { \
+    return g_wallet_signals.signal_name.connect(fn);                                                     \
+  }                                                                                                      \
+  void CWallet::signal_name##_disconnect(std::function<signal_name##Sig> fn) const {                     \
+    return g_wallet_signals.signal_name.disconnect(&fn);                                                 \
+  }
+
+ADD_SIGNALS_IMPL_WRAPPER(NotifyZkpReset)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyZerocoinChanged)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyAddressBookChanged)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyTransactionChanged)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyWatchonlyChanged)
+ADD_SIGNALS_IMPL_WRAPPER(NotifyMultiSigChanged)
+ADD_SIGNALS_IMPL_WRAPPER(ShowProgress)
+ADD_SIGNALS_IMPL_CONST_WRAPPER(NotifyWalletBacked)
+
+void CWallet::NotifyZkpReset() { g_wallet_signals.NotifyZkpReset(); }
+void CWallet::NotifyZerocoinChanged(CWallet* wallet, const std::string& pubCoin, const std::string& isUsed,
+                                    ChangeType status) {
+  g_wallet_signals.NotifyZerocoinChanged(wallet, pubCoin, isUsed, status);
+}
+
+void CWallet::NotifyAddressBookChanged(CWallet* wallet, const CTxDestination& address, const std::string& label,
+                                       bool isMine, const std::string& purpose, ChangeType status) {
+  g_wallet_signals.NotifyAddressBookChanged(wallet, address, label, isMine, purpose, status);
+}
+
+void CWallet::NotifyTransactionChanged(CWallet* wallet, const uint256& hashTx, ChangeType status) {
+  g_wallet_signals.NotifyTransactionChanged(wallet, hashTx, status);
+}
+
+void CWallet::ShowProgress(const std::string& title, int nProgress) { g_wallet_signals.ShowProgress(title, nProgress); }
+
+void CWallet::NotifyWatchonlyChanged(bool f) { g_wallet_signals.NotifyWatchonlyChanged(f); }
+
+void CWallet::NotifyWalletBacked(bool f, const std::string& s) const { g_wallet_signals.NotifyWalletBacked(f, s); }
+
+void CWallet::NotifyMultiSigChanged(bool f) { g_wallet_signals.NotifyMultiSigChanged(f); }

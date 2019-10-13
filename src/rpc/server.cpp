@@ -18,12 +18,12 @@
 #include "utilstrencodings.h"
 #include "wallet_externs.h"
 
-#include "signals-cpp/signals.hpp"
 #include <univalue/univalue.h>
+#include <boost/bind.hpp>
+#include <boost/signals2/signal.hpp>
 
 using namespace RPCServer;
 using namespace std;
-using std::placeholders::_1;
 
 static bool fRPCRunning = false;
 static bool fRPCInWarmup = true;
@@ -36,10 +36,10 @@ static std::vector<RPCTimerInterface*> timerInterfaces;
 static std::map<std::string, std::unique_ptr<RPCTimerBase> > deadlineTimers;
 
 static struct CRPCSignals {
-  sigs::signal<void()> Started;
-  sigs::signal<void()> Stopped;
-  sigs::signal<void(const CRPCCommand&)> PreCommand;
-  sigs::signal<void(const CRPCCommand&)> PostCommand;
+  boost::signals2::signal<void()> Started;
+  boost::signals2::signal<void()> Stopped;
+  boost::signals2::signal<void(const CRPCCommand&)> PreCommand;
+  boost::signals2::signal<void(const CRPCCommand&)> PostCommand;
 } g_rpcSignals;
 
 void RPCServer::OnStarted(std::function<void()> slot) { g_rpcSignals.Started.connect(slot); }
@@ -47,11 +47,11 @@ void RPCServer::OnStarted(std::function<void()> slot) { g_rpcSignals.Started.con
 void RPCServer::OnStopped(std::function<void()> slot) { g_rpcSignals.Stopped.connect(slot); }
 
 void RPCServer::OnPreCommand(std::function<void(const CRPCCommand&)> slot) {
-  g_rpcSignals.PreCommand.connect(std::bind(slot, _1));
+  g_rpcSignals.PreCommand.connect(boost::bind(slot, _1));
 }
 
 void RPCServer::OnPostCommand(std::function<void(const CRPCCommand&)> slot) {
-  g_rpcSignals.PostCommand.connect(std::bind(slot, _1));
+  g_rpcSignals.PostCommand.connect(boost::bind(slot, _1));
 }
 
 void RPCTypeCheck(const UniValue& params, const list<UniValue::VType>& typesExpected, bool fAllowNull) {
@@ -351,7 +351,7 @@ const CRPCCommand* CRPCTable::operator[](const std::string& name) const {
 bool StartRPC() {
   LogPrint(TessaLog::RPC, "Starting RPC\n");
   fRPCRunning = true;
-  g_rpcSignals.Started.fire();
+  g_rpcSignals.Started();
   return true;
 }
 
@@ -364,7 +364,7 @@ void InterruptRPC() {
 void StopRPC() {
   LogPrint(TessaLog::RPC, "Stopping RPC\n");
   deadlineTimers.clear();
-  g_rpcSignals.Stopped.fire();
+  g_rpcSignals.Stopped();
 }
 
 bool IsRPCRunning() { return fRPCRunning; }
@@ -442,14 +442,14 @@ UniValue CRPCTable::execute(const std::string& strMethod, const UniValue& params
   const CRPCCommand* pcmd = tableRPC[strMethod];
   if (!pcmd) throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
 
-  g_rpcSignals.PreCommand.fire(*pcmd);
+  g_rpcSignals.PreCommand(*pcmd);
 
   try {
     // Execute
     return pcmd->actor(params, false);
   } catch (std::exception& e) { throw JSONRPCError(RPC_MISC_ERROR, e.what()); }
 
-  g_rpcSignals.PostCommand.fire(*pcmd);
+  g_rpcSignals.PostCommand(*pcmd);
 }
 
 std::vector<std::string> CRPCTable::listCommands() const {
@@ -457,7 +457,7 @@ std::vector<std::string> CRPCTable::listCommands() const {
   typedef std::map<std::string, const CRPCCommand*> commandMap;
 
   std::transform(mapCommands.begin(), mapCommands.end(), std::back_inserter(commandList),
-                 std::bind(&commandMap::value_type::first, _1));
+                 boost::bind(&commandMap::value_type::first, _1));
   return commandList;
 }
 

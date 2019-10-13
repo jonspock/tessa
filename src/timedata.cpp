@@ -86,8 +86,7 @@ void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample) {
                 "Core will not work properly.");
           strMiscWarning = strMessage;
           LogPrintf("*** %s\n", strMessage);
-          bool fRet;
-          uiInterface.ThreadSafeMessageBox.fire(strMessage, "", CClientUIInterface::MSG_WARNING, &fRet);
+          uiInterface.ThreadSafeMessageBox(strMessage, "", CClientUIInterface::MSG_WARNING);
         }
       }
     }

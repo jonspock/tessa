@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-using valtype = std::vector<uint8_t>;
+typedef std::vector<uint8_t> valtype;
 
 static const uint32_t MAX_SCRIPT_ELEMENT_SIZE = 520;  // bytes
 

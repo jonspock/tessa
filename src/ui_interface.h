@@ -12,7 +12,11 @@
 #include <memory>
 #include <string>
 
-#include "signals-cpp/signals.hpp"
+namespace boost {
+namespace signals2 {
+class connection;
+}
+}  // namespace boost
 
 class CBlockIndex;
 class CBasicKeyStore;
@@ -68,33 +72,40 @@ class CClientUIInterface {
     MSG_ERROR = (ICON_ERROR | BTN_OK | MODAL)
   };
 
+#define ADD_SIGNALS_DECL_WRAPPER(signal_name, rtype, ...)                                \
+  rtype signal_name(__VA_ARGS__);                                                        \
+  using signal_name##Sig = rtype(__VA_ARGS__);                                           \
+  boost::signals2::connection signal_name##_connect(std::function<signal_name##Sig> fn); \
+  void signal_name##_disconnect(std::function<signal_name##Sig> fn);
+
   /** Show message box. */
-  sigs::signal<void(const std::string& message, const std::string& caption, unsigned int style, bool* b)>
-      ThreadSafeMessageBox;
+  ADD_SIGNALS_DECL_WRAPPER(ThreadSafeMessageBox, bool, const std::string& message, const std::string& caption,
+                           uint32_t style)
 
   /** Progress message during initialization. */
-  sigs::signal<void(const std::string& message)> InitMessage;
+  ADD_SIGNALS_DECL_WRAPPER(InitMessage, void, const std::string& message)
 
   /** Translate a message to the native language of the user. */
-  sigs::signal<std::string(const char* psz)> Translate;
+  // boost::signals2::signal<std::string(const char* psz)> Translate;
+  ///// ADD_SIGNALS_DECL_WRAPPER(Translate, std::string, const char* psz)
 
   /** Number of network connections changed. */
-  sigs::signal<void(int newNumConnections)> NotifyNumConnectionsChanged;
+  ADD_SIGNALS_DECL_WRAPPER(NotifyNumConnectionsChanged, void, int newNumConnections)
 
   /** A wallet has been loaded. */
-  sigs::signal<void(CWallet* wallet)> LoadWallet;
+  ADD_SIGNALS_DECL_WRAPPER(LoadWallet, void, CWallet* wallet)
 
   /** Show progress e.g. for verifychain */
-  sigs::signal<void(const std::string& title, int nProgress)> ShowProgress;
+  ADD_SIGNALS_DECL_WRAPPER(ShowProgress, void, const std::string& title, int nProgress)  //, bool resume_possible);
 
   /** New block has been accepted */
-  sigs::signal<void(const uint256& hash)> NotifyBlockTip;
+  ADD_SIGNALS_DECL_WRAPPER(NotifyBlockTip, void, const uint256&)
 
   /** New block has been accepted and is over a certain size */
-  sigs::signal<void(int size, const uint256& hash)> NotifyBlockSize;
+  ADD_SIGNALS_DECL_WRAPPER(NotifyBlockSize, void, int, const uint256&)
 
   /** Banlist did change. */
-  sigs::signal<void(void)> BannedListChanged;
+  ADD_SIGNALS_DECL_WRAPPER(BannedListChanged, void, void)
 };
 
 extern CClientUIInterface uiInterface;

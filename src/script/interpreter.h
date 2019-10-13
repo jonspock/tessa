@@ -82,7 +82,7 @@ class BaseSignatureChecker {
     return false;
   }
 
-  virtual ~BaseSignatureChecker() = default;
+  virtual ~BaseSignatureChecker() {}
 };
 
 class TransactionSignatureChecker : public BaseSignatureChecker {
