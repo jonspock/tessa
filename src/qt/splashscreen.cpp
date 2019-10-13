@@ -18,6 +18,10 @@
 #include "wallet/wallet.h"
 #include "wallet/wallettx.h"
 
+#include <boost/bind.hpp>
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDesktopWidget>
@@ -103,17 +107,23 @@ static void ShowProgress(SplashScreen* splash, const std::string& title, int nPr
 }
 
 static void ConnectWallet(SplashScreen* splash, CWallet* wallet) {
-  if (wallet) wallet->ShowProgress.connect(std::bind(ShowProgress, splash, std::placeholders::_1, std::placeholders::_2));
+  if (wallet) wallet->ShowProgress_connect(boost::bind(ShowProgress, splash, _1, _2));
 }
 
 void SplashScreen::subscribeToCoreSignals() {
   // Connect signals to client
-  uiInterface.InitMessage.connect(std::bind(InitMessage, this, std::placeholders::_1));
-  uiInterface.ShowProgress.connect(std::bind(ShowProgress, this, std::placeholders::_1, std::placeholders::_2));
-  if (pwalletMain) uiInterface.LoadWallet.connect(std::bind(ConnectWallet, this, std::placeholders::_1));
+  uiInterface.InitMessage_connect(boost::bind(InitMessage, this, _1));
+  uiInterface.ShowProgress_connect(boost::bind(ShowProgress, this, _1, _2));
+  if (pwalletMain) uiInterface.LoadWallet_connect(boost::bind(ConnectWallet, this, _1));
 }
 
-void SplashScreen::unsubscribeFromCoreSignals() {}
+void SplashScreen::unsubscribeFromCoreSignals() {
+  // Disconnect signals from client
+  uiInterface.InitMessage_disconnect(boost::bind(InitMessage, this, _1));
+  uiInterface.ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
+
+  if (pwalletMain) pwalletMain->ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
+}
 
 void SplashScreen::showMessage(const QString& message, int alignment, const QColor& color) {
   curMessage = message;

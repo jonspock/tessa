@@ -34,6 +34,9 @@
 #include "util.h"
 #include "utiltime.h"
 
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 #include <cstdint>
 
 #include <QApplication>
@@ -528,7 +531,7 @@ int main(int argc, char* argv[]) {
   InitLogging();
 
   // Subscribe to global signals from core
-  uiInterface.InitMessage.connect(InitMessage);
+  uiInterface.InitMessage_connect(InitMessage);
 
   if (GetBoolArg("-splash", true) && !GetBoolArg("-min", false)) app.createSplashScreen(networkStyle.data());
 

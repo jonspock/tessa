@@ -508,8 +508,7 @@ SET(LIBS_LIST coin bls lmdb ${DB_LIBRARIES} ${UPNP_LIB}
 target_link_libraries(tessad ${LIBS_LIST})
 
 # Subset of libraries needed for cli
-target_link_libraries(tessa-cli coin event pthread sodium ${FS_LIBS}) # wsock32)
-
+#target_link_libraries(tessa-cli coin event pthread sodium ${FS_LIBS}) # wsock32)
 add_subdirectory(src/qt)
 
 #---------------------------------------------------------------------------------------------------------

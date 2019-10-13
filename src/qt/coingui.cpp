@@ -36,6 +36,11 @@
 #include "ui_interface.h"
 #include "util.h"
 
+#include <boost/bind.hpp>
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
+
 #include <iostream>
 
 #include <QAction>
@@ -1080,10 +1085,13 @@ static bool ThreadSafeMessageBox(BitcoinGUI* gui, const std::string& message, co
 
 void BitcoinGUI::subscribeToCoreSignals() {
   // Connect signals to client
-  uiInterface.ThreadSafeMessageBox.connect(std::bind(ThreadSafeMessageBox, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+  uiInterface.ThreadSafeMessageBox_connect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
 }
 
-void BitcoinGUI::unsubscribeFromCoreSignals() {}
+void BitcoinGUI::unsubscribeFromCoreSignals() {
+  // Disconnect signals from client
+  uiInterface.ThreadSafeMessageBox_disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
+}
 
 /** Get restart command-line parameters and request restart */
 void BitcoinGUI::handleRestart(QStringList args) {

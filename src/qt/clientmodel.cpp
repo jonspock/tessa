@@ -27,6 +27,10 @@
 #include <QDebug>
 #include <QTimer>
 
+#include <boost/bind.hpp>
+#include <boost/signals2/last_value.hpp>
+#include <boost/signals2/signal.hpp>
+
 static const int64_t nClientStartupTime = GetTime();
 
 ClientModel::ClientModel(OptionsModel* optionsModel, QObject* parent)
@@ -157,9 +161,14 @@ static void BannedListChanged(ClientModel* clientmodel) {
 
 void ClientModel::subscribeToCoreSignals() {
   // Connect signals to client
-  uiInterface.ShowProgress.connect(std::bind(ShowProgress, this, std::placeholders::_1, std::placeholders::_2));
-  uiInterface.NotifyNumConnectionsChanged.connect(std::bind(NotifyNumConnectionsChanged, this, std::placeholders::_1));
-  uiInterface.BannedListChanged.connect(std::bind(BannedListChanged, this));
+  uiInterface.ShowProgress_connect(boost::bind(ShowProgress, this, _1, _2));
+  uiInterface.NotifyNumConnectionsChanged_connect(boost::bind(NotifyNumConnectionsChanged, this, _1));
+  uiInterface.BannedListChanged_connect(boost::bind(BannedListChanged, this));
 }
 
-void ClientModel::unsubscribeFromCoreSignals() {}
+void ClientModel::unsubscribeFromCoreSignals() {
+  // Disconnect signals from client
+  uiInterface.ShowProgress_disconnect(boost::bind(ShowProgress, this, _1, _2));
+  uiInterface.NotifyNumConnectionsChanged_disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
+  uiInterface.BannedListChanged_disconnect(boost::bind(BannedListChanged, this));
+}
